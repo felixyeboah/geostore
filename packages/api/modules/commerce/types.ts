@@ -1,0 +1,37 @@
+import { z } from "zod";
+
+export const productFormSchema = z.object({
+	name: z.string().trim().min(2, "Enter a product name."),
+	slug: z
+		.string()
+		.trim()
+		.min(2, "Enter a product URL slug.")
+		.regex(
+			/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+			"Use lowercase words separated by hyphens.",
+		),
+	shortDescription: z
+		.string()
+		.trim()
+		.min(10, "Add a short description.")
+		.max(180),
+	description: z
+		.string()
+		.trim()
+		.min(30, "Add a more complete product description."),
+	brand: z.string().trim().min(2, "Enter the brand."),
+	sku: z.string().trim().min(3, "Enter a SKU."),
+	status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
+	priceInPesewas: z.number().int().min(1, "Enter a price greater than zero."),
+	compareAtInPesewas: z.number().int().positive().optional(),
+	stockQuantity: z.number().int().min(0),
+	lowStockThreshold: z.number().int().min(0),
+	isFeatured: z.boolean(),
+	categoryId: z.string().min(1, "Choose a category."),
+	imageUrls: z
+		.array(z.string().url("Use a complete image URL."))
+		.min(1, "Add at least one product image."),
+	specifications: z.record(z.string(), z.string()),
+});
+
+export type ProductFormValues = z.infer<typeof productFormSchema>;

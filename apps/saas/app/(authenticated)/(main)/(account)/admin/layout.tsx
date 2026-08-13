@@ -1,0 +1,103 @@
+import { getSession } from "@auth/lib/server";
+import { config } from "@repo/auth/config";
+import { Logo } from "@repo/ui";
+import { SettingsMenu } from "@settings/components/SettingsMenu";
+import { PageHeader } from "@shared/components/PageHeader";
+import { getTranslations } from "@shared/lib/translations";
+import {
+	Building2Icon,
+	ChartNoAxesCombinedIcon,
+	LayoutDashboardIcon,
+	PackageIcon,
+	ReceiptTextIcon,
+	ShoppingBagIcon,
+	UsersIcon,
+} from "lucide-react";
+import { redirect } from "next/navigation";
+import type { PropsWithChildren } from "react";
+
+export default async function AdminLayout({ children }: PropsWithChildren) {
+	const t = await getTranslations("admin");
+	const session = await getSession();
+
+	if (!session) {
+		redirect("/login");
+	}
+
+	if (session.user?.role !== "admin") {
+		redirect("/");
+	}
+
+	return (
+		<>
+			<PageHeader title={t("title")} subtitle={t("description")} />
+
+			<SettingsMenu
+				className="mb-6"
+				menuItems={[
+					{
+						avatar: <Logo className="size-8" withLabel={false} />,
+						title: t("title"),
+						items: [
+							{
+								title: t("menu.overview"),
+								href: "/admin/overview",
+								icon: (
+									<LayoutDashboardIcon className="size-4 opacity-50" />
+								),
+							},
+							{
+								title: t("menu.products"),
+								href: "/admin/products",
+								icon: (
+									<PackageIcon className="size-4 opacity-50" />
+								),
+							},
+							{
+								title: t("menu.orders"),
+								href: "/admin/orders",
+								icon: (
+									<ShoppingBagIcon className="size-4 opacity-50" />
+								),
+							},
+							{
+								title: t("menu.transactions"),
+								href: "/admin/transactions",
+								icon: (
+									<ReceiptTextIcon className="size-4 opacity-50" />
+								),
+							},
+							{
+								title: t("menu.analytics"),
+								href: "/admin/analytics",
+								icon: (
+									<ChartNoAxesCombinedIcon className="size-4 opacity-50" />
+								),
+							},
+							{
+								title: t("menu.users"),
+								href: "/admin/users",
+								icon: (
+									<UsersIcon className="size-4 opacity-50" />
+								),
+							},
+							...(config.organizations.enable
+								? [
+										{
+											title: t("menu.organizations"),
+											href: "/admin/organizations",
+											icon: (
+												<Building2Icon className="size-4 opacity-50" />
+											),
+										},
+									]
+								: []),
+						],
+					},
+				]}
+			/>
+
+			{children}
+		</>
+	);
+}
