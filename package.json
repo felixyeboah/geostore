@@ -25,7 +25,7 @@
 		"@repo/tsconfig": "workspace:*",
 		"@types/node": "catalog:",
 		"dotenv-cli": "catalog:",
-		"turbo": "^2.8.17",
+		"turbo": "^2.10.9",
 		"typescript": "catalog:"
 	},
 	"pnpm": {
