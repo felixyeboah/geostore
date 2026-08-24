@@ -1,14 +1,14 @@
 {
 	"dependencies": {
-		"@react-email/components": "^1.0.10",
-		"@react-email/render": "^2.0.4",
+		"@react-email/components": "^1.0.12",
+		"@react-email/render": "^2.1.0",
 		"@repo/logs": "workspace:*",
 		"@repo/ui": "workspace:*",
-		"nodemailer": "^8.0.3",
+		"nodemailer": "^9.0.5",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"react-email": "^5.2.10",
-		"resend": "^6.9.4"
+		"react-email": "^6.9.2",
+		"resend": "^6.21.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
