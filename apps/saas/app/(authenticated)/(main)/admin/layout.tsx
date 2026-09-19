@@ -1,4 +1,5 @@
-import { AdminNav } from "@admin/components/AdminNav";
+import { AdminContainer, AdminShell } from "@admin/components/AdminPage";
+import { AdminTopBar } from "@admin/components/AdminTopBar";
 import { getSession } from "@auth/lib/server";
 import { config } from "@repo/auth/config";
 import { countOrdersAwaitingDispatch } from "@repo/database";
@@ -7,6 +8,7 @@ import {
 	Building2Icon,
 	ChartNoAxesCombinedIcon,
 	LayoutDashboardIcon,
+	LayoutTemplateIcon,
 	PackageIcon,
 	ReceiptTextIcon,
 	ShoppingBagIcon,
@@ -31,9 +33,8 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 	const ordersAwaitingDispatch = await countOrdersAwaitingDispatch();
 
 	return (
-		<>
-			<AdminNav
-				className="mb-6"
+		<AdminShell className="pb-20">
+			<AdminTopBar
 				items={[
 					{
 						title: t("menu.overview"),
@@ -55,6 +56,11 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 						title: t("menu.categories"),
 						href: "/admin/categories",
 						icon: <TagsIcon />,
+					},
+					{
+						title: "Landing page",
+						href: "/admin/landing",
+						icon: <LayoutTemplateIcon />,
 					},
 					{
 						title: t("menu.analytics"),
@@ -83,7 +89,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 				]}
 			/>
 
-			{children}
-		</>
+			<AdminContainer className="pt-10">{children}</AdminContainer>
+		</AdminShell>
 	);
 }

@@ -18,7 +18,9 @@ export interface RevenuePoint {
 }
 
 const chartConfig = {
-	current: { label: "This period", color: "var(--primary)" },
+	// Ink, not the brand purple: the chart is a reading of the figures
+	// above it, not a second accent competing with them.
+	current: { label: "This period", color: "var(--foreground)" },
 	previous: { label: "Previous period", color: "var(--muted-foreground)" },
 } satisfies ChartConfig;
 
@@ -35,7 +37,7 @@ export function RevenueChart({ data }: { data: RevenuePoint[] }) {
 	return (
 		<ChartContainer
 			config={chartConfig}
-			className="h-[210px] w-full sm:h-[230px]"
+			className="h-[240px] w-full sm:h-[280px]"
 		>
 			<AreaChart
 				data={data}
@@ -52,7 +54,7 @@ export function RevenueChart({ data }: { data: RevenuePoint[] }) {
 						<stop
 							offset="0%"
 							stopColor="var(--color-current)"
-							stopOpacity={0.22}
+							stopOpacity={0.09}
 						/>
 						<stop
 							offset="100%"
@@ -64,7 +66,7 @@ export function RevenueChart({ data }: { data: RevenuePoint[] }) {
 				<CartesianGrid
 					vertical={false}
 					stroke="var(--border)"
-					strokeOpacity={0.7}
+					strokeOpacity={0.55}
 				/>
 				<XAxis
 					dataKey="date"
@@ -131,7 +133,11 @@ export function RevenueChart({ data }: { data: RevenuePoint[] }) {
 					strokeWidth={2.25}
 					fill="url(#overview-revenue-fill)"
 					dot={false}
-					activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--card)" }}
+					activeDot={{
+						r: 3.5,
+						strokeWidth: 2,
+						stroke: "var(--background)",
+					}}
 					isAnimationActive={false}
 				/>
 			</AreaChart>

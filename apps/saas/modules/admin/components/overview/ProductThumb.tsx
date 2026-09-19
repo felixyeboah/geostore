@@ -3,8 +3,8 @@ import { cn } from "@repo/ui";
 import Image from "next/image";
 
 const SIZES = {
-	sm: { box: "size-7 rounded-md text-[10px]", px: "28px" },
-	md: { box: "size-9 rounded-lg text-xs", px: "36px" },
+	sm: { box: "size-7 rounded-[2px] text-[10px]", px: "28px" },
+	md: { box: "size-9 rounded-[2px] text-xs", px: "36px" },
 } as const;
 
 export function ProductThumb({

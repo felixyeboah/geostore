@@ -4,8 +4,12 @@ import {
 	updateStoreProductStatusAction,
 	updateStoreProductStockAction,
 } from "@admin/actions/commerce";
-import { Button } from "@repo/ui/components/button";
-import { Input } from "@repo/ui/components/input";
+import {
+	AdminButton,
+	AdminInput,
+	AdminSelect,
+	adminButtonClass,
+} from "@admin/components/ui";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { SaveIcon } from "lucide-react";
 import Link from "next/link";
@@ -55,44 +59,47 @@ export function ProductRowActions({
 
 	return (
 		<div className="flex flex-wrap items-center justify-end gap-2">
-			<select
+			<AdminSelect
+				size="sm"
 				defaultValue={status}
 				disabled={isSavingStatus}
-				onChange={(event) =>
-					handleStatusChange(
-						event.target.value as ProductRowActionsProps["status"],
-					)
+				onValueChange={(next) =>
+					handleStatusChange(next as ProductRowActionsProps["status"])
 				}
 				aria-label="Product status"
-				className="h-9 rounded-lg border bg-background px-2 text-xs"
-			>
-				<option value="DRAFT">Draft</option>
-				<option value="ACTIVE">Active</option>
-				<option value="ARCHIVED">Archived</option>
-			</select>
-			<div className="flex items-center gap-1">
-				<Input
+				className="w-auto min-w-[116px]"
+				options={[
+					{ value: "DRAFT", label: "Draft" },
+					{ value: "ACTIVE", label: "Active" },
+					{ value: "ARCHIVED", label: "Archived" },
+				]}
+			/>
+			<div className="flex items-center gap-1.5">
+				<AdminInput
 					type="number"
 					min="0"
+					inputSize="sm"
 					value={stock}
 					onChange={(event) => setStock(Number(event.target.value))}
 					aria-label="Stock quantity"
-					className="h-9 w-20"
+					className="w-[72px] text-right"
 				/>
-				<Button
-					type="button"
-					size="icon"
-					variant="secondary"
+				<AdminButton
+					size="sm"
 					disabled={isSavingStock || stock === stockQuantity}
 					onClick={handleStockSave}
 					aria-label="Save stock"
+					className="px-2"
 				>
 					<SaveIcon className="size-3.5" />
-				</Button>
+				</AdminButton>
 			</div>
-			<Button asChild size="sm" variant="ghost">
-				<Link href={`/admin/products/${productId}`}>Edit</Link>
-			</Button>
+			<Link
+				href={`/admin/products/${productId}`}
+				className={adminButtonClass("ghost", "sm")}
+			>
+				Edit
+			</Link>
 		</div>
 	);
 }

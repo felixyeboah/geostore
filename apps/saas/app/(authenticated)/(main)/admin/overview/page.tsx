@@ -1,3 +1,4 @@
+import { AdminHeader, AdminSection } from "@admin/components/AdminPage";
 import {
 	type AttentionItem,
 	AttentionQueue,
@@ -8,11 +9,11 @@ import { RangeToggle } from "@admin/components/overview/RangeToggle";
 import { RecentOrdersTable } from "@admin/components/overview/RecentOrdersTable";
 import { RevenueChart } from "@admin/components/overview/RevenueChart";
 import { RunningLow } from "@admin/components/overview/RunningLow";
-import { SectionCard } from "@admin/components/overview/SectionCard";
 import {
 	TrendChip,
 	trendDirection,
 } from "@admin/components/overview/TrendChip";
+import { adminButtonClass } from "@admin/components/ui";
 import {
 	daysOfStockLeft,
 	formatPercentChange,
@@ -21,7 +22,6 @@ import {
 } from "@admin/lib/overview";
 import { formatMoney } from "@repo/commerce";
 import { DISPATCH_WINDOW_HOURS, getStoreOverview } from "@repo/database";
-import { Button } from "@repo/ui/components/button";
 import {
 	ClockIcon,
 	CreditCardIcon,
@@ -139,152 +139,170 @@ export default async function AdminOverviewPage({
 		},
 	];
 
-	return (
-		<div className="space-y-4">
-			<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-				<div>
-					<h1 className="font-semibold text-2xl tracking-tight">
-						Overview
-					</h1>
-					<p className="mt-1 text-muted-foreground text-sm">
-						{new Intl.DateTimeFormat("en-GH", {
-							weekday: "long",
-							day: "numeric",
-							month: "long",
-						}).format(generatedAt)}{" "}
-						· revenue excludes cancelled and refunded orders
-					</p>
-				</div>
-				<div className="flex items-center gap-2">
-					<Button asChild variant="secondary">
-						<Link href="/admin/analytics">Analytics</Link>
-					</Button>
-					<Button asChild>
-						<Link href="/admin/products/new">
-							<PlusIcon className="size-4" /> Add product
-						</Link>
-					</Button>
-				</div>
-			</div>
+	const dateLine = new Intl.DateTimeFormat("en-GH", {
+		weekday: "long",
+		day: "numeric",
+		month: "long",
+	}).format(generatedAt);
 
-			{/* Hero: the one number, with its trend beside it */}
-			<SectionCard className="grid overflow-hidden lg:grid-cols-[300px_1fr]">
-				<div className="border-b p-5 lg:border-r lg:border-b-0">
-					<p className="font-medium text-muted-foreground text-[13px]">
-						Paid revenue · last {range} days
-					</p>
-					<p className="mt-2 font-semibold text-4xl tracking-tighter tabular-nums">
-						{formatMoney(analytics.revenueInPesewas)}
-					</p>
-					<div className="mt-3 flex flex-wrap items-center gap-2">
-						<TrendChip direction={trendDirection(revenueChange)}>
-							{formatPercentChange(revenueChange)}
-						</TrendChip>
-						<span className="text-muted-foreground/80 text-xs tabular-nums">
-							{previous.revenueInPesewas
-								? `from ${formatMoney(previous.revenueInPesewas)}`
-								: "no previous period to compare"}
-						</span>
-					</div>
-					<dl className="mt-5 grid grid-cols-2 gap-4 border-t pt-4">
-						<div>
-							<dt className="text-muted-foreground text-xs">
-								Paid orders
-							</dt>
-							<dd className="mt-0.5 font-semibold tabular-nums">
-								{analytics.paidOrderCount.toLocaleString()}
-							</dd>
-						</div>
-						<div>
-							<dt className="text-muted-foreground text-xs">
-								Best day
-							</dt>
-							<dd className="mt-0.5 font-semibold tabular-nums">
-								{formatMoney(bestDay?.revenueInPesewas ?? 0)}
-							</dd>
-						</div>
-					</dl>
-				</div>
-				<div className="min-w-0 px-3 pt-3 pb-2 sm:px-4">
-					<div className="flex items-center justify-between gap-3 px-1 pb-1">
-						<p className="text-muted-foreground text-xs">
-							Daily · compared to the previous {range} days
+	return (
+		<div>
+			<AdminHeader
+				eyebrow="Performance"
+				title="Overview"
+				description={`${dateLine} · revenue excludes cancelled and refunded orders.`}
+				actions={
+					<>
+						<Link
+							href="/admin/analytics"
+							className={adminButtonClass("quiet")}
+						>
+							Analytics
+						</Link>
+						<Link
+							href="/admin/products/new"
+							className={adminButtonClass("primary")}
+						>
+							<PlusIcon className="size-4" />
+							Add product
+						</Link>
+					</>
+				}
+			/>
+
+			{/*
+			 * One figure leads the page. Everything below is context for it,
+			 * which is why nothing else is set at this size.
+			 */}
+			<section className="pt-10">
+				<div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+					<div>
+						<p className="eyebrow text-muted-foreground">
+							Paid revenue · last {range} days
 						</p>
-						<RangeToggle active={range} />
+						<p className="mt-4 font-semibold text-[clamp(38px,5vw,64px)] text-foreground leading-[0.95] tracking-[-0.045em] tabular-nums">
+							{formatMoney(analytics.revenueInPesewas)}
+						</p>
+						<p className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+							<TrendChip
+								direction={trendDirection(revenueChange)}
+							>
+								{formatPercentChange(revenueChange)}
+							</TrendChip>
+							<span className="text-[13px] text-muted-foreground tabular-nums">
+								{previous.revenueInPesewas
+									? `from ${formatMoney(previous.revenueInPesewas)} the previous ${range} days`
+									: "no previous period to compare"}
+							</span>
+						</p>
 					</div>
+					<div className="flex flex-col items-start gap-4 sm:items-end">
+						<RangeToggle active={range} />
+						<p className="text-[12.5px] text-muted-foreground tabular-nums">
+							Best day{" "}
+							{formatMoney(bestDay?.revenueInPesewas ?? 0)}
+							{" · "}
+							{analytics.paidOrderCount.toLocaleString()} paid
+							orders
+						</p>
+					</div>
+				</div>
+
+				<div className="mt-8">
 					<RevenueChart data={chartData} />
 				</div>
-			</SectionCard>
+			</section>
 
-			{/* Secondary figures */}
-			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-				<MetricTile
-					label="Orders"
-					value={analytics.orderCount.toLocaleString()}
-					trend={
-						<TrendChip direction={trendDirection(ordersChange)}>
-							{formatPercentChange(ordersChange)}
-						</TrendChip>
-					}
-					detail={`${analytics.paidOrderCount.toLocaleString()} paid`}
-				/>
-				<MetricTile
-					label="Average order value"
-					value={formatMoney(analytics.averageOrderValueInPesewas)}
-					trend={
-						<TrendChip direction={trendDirection(aovChange)}>
-							{formatPercentChange(aovChange)}
-						</TrendChip>
-					}
-					detail="paid orders"
-				/>
-				<MetricTile
-					label="Payment success"
-					value={
-						successRate === null
-							? "—"
-							: `${Math.round(successRate * 100)}%`
-					}
-					trend={
-						<TrendChip direction={trendDirection(successChange)}>
-							{formatPercentChange(successChange)}
-						</TrendChip>
-					}
-					detail={
-						analytics.attemptedPaymentCount
-							? `${analytics.succeededPaymentCount} of ${analytics.attemptedPaymentCount} online`
-							: "no online payments yet"
-					}
-				/>
-				<MetricTile
-					label="Customers"
-					value={metrics.customers.toLocaleString()}
-					trend={
-						<TrendChip
-							direction={queues.newCustomers > 0 ? "up" : "flat"}
-						>
-							+{queues.newCustomers}
-						</TrendChip>
-					}
-					detail="new in 30 days"
-				/>
-			</div>
+			{/*
+			 * The supporting figures as one strip of type. Hairlines between
+			 * them rather than four boxes, so they read as a single row.
+			 */}
+			<section className="mt-12 grid gap-8 border-border border-t pt-8 sm:grid-cols-2 sm:gap-x-10 xl:grid-cols-4 xl:divide-x xl:divide-border">
+				<div className="xl:pr-10">
+					<MetricTile
+						label="Orders"
+						value={analytics.orderCount.toLocaleString()}
+						trend={
+							<TrendChip direction={trendDirection(ordersChange)}>
+								{formatPercentChange(ordersChange)}
+							</TrendChip>
+						}
+						detail={`${analytics.paidOrderCount.toLocaleString()} paid`}
+					/>
+				</div>
+				<div className="xl:px-10">
+					<MetricTile
+						label="Average order"
+						value={formatMoney(
+							analytics.averageOrderValueInPesewas,
+						)}
+						trend={
+							<TrendChip direction={trendDirection(aovChange)}>
+								{formatPercentChange(aovChange)}
+							</TrendChip>
+						}
+						detail="across paid orders"
+					/>
+				</div>
+				<div className="xl:px-10">
+					<MetricTile
+						label="Payments taken"
+						value={
+							successRate === null
+								? "—"
+								: `${Math.round(successRate * 100)}%`
+						}
+						trend={
+							<TrendChip
+								direction={trendDirection(successChange)}
+							>
+								{formatPercentChange(successChange)}
+							</TrendChip>
+						}
+						detail={
+							analytics.attemptedPaymentCount
+								? `${analytics.succeededPaymentCount} of ${analytics.attemptedPaymentCount} online`
+								: "no online payments yet"
+						}
+					/>
+				</div>
+				<div className="xl:pl-10">
+					<MetricTile
+						label="Customers"
+						value={metrics.customers.toLocaleString()}
+						trend={
+							<TrendChip
+								direction={
+									queues.newCustomers > 0 ? "up" : "flat"
+								}
+							>
+								+{queues.newCustomers}
+							</TrendChip>
+						}
+						detail="new in 30 days"
+					/>
+				</div>
+			</section>
 
-			<div className="grid items-start gap-4 lg:grid-cols-3">
-				<AttentionQueue items={attention} />
-				<BestSellers products={overview.topProducts} days={range} />
-				<RunningLow
-					products={overview.lowStock}
-					activeProducts={metrics.activeProducts}
-					totalProducts={metrics.products}
-				/>
-			</div>
+			<AdminSection className="mt-12">
+				<div className="grid items-start gap-10 lg:grid-cols-3 lg:gap-12">
+					<AttentionQueue items={attention} />
+					<BestSellers products={overview.topProducts} days={range} />
+					<RunningLow
+						products={overview.lowStock}
+						activeProducts={metrics.activeProducts}
+						totalProducts={metrics.products}
+					/>
+				</div>
+			</AdminSection>
 
-			<RecentOrdersTable
-				orders={overview.recentOrders}
-				totalOrders={metrics.orders}
-				now={generatedAt}
-			/>
+			<AdminSection className="mt-12">
+				<RecentOrdersTable
+					orders={overview.recentOrders}
+					totalOrders={metrics.orders}
+					now={generatedAt}
+				/>
+			</AdminSection>
 		</div>
 	);
 }

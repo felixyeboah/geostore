@@ -1,3 +1,4 @@
+import { AdminHeader } from "@admin/components/AdminPage";
 import { formatMoney } from "@repo/commerce";
 import { getAdminStoreOrders } from "@repo/database";
 import { Badge } from "@repo/ui/components/badge";
@@ -23,15 +24,13 @@ export default async function AdminTransactionsPage() {
 
 	return (
 		<div>
-			<div>
-				<p className="font-semibold text-primary text-sm">Payments</p>
-				<h1 className="mt-1 font-semibold text-2xl">Transactions</h1>
-				<p className="mt-1 text-muted-foreground text-sm">
-					A reconciliable record of mock and future provider payments.
-				</p>
-			</div>
+			<AdminHeader
+				eyebrow="Payments"
+				title="Transactions"
+				description="A reconciliable record of mock and future provider payments."
+			/>
 			{transactions.length === 0 ? (
-				<div className="mt-6 flex min-h-72 flex-col items-center justify-center rounded-2xl bg-muted/55 p-6 text-center">
+				<div className="mt-9 border-border border-t py-16 text-center">
 					<ReceiptTextIcon className="size-7 text-muted-foreground" />
 					<h2 className="mt-4 font-semibold text-xl">
 						No transactions yet
@@ -41,7 +40,7 @@ export default async function AdminTransactionsPage() {
 					</p>
 				</div>
 			) : (
-				<div className="mt-6 overflow-hidden rounded-2xl border bg-card">
+				<div className="mt-9 overflow-x-auto">
 					<div className="overflow-x-auto">
 						<Table>
 							<TableHeader>

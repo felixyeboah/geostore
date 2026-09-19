@@ -1,6 +1,6 @@
 import type { StatusTone } from "@admin/lib/overview";
 import { cn } from "@repo/ui";
-import { ChevronRightIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { EmptyRow, SectionCard, SectionHead } from "./SectionCard";
@@ -12,18 +12,9 @@ export interface AttentionItem {
 	count: number;
 	href: string;
 	tone: StatusTone;
-	icon: ReactNode;
+	/** Kept for the call sites; the list leads with the count instead. */
+	icon?: ReactNode;
 }
-
-const ICON_TONES: Record<StatusTone, string> = {
-	danger: "border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400",
-	warning:
-		"border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
-	info: "border-primary/15 bg-accent text-accent-foreground",
-	success:
-		"border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-	neutral: "border-border bg-muted text-muted-foreground",
-};
 
 export function AttentionQueue({ items }: { items: AttentionItem[] }) {
 	const open = items.filter((item) => item.count > 0);
@@ -42,34 +33,38 @@ export function AttentionQueue({ items }: { items: AttentionItem[] }) {
 			{open.length === 0 ? (
 				<EmptyRow>All queues are clear.</EmptyRow>
 			) : (
-				<ul className="divide-y">
+				<ul>
 					{open.map((item) => (
-						<li key={item.key}>
+						<li key={item.key} className="border-border border-b">
 							<Link
 								href={item.href}
-								className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-muted/40 sm:px-5"
+								className="group flex items-baseline gap-4 py-3.5"
 							>
+								{/*
+								 * The count leads, because it is the thing
+								 * being triaged. Only a genuinely urgent
+								 * queue is inked; the rest stay quiet so the
+								 * urgent one is visible at a glance.
+								 */}
 								<span
-									aria-hidden="true"
 									className={cn(
-										"grid size-7 shrink-0 place-items-center rounded-lg border [&>svg]:size-3.5",
-										ICON_TONES[item.tone],
+										"w-7 shrink-0 font-semibold text-[17px] tabular-nums",
+										item.tone === "danger"
+											? "text-[var(--ed-accent)]"
+											: "text-foreground",
 									)}
 								>
-									{item.icon}
+									{item.count}
 								</span>
 								<span className="min-w-0 flex-1">
-									<span className="block font-medium text-[13px]">
+									<span className="block truncate font-medium text-[13.5px] text-foreground">
 										{item.title}
 									</span>
-									<span className="block text-muted-foreground text-xs">
+									<span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
 										{item.description}
 									</span>
 								</span>
-								<span className="font-semibold text-sm tabular-nums">
-									{item.count}
-								</span>
-								<ChevronRightIcon className="size-3.5 text-muted-foreground/50" />
+								<ArrowRightIcon className="size-3.5 shrink-0 self-center text-muted-foreground/50 transition-transform group-hover:translate-x-0.5" />
 							</Link>
 						</li>
 					))}

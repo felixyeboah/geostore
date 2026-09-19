@@ -19,7 +19,7 @@ export function BestSellers({
 				action={
 					<Link
 						href="/admin/analytics"
-						className="font-medium text-primary text-xs"
+						className="shrink-0 border-border border-b pb-px text-[12.5px] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
 					>
 						Analytics
 					</Link>

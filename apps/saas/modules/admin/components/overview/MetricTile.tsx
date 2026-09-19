@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
-import { SectionCard } from "./SectionCard";
 
+/**
+ * One figure in the strip under the headline. No tile, no border of its own:
+ * the strip draws the dividers, so the numbers line up as a row of type.
+ */
 export function MetricTile({
 	label,
 	value,
@@ -13,21 +16,19 @@ export function MetricTile({
 	detail?: string;
 }) {
 	return (
-		<SectionCard className="px-4 py-3.5 sm:px-5">
-			<p className="font-medium text-muted-foreground text-xs sm:text-[13px]">
-				{label}
-			</p>
-			<p className="mt-2 font-semibold text-2xl tracking-tight tabular-nums">
+		<div className="min-w-0">
+			<p className="eyebrow text-muted-foreground">{label}</p>
+			<p className="mt-3 font-semibold text-[clamp(22px,2.2vw,28px)] text-foreground leading-none tracking-[-0.03em] tabular-nums">
 				{value}
 			</p>
-			<div className="mt-2.5 flex items-center gap-2">
+			<div className="mt-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
 				{trend}
 				{detail && (
-					<span className="truncate text-muted-foreground/80 text-xs tabular-nums">
+					<span className="truncate text-[12px] text-muted-foreground tabular-nums">
 						{detail}
 					</span>
 				)}
 			</div>
-		</SectionCard>
+		</div>
 	);
 }

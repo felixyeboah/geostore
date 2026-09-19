@@ -33,7 +33,7 @@ export function RunningLow({
 				action={
 					<Link
 						href="/admin/products"
-						className="font-medium text-primary text-xs"
+						className="shrink-0 border-border border-b pb-px text-[12.5px] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
 					>
 						Inventory
 					</Link>
@@ -72,10 +72,10 @@ export function RunningLow({
 									</span>
 									<span
 										className={cn(
-											"shrink-0 rounded-md border px-2 py-0.5 font-semibold text-xs tabular-nums",
+											"shrink-0 rounded-[2px] border px-2 py-0.5 font-medium text-[11.5px] tabular-nums",
 											critical
-												? "border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-400"
-												: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+												? "border-foreground bg-foreground text-background"
+												: "border-border text-muted-foreground",
 										)}
 									>
 										{product.stockQuantity} left

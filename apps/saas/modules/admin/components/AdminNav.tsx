@@ -25,9 +25,11 @@ export function AdminNav({
 	return (
 		<nav
 			aria-label="Administration"
-			className={cn("-mx-4 border-b sm:mx-0", className)}
+			// The surrounding bar owns the rule and the gutter now, so this
+			// is only the row of tabs.
+			className={cn("w-full", className)}
 		>
-			<ul className="no-scrollbar flex list-none items-stretch gap-0.5 overflow-x-auto px-4 sm:px-0">
+			<ul className="no-scrollbar flex list-none items-stretch gap-6 overflow-x-auto">
 				{items.map((item) => {
 					const isActive = pathname.startsWith(item.href);
 					return (
@@ -36,39 +38,32 @@ export function AdminNav({
 								href={item.href}
 								aria-current={isActive ? "page" : undefined}
 								className={cn(
-									"relative flex h-11 items-center gap-2 px-3 text-sm transition-colors",
+									"relative flex h-11 items-center gap-2 text-[13px] transition-colors",
 									isActive
-										? "font-semibold text-primary"
-										: "font-medium text-muted-foreground hover:text-foreground",
+										? "font-medium text-foreground"
+										: "text-muted-foreground hover:text-foreground",
 								)}
 							>
 								<span
 									className={cn(
-										"[&>svg]:size-4",
+										"[&>svg]:size-[15px]",
 										isActive
-											? "text-primary"
-											: "text-muted-foreground/70",
+											? "text-foreground"
+											: "text-muted-foreground/60",
 									)}
 								>
 									{item.icon}
 								</span>
 								{item.title}
 								{item.count ? (
-									<span
-										className={cn(
-											"rounded-full px-1.5 py-px text-[11px] font-semibold tabular-nums text-primary-foreground",
-											isActive
-												? "bg-primary"
-												: "bg-foreground",
-										)}
-									>
+									<span className="rounded-[2px] border border-border px-1.5 py-px font-medium text-[11px] text-muted-foreground tabular-nums">
 										{item.count}
 									</span>
 								) : null}
 								{isActive && (
 									<span
 										aria-hidden="true"
-										className="absolute inset-x-2.5 -bottom-px h-0.5 rounded-t bg-primary"
+										className="-bottom-px absolute inset-x-0 h-0.5 bg-foreground"
 									/>
 								)}
 							</Link>

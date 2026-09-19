@@ -80,7 +80,7 @@ export default async function AdminAnalyticsPage() {
 				</div>
 			</section>
 
-			<section className="rounded-2xl border bg-card p-5 sm:p-6">
+			<section className="border-border border-t pt-7 sm:p-6">
 				<div className="flex items-end justify-between gap-4">
 					<div>
 						<h2 className="font-semibold">Daily paid revenue</h2>

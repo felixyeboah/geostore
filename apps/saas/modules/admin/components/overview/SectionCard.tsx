@@ -1,44 +1,37 @@
 import { cn } from "@repo/ui";
 import type { PropsWithChildren, ReactNode } from "react";
 
+/**
+ * A block of the overview.
+ *
+ * These used to be raised cards. The editorial language has no cards: a block
+ * is separated by a hairline and by space, and the type does the work. Keeping
+ * the old names means every list that was built on them is restyled at once.
+ */
 export function SectionCard({
 	className,
 	children,
 }: PropsWithChildren<{ className?: string }>) {
-	return (
-		<section
-			className={cn(
-				"min-w-0 rounded-xl border bg-card shadow-sm",
-				className,
-			)}
-		>
-			{children}
-		</section>
-	);
+	return <section className={cn("min-w-0", className)}>{children}</section>;
 }
 
 export function SectionHead({
 	title,
 	description,
 	action,
-	divided = true,
 }: {
 	title: string;
 	description?: ReactNode;
 	action?: ReactNode;
+	/** Kept for the old call sites; the hairline is always drawn now. */
 	divided?: boolean;
 }) {
 	return (
-		<header
-			className={cn(
-				"flex items-start justify-between gap-4 px-4 py-3.5 sm:px-5",
-				divided && "border-b",
-			)}
-		>
+		<header className="flex items-baseline justify-between gap-4 border-border border-b pb-3">
 			<div className="min-w-0">
-				<h2 className="font-semibold text-sm">{title}</h2>
+				<h2 className="eyebrow text-muted-foreground">{title}</h2>
 				{description && (
-					<p className="mt-0.5 text-muted-foreground text-xs">
+					<p className="mt-2 text-[12.5px] text-muted-foreground">
 						{description}
 					</p>
 				)}
@@ -50,8 +43,6 @@ export function SectionHead({
 
 export function EmptyRow({ children }: PropsWithChildren) {
 	return (
-		<p className="px-5 py-8 text-center text-muted-foreground text-sm">
-			{children}
-		</p>
+		<p className="py-10 text-[13px] text-muted-foreground">{children}</p>
 	);
 }

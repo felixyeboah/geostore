@@ -1,12 +1,18 @@
 "use client";
 
 import { saveStoreProductAction } from "@admin/actions/commerce";
+import {
+	AdminButton,
+	AdminCheckbox,
+	AdminInput,
+	AdminSelect,
+	AdminTextarea,
+} from "@admin/components/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
-import { Button } from "@repo/ui/components/button";
 import {
 	Form,
 	FormControl,
@@ -15,8 +21,6 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@repo/ui/components/form";
-import { Input } from "@repo/ui/components/input";
-import { Textarea } from "@repo/ui/components/textarea";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { useMutation } from "@tanstack/react-query";
@@ -155,25 +159,26 @@ export function ProductForm({
 						>
 							<ArrowLeftIcon className="size-4" /> Products
 						</Link>
-						<h1 className="mt-2 font-semibold text-2xl">
+						<h1 className="mt-3 font-semibold text-[clamp(24px,2.4vw,30px)] text-foreground leading-[1.05] tracking-[-0.035em]">
 							{productId ? "Edit product" : "Add product"}
 						</h1>
 					</div>
-					<Button
+					<AdminButton
 						type="submit"
+						variant="primary"
 						disabled={form.formState.isSubmitting}
 					>
 						<SaveIcon className="size-4" />{" "}
 						{form.formState.isSubmitting
 							? "Saving..."
 							: "Save product"}
-					</Button>
+					</AdminButton>
 				</div>
 
 				<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
 					<div className="space-y-6">
-						<section className="rounded-2xl border bg-card p-5">
-							<h2 className="font-semibold text-lg">
+						<section className="border-border border-t pt-7">
+							<h2 className="eyebrow text-muted-foreground">
 								Product information
 							</h2>
 							<div className="mt-5 grid gap-5 sm:grid-cols-2">
@@ -182,9 +187,11 @@ export function ProductForm({
 									name="name"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Name</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												Name
+											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													placeholder="iPhone 15 Pro"
 													{...field}
 												/>
@@ -198,9 +205,11 @@ export function ProductForm({
 									name="slug"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>URL slug</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												URL slug
+											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													placeholder="iphone-15-pro"
 													{...field}
 												/>
@@ -214,9 +223,11 @@ export function ProductForm({
 									name="brand"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Brand</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												Brand
+											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													placeholder="Apple"
 													{...field}
 												/>
@@ -230,9 +241,11 @@ export function ProductForm({
 									name="sku"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>SKU</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												SKU
+											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													placeholder="GST-APL-IP15P-256"
 													{...field}
 												/>
@@ -246,11 +259,11 @@ export function ProductForm({
 									name="shortDescription"
 									render={({ field }) => (
 										<FormItem className="sm:col-span-2">
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												Short description
 											</FormLabel>
 											<FormControl>
-												<Textarea
+												<AdminTextarea
 													rows={2}
 													placeholder="A concise summary for product cards."
 													{...field}
@@ -265,11 +278,11 @@ export function ProductForm({
 									name="description"
 									render={({ field }) => (
 										<FormItem className="sm:col-span-2">
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												Full description
 											</FormLabel>
 											<FormControl>
-												<Textarea
+												<AdminTextarea
 													rows={6}
 													placeholder="What should a customer know before buying?"
 													{...field}
@@ -282,8 +295,8 @@ export function ProductForm({
 							</div>
 						</section>
 
-						<section className="rounded-2xl border bg-card p-5">
-							<h2 className="font-semibold text-lg">
+						<section className="border-border border-t pt-7">
+							<h2 className="eyebrow text-muted-foreground">
 								Images and specifications
 							</h2>
 							<div className="mt-5 grid gap-5">
@@ -292,10 +305,10 @@ export function ProductForm({
 									name="imageUrls"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												Product image URLs
 											</FormLabel>
-											<label className="mb-3 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed bg-muted/35 px-4 py-6 font-medium text-sm transition hover:bg-muted">
+											<label className="mb-4 flex cursor-pointer items-center justify-center gap-2 rounded-[2px] border border-border border-dashed px-4 py-7 font-medium text-[13.5px] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground">
 												<input
 													type="file"
 													accept="image/jpeg,image/png,image/webp"
@@ -320,7 +333,7 @@ export function ProductForm({
 													: "Upload product images"}
 											</label>
 											<FormControl>
-												<Textarea
+												<AdminTextarea
 													rows={4}
 													value={field.value.join(
 														"\n",
@@ -354,11 +367,11 @@ export function ProductForm({
 									name="specifications"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												Specifications
 											</FormLabel>
 											<FormControl>
-												<Textarea
+												<AdminTextarea
 													rows={6}
 													value={specificationsText}
 													onChange={(event) =>
@@ -383,14 +396,12 @@ export function ProductForm({
 							</div>
 						</section>
 
-						<section className="rounded-2xl border bg-card p-5">
+						<section className="border-border border-t pt-7">
 							<div className="flex items-center justify-between gap-3">
-								<h2 className="font-semibold text-lg">
+								<h2 className="eyebrow text-muted-foreground">
 									Variants
 								</h2>
-								<Button
-									type="button"
-									variant="secondary"
+								<AdminButton
 									size="sm"
 									onClick={() =>
 										form.setValue("variants", [
@@ -410,7 +421,7 @@ export function ProductForm({
 									}
 								>
 									Add option
-								</Button>
+								</AdminButton>
 							</div>
 							<p className="mt-2 text-muted-foreground text-sm">
 								Use variants for storage, colour, or size. Leave
@@ -422,18 +433,18 @@ export function ProductForm({
 									.map((variant, index) => (
 										<div
 											key={variant.id ?? `new-${index}`}
-											className="grid gap-3 rounded-xl bg-muted/45 p-4 sm:grid-cols-2"
+											className="grid gap-5 border-border border-t pt-5 sm:grid-cols-2"
 										>
 											<FormField
 												control={form.control}
 												name={`variants.${index}.name`}
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>
+														<FormLabel className="eyebrow text-muted-foreground">
 															Name
 														</FormLabel>
 														<FormControl>
-															<Input
+															<AdminInput
 																placeholder="256 GB"
 																{...field}
 															/>
@@ -447,11 +458,13 @@ export function ProductForm({
 												name={`variants.${index}.sku`}
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>
+														<FormLabel className="eyebrow text-muted-foreground">
 															SKU
 														</FormLabel>
 														<FormControl>
-															<Input {...field} />
+															<AdminInput
+																{...field}
+															/>
 														</FormControl>
 														<FormMessage />
 													</FormItem>
@@ -462,11 +475,11 @@ export function ProductForm({
 												name={`variants.${index}.priceInPesewas`}
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>
+														<FormLabel className="eyebrow text-muted-foreground">
 															Price (GH₵)
 														</FormLabel>
 														<FormControl>
-															<Input
+															<AdminInput
 																type="number"
 																min="0"
 																step="0.01"
@@ -499,11 +512,11 @@ export function ProductForm({
 												name={`variants.${index}.stockQuantity`}
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>
+														<FormLabel className="eyebrow text-muted-foreground">
 															Stock
 														</FormLabel>
 														<FormControl>
-															<Input
+															<AdminInput
 																type="number"
 																min="0"
 																{...field}
@@ -554,30 +567,41 @@ export function ProductForm({
 					</div>
 
 					<aside className="space-y-6 xl:sticky xl:top-6">
-						<section className="rounded-2xl border bg-card p-5">
-							<h2 className="font-semibold">Publishing</h2>
+						<section className="border-border border-t pt-7">
+							<h2 className="eyebrow text-muted-foreground">
+								Publishing
+							</h2>
 							<div className="mt-5 grid gap-5">
 								<FormField
 									control={form.control}
 									name="status"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Status</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												Status
+											</FormLabel>
 											<FormControl>
-												<select
-													{...field}
-													className="h-10 w-full rounded-lg border bg-background px-3 text-sm"
-												>
-													<option value="DRAFT">
-														Draft
-													</option>
-													<option value="ACTIVE">
-														Active
-													</option>
-													<option value="ARCHIVED">
-														Archived
-													</option>
-												</select>
+												<AdminSelect
+													value={field.value}
+													onValueChange={
+														field.onChange
+													}
+													aria-label="Status"
+													options={[
+														{
+															value: "DRAFT",
+															label: "Draft",
+														},
+														{
+															value: "ACTIVE",
+															label: "Active",
+														},
+														{
+															value: "ARCHIVED",
+															label: "Archived",
+														},
+													]}
+												/>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -588,30 +612,24 @@ export function ProductForm({
 									name="categoryId"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Category</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												Category
+											</FormLabel>
 											<FormControl>
-												<select
-													{...field}
-													className="h-10 w-full rounded-lg border bg-background px-3 text-sm"
-												>
-													<option value="">
-														Choose category
-													</option>
-													{categories.map(
-														(category) => (
-															<option
-																key={
-																	category.id
-																}
-																value={
-																	category.id
-																}
-															>
-																{category.name}
-															</option>
-														),
+												<AdminSelect
+													value={field.value}
+													onValueChange={
+														field.onChange
+													}
+													placeholder="Choose category"
+													aria-label="Category"
+													options={categories.map(
+														(category) => ({
+															value: category.id,
+															label: category.name,
+														}),
 													)}
-												</select>
+												/>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -622,12 +640,10 @@ export function ProductForm({
 									name="isFeatured"
 									render={({ field }) => (
 										<FormItem>
-											<label className="flex items-center gap-3 rounded-xl bg-muted/55 p-3 text-sm">
-												<input
-													type="checkbox"
+											<label className="flex items-center gap-3 rounded-[2px] border border-border p-3 text-[13.5px]">
+												<AdminCheckbox
 													checked={field.value}
 													onChange={field.onChange}
-													className="size-4 accent-primary"
 												/>
 												<span>
 													<strong className="block">
@@ -646,17 +662,21 @@ export function ProductForm({
 							</div>
 						</section>
 
-						<section className="rounded-2xl border bg-card p-5">
-							<h2 className="font-semibold">Price and stock</h2>
+						<section className="border-border border-t pt-7">
+							<h2 className="eyebrow text-muted-foreground">
+								Price and stock
+							</h2>
 							<div className="mt-5 grid gap-5">
 								<FormField
 									control={form.control}
 									name="priceInPesewas"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Price (GH₵)</FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
+												Price (GH₵)
+											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													type="number"
 													min="0"
 													step="0.01"
@@ -682,11 +702,11 @@ export function ProductForm({
 									name="compareAtInPesewas"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												Compare-at price (GH₵)
 											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													type="number"
 													min="0"
 													step="0.01"
@@ -719,11 +739,11 @@ export function ProductForm({
 									name="stockQuantity"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												On-hand quantity
 											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													type="number"
 													min="0"
 													step="1"
@@ -747,11 +767,11 @@ export function ProductForm({
 									name="lowStockThreshold"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
+											<FormLabel className="eyebrow text-muted-foreground">
 												Low-stock warning at
 											</FormLabel>
 											<FormControl>
-												<Input
+												<AdminInput
 													type="number"
 													min="0"
 													step="1"

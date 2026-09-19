@@ -1,3 +1,4 @@
+import { AdminHeader } from "@admin/components/AdminPage";
 import { CategoryForm } from "@admin/components/categories/CategoryForm";
 import { getStoreCategories } from "@repo/database";
 
@@ -6,13 +7,11 @@ export default async function AdminCategoriesPage() {
 
 	return (
 		<div className="space-y-8">
-			<div>
-				<p className="font-semibold text-primary text-sm">Catalogue</p>
-				<h1 className="mt-1 font-semibold text-2xl">Categories</h1>
-				<p className="mt-1 text-muted-foreground text-sm">
-					Create and update the categories customers browse.
-				</p>
-			</div>
+			<AdminHeader
+				eyebrow="Catalogue"
+				title="Categories"
+				description="Create and update the categories customers browse."
+			/>
 			<CategoryForm />
 			<div className="space-y-4">
 				{categories.map((category) => (

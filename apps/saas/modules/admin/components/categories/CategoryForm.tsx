@@ -1,9 +1,12 @@
 "use client";
 
 import { saveStoreCategoryAction } from "@admin/actions/commerce";
-import { Button } from "@repo/ui/components/button";
-import { Input } from "@repo/ui/components/input";
-import { Textarea } from "@repo/ui/components/textarea";
+import {
+	AdminButton,
+	AdminCheckbox,
+	AdminInput,
+	AdminTextarea,
+} from "@admin/components/ui";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -49,56 +52,79 @@ export function CategoryForm({ category }: CategoryFormProps) {
 	return (
 		<form
 			action={handleSubmit}
-			className="grid gap-4 rounded-2xl border bg-card p-5"
+			className="grid gap-6 border-border border-t pt-7"
 		>
-			<div className="grid gap-4 sm:grid-cols-2">
-				<div className="grid gap-1.5 text-sm">
-					<span className="font-medium">Name</span>
-					<Input name="name" defaultValue={category?.name} required />
+			<div className="grid gap-6 sm:grid-cols-2">
+				<div className="grid gap-2.5">
+					<span className="eyebrow block text-muted-foreground">
+						Name
+					</span>
+					<AdminInput
+						name="name"
+						defaultValue={category?.name}
+						required
+					/>
 				</div>
-				<div className="grid gap-1.5 text-sm">
-					<span className="font-medium">Slug</span>
-					<Input name="slug" defaultValue={category?.slug} required />
+				<div className="grid gap-2.5">
+					<span className="eyebrow block text-muted-foreground">
+						Slug
+					</span>
+					<AdminInput
+						name="slug"
+						defaultValue={category?.slug}
+						required
+					/>
 				</div>
-				<div className="grid gap-1.5 text-sm sm:col-span-2">
-					<span className="font-medium">Description</span>
-					<Textarea
+				<div className="grid gap-2.5 sm:col-span-2">
+					<span className="eyebrow block text-muted-foreground">
+						Description
+					</span>
+					<AdminTextarea
 						name="description"
 						rows={3}
 						defaultValue={category?.description ?? ""}
 					/>
 				</div>
-				<div className="grid gap-1.5 text-sm sm:col-span-2">
-					<span className="font-medium">Image URL</span>
-					<Input
+				<div className="grid gap-2.5 sm:col-span-2">
+					<span className="eyebrow block text-muted-foreground">
+						Image URL
+					</span>
+					<AdminInput
 						name="imageUrl"
 						defaultValue={category?.imageUrl ?? ""}
 					/>
 				</div>
-				<div className="grid gap-1.5 text-sm">
-					<span className="font-medium">Sort order</span>
-					<Input
+				<div className="grid gap-2.5">
+					<span className="eyebrow block text-muted-foreground">
+						Sort order
+					</span>
+					<AdminInput
 						name="sortOrder"
 						type="number"
 						defaultValue={category?.sortOrder ?? 0}
 					/>
 				</div>
-				<label className="flex items-center gap-2 text-sm">
-					<input
-						type="checkbox"
+				<label className="flex items-center gap-2.5 self-end pb-3 text-[13.5px] text-foreground">
+					<AdminCheckbox
 						name="isActive"
 						defaultChecked={category?.isActive ?? true}
 					/>
 					Active
 				</label>
 			</div>
-			<Button type="submit" disabled={isSaving}>
-				{isSaving
-					? "Saving..."
-					: category
-						? "Update category"
-						: "Add category"}
-			</Button>
+			<div>
+				<AdminButton
+					type="submit"
+					variant="primary"
+					disabled={isSaving}
+				>
+					{isSaving
+						? "Saving…"
+						: category
+							? "Update category"
+							: "Add category"}
+				</AdminButton>
+			</div>
 		</form>
 	);
 }

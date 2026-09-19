@@ -1,16 +1,26 @@
-import { OrderStatusSelect } from "@admin/components/orders/OrderStatusSelect";
-import { formatMoney } from "@repo/commerce";
-import { getAdminStoreOrders } from "@repo/database";
-import { Badge } from "@repo/ui/components/badge";
+import { AdminEmptyState, AdminHeader } from "@admin/components/AdminPage";
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@repo/ui/components/table";
-import { ShoppingBagIcon } from "lucide-react";
+	type OrderRow,
+	OrdersTable,
+} from "@admin/components/orders/OrdersTable";
+import type { OrderStatusKey } from "@admin/lib/overview";
+import { formatMoney } from "@repo/commerce";
+import { DISPATCH_WINDOW_HOURS, getAdminStoreOrders } from "@repo/database";
+import { ArrowRightIcon } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = { title: "Orders" };
+
+/**
+ * How many orders the table holds in the browser.
+ *
+ * Filtering and paging happen client side, which keeps every interaction
+ * instant and needs no round trip. That only works while the whole set fits
+ * comfortably in memory; past this the page needs server-side paging instead,
+ * and the notice below tells an admin when they have crossed the line.
+ */
+const TABLE_LIMIT = 500;
 
 function getAddressLabel(value: unknown): string {
 	if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -24,120 +34,172 @@ function getAddressLabel(value: unknown): string {
 	);
 }
 
+/** Paid, not yet on its way, and past the window we promise customers. */
+function isLate(order: {
+	paymentStatus: string;
+	status: string;
+	placedAt: Date;
+}): boolean {
+	if (order.paymentStatus !== "PAID") {
+		return false;
+	}
+	if (
+		["OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED", "REFUNDED"].includes(
+			order.status,
+		)
+	) {
+		return false;
+	}
+	const hoursWaiting =
+		(Date.now() - order.placedAt.getTime()) / (1000 * 60 * 60);
+	return hoursWaiting > DISPATCH_WINDOW_HOURS;
+}
+
 export default async function AdminOrdersPage() {
-	const orders = await getAdminStoreOrders();
+	const orders = await getAdminStoreOrders({ take: TABLE_LIMIT });
+
+	const rows: OrderRow[] = orders.map((order) => ({
+		id: order.id,
+		orderNumber: order.orderNumber,
+		placedAt: order.placedAt.toISOString(),
+		customerName: order.user?.name ?? order.customerEmail.split("@")[0],
+		customerEmail: order.customerEmail,
+		customerPhone: order.customerPhone,
+		destination: getAddressLabel(order.shippingAddress),
+		itemCount: order.items.length,
+		totalInPesewas: order.totalInPesewas,
+		paymentMethod: order.paymentMethod,
+		paymentStatus: order.paymentStatus,
+		status: order.status as OrderStatusKey,
+		isLate: isLate(order),
+	}));
+
+	const late = rows.filter((row) => row.isLate);
+	const awaitingDispatch = rows.filter(
+		(row) =>
+			row.paymentStatus === "PAID" &&
+			[
+				"PENDING",
+				"CONFIRMED",
+				"PROCESSING",
+				"READY_FOR_DELIVERY",
+			].includes(row.status),
+	);
+	const unpaid = rows.filter(
+		(row) =>
+			row.paymentStatus !== "PAID" &&
+			!["CANCELLED", "REFUNDED"].includes(row.status),
+	);
+	const unpaidValue = unpaid.reduce(
+		(sum, row) => sum + row.totalInPesewas,
+		0,
+	);
+
+	// The headline reads as a sentence, so the state of the shop is legible
+	// before anyone parses a table.
+	const summary = [
+		late.length
+			? `${late.length} past the ${DISPATCH_WINDOW_HOURS}-hour window`
+			: null,
+		awaitingDispatch.length
+			? `${awaitingDispatch.length} awaiting dispatch`
+			: null,
+		unpaid.length ? `${formatMoney(unpaidValue)} unpaid` : null,
+	].filter(Boolean);
+
+	const triage = [
+		{
+			key: "late",
+			count: late.length,
+			title: `Past the ${DISPATCH_WINDOW_HOURS}-hour dispatch window`,
+			detail: "Paid, and the customer is still waiting",
+			urgent: true,
+		},
+		{
+			key: "dispatch",
+			count: awaitingDispatch.length,
+			title: "Paid and awaiting dispatch",
+			detail: "Ready to pack and send",
+			urgent: false,
+		},
+		{
+			key: "unpaid",
+			count: unpaid.length,
+			title: "Waiting on payment",
+			detail: `${formatMoney(unpaidValue)} not yet collected`,
+			urgent: false,
+		},
+	].filter((item) => item.count > 0);
 
 	return (
 		<div>
-			<div>
-				<p className="font-semibold text-primary text-sm">Fulfilment</p>
-				<h1 className="mt-1 font-semibold text-2xl">Orders</h1>
-				<p className="mt-1 text-muted-foreground text-sm">
-					Review customer details, payment state, and move orders
-					through delivery.
-				</p>
-			</div>
+			<AdminHeader
+				eyebrow="Fulfilment"
+				title="Orders"
+				description={
+					summary.length > 0
+						? `${summary.join(" · ")}.`
+						: "Nothing is waiting on you. Every paid order is on its way."
+				}
+				actions={
+					<Link
+						href="/admin/transactions"
+						className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+					>
+						Payments
+						<ArrowRightIcon className="size-3.5" />
+					</Link>
+				}
+			/>
+
 			{orders.length === 0 ? (
-				<div className="mt-6 flex min-h-72 flex-col items-center justify-center rounded-2xl bg-muted/55 p-6 text-center">
-					<ShoppingBagIcon className="size-7 text-muted-foreground" />
-					<h2 className="mt-4 font-semibold text-xl">
-						No orders yet
-					</h2>
-					<p className="mt-2 text-muted-foreground text-sm">
-						Orders placed through checkout will appear here.
-					</p>
-				</div>
+				<AdminEmptyState
+					title="No orders yet"
+					description="Orders placed through checkout will appear here."
+				/>
 			) : (
-				<div className="mt-6 overflow-hidden rounded-2xl border bg-card">
-					<div className="overflow-x-auto">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Order</TableHead>
-									<TableHead>Customer</TableHead>
-									<TableHead>Delivery</TableHead>
-									<TableHead>Payment</TableHead>
-									<TableHead>Total</TableHead>
-									<TableHead className="text-right">
-										Fulfilment status
-									</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{orders.map((order) => (
-									<TableRow key={order.id}>
-										<TableCell>
-											<p className="font-medium text-sm tabular-nums">
-												{order.orderNumber}
-											</p>
-											<p className="mt-1 text-muted-foreground text-xs">
-												{new Intl.DateTimeFormat(
-													"en-GH",
-													{
-														dateStyle: "medium",
-														timeStyle: "short",
-													},
-												).format(order.placedAt)}{" "}
-												· {order.items.length}{" "}
-												{order.items.length === 1
-													? "item"
-													: "items"}
-											</p>
-										</TableCell>
-										<TableCell>
-											<p className="font-medium text-sm">
-												{order.user?.name ??
-													order.customerEmail.split(
-														"@",
-													)[0]}
-											</p>
-											<p className="mt-1 text-muted-foreground text-xs">
-												{order.customerEmail}
-												<br />
-												{order.customerPhone}
-											</p>
-										</TableCell>
-										<TableCell className="text-sm">
-											{getAddressLabel(
-												order.shippingAddress,
-											)}
-										</TableCell>
-										<TableCell>
-											<Badge
-												status={
-													order.paymentStatus ===
-													"PAID"
-														? "success"
-														: "warning"
-												}
-											>
-												{order.paymentStatus.toLocaleLowerCase()}
-											</Badge>
-											<p className="mt-1 text-muted-foreground text-xs">
-												{order.paymentMethod.toLocaleLowerCase()}
-											</p>
-										</TableCell>
-										<TableCell className="font-semibold tabular-nums">
-											{formatMoney(order.totalInPesewas)}
-										</TableCell>
-										<TableCell className="text-right">
-											<OrderStatusSelect
-												orderId={order.id}
-												status={order.status}
-												paymentStatus={
-													order.paymentStatus
-												}
-												paymentMethod={
-													order.paymentMethod
-												}
-											/>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
+				<>
+					{triage.length > 0 && (
+						<section className="mt-9 grid gap-x-10 gap-y-5 border-border border-b pb-6 sm:grid-cols-3">
+							{triage.map((item) => (
+								<div
+									key={item.key}
+									className="flex items-baseline gap-3.5"
+								>
+									<span
+										className={
+											item.urgent
+												? "font-semibold text-[22px] text-[var(--ed-accent)] tabular-nums"
+												: "font-semibold text-[22px] text-foreground tabular-nums"
+										}
+									>
+										{item.count}
+									</span>
+									<span className="min-w-0">
+										<span className="block font-medium text-[13.5px] text-foreground">
+											{item.title}
+										</span>
+										<span className="mt-0.5 block text-[12px] text-muted-foreground">
+											{item.detail}
+										</span>
+									</span>
+								</div>
+							))}
+						</section>
+					)}
+
+					<div className="mt-2">
+						<OrdersTable orders={rows} />
 					</div>
-				</div>
+
+					{orders.length === TABLE_LIMIT && (
+						<p className="text-[12px] text-muted-foreground">
+							Showing the {TABLE_LIMIT} most recent orders. Older
+							ones are still in the database but are not loaded
+							here.
+						</p>
+					)}
+				</>
 			)}
 		</div>
 	);

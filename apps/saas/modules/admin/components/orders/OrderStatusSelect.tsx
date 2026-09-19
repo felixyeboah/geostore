@@ -4,6 +4,8 @@ import {
 	markCashReceivedAction,
 	updateStoreOrderStatusAction,
 } from "@admin/actions/commerce";
+import { AdminSelect } from "@admin/components/ui";
+import { ORDER_STATUS_LABELS } from "@admin/lib/overview";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -81,22 +83,19 @@ export function OrderStatusSelect({
 
 	return (
 		<div className="flex flex-col items-end gap-2">
-			<select
+			<AdminSelect
 				key={`${status}-${resetKey}`}
+				size="sm"
 				defaultValue={status}
 				disabled={isSaving || isClosed}
-				onChange={(event) =>
-					handleChange(event.target.value as OrderStatus)
-				}
+				onValueChange={(next) => handleChange(next as OrderStatus)}
 				aria-label="Order status"
-				className="h-9 rounded-lg border bg-background px-2 text-xs"
-			>
-				{ORDER_STATUSES.map((value) => (
-					<option key={value} value={value}>
-						{value.toLocaleLowerCase().replaceAll("_", " ")}
-					</option>
-				))}
-			</select>
+				className="w-auto min-w-[158px]"
+				options={ORDER_STATUSES.map((value) => ({
+					value,
+					label: ORDER_STATUS_LABELS[value],
+				}))}
+			/>
 			{paymentMethod === "CASH_ON_DELIVERY" &&
 			paymentStatus !== "PAID" &&
 			!isClosed ? (
@@ -104,7 +103,7 @@ export function OrderStatusSelect({
 					type="button"
 					disabled={isSaving}
 					onClick={handleCashReceived}
-					className="text-primary text-xs"
+					className="border-border border-b pb-px text-[12px] text-foreground transition-colors hover:border-foreground"
 				>
 					Mark cash received
 				</button>

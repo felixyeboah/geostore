@@ -4,10 +4,7 @@ import Link from "next/link";
 
 export function RangeToggle({ active }: { active: OverviewRange }) {
 	return (
-		<nav
-			aria-label="Reporting range"
-			className="flex rounded-lg border bg-background p-0.5"
-		>
+		<nav aria-label="Reporting range" className="flex items-center gap-2">
 			{OVERVIEW_RANGES.map((range) => {
 				const isActive = range === active;
 				return (
@@ -20,13 +17,13 @@ export function RangeToggle({ active }: { active: OverviewRange }) {
 						}
 						aria-current={isActive ? "page" : undefined}
 						className={cn(
-							"rounded-md px-2.5 py-1 font-medium text-xs tabular-nums transition-colors",
+							"rounded-[2px] border px-2.5 py-[5px] font-medium text-[12.5px] tabular-nums transition-colors",
 							isActive
-								? "bg-card text-foreground shadow-sm"
-								: "text-muted-foreground hover:text-foreground",
+								? "border-foreground bg-foreground text-background"
+								: "border-border text-muted-foreground hover:border-foreground hover:text-foreground",
 						)}
 					>
-						{range}d
+						{range} days
 					</Link>
 				);
 			})}

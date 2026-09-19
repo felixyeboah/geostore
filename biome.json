@@ -12,6 +12,21 @@
 				"noExplicitAny": "off",
 				"noArrayIndexKey": "off"
 			},
+			"a11y": {
+				"noLabelWithoutControl": {
+					"level": "error",
+					"options": {
+						"inputComponents": [
+							"AdminInput",
+							"AdminTextarea",
+							"AdminSelect",
+							"AdminCheckbox",
+							"Input",
+							"Textarea"
+						]
+					}
+				}
+			},
 			"complexity": {
 				"noForEach": "off"
 			},

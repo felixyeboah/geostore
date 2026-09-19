@@ -389,3 +389,55 @@ export async function saveStoreCategoryAction(
 		};
 	}
 }
+
+/**
+ * Moves several orders to the same status in one go.
+ *
+ * Each order goes through `updateStoreOrderStatus` individually rather than a
+ * single `updateMany`, because that function also writes the status event and
+ * sends the customer their email. A bulk update that skipped those would leave
+ * the order history lying about what happened.
+ *
+ * One failure does not stop the rest: a bulk action on twenty orders where the
+ * third is already cancelled should still move the other nineteen. The result
+ * says how many moved and names the first thing that went wrong.
+ */
+export async function bulkUpdateStoreOrderStatusAction(
+	orderIds: string[],
+	status: Parameters<typeof updateStoreOrderStatusAction>[1],
+): Promise<AdminActionResult & { updated: number; failed: number }> {
+	try {
+		await requireAdmin();
+	} catch {
+		return {
+			success: false,
+			message: "You do not have permission to perform this action.",
+			updated: 0,
+			failed: orderIds.length,
+		};
+	}
+
+	let updated = 0;
+	let firstError: string | undefined;
+
+	for (const orderId of orderIds) {
+		const result = await updateStoreOrderStatusAction(orderId, status);
+
+		if (result.success) {
+			updated += 1;
+		} else {
+			firstError ??= result.message;
+		}
+	}
+
+	const failed = orderIds.length - updated;
+
+	return {
+		success: updated > 0,
+		updated,
+		failed,
+		message: failed
+			? `${updated} of ${orderIds.length} updated. ${firstError ?? "Some orders could not be changed."}`
+			: `${updated} ${updated === 1 ? "order" : "orders"} updated.`,
+	};
+}
