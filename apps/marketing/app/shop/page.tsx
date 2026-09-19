@@ -15,14 +15,19 @@ import {
 	getLiveProducts,
 } from "@commerce/lib/live-catalog";
 import { storeLinks } from "@commerce/lib/store-links";
+import { pageMetadata } from "@shared/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
 	title: "Shop phones, computers, gaming and home appliances",
 	description:
 		"Browse the GeoStores catalogue: phones, laptops, gaming, appliances and everyday accessories, delivered across Ghana.",
-};
+	// Every filtered view — a brand, a price band, a collection — is the same
+	// page to a search engine, so they all canonicalise here rather than
+	// competing with each other for the same terms.
+	path: "/shop",
+});
 
 interface StorePageProps {
 	searchParams: Promise<CatalogueSearchParams>;

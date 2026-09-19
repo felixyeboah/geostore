@@ -20,6 +20,7 @@ import {
 	itemListSchema,
 	StructuredData,
 } from "@shared/components/StructuredData";
+import { pageMetadata } from "@shared/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -35,9 +36,16 @@ export async function generateMetadata({
 	const categories = await getLiveCategories();
 	const category = categories.find((item) => item.slug === slug);
 
-	return category
-		? { title: category.name, description: category.description }
-		: { title: "Category not found" };
+	if (!category) {
+		return { title: "Department not found", robots: { index: false } };
+	}
+
+	return pageMetadata({
+		title: category.name,
+		description: category.description,
+		path: `/categories/${category.slug}`,
+		image: category.imageUrl,
+	});
 }
 
 export default async function CategoryPage({

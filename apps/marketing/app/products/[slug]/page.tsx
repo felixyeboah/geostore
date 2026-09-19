@@ -12,6 +12,7 @@ import {
 	productSchema,
 	StructuredData,
 } from "@shared/components/StructuredData";
+import { pageMetadata } from "@shared/lib/seo";
 import {
 	RotateCcwIcon,
 	ShieldCheckIcon,
@@ -32,13 +33,20 @@ export async function generateMetadata({
 	const { slug } = await params;
 	const product = await getLiveProductBySlug(slug);
 
-	return product
-		? {
-				title: product.name,
-				description: product.shortDescription,
-				openGraph: { images: [product.imageUrl] },
-			}
-		: { title: "Product not found" };
+	if (!product) {
+		// A missing product must not be indexed, or a deleted line lingers in
+		// results as a 404 for months.
+		return { title: "Product not found", robots: { index: false } };
+	}
+
+	return pageMetadata({
+		// The brand is what people actually search alongside the model.
+		title: `${product.name} · ${product.brand}`,
+		description: product.shortDescription || product.description,
+		path: `/products/${product.slug}`,
+		image: product.imageUrl,
+		type: "article",
+	});
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
