@@ -15,6 +15,11 @@ import { ProductRail } from "@home/components/ProductRail";
 import { TrustStrip } from "@home/components/TrustStrip";
 import { getRenderableSections } from "@home/lib/landing-sections";
 import type { SectionCopyProps } from "@home/lib/section-copy";
+import {
+	organisationSchema,
+	StructuredData,
+	websiteSchema,
+} from "@shared/components/StructuredData";
 import { pageMetadata, SITE_DESCRIPTION } from "@shared/lib/seo";
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
@@ -60,6 +65,7 @@ export default async function Home() {
 
 	return (
 		<>
+			<StructuredData data={[organisationSchema(), websiteSchema()]} />
 			{sections.map(({ key, copy }) => {
 				const Section = SECTION_COMPONENTS[key];
 				return Section ? <Section key={key} copy={copy} /> : null;

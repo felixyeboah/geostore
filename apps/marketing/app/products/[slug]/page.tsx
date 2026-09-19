@@ -8,6 +8,11 @@ import {
 } from "@commerce/lib/live-catalog";
 import { storeLinks } from "@commerce/lib/store-links";
 import {
+	breadcrumbSchema,
+	productSchema,
+	StructuredData,
+} from "@shared/components/StructuredData";
+import {
 	RotateCcwIcon,
 	ShieldCheckIcon,
 	StarIcon,
@@ -77,6 +82,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
 	return (
 		<div className="editorial">
+			<StructuredData
+				data={[
+					productSchema(product),
+					breadcrumbSchema([
+						{ name: "Shop", path: "/shop" },
+						...(category
+							? [
+									{
+										name: category.name,
+										path: `/categories/${category.slug}`,
+									},
+								]
+							: []),
+						{
+							name: product.name,
+							path: `/products/${product.slug}`,
+						},
+					]),
+				]}
+			/>
 			<div className="mx-auto w-full max-w-[1560px] px-5 py-10 md:px-10 lg:py-14">
 				<nav
 					aria-label="Breadcrumb"

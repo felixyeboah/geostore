@@ -15,6 +15,11 @@ import {
 	getLiveProducts,
 } from "@commerce/lib/live-catalog";
 import { storeLinks } from "@commerce/lib/store-links";
+import {
+	breadcrumbSchema,
+	itemListSchema,
+	StructuredData,
+} from "@shared/components/StructuredData";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -68,6 +73,21 @@ export default async function CategoryPage({
 
 	return (
 		<div className="editorial">
+			<StructuredData
+				data={[
+					itemListSchema(products, {
+						name: category.name,
+						path: `/categories/${category.slug}`,
+					}),
+					breadcrumbSchema([
+						{ name: "Shop", path: "/shop" },
+						{
+							name: category.name,
+							path: `/categories/${category.slug}`,
+						},
+					]),
+				]}
+			/>
 			<section className="mx-auto w-full max-w-[1560px] px-5 pt-12 md:px-10 lg:pt-20">
 				<CatalogueHeader
 					title={catalogueTitle(category.name, query, collections)}
