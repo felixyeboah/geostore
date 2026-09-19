@@ -1,4 +1,5 @@
 import { DEPARTMENTS, links } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	ArrowLink,
 	Container,
@@ -9,26 +10,25 @@ import { useTranslations } from "@shared/lib/translations";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 
-export function DepartmentsSection() {
+export function DepartmentsSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.departments");
 
 	return (
 		<section className="pt-20 lg:pt-[104px]">
 			<Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,760px)] lg:gap-20">
 				<div>
-					<Eyebrow>{t("home.departments.eyebrow")}</Eyebrow>
+					<Eyebrow>{c("eyebrow")}</Eyebrow>
 					<SectionHeading className="mt-6">
-						{t("home.departments.title1")}
+						{c("title1")}
 						<br />
-						{t("home.departments.title2")}
+						{c("title2")}
 					</SectionHeading>
 					<p className="mt-8 max-w-[370px] text-[13px] text-muted-foreground leading-[1.7]">
-						{t("home.departments.description")}
+						{c("description")}
 					</p>
 					<div className="mt-8">
-						<ArrowLink href={links.shop}>
-							{t("home.departments.link")}
-						</ArrowLink>
+						<ArrowLink href={links.shop}>{c("link")}</ArrowLink>
 					</div>
 				</div>
 

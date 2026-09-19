@@ -1,22 +1,24 @@
 import { CATEGORY_RAIL, links } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { Container, SectionHeader } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
 import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function CategoriesSection() {
+export function CategoriesSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.categories");
 
 	return (
 		<section className="py-16 lg:py-[88px]">
 			<Container>
 				<SectionHeader
-					eyebrow={t("home.categories.eyebrow")}
-					title={t("home.categories.title")}
+					eyebrow={c("eyebrow")}
+					title={c("title")}
 					link={{
 						href: links.shop,
-						label: t("home.categories.link"),
+						label: c("link"),
 					}}
 				/>
 			</Container>

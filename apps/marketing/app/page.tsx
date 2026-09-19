@@ -13,25 +13,49 @@ import { NeedsSection } from "@home/components/NeedsSection";
 import { NewsletterSection } from "@home/components/NewsletterSection";
 import { ProductRail } from "@home/components/ProductRail";
 import { TrustStrip } from "@home/components/TrustStrip";
+import { getRenderableSections } from "@home/lib/landing-sections";
+import type { SectionCopyProps } from "@home/lib/section-copy";
+import type { ComponentType } from "react";
 
-export default function Home() {
+/**
+ * Section key to component. The keys match `LANDING_SECTIONS` in
+ * `@repo/commerce`, which is what the admin edits against.
+ */
+const SECTION_COMPONENTS: Record<string, ComponentType<SectionCopyProps>> = {
+	hero: HeroSection,
+	trust: TrustStrip,
+	brands: BrandsSection,
+	categories: CategoriesSection,
+	edit: EditSection,
+	products: ProductRail,
+	gaming: GamingSection,
+	computing: ComputingSection,
+	kitchen: KitchenBundleSection,
+	appliances: AppliancesSection,
+	departments: DepartmentsSection,
+	needs: NeedsSection,
+	about: AboutSection,
+	newsletter: NewsletterSection,
+	enquiry: EnquirySection,
+};
+
+/**
+ * The page reads its running order from the database, and the admin lives in a
+ * separate deployment that cannot call `revalidatePath` here. Rendering per
+ * request is what makes an editor's change show up immediately; it matches the
+ * rest of the storefront, which is already dynamic.
+ */
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+	const sections = await getRenderableSections();
+
 	return (
 		<>
-			<HeroSection />
-			<TrustStrip />
-			<BrandsSection />
-			<CategoriesSection />
-			<EditSection />
-			<ProductRail />
-			<GamingSection />
-			<ComputingSection />
-			<KitchenBundleSection />
-			<AppliancesSection />
-			<DepartmentsSection />
-			<NeedsSection />
-			<AboutSection />
-			<NewsletterSection />
-			<EnquirySection />
+			{sections.map(({ key, copy }) => {
+				const Section = SECTION_COMPONENTS[key];
+				return Section ? <Section key={key} copy={copy} /> : null;
+			})}
 		</>
 	);
 }

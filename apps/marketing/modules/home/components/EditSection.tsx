@@ -1,4 +1,5 @@
 import { FEATURED_PRODUCTS, links } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	Container,
 	Eyebrow,
@@ -9,16 +10,17 @@ import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function EditSection() {
+export function EditSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.edit");
 
 	return (
 		<section className="pb-20 lg:pb-[88px]">
 			<Container>
 				<SectionHeader
-					eyebrow={t("home.edit.eyebrow")}
-					title={t("home.edit.title")}
-					link={{ href: links.shop, label: t("home.edit.link") }}
+					eyebrow={c("eyebrow")}
+					title={c("title")}
+					link={{ href: links.shop, label: c("link") }}
 				/>
 
 				<ul className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
@@ -31,7 +33,7 @@ export function EditSection() {
 									`home.categories.items.${product.category}`,
 								)}
 								name={product.name}
-								price={t("home.edit.price")}
+								price={c("price")}
 							/>
 						</li>
 					))}
@@ -41,7 +43,7 @@ export function EditSection() {
 				</ul>
 
 				<p className="mt-10 text-[12px] text-muted-foreground">
-					{t("home.edit.note")}
+					{c("note")}
 				</p>
 			</Container>
 		</section>

@@ -1,0 +1,158 @@
+import { expect, type Page, test } from "@playwright/test";
+import { LANDING_SECTIONS } from "@repo/commerce";
+import { Client } from "pg";
+
+const ADMIN = { email: "qa-admin@geostore.test", password: "QaAdmin!2345" };
+const STOREFRONT = process.env.STOREFRONT_URL ?? "http://localhost:3001";
+const STAMP = Date.now();
+const HERO_MARKER = `Hero marker ${STAMP}`;
+const BRAND_MARKER = `Brand marker ${STAMP}`;
+
+async function signIn(page: Page) {
+	await page.goto("/login");
+	await page.getByRole("textbox", { name: "Email" }).fill(ADMIN.email);
+	await page
+		.locator('input[autocomplete="current-password"]')
+		.fill(ADMIN.password);
+	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await page.waitForURL((url) => !url.pathname.startsWith("/login"), {
+		timeout: 90_000,
+	});
+}
+
+async function storefront(request: {
+	get: (url: string) => Promise<{ text: () => Promise<string> }>;
+}) {
+	return (await request.get(`${STOREFRONT}/?t=${Date.now()}`)).text();
+}
+
+/**
+ * Poll the storefront rather than asserting on it once.
+ *
+ * A toast is not a reliable signal that a save has landed: this suite runs in
+ * seconds, so a toast from an earlier step can still be on screen and satisfy
+ * a visibility check before the later save has finished. The rendered page is
+ * the only thing worth asserting on, so wait for it to agree.
+ */
+function expectStorefront(
+	request: Parameters<typeof storefront>[0],
+	message: string,
+) {
+	return expect.poll(async () => await storefront(request), {
+		timeout: 20_000,
+		message,
+	});
+}
+
+test("the landing editor controls the storefront", async ({
+	page,
+	request,
+}) => {
+	test.setTimeout(300_000);
+
+	// Put every section back to its shipped state first. Visibility and copy
+	// are not enough: step 5 moves a band up, so without restoring the order
+	// each run would start one place further along and eventually select a
+	// different section than the one these assertions name.
+	const reset = new Client({ connectionString: process.env.DATABASE_URL });
+	await reset.connect();
+	await reset.query(
+		'UPDATE landing_section SET "isVisible" = true, settings = NULL',
+	);
+	for (const section of LANDING_SECTIONS) {
+		await reset.query(
+			'UPDATE landing_section SET "sortOrder" = $1 WHERE key = $2',
+			[section.defaultSortOrder, section.key],
+		);
+	}
+	await reset.end();
+
+	await signIn(page);
+	await page.goto("/admin/landing", { waitUntil: "networkidle" });
+
+	// 1. Copy override reaches the page.
+	await page.getByLabel("Headline, first line").fill(HERO_MARKER);
+	await page.getByRole("button", { name: "Save section" }).click();
+	await expect(page.getByText("Hero saved.")).toBeVisible({
+		timeout: 20_000,
+	});
+	await expectStorefront(request, "hero override reaches the page").toContain(
+		HERO_MARKER,
+	);
+
+	// 2. A second section, so the hide check has something unique to look for.
+	await page.getByRole("button", { name: /^Brand line/ }).click();
+	await page.getByLabel("First line").fill(BRAND_MARKER);
+	await page.getByRole("button", { name: "Save section" }).click();
+	await expect(page.getByText("Brand line saved.")).toBeVisible({
+		timeout: 20_000,
+	});
+	await expectStorefront(
+		request,
+		"brand override reaches the page",
+	).toContain(BRAND_MARKER);
+
+	// 3. Hiding removes it from the page entirely.
+	await page.getByRole("button", { name: "Hide Brand line" }).click();
+	await expect(page.getByText("Brand line is hidden.")).toBeVisible({
+		timeout: 20_000,
+	});
+	await expectStorefront(
+		request,
+		"hidden band leaves the page",
+	).not.toContain(BRAND_MARKER);
+	await expectStorefront(
+		request,
+		"hiding one band must not affect another",
+	).toContain(HERO_MARKER);
+
+	// 4. Showing brings it back.
+	await page.getByRole("button", { name: "Show Brand line" }).click();
+	await expect(page.getByText("Brand line is now showing.")).toBeVisible({
+		timeout: 20_000,
+	});
+	await expectStorefront(request, "showing brings the band back").toContain(
+		BRAND_MARKER,
+	);
+
+	// 5. Reordering is persisted.
+	await page.getByRole("button", { name: "Move Brand line up" }).click();
+	await page.waitForTimeout(2500);
+
+	const db = new Client({ connectionString: process.env.DATABASE_URL });
+	await db.connect();
+	const { rows } = await db.query<{ key: string; sortOrder: number }>(
+		'SELECT key, "sortOrder" FROM landing_section ORDER BY "sortOrder" ASC',
+	);
+	await db.end();
+	const order = rows.map((row) => row.key);
+	expect(
+		order.indexOf("brands"),
+		"Brand line should now sit above the delivery strip",
+	).toBeLessThan(order.indexOf("trust"));
+
+	// 6. Clearing the overrides restores the shipped copy.
+	for (const [section, toast] of [
+		["Brand line", "Brand line saved."],
+		["Hero", "Hero saved."],
+	] as const) {
+		await page
+			.getByRole("button", { name: new RegExp(`^${section}`) })
+			.click();
+		await page
+			.getByRole("button", { name: "Reset to built-in text" })
+			.click();
+		await page.getByRole("button", { name: "Save section" }).click();
+		await expect(page.getByText(toast)).toBeVisible({ timeout: 20_000 });
+	}
+
+	await expectStorefront(request, "hero override cleared").not.toContain(
+		HERO_MARKER,
+	);
+	await expectStorefront(request, "brand override cleared").not.toContain(
+		BRAND_MARKER,
+	);
+	await expectStorefront(request, "the shipped copy is back").toContain(
+		"we stock.",
+	);
+});

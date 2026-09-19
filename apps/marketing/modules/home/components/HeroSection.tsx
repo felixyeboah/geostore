@@ -1,35 +1,35 @@
 import { IMAGES, links } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { Container, Eyebrow } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
 import { ArrowRightIcon, MessageCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function HeroSection() {
+export function HeroSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.hero");
 	const tagline = t.raw("home.hero.tagline") as string[];
 
 	return (
 		<section id="top" className="border-border border-b">
 			<Container className="grid gap-12 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,632px)] lg:gap-10">
 				<div className="flex flex-col justify-center pt-6 lg:pt-12 lg:pb-8">
-					<Eyebrow rule>{t("home.hero.eyebrow")}</Eyebrow>
+					<Eyebrow rule>{c("eyebrow")}</Eyebrow>
 
 					<h1 className="mt-8 font-semibold text-[56px] text-foreground leading-[0.98] tracking-[-0.045em] md:text-[72px] lg:text-[84px]">
-						{t("home.hero.titleLine1")}
+						{c("titleLine1")}
 						<br />
-						{t("home.hero.titleLine2")}
+						{c("titleLine2")}
 						<br />
-						{t("home.hero.titleLine3")}{" "}
-						<span className="text-primary">
-							{t("home.hero.titleAccent")}
-						</span>
+						{c("titleLine3")}{" "}
+						<span className="text-primary">{c("titleAccent")}</span>
 					</h1>
 
 					<p className="mt-9 text-[14px] text-muted-foreground leading-[1.7]">
-						{t("home.hero.subtitle1")}
+						{c("subtitle1")}
 						<br />
-						{t("home.hero.subtitle2")}
+						{c("subtitle2")}
 					</p>
 
 					<div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
@@ -37,14 +37,14 @@ export function HeroSection() {
 							href={links.shop}
 							className="inline-flex h-[52px] items-center gap-6 rounded-[4px] bg-primary px-6 font-medium text-[13.5px] text-white transition-colors hover:bg-primary/90"
 						>
-							{t("home.hero.primaryCta")}
+							{c("primaryCta")}
 							<ArrowRightIcon className="size-4" />
 						</Link>
 						<Link
 							href={links.contact}
 							className="inline-flex items-center gap-4 font-medium text-[13.5px] text-foreground"
 						>
-							{t("home.hero.secondaryCta")}
+							{c("secondaryCta")}
 							<MessageCircleIcon
 								className="size-[18px] text-primary"
 								strokeWidth={1.75}

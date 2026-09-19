@@ -1,4 +1,5 @@
 import { COMPUTING_DEVICES, IMAGES, links } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	ArrowLink,
 	Container,
@@ -10,18 +11,19 @@ import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function ComputingSection() {
+export function ComputingSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.computing");
 
 	return (
 		<section className="pt-16 lg:pt-[88px]">
 			<Container>
 				<SectionHeader
-					eyebrow={t("home.computing.eyebrow")}
-					title={t("home.computing.title")}
+					eyebrow={c("eyebrow")}
+					title={c("title")}
 					link={{
 						href: links.category("laptops"),
-						label: t("home.computing.link"),
+						label: c("link"),
 					}}
 				/>
 
@@ -55,7 +57,7 @@ export function ComputingSection() {
 
 					<div className="flex flex-col">
 						<Eyebrow className="pt-1 text-[10px] text-foreground/80 lg:pt-5">
-							{t("home.computing.listEyebrow")}
+							{c("listEyebrow")}
 						</Eyebrow>
 						<ul className="mt-4">
 							{COMPUTING_DEVICES.map((device, index) => (
@@ -78,7 +80,7 @@ export function ComputingSection() {
 												{device.name}
 											</span>
 											<span className="mt-2.5 block text-[10px] text-muted-foreground">
-												{t("home.computing.explore")}
+												{c("explore")}
 											</span>
 										</span>
 										<ArrowRightIcon className="mt-[26px] size-4 shrink-0 text-foreground transition-transform group-hover:translate-x-0.5" />

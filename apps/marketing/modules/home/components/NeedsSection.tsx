@@ -1,4 +1,5 @@
 import { NEEDS } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	Container,
 	Eyebrow,
@@ -9,16 +10,14 @@ import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function NeedsSection() {
+export function NeedsSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.needs");
 
 	return (
 		<section className="pt-20 lg:pt-[104px]">
 			<Container>
-				<SectionHeader
-					eyebrow={t("home.needs.eyebrow")}
-					title={t("home.needs.title")}
-				/>
+				<SectionHeader eyebrow={c("eyebrow")} title={c("title")} />
 
 				<ul className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3">
 					{NEEDS.map((need) => (

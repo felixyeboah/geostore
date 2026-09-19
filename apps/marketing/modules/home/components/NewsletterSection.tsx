@@ -1,5 +1,6 @@
 "use client";
 
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Container, Eyebrow } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
@@ -11,8 +12,9 @@ const formSchema = z.object({
 	email: z.email(),
 });
 
-export function NewsletterSection() {
+export function NewsletterSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "newsletter");
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -34,13 +36,13 @@ export function NewsletterSection() {
 			<Container className="grid gap-10 py-16 lg:grid-cols-2 lg:items-center lg:py-20">
 				<div>
 					<Eyebrow className="text-[10px] text-white/80">
-						{t("newsletter.eyebrow")}
+						{c("eyebrow")}
 					</Eyebrow>
 					<h2 className="mt-6 font-medium text-[32px] leading-[1.1] tracking-[-0.025em] md:text-[40px]">
-						{t("newsletter.title")}
+						{c("title")}
 					</h2>
 					<p className="mt-6 max-w-[420px] text-[13px] text-white/75 leading-[1.7]">
-						{t("newsletter.subtitle")}
+						{c("subtitle")}
 					</p>
 				</div>
 
@@ -75,7 +77,7 @@ export function NewsletterSection() {
 								disabled={form.formState.isSubmitting}
 								className="inline-flex h-[52px] items-center justify-center gap-5 rounded-[4px] bg-white px-6 font-medium text-[#1d1c1c] text-[13.5px] transition-colors hover:bg-white/90 disabled:opacity-60"
 							>
-								{t("newsletter.submit")}
+								{c("submit")}
 								<ArrowRightIcon className="size-4" />
 							</button>
 						</div>

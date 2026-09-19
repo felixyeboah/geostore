@@ -4,6 +4,7 @@ import {
 	productHref,
 	RAIL_PRODUCTS,
 } from "@home/data/landing";
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	Container,
 	Eyebrow,
@@ -14,16 +15,17 @@ import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function ProductRail() {
+export function ProductRail({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.products");
 
 	return (
 		<section className="border-border border-t pt-16 pb-20 lg:pt-[88px] lg:pb-[88px]">
 			<Container>
 				<SectionHeader
-					eyebrow={t("home.products.eyebrow")}
-					title={t("home.products.title")}
-					link={{ href: links.shop, label: t("home.products.link") }}
+					eyebrow={c("eyebrow")}
+					title={c("title")}
+					link={{ href: links.shop, label: c("link") }}
 				/>
 			</Container>
 

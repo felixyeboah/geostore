@@ -1,3 +1,4 @@
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	Container,
 	Eyebrow,
@@ -12,21 +13,22 @@ const ABOUT_ITEMS = [
 	{ key: "conversation", icon: MessageCircleIcon },
 ] as const;
 
-export function AboutSection() {
+export function AboutSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.about");
 
 	return (
 		<section id="about" className="scroll-mt-24 py-20 lg:py-[104px]">
 			<Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,538px)] lg:gap-20">
 				<div>
-					<Eyebrow>{t("home.about.eyebrow")}</Eyebrow>
+					<Eyebrow>{c("eyebrow")}</Eyebrow>
 					<SectionHeading className="mt-6">
-						{t("home.about.title1")}
+						{c("title1")}
 						<br />
-						{t("home.about.title2")}
+						{c("title2")}
 					</SectionHeading>
 					<p className="mt-8 max-w-[370px] text-[13px] text-muted-foreground leading-[1.7]">
-						{t("home.about.description")}
+						{c("description")}
 					</p>
 				</div>
 
