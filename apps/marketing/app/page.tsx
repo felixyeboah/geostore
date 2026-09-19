@@ -15,7 +15,15 @@ import { ProductRail } from "@home/components/ProductRail";
 import { TrustStrip } from "@home/components/TrustStrip";
 import { getRenderableSections } from "@home/lib/landing-sections";
 import type { SectionCopyProps } from "@home/lib/section-copy";
+import { pageMetadata, SITE_DESCRIPTION } from "@shared/lib/seo";
+import type { Metadata } from "next";
 import type { ComponentType } from "react";
+
+export const metadata: Metadata = pageMetadata({
+	title: "Electronics and appliances, delivered in Ghana",
+	description: SITE_DESCRIPTION,
+	path: "/",
+});
 
 /**
  * Section key to component. The keys match `LANDING_SECTIONS` in

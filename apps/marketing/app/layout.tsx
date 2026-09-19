@@ -9,6 +9,8 @@ import { ConsentBanner } from "@shared/components/ConsentBanner";
 import { ConsentProvider } from "@shared/components/ConsentProvider";
 import { Footer } from "@shared/components/Footer";
 import { NavBar } from "@shared/components/NavBar";
+import { getBaseUrl } from "@shared/lib/base-url";
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_TAGLINE } from "@shared/lib/seo";
 import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import { cookies } from "next/headers";
@@ -23,10 +25,43 @@ const sansFont = Figtree({
 });
 
 export const metadata: Metadata = {
+	// Without this, every relative Open Graph image resolves against
+	// localhost and link previews come back blank in production.
+	metadataBase: new URL(getBaseUrl()),
 	title: {
-		absolute: config.appName,
-		default: config.appName,
+		absolute: `${config.appName} · ${SITE_TAGLINE}`,
+		default: `${config.appName} · ${SITE_TAGLINE}`,
 		template: `%s | ${config.appName}`,
+	},
+	description: SITE_DESCRIPTION,
+	applicationName: config.appName,
+	referrer: "origin-when-cross-origin",
+	formatDetection: { telephone: true, address: false, email: false },
+	openGraph: {
+		type: "website",
+		siteName: config.appName,
+		locale: "en_GH",
+		url: getBaseUrl(),
+		title: `${config.appName} · ${SITE_TAGLINE}`,
+		description: SITE_DESCRIPTION,
+		images: [{ url: OG_IMAGE, alt: config.appName }],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: `${config.appName} · ${SITE_TAGLINE}`,
+		description: SITE_DESCRIPTION,
+		images: [OG_IMAGE],
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			"max-image-preview": "large",
+			"max-snippet": -1,
+			"max-video-preview": -1,
+		},
 	},
 };
 
