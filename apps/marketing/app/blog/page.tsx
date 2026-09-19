@@ -5,13 +5,16 @@ import {
 	EditorialHeader,
 	EditorialShell,
 } from "@shared/components/EditorialPage";
+import { pageMetadata } from "@shared/lib/seo";
 import { getTranslations } from "@shared/lib/translations";
 
 export async function generateMetadata() {
 	const t = await getTranslations({ namespace: "blog" });
-	return {
+	return pageMetadata({
 		title: t("title"),
-	};
+		description: t("description"),
+		path: "/blog",
+	});
 }
 
 export default async function BlogListPage() {

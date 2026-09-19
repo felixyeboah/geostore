@@ -4,7 +4,17 @@ import {
 	EditorialHeader,
 	EditorialShell,
 } from "@shared/components/EditorialPage";
+import { pageMetadata } from "@shared/lib/seo";
 import { getTranslations } from "@shared/lib/translations";
+
+export async function generateMetadata() {
+	const t = await getTranslations({ namespace: "changelog" });
+	return pageMetadata({
+		title: t("title"),
+		description: t("description"),
+		path: "/changelog",
+	});
+}
 
 export default async function ChangelogPage() {
 	const t = await getTranslations({ namespace: "changelog" });
