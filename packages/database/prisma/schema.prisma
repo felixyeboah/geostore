@@ -1,11 +1,28 @@
 datasource db {
-  provider = "postgresql"
+  // Turso (libSQL) speaks SQLite. Cloudflare Workers cannot open a raw TCP
+  // socket, so Postgres is not reachable from the edge without Hyperdrive.
+  provider = "sqlite"
 }
 
 generator client {
   provider   = "prisma-client"
   output     = "./generated"
   engineType = "client"
+}
+
+/// A second client built for Cloudflare Workers.
+///
+/// The default client decodes its WASM query compiler from base64 and calls
+/// `new WebAssembly.Module(bytes)`, which workerd forbids — every query throws
+/// "Wasm code generation disallowed by embedder". The workerd runtime imports
+/// the wasm as a module instead, so the platform compiles it at deploy time.
+/// Node keeps using the client above, because that module import does not
+/// resolve under tsx.
+generator clientWorkerd {
+  provider   = "prisma-client"
+  output     = "./generated-workerd"
+  engineType = "client"
+  runtime    = "workerd"
 }
 
 generator zod {
@@ -76,9 +93,9 @@ model Account {
   providerId   String
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken  String?   @db.Text
-  refreshToken String?   @db.Text
-  idToken      String?   @db.Text
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
   expiresAt    DateTime?
   password     String?
 
@@ -95,7 +112,7 @@ model Account {
 model Verification {
   id         String   @id @default(cuid())
   identifier String
-  value      String   @db.Text
+  value      String
   expiresAt  DateTime
 
   createdAt DateTime?
@@ -308,7 +325,7 @@ model Product {
   name                 String
   slug                 String           @unique
   shortDescription     String?
-  description          String           @db.Text
+  description          String
   brand                String
   sku                  String           @unique
   status               ProductStatus    @default(DRAFT)
@@ -412,7 +429,7 @@ model Order {
   customerEmail              String
   customerPhone              String
   shippingAddress            Json
-  customerNote               String?                @db.Text
+  customerNote               String?
   items                      OrderItem[]
   transactions               StoreTransaction[]
   statusEvents               OrderStatusEvent[]
@@ -459,7 +476,7 @@ model Review {
   orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   rating      Int
   title       String?
-  body        String    @db.Text
+  body        String
   isApproved  Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -550,4 +567,28 @@ model RateLimit {
   lastRequest BigInt
 
   @@map("rateLimit")
+}
+
+/// One band of the marketing landing page.
+///
+/// The catalogue of section types lives in code (`@repo/commerce/landing`),
+/// because each one is a React component with its own shape. A row here
+/// records what an editor decided about a section: whether it shows, where it
+/// sits, and any copy that overrides the built-in default.
+///
+/// `settings` holds only the fields an editor actually changed. An absent or
+/// empty field falls back to the shipped default, so a half-filled row can
+/// never blank out a band of the page.
+model LandingSection {
+  id        String   @id @default(cuid())
+  /// Matches a key in the section registry, e.g. "hero" or "categories".
+  key       String   @unique
+  isVisible Boolean  @default(true)
+  sortOrder Int      @default(0)
+  settings  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isVisible, sortOrder])
+  @@map("landing_section")
 }

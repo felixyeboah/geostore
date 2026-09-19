@@ -1,6 +1,8 @@
 {
 	"dependencies": {
+		"@libsql/client": "^0.18.0",
 		"@paralleldrive/cuid2": "^3.3.0",
+		"@prisma/adapter-libsql": "^7.10.0",
 		"@prisma/adapter-pg": "catalog:",
 		"@prisma/client": "catalog:",
 		"@repo/utils": "workspace:*",

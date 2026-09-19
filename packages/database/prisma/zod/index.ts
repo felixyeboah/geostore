@@ -6,7 +6,7 @@
 import * as z from 'zod';
 // File: TransactionIsolationLevel.schema.ts
 
-export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable'])
+export const TransactionIsolationLevelSchema = z.enum(['Serializable'])
 
 export type TransactionIsolationLevel = z.infer<typeof TransactionIsolationLevelSchema>;
 
@@ -160,6 +160,12 @@ export const RateLimitScalarFieldEnumSchema = z.enum(['id', 'key', 'count', 'las
 
 export type RateLimitScalarFieldEnum = z.infer<typeof RateLimitScalarFieldEnumSchema>;
 
+// File: LandingSectionScalarFieldEnum.schema.ts
+
+export const LandingSectionScalarFieldEnumSchema = z.enum(['id', 'key', 'isVisible', 'sortOrder', 'settings', 'createdAt', 'updatedAt'])
+
+export type LandingSectionScalarFieldEnum = z.infer<typeof LandingSectionScalarFieldEnumSchema>;
+
 // File: SortOrder.schema.ts
 
 export const SortOrderSchema = z.enum(['asc', 'desc'])
@@ -178,12 +184,6 @@ export const JsonNullValueInputSchema = z.enum(['JsonNull'])
 
 export type JsonNullValueInput = z.infer<typeof JsonNullValueInputSchema>;
 
-// File: QueryMode.schema.ts
-
-export const QueryModeSchema = z.enum(['default', 'insensitive'])
-
-export type QueryMode = z.infer<typeof QueryModeSchema>;
-
 // File: NullsOrder.schema.ts
 
 export const NullsOrderSchema = z.enum(['first', 'last'])
@@ -195,6 +195,12 @@ export type NullsOrder = z.infer<typeof NullsOrderSchema>;
 export const JsonNullValueFilterSchema = z.enum(['DbNull', 'JsonNull', 'AnyNull'])
 
 export type JsonNullValueFilter = z.infer<typeof JsonNullValueFilterSchema>;
+
+// File: QueryMode.schema.ts
+
+export const QueryModeSchema = z.enum(['default', 'insensitive'])
+
+export type QueryMode = z.infer<typeof QueryModeSchema>;
 
 // File: PurchaseType.schema.ts
 
@@ -670,4 +676,19 @@ export const RateLimitSchema = z.object({
 });
 
 export type RateLimitType = z.infer<typeof RateLimitSchema>;
+
+
+// File: LandingSection.schema.ts
+
+export const LandingSectionSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  isVisible: z.boolean().default(true),
+  sortOrder: z.number().int(),
+  settings: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type LandingSectionType = z.infer<typeof LandingSectionSchema>;
 

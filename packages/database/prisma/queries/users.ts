@@ -18,13 +18,11 @@ export async function getUsers({
 						{
 							name: {
 								contains: query,
-								mode: "insensitive",
 							},
 						},
 						{
 							email: {
 								contains: query,
-								mode: "insensitive",
 							},
 						},
 					],
@@ -43,13 +41,11 @@ export async function countAllUsers({ query }: { query?: string }) {
 						{
 							name: {
 								contains: query,
-								mode: "insensitive",
 							},
 						},
 						{
 							email: {
 								contains: query,
-								mode: "insensitive",
 							},
 						},
 					],

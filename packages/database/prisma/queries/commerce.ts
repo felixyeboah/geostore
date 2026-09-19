@@ -150,9 +150,9 @@ export async function getPublishedStoreProducts(
 					}
 				: undefined,
 			brand: filters.brands?.length
-				? { in: filters.brands, mode: "insensitive" }
+				? { in: filters.brands }
 				: filters.brand
-					? { equals: filters.brand, mode: "insensitive" }
+					? { equals: filters.brand }
 					: undefined,
 			priceInPesewas:
 				filters.minPriceInPesewas !== undefined ||
@@ -172,19 +172,16 @@ export async function getPublishedStoreProducts(
 						{
 							name: {
 								contains: filters.query,
-								mode: "insensitive",
 							},
 						},
 						{
 							brand: {
 								contains: filters.query,
-								mode: "insensitive",
 							},
 						},
 						{
 							shortDescription: {
 								contains: filters.query,
-								mode: "insensitive",
 							},
 						},
 					]
@@ -256,19 +253,16 @@ export async function getAdminStoreProducts(filters: StoreProductFilters = {}) {
 						{
 							name: {
 								contains: filters.query,
-								mode: "insensitive",
 							},
 						},
 						{
 							sku: {
 								contains: filters.query,
-								mode: "insensitive",
 							},
 						},
 						{
 							brand: {
 								contains: filters.query,
-								mode: "insensitive",
 							},
 						},
 					]

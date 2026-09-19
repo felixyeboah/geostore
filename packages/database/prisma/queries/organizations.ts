@@ -19,7 +19,6 @@ export async function getOrganizations({
 							{
 								name: {
 									contains: query,
-									mode: "insensitive",
 								},
 							},
 						],
@@ -51,7 +50,6 @@ export async function countAllOrganizations({ query }: { query?: string }) {
 						{
 							name: {
 								contains: query,
-								mode: "insensitive",
 							},
 						},
 					],
