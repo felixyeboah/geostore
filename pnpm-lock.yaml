@@ -1191,6 +1191,9 @@ importers:
 
   tooling/scripts:
     dependencies:
+      '@libsql/client':
+        specifier: ^0.17.4
+        version: 0.17.4
       '@repo/auth':
         specifier: workspace:*
         version: link:../../packages/auth

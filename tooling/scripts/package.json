@@ -4,7 +4,8 @@
 		"@repo/commerce": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/logs": "workspace:*",
-		"@repo/utils": "workspace:*"
+		"@repo/utils": "workspace:*",
+		"@libsql/client": "^0.17.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
@@ -19,7 +20,8 @@
 		"clean": "git clean -xdf .cache .turbo dist node_modules",
 		"create:user": "dotenv -c -e ../../.env -- tsx ./src/create-user.ts",
 		"seed:store": "dotenv -c -e ../../.env -- tsx ./src/seed-store.ts",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"push:schema": "dotenv -c -e ../../.env -- tsx ./src/push-schema.ts"
 	},
 	"version": "0.0.0"
 }

@@ -5,7 +5,10 @@ on:
     branches: [main]
 
 env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  # The app runs on Turso (libSQL) now, which speaks HTTP. CI stands up a
+  # throwaway libsql-server rather than sharing a database, so a pull request
+  # cannot see or disturb anyone's data and needs no secret to run.
+  DATABASE_URL: "http://127.0.0.1:8080"
   BETTER_AUTH_SECRET: "better-auth-e2e-secret-1234567890"
   # The e2e suite builds and runs the app with NODE_ENV=production, so the
   # mock payment provider needs its explicit opt-in. Never set this on a real
@@ -56,6 +59,13 @@ jobs:
     name: Run e2e tests
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    services:
+      libsql:
+        image: ghcr.io/tursodatabase/libsql-server:latest
+        ports:
+          - 8080:8080
+        env:
+          SQLD_NODE: primary
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -64,6 +74,12 @@ jobs:
       - uses: pnpm/action-setup@v4
       - name: Install dependencies
         run: pnpm install && pnpm --filter database generate
+      - name: Apply the schema
+        # prisma db push cannot talk to a libSQL server, so the DDL is
+        # generated and executed through the libSQL client instead.
+        run: pnpm --filter @repo/scripts exec tsx ./src/push-schema.ts
+      - name: Seed the catalogue
+        run: pnpm --filter @repo/scripts exec tsx ./src/seed-store.ts
       - name: Run Playwright tests for SaaS app
         run: pnpm --filter saas e2e:ci
       - name: Run Playwright tests for Marketing app
