@@ -2,6 +2,7 @@
 
 import { CartLink } from "@commerce/components/CartLink";
 import { SearchDialog } from "@commerce/components/SearchDialog";
+import { ShopMegaMenu } from "@commerce/components/ShopMegaMenu";
 import { links, PHONE_NUMBER } from "@home/data/landing";
 import { cn } from "@repo/ui";
 import {
@@ -31,8 +32,11 @@ export function NavBar() {
 		setMobileMenuOpen(false);
 	}, [pathname]);
 
+	const shopLabel = t("common.menu.shop");
+
+	// `Shop` is the mega menu on desktop, so it is not in this list; the
+	// mobile sheet adds it back at the top, where a flat link is right.
 	const menuItems: NavItem[] = [
-		{ label: t("common.menu.shop"), href: links.shop },
 		{ label: t("common.menu.phones"), href: links.category("phones") },
 		{ label: t("common.menu.computers"), href: links.category("laptops") },
 		{ label: t("common.menu.gaming"), href: links.category("gaming") },
@@ -82,6 +86,9 @@ export function NavBar() {
 				</Link>
 
 				<ul className="hidden items-center gap-6 lg:flex">
+					<li>
+						<ShopMegaMenu label={shopLabel} />
+					</li>
 					{menuItems.map((item) => (
 						<li key={item.href}>
 							<Link
@@ -105,7 +112,10 @@ export function NavBar() {
 					/>
 					<CartLink />
 					<MobileMenu
-						items={menuItems}
+						items={[
+							{ label: shopLabel, href: links.shop },
+							...menuItems,
+						]}
 						open={mobileMenuOpen}
 						onOpenChange={setMobileMenuOpen}
 						menuLabel={t("common.aria.menu")}

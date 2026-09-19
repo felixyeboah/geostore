@@ -1,3 +1,4 @@
+import { ProductGallery } from "@commerce/components/ProductGallery";
 import { ProductGrid } from "@commerce/components/ProductGrid";
 import { VariantPicker } from "@commerce/components/VariantPicker";
 import {
@@ -13,7 +14,6 @@ import {
 	TruckIcon,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -112,21 +112,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				{/* The featured-product split from the mockup: image to the
 				    edge on the left, everything else in a narrower column. */}
 				<section className="mt-9 grid items-stretch gap-0 lg:grid-cols-[60fr_40fr]">
-					<div className="relative min-h-[420px] overflow-hidden bg-muted lg:min-h-[640px]">
-						<Image
-							src={product.imageUrl}
-							alt={product.name}
-							fill
-							priority
-							sizes="(min-width: 1024px) 58vw, 100vw"
-							className="object-cover"
-						/>
-						{product.isNew && (
-							<span className="eyebrow absolute top-0 left-0 bg-white px-[13px] py-2.5 text-foreground">
-								Just landed
-							</span>
-						)}
-					</div>
+					<ProductGallery
+						name={product.name}
+						images={
+							product.images.length > 0
+								? product.images
+								: [product.imageUrl]
+						}
+						badge={
+							product.isNew ? (
+								<span className="eyebrow absolute top-0 left-0 bg-white px-[13px] py-2.5 text-foreground">
+									Just landed
+								</span>
+							) : null
+						}
+					/>
 
 					<div className="flex flex-col justify-center pt-8 lg:pt-0 lg:pl-16">
 						<p className="eyebrow text-muted-foreground">

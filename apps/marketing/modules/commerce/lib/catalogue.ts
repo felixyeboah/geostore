@@ -105,18 +105,6 @@ export function catalogueTitle(
 	return fallback;
 }
 
-/** True when anything narrows the catalogue beyond the current department. */
-export function hasActiveFilters(params: CatalogueSearchParams): boolean {
-	return Boolean(
-		params.q ||
-			params.collection ||
-			params.brand ||
-			params.price ||
-			params.stock ||
-			params.sale,
-	);
-}
-
 /**
  * Builds a catalogue URL that keeps the filters already in play. Pass `null`
  * for a key to drop it — the filter bar leans on this so a brand pill, a price
