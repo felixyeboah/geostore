@@ -1,0 +1,22 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "geostoresgh",
+	// Reevitinc's account: the Projects account is on the free Workers plan,
+	// whose 10ms CPU ceiling cannot run Next.js server rendering.
+	"account_id": "dfed33ea3d6cce574a4f6d446d5f1e8b",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-09-19",
+	// `nodejs_compat` is required by the Next.js runtime; the OpenNext adapter
+	// will not boot without it.
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"NEXT_PUBLIC_MARKETING_URL": "https://geostoresgh.reevitinc.workers.dev"
+	}
+}
