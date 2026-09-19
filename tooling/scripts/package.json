@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"@repo/auth": "workspace:*",
+		"@repo/commerce": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/logs": "workspace:*",
 		"@repo/utils": "workspace:*"

@@ -1,6 +1,41 @@
 // @ts-expect-error - PrismaPlugin is not typed
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
+import { ALLOWED_IMAGE_HOSTS, getUploadImageHosts } from "@repo/utils";
 import type { NextConfig } from "next";
+
+// `next/image` throws during render on an unconfigured host, so this list has
+// to stay in lockstep with the one the product form validates against.
+// Deriving both from ALLOWED_IMAGE_HOSTS is what keeps them from drifting.
+const uploadImageHosts = getUploadImageHosts();
+
+// A localhost pattern is a server-side fetch target for `next/image`, so it is
+// only configured outside production. This mirrors `isAllowedImageUrl`.
+const allowLocalhostImages = process.env.NODE_ENV !== "production";
+
+const remotePatterns: NonNullable<
+	NonNullable<NextConfig["images"]>["remotePatterns"]
+> = [
+	...(allowLocalhostImages
+		? ([
+				{ protocol: "http", hostname: "localhost" },
+				{ protocol: "http", hostname: "127.0.0.1" },
+			] as const)
+		: []),
+	...ALLOWED_IMAGE_HOSTS.map(
+		(hostname) => ({ protocol: "https", hostname }) as const,
+	),
+];
+
+for (const hostname of uploadImageHosts) {
+	if (hostname === "localhost" || hostname === "127.0.0.1") {
+		if (allowLocalhostImages) {
+			remotePatterns.push({ protocol: "http", hostname });
+		}
+		continue;
+	}
+
+	remotePatterns.push({ protocol: "https", hostname });
+}
 
 const nextConfig: NextConfig = {
 	transpilePackages: [
@@ -10,30 +45,48 @@ const nextConfig: NextConfig = {
 		"@repo/ui",
 	],
 	images: {
-		remotePatterns: [
-			{
-				protocol: "http",
-				hostname: "localhost",
-				port: "9000",
-			},
-			{
-				protocol: "https",
-				hostname: "images.unsplash.com",
-			},
-			{
-				// google profile images
-				protocol: "https",
-				hostname: "lh3.googleusercontent.com",
-			},
-			{
-				// github profile images
-				protocol: "https",
-				hostname: "avatars.githubusercontent.com",
-			},
-		],
+		remotePatterns,
 	},
 	async redirects() {
+		// The customer-facing storefront moved to the marketing app. These keep
+		// old links, bookmarks and indexed URLs working; without a configured
+		// storefront URL they are skipped rather than pointing nowhere.
+		const storefrontUrl = process.env.NEXT_PUBLIC_MARKETING_URL?.replace(
+			/\/$/,
+			"",
+		);
+		const storefrontRedirects = storefrontUrl
+			? [
+					{
+						source: "/",
+						destination: `${storefrontUrl}/shop`,
+						permanent: false,
+					},
+					{
+						source: "/cart",
+						destination: `${storefrontUrl}/cart`,
+						permanent: false,
+					},
+					{
+						source: "/checkout/:path*",
+						destination: `${storefrontUrl}/checkout/:path*`,
+						permanent: false,
+					},
+					{
+						source: "/products/:slug",
+						destination: `${storefrontUrl}/products/:slug`,
+						permanent: false,
+					},
+					{
+						source: "/categories/:slug",
+						destination: `${storefrontUrl}/categories/:slug`,
+						permanent: false,
+					},
+				]
+			: [];
+
 		return [
+			...storefrontRedirects,
 			{
 				source: "/settings",
 				destination: "/settings/general",

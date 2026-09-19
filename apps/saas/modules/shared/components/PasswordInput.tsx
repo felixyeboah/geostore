@@ -1,6 +1,7 @@
 "use client";
 
 import { cn, Input } from "@repo/ui";
+import { useTranslations } from "@shared/lib/translations";
 import {
 	CircleCheckIcon,
 	CircleXIcon,
@@ -8,7 +9,6 @@ import {
 	EyeOffIcon,
 	RefreshCw,
 } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 import React from "react";
 
 // Allowed special characters from password schema

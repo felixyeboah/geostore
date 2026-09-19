@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geostoresgh — gadgets &amp; more</title>
+<meta name="description" content="Geostoresgh sells phones, audio, wearables and home tech in Ghana. Pay with MoMo, Telecel Cash, card or cash on delivery.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="shared/core.css">
+<style>
+/* ============================================================
+   1. Tokens + base
+   ============================================================ */
+:root{
+  --geo-accent:#6b28d9;
+  --geo-radius:18px;
+  --geo-radius-sm:12px;
+  --ink:#1d1d1f;
+  --grey:#6e6e73;
+  --panel:#f5f5f7;
+  --hair:#e3e3e8;
+  --nav-h:48px;
+  --pad:24px;
+}
+body{background:#fff;color:var(--ink);letter-spacing:-0.01em;}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-0.03em;line-height:1.08;}
+p{margin:0;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 var(--pad);}
+.sec{padding-top:64px;padding-bottom:64px;}
+.sec--tight{padding-top:48px;padding-bottom:48px;}
+.h2{font-size:34px;}
+.h2 .dim{color:var(--grey);}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+.link{color:var(--geo-accent);font-weight:500;}
+.link:hover{text-decoration:underline;}
+
+/* ============================================================
+   2. Nav
+   ============================================================ */
+.nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:#fff;border-bottom:1px solid var(--hair);}
+.nav__row{display:flex;align-items:center;gap:20px;height:var(--nav-h);max-width:1200px;margin:0 auto;padding:0 var(--pad);}
+.logo{display:inline-flex;align-items:center;gap:7px;font-size:16px;font-weight:600;letter-spacing:-0.04em;color:var(--ink);flex:none;}
+.logo svg{flex:none;}
+.nav__links{display:flex;align-items:center;gap:4px;margin-left:8px;flex:1;min-width:0;}
+.nav__links a{font-size:12.5px;color:var(--ink);opacity:.82;padding:6px 10px;border-radius:8px;white-space:nowrap;}
+.nav__links a:hover{opacity:1;background:var(--panel);}
+.nav__right{display:flex;align-items:center;gap:2px;margin-left:auto;}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:999px;color:var(--ink);position:relative;}
+.iconbtn:hover{background:var(--panel);}
+.iconbtn .geo-ic{width:18px;height:18px;}
+.badge{position:absolute;top:2px;right:1px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--geo-accent);color:#fff;font-size:10px;font-weight:600;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;}
+.nav__burger{display:none;}
+
+.nav__search{position:absolute;inset:0 0 auto;height:var(--nav-h);background:#fff;opacity:0;visibility:hidden;transition:opacity .18s ease;}
+.nav.is-searching .nav__search{opacity:1;visibility:visible;}
+.nav__search form{display:flex;align-items:center;gap:10px;height:var(--nav-h);max-width:1200px;margin:0 auto;padding:0 var(--pad);}
+.nav__search .geo-ic{color:var(--grey);flex:none;}
+.nav__search input{flex:1;min-width:0;height:34px;border:0;background:transparent;font-size:15px;letter-spacing:-0.01em;}
+.nav__search input::placeholder{color:var(--grey);}
+.nav__search input:focus{outline:none;}
+.nav__search input::-webkit-search-cancel-button,.mnav input::-webkit-search-cancel-button{display:none;}
+.searchcancel{font-size:13px;color:var(--geo-accent);font-weight:500;padding:6px 4px;}
+.searchcancel:hover{text-decoration:underline;}
+
+/* mobile panel */
+.mnav{position:fixed;inset:var(--nav-h) 0 0;background:#fff;z-index:45;padding:8px var(--pad) 32px;overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s ease,transform .2s ease;}
+.mnav.is-open{opacity:1;visibility:visible;transform:none;}
+.mnav form{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;margin:12px 0 8px;background:var(--panel);border-radius:999px;}
+.mnav form .geo-ic{color:var(--grey);}
+.mnav input{flex:1;min-width:0;border:0;background:transparent;font-size:15px;}
+.mnav input:focus{outline:none;}
+.mnav a.mnav__link{display:flex;align-items:center;justify-content:space-between;padding:14px 2px;font-size:20px;font-weight:600;letter-spacing:-0.03em;border-bottom:1px solid var(--hair);}
+.mnav a.mnav__link .geo-ic{color:var(--grey);}
+body.geo-menu-open{overflow:hidden;}
+
+/* ============================================================
+   3. Hero band
+   ============================================================ */
+.hero{padding-top:64px;padding-bottom:40px;}
+.hero__grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:48px;align-items:start;}
+.hero h1{font-size:56px;line-height:1.06;max-width:15ch;}
+.hero h1 .dim{color:var(--grey);}
+.hero__help{display:flex;flex-direction:column;gap:20px;padding-top:8px;}
+.helprow{display:flex;gap:14px;align-items:flex-start;}
+.helprow__ic{width:36px;height:36px;border-radius:999px;background:var(--panel);display:grid;place-items:center;flex:none;color:var(--ink);}
+.helprow__ic .geo-ic{width:18px;height:18px;}
+.helprow b{display:block;font-size:14px;font-weight:600;}
+.helprow a{display:inline-flex;align-items:center;gap:3px;font-size:14px;color:var(--geo-accent);font-weight:500;}
+.helprow a:hover{text-decoration:underline;}
+
+/* ============================================================
+   4. Category / brand rail
+   ============================================================ */
+.crail{display:flex;gap:8px;overflow-x:auto;padding-top:8px;padding-bottom:20px;scroll-snap-type:x proximity;}
+.crail-bleed{margin:0 calc(var(--pad) * -1);padding-left:var(--pad);padding-right:var(--pad);}
+.citem{flex:none;width:120px;display:flex;flex-direction:column;align-items:center;gap:10px;scroll-snap-align:start;padding:4px 0 6px;}
+.citem__tile{width:120px;height:120px;border-radius:16px;background:var(--panel);overflow:hidden;display:grid;place-items:center;transition:transform .2s ease;}
+.citem:hover .citem__tile{transform:translateY(-2px);}
+.citem__tile img{width:100%;height:100%;object-fit:cover;}
+.citem__word{font-size:19px;font-weight:600;letter-spacing:-0.04em;color:var(--ink);}
+.citem__label{font-size:12.5px;color:var(--grey);text-align:center;border-bottom:1.5px solid transparent;padding-bottom:2px;line-height:1.3;}
+.citem.is-active .citem__label{color:var(--ink);font-weight:600;border-bottom-color:var(--ink);}
+.citem.is-active .citem__tile{box-shadow:0 0 0 1.5px var(--ink);}
+
+/* ============================================================
+   5. "The latest." rail
+   ============================================================ */
+.railhead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px;}
+.railnav{display:flex;gap:8px;flex:none;}
+.railnav button{width:36px;height:36px;border-radius:999px;background:var(--panel);display:grid;place-items:center;color:var(--ink);transition:background .15s,opacity .15s;}
+.railnav button:hover:not(:disabled){background:#e8e8ed;}
+.railnav button:disabled{opacity:.32;cursor:default;}
+.railnav svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+.lrail{display:flex;gap:16px;overflow-x:auto;padding-top:4px;padding-bottom:8px;scroll-snap-type:x proximity;}
+.lcard{flex:none;width:400px;height:500px;display:flex;flex-direction:column;border:1px solid var(--hair);border-radius:18px;background:#fff;scroll-snap-align:start;cursor:pointer;transition:box-shadow .2s ease;}
+.lcard:hover{box-shadow:0 12px 32px -18px rgba(0,0,0,.35);}
+.lcard.is-dark{background:#000;border-color:#000;color:#fff;}
+.lcard__head{padding:28px 28px 18px;}
+.lcard__eyebrow{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);margin-bottom:10px;}
+.lcard.is-dark .lcard__eyebrow{color:#a1a1a6;}
+.lcard__title{font-size:28px;margin-bottom:6px;}
+.lcard__title button{font:inherit;color:inherit;letter-spacing:inherit;text-align:left;}
+.lcard__title button:hover{text-decoration:underline;text-underline-offset:3px;}
+.lcard__tag{font-size:14px;color:var(--grey);}
+.lcard.is-dark .lcard__tag{color:#c7c7cc;}
+.lcard__foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;}
+.lcard__from{font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;}
+.lcard__buy{height:32px;padding:0 16px;border-radius:999px;background:var(--geo-accent);color:#fff;font-size:13px;font-weight:600;}
+.lcard__buy:hover{background:var(--geo-accent-d);}
+.lcard__buy.is-added{background:var(--geo-success);}
+.lcard.is-dark .lcard__buy{background:#fff;color:#000;}
+.lcard__media{flex:1;margin:0 14px 14px;border-radius:12px;overflow:hidden;background:var(--panel);}
+.lcard.is-dark .lcard__media{background:#141416;}
+.lcard__media img{width:100%;height:100%;object-fit:cover;}
+
+/* ============================================================
+   6. Product grid
+   ============================================================ */
+#popular{scroll-margin-top:64px;}
+.gridbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:20px 0 28px;padding-bottom:16px;border-bottom:1px solid var(--hair);}
+.gridbar__count{font-size:13px;color:var(--grey);}
+.gridbar__count b{color:var(--ink);font-weight:600;}
+.reset{font-size:13px;color:var(--geo-accent);font-weight:500;margin-left:8px;}
+.reset:hover{text-decoration:underline;}
+.sortwrap{display:flex;align-items:center;gap:8px;}
+.sortwrap label{font-size:13px;color:var(--grey);}
+.sortwrap select{height:36px;border:1px solid var(--hair);border-radius:999px;padding:0 34px 0 14px;font-size:13px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/14px;appearance:none;cursor:pointer;}
+.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 20px;}
+.pcard{display:flex;flex-direction:column;}
+.pcard__media{position:relative;aspect-ratio:1/1;border-radius:18px;background:var(--panel);overflow:hidden;}
+.pcard__media img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease;}
+.pcard:hover .pcard__media img{transform:scale(1.03);}
+.pheart{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:999px;background:rgba(255,255,255,.92);display:grid;place-items:center;color:var(--grey);}
+.pheart .geo-ic{width:17px;height:17px;}
+.pheart:hover{color:var(--ink);}
+.pheart.is-on{color:var(--geo-accent);}
+.pheart.is-on .geo-ic{fill:currentColor;}
+.pcard__body{padding:14px 2px 0;display:flex;flex-direction:column;gap:5px;flex:1;}
+.pbrand{font-size:12px;color:var(--grey);}
+.pname{font-size:15px;font-weight:600;line-height:1.3;}
+.pspec{font-size:12.5px;color:var(--grey);}
+.pspec .low{color:#b45309;}
+.prate{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--grey);}
+.pprice{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;margin-top:2px;font-variant-numeric:tabular-nums;}
+.pprice b{font-size:15px;font-weight:600;white-space:nowrap;}
+.pprice s{font-size:12.5px;color:var(--grey);white-space:nowrap;}
+.pactions{display:flex;align-items:center;gap:14px;margin-top:auto;padding:12px 0 4px;}
+.pactions .geo-btn{width:auto;height:34px;padding:0 16px;font-size:13px;}
+.pquick{font-size:13px;color:var(--geo-accent);font-weight:500;}
+.pquick:hover{text-decoration:underline;}
+.pempty{grid-column:1/-1;padding:56px 0;text-align:center;}
+.pempty h3{font-size:20px;margin-bottom:6px;}
+.pempty p{font-size:14px;color:var(--grey);margin-bottom:16px;}
+
+/* ============================================================
+   7. Why shop
+   ============================================================ */
+.why{border-top:1px solid var(--hair);}
+.whygrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;}
+.why .geo-ic,.whyitem svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;color:var(--ink);}
+.whyitem h3{font-size:15px;margin:14px 0 6px;}
+.whyitem p{font-size:13px;color:var(--grey);line-height:1.5;}
+
+/* ============================================================
+   8. FAQ
+   ============================================================ */
+.faq{border-top:1px solid var(--hair);}
+.faqgrid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:48px;align-items:start;}
+.faqside p{font-size:14px;color:var(--grey);margin-top:12px;max-width:34ch;}
+.faqside a{display:inline-block;margin-top:14px;font-size:14px;color:var(--geo-accent);font-weight:500;}
+.faqside a:hover{text-decoration:underline;}
+[data-accordion]{border-bottom:1px solid var(--hair);}
+[data-accordion]>button{padding:20px 0;font-size:17px;font-weight:600;letter-spacing:-0.02em;}
+[data-accordion]>button .geo-ic{color:var(--grey);width:18px;height:18px;}
+[data-accordion] .ans{font-size:14px;color:var(--grey);line-height:1.6;padding:0 48px 20px 0;max-width:62ch;}
+
+/* ============================================================
+   9. Footer
+   ============================================================ */
+.foot{background:var(--panel);padding:44px 0 36px;font-size:12px;color:var(--grey);}
+.foot__cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;padding-bottom:28px;border-bottom:1px solid #dcdce2;}
+.foot h3{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+.foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.foot a:hover{color:var(--ink);text-decoration:underline;}
+.foot__brand .logo{color:var(--ink);font-size:15px;}
+.foot__brand p{margin-top:10px;line-height:1.6;max-width:26ch;}
+.pays{display:flex;flex-wrap:wrap;gap:6px;margin:20px 0 14px;}
+.pay{border:1px solid #dcdce2;background:#fff;border-radius:999px;padding:4px 10px;font-size:11.5px;color:var(--ink);font-weight:500;}
+.foot__end{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;line-height:1.7;}
+
+/* ============================================================
+   10. Responsive
+   ============================================================ */
+@media (max-width:1080px){
+  .pgrid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .whygrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+  .faqgrid{grid-template-columns:1fr;gap:24px;}
+  .foot__cols{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:900px){
+  .nav__links{display:none;}
+  .nav__burger{display:grid;}
+  .hero__grid{grid-template-columns:1fr;gap:32px;}
+  .hero h1{max-width:none;}
+}
+@media (max-width:640px){
+  :root{--pad:16px;}
+  .sec{padding-top:44px;padding-bottom:44px;}
+  .hero{padding-top:36px;padding-bottom:28px;}
+  .hero h1{font-size:34px;}
+  .h2{font-size:26px;}
+  .lcard{width:min(320px,82vw);height:440px;}
+  .lcard__head{padding:22px 22px 14px;}
+  .lcard__title{font-size:24px;}
+  .pgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;}
+  .citem,.citem__tile{width:104px;}
+  .citem__tile{height:104px;}
+  .pactions{flex-direction:column;align-items:flex-start;gap:8px;}
+  .whygrid{grid-template-columns:1fr;gap:24px;}
+  .foot__cols{grid-template-columns:1fr;gap:24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <div class="nav__row">
+    <a class="logo" href="#" data-url="store" aria-label="Geostoresgh home">
+      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+      <span>Geostoresgh</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#popular">Store</a>
+      <a href="#" data-url="category:phones">Phones</a>
+      <a href="#" data-url="category:audio">Audio</a>
+      <a href="#" data-url="category:wearables">Wearables</a>
+      <a href="#" data-url="category:home-tech">Home tech</a>
+      <a href="#popular" data-preset="deals">Deals</a>
+      <a href="#help">Support</a>
+    </nav>
+    <div class="nav__right">
+      <button type="button" class="iconbtn nav__burger" data-menu-toggle="mobile-nav" aria-expanded="false" aria-label="Menu" aria-controls="mobile-nav">
+        <svg class="geo-ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <button type="button" class="iconbtn" id="search-open" aria-expanded="false" aria-controls="nav-search" aria-label="Search geostoresgh">
+        <svg class="geo-ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <a class="iconbtn" href="#" data-url="account" aria-label="Orders and account">
+        <svg class="geo-ic" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>
+      </a>
+      <button type="button" class="iconbtn" data-cart-open aria-label="Open shopping bag">
+        <svg class="geo-ic" viewBox="0 0 24 24"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="badge tnum" data-cart-count data-hide-empty hidden>0</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nav__search" id="nav-search">
+    <form class="geo-search" role="search" id="desktop-search-form">
+      <svg class="geo-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <label class="sr-only" for="q-desktop">Search products</label>
+      <input id="q-desktop" type="search" placeholder="Search phones, audio, wearables…">
+      <button type="button" class="searchcancel" id="search-close">Cancel</button>
+    </form>
+  </div>
+</header>
+
+<!-- ======================= MOBILE PANEL ======================= -->
+<div class="mnav" id="mobile-nav">
+  <form class="geo-search" role="search" id="mobile-search-form">
+    <svg class="geo-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <label class="sr-only" for="q-mobile">Search products</label>
+    <input id="q-mobile" type="search" placeholder="Search geostoresgh">
+  </form>
+  <a class="mnav__link" href="#popular" data-menu-close>Store <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#" data-url="category:phones">Phones <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#" data-url="category:audio">Audio <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#" data-url="category:wearables">Wearables <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#" data-url="category:home-tech">Home tech <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#popular" data-preset="deals" data-menu-close>Deals <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#help" data-menu-close>Support <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+  <a class="mnav__link" href="#" data-url="account">Orders and account <svg class="geo-ic" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
+</div>
+
+<main>
+  <!-- ============================ HERO ============================ -->
+  <section class="hero wrap">
+    <div class="hero__grid">
+      <h1><span>Store.</span> <span class="dim">The best way to buy the gadgets you love.</span></h1>
+      <div class="hero__help">
+        <div class="helprow">
+          <span class="helprow__ic" aria-hidden="true">
+            <svg class="geo-ic" viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-11 6.6L4 19.5l1.4-4.6A7.5 7.5 0 1 1 20 11.5z"/></svg>
+          </span>
+          <div>
+            <b>Need help choosing?</b>
+            <a href="https://wa.me/233000000000" rel="noopener">Chat on WhatsApp <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="helprow">
+          <span class="helprow__ic" aria-hidden="true">
+            <svg class="geo-ic" viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          </span>
+          <div>
+            <b>Pick up in Accra</b>
+            <a href="#store">Find our store <span aria-hidden="true">›</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== CATEGORY RAIL ====================== -->
+  <section class="wrap" aria-labelledby="browse-h">
+    <h2 id="browse-h" class="sr-only">Browse by category and brand</h2>
+    <div class="crail crail-bleed no-scrollbar" id="crail"></div>
+  </section>
+
+  <!-- ======================== THE LATEST ======================== -->
+  <section class="sec wrap" aria-labelledby="latest-h" data-rail-wrap>
+    <div class="railhead">
+      <h2 class="h2" id="latest-h">The latest. <span class="dim">Take a look at what’s new, now.</span></h2>
+      <div class="railnav">
+        <button type="button" data-rail-prev aria-label="Previous items"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
+        <button type="button" data-rail-next aria-label="Next items"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+    </div>
+    <div class="lrail crail-bleed no-scrollbar" data-rail id="lrail"></div>
+  </section>
+
+  <!-- ====================== POPULAR GRID ======================= -->
+  <section class="sec wrap" id="popular" aria-labelledby="popular-h">
+    <h2 class="h2" id="popular-h">Popular right now. <span class="dim">Stocked in Accra, delivered nationwide.</span></h2>
+    <div class="gridbar">
+      <p class="gridbar__count" id="count"><b>8 products</b></p>
+      <div class="sortwrap">
+        <label for="sort">Sort by</label>
+        <select id="sort">
+          <option value="featured">Featured</option>
+          <option value="rating">Top rated</option>
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="newest">Newest</option>
+        </select>
+      </div>
+    </div>
+    <div class="pgrid" id="pgrid"></div>
+  </section>
+
+  <!-- ========================= WHY SHOP ========================= -->
+  <section class="sec why" aria-labelledby="why-h">
+    <div class="wrap">
+      <h2 class="h2" id="why-h" style="margin-bottom:32px">Why shop with Geostoresgh.</h2>
+      <div class="whygrid">
+        <div class="whyitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg>
+          <h3>Free delivery in Accra</h3>
+          <p>Orders over GH₵ 1,000 ship free inside Accra. Nationwide delivery is quoted at checkout.</p>
+        </div>
+        <div class="whyitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h13A2.5 2.5 0 0 1 21 8.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 15.5z"/><path d="M3 10.5h18"/><path d="M6.5 14.5h3"/></svg>
+          <h3>Pay the way you want</h3>
+          <p>MTN MoMo, Telecel Cash, Visa and Mastercard, or cash when the rider arrives.</p>
+        </div>
+        <div class="whyitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 19 6v5.6c0 4.3-2.9 7.5-7 9.2-4.1-1.7-7-4.9-7-9.2V6z"/><path d="m9 12 2.2 2.2L15.4 10"/></svg>
+          <h3>12-month warranty</h3>
+          <p>Flagship phones and TVs carry a 12-month warranty. Every listing states its cover.</p>
+        </div>
+        <div class="whyitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.5 5.3 5.5.7-4.1 3.8 1.1 5.6L12 16.2 6.9 19l1.1-5.6L3.9 9.6l5.6-.7z"/></svg>
+          <h3>Verified reviews only</h3>
+          <p>Ratings come from customers whose orders were actually delivered. Nothing else counts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FAQ ============================ -->
+  <section class="sec faq" id="help" aria-labelledby="help-h">
+    <div class="wrap faqgrid">
+      <div class="faqside">
+        <h2 class="h2" id="help-h">Help is here.</h2>
+        <p>Questions about payment, delivery or warranty? Most answers are below — and a human is one message away.</p>
+        <a href="#" data-url="support">Contact support ›</a>
+      </div>
+      <div data-accordion-group id="faqlist"></div>
+    </div>
+  </section>
+</main>
+
+<!-- =========================== FOOTER =========================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__cols">
+      <div class="foot__brand" id="store">
+        <span class="logo">
+          <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+          <span>Geostoresgh</span>
+        </span>
+        <p>Gadgets &amp; more. Pickup in Accra, Monday to Saturday, 9am–6pm.</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <ul>
+          <li><a href="#popular">Featured products</a></li>
+          <li><a href="#" data-url="category:phones">Phones</a></li>
+          <li><a href="#" data-url="category:audio">Audio</a></li>
+          <li><a href="#" data-url="category:wearables">Wearables</a></li>
+          <li><a href="#" data-url="category:home-tech">Home tech</a></li>
+          <li><a href="#" data-url="cart">Shopping bag</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Help &amp; account</h3>
+        <ul>
+          <li><a href="#" data-url="account">Orders and account</a></li>
+          <li><a href="#" data-url="support">Contact support</a></li>
+          <li><a href="#" data-url="legal:privacy-policy">Privacy policy</a></li>
+          <li><a href="#" data-url="legal:terms">Terms</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Ways to pay</h3>
+        <div class="pays" id="pays"></div>
+      </div>
+    </div>
+    <div class="foot__end">
+      <span>© <span data-year></span> Geostoresgh · Prices are shown in Ghana cedis.</span>
+      <span>Accra, Ghana</span>
+    </div>
+  </div>
+</footer>
+
+<script src="shared/data.js"></script>
+<script src="shared/core.js"></script>
+<script>
+(function () {
+  function boot() {
+    var GEO = window.GEO;
+    var esc = GEO.esc;
+
+    /* ---------- real links from GEO.urls ---------- */
+    document.querySelectorAll("[data-url]").forEach(function (el) {
+      var raw = el.dataset.url;
+      var parts = raw.split(":");
+      var key = parts[0];
+      var arg = parts.slice(1).join(":");
+      var v = GEO.urls[key];
+      el.setAttribute("href", typeof v === "function" ? v(arg) : v);
+    });
+
+    /* ---------- state ---------- */
+    var state = { category: null, brand: null, sort: "featured", onSale: false };
+
+    /* ---------- nav search ---------- */
+    var nav = document.getElementById("nav");
+    var openBtn = document.getElementById("search-open");
+    var closeBtn = document.getElementById("search-close");
+    var deskInput = document.getElementById("q-desktop");
+    function openSearch() {
+      nav.classList.add("is-searching");
+      openBtn.setAttribute("aria-expanded", "true");
+      deskInput.focus({ preventScroll: true });
+    }
+    function closeSearch() {
+      nav.classList.remove("is-searching");
+      openBtn.setAttribute("aria-expanded", "false");
+      openBtn.focus();
+    }
+    openBtn.addEventListener("click", openSearch);
+    closeBtn.addEventListener("click", closeSearch);
+    deskInput.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !e.defaultPrevented) closeSearch();
+    });
+    GEO.bindSearch(deskInput, { showDefault: true });
+    GEO.bindSearch(document.getElementById("q-mobile"), { showDefault: true });
+
+    /* ---------- category + brand rail ---------- */
+    var railEl = document.getElementById("crail");
+    var railItems = GEO.categories
+      .map(function (c) {
+        return (
+          '<button type="button" class="citem" data-ftype="category" data-fvalue="' + c.slug + '" aria-pressed="false">' +
+          '<span class="citem__tile"><img src="' + esc(c.imageUrl) + '" alt="" loading="lazy" data-fade></span>' +
+          '<span class="citem__label">' + esc(c.name) + "</span></button>"
+        );
+      })
+      .concat(
+        GEO.brands.map(function (b) {
+          var n = GEO.products.filter(function (p) { return p.brand === b; }).length;
+          return (
+            '<button type="button" class="citem" data-ftype="brand" data-fvalue="' + esc(b) + '" aria-pressed="false" aria-label="Filter by ' + esc(b) + '">' +
+            '<span class="citem__tile"><span class="citem__word">' + esc(b) + "</span></span>" +
+            '<span class="citem__label">' + n + " product" + (n === 1 ? "" : "s") + "</span></button>"
+          );
+        })
+      )
+      .join("");
+    railEl.innerHTML = railItems;
+
+    railEl.addEventListener("click", function (e) {
+      var item = e.target.closest(".citem");
+      if (!item) return;
+      var type = item.dataset.ftype;
+      var value = item.dataset.fvalue;
+      var isActive = state[type] === value;
+      state.category = null;
+      state.brand = null;
+      state.onSale = false;
+      if (!isActive) state[type] = value;
+      paintRail();
+      renderGrid();
+      document.getElementById("popular").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    function paintRail() {
+      railEl.querySelectorAll(".citem").forEach(function (item) {
+        var on = state[item.dataset.ftype] === item.dataset.fvalue;
+        item.classList.toggle("is-active", on);
+        item.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    /* ---------- "Deals" preset ---------- */
+    document.querySelectorAll("[data-preset='deals']").forEach(function (a) {
+      a.addEventListener("click", function () {
+        state.category = null;
+        state.brand = null;
+        state.onSale = true;
+        paintRail();
+        renderGrid();
+      });
+    });
+
+    /* ---------- the latest rail ---------- */
+    var LATEST = [
+      { id: "prod_iphone_15_pro", eyebrow: "Price drop", tag: "Titanium build, A17 Pro, and the camera you keep using.", dark: true },
+      { id: "prod_galaxy_s24_ultra", eyebrow: "New", tag: "Big screen, S Pen, and a 200 MP zoom camera." },
+      { id: "prod_airpods_pro_2", eyebrow: "Price drop", tag: "Noise cancellation that makes a trotro ride quiet." },
+      { id: "prod_apple_watch_s9", eyebrow: "Top rated", tag: "Activity, sleep and safety features on your wrist." },
+      { id: "prod_samsung_crystal_55", eyebrow: "Only 3 left", tag: "55 inches of 4K for match day and movie night." },
+      { id: "prod_pixel_8a", eyebrow: "New", tag: "Clean Android and a camera that punches above its price." }
+    ];
+    document.getElementById("lrail").innerHTML = LATEST.map(function (item) {
+      var p = GEO.byId[item.id];
+      if (!p) return "";
+      return (
+        '<article class="lcard' + (item.dark ? " is-dark" : "") + '" data-quickview="' + p.id + '">' +
+        '<div class="lcard__head">' +
+        '<p class="lcard__eyebrow">' + esc(item.eyebrow) + "</p>" +
+        '<h3 class="lcard__title"><button type="button" data-quickview="' + p.id + '" aria-label="Quick look at ' + esc(p.name) + '">' + esc(p.name) + "</button></h3>" +
+        '<p class="lcard__tag">' + esc(item.tag) + "</p>" +
+        '<div class="lcard__foot"><span class="lcard__from tnum">From ' + GEO.formatMoney(p.priceInPesewas) + "</span>" +
+        '<button type="button" class="lcard__buy" data-add="' + p.id + '" aria-label="Add ' + esc(p.name) + ' to bag">Buy</button></div>' +
+        "</div>" +
+        '<div class="lcard__media"><img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy" data-fade></div>' +
+        "</article>"
+      );
+    }).join("");
+
+    /* ---------- product grid ---------- */
+    var gridEl = document.getElementById("pgrid");
+    var countEl = document.getElementById("count");
+    var sortEl = document.getElementById("sort");
+    sortEl.addEventListener("change", function () {
+      state.sort = sortEl.value;
+      renderGrid();
+    });
+
+    function specLine(p) {
+      var first = Object.values(p.specifications)[0] || "";
+      var low = p.stockQuantity <= 3 ? ' · <span class="low">Only ' + p.stockQuantity + " left</span>" : "";
+      return esc(first) + low;
+    }
+
+    function cardHtml(p) {
+      return (
+        '<article class="pcard">' +
+        '<div class="pcard__media">' +
+        '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy" data-fade>' +
+        '<button type="button" class="pheart" data-wishlist="' + p.id + '" aria-pressed="false" aria-label="Save ' + esc(p.name) + ' for later">' +
+        '<svg class="geo-ic" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9-8.5C1.5 8 3.5 4.5 7 4.5c2 0 3.5 1 5 3 1.5-2 3-3 5-3 3.5 0 5.5 3.5 4 7-2 4.1-9 8.5-9 8.5z"/></svg>' +
+        "</button></div>" +
+        '<div class="pcard__body">' +
+        '<p class="pbrand">' + esc(p.brand) + "</p>" +
+        '<h3 class="pname">' + esc(p.name) + "</h3>" +
+        '<p class="pspec">' + specLine(p) + "</p>" +
+        '<p class="prate">' + GEO.stars(p.rating) + '<span class="tnum">' + p.rating + " (" + p.reviewCount + ")</span></p>" +
+        '<p class="pprice"><b>' + GEO.formatMoney(p.priceInPesewas) + "</b>" +
+        (p.compareAtInPesewas ? "<s>" + GEO.formatMoney(p.compareAtInPesewas) + "</s>" : "") +
+        "</p>" +
+        '<div class="pactions">' +
+        '<button type="button" class="geo-btn geo-btn--ink" data-add="' + p.id + '">Add to bag</button>' +
+        '<button type="button" class="pquick" data-quickview="' + p.id + '">Quick look</button>' +
+        "</div></div></article>"
+      );
+    }
+
+    function activeLabel() {
+      if (state.category) return " in " + GEO.categoryBySlug[state.category].name;
+      if (state.brand) return " from " + state.brand;
+      if (state.onSale) return " on price drop";
+      return "";
+    }
+
+    function renderGrid() {
+      var list = GEO.filterProducts({
+        category: state.category,
+        brand: state.brand,
+        sort: state.sort,
+        onSale: state.onSale
+      });
+      var filtered = Boolean(state.category || state.brand || state.onSale);
+      countEl.innerHTML =
+        "<b>" + list.length + " product" + (list.length === 1 ? "" : "s") + "</b>" +
+        esc(activeLabel()) +
+        (filtered ? ' <button type="button" class="reset" id="reset">Show all</button>' : "");
+      if (filtered) {
+        document.getElementById("reset").addEventListener("click", function () {
+          state.category = null;
+          state.brand = null;
+          state.onSale = false;
+          paintRail();
+          renderGrid();
+        });
+      }
+      if (!list.length) {
+        gridEl.innerHTML =
+          '<div class="pempty"><h3>Nothing here yet</h3>' +
+          "<p>We have no stock matching that filter right now.</p>" +
+          '<button type="button" class="geo-btn geo-btn--ghost geo-btn--sm" id="empty-reset">Show all products</button></div>';
+        document.getElementById("empty-reset").addEventListener("click", function () {
+          state.category = null;
+          state.brand = null;
+          state.onSale = false;
+          paintRail();
+          renderGrid();
+        });
+        return;
+      }
+      gridEl.innerHTML = list.map(cardHtml).join("");
+      GEO.paintWishlist();
+      GEO.bindImages();
+    }
+
+    /* ---------- FAQ ---------- */
+    document.getElementById("faqlist").innerHTML = GEO.faqs
+      .map(function (f) {
+        return (
+          '<div data-accordion><button type="button" aria-expanded="false"><span>' + esc(f.q) + "</span>" +
+          '<svg class="geo-ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>' +
+          '<div data-panel><div><p class="ans">' + esc(f.a) + "</p></div></div></div>"
+        );
+      })
+      .join("");
+
+    /* ---------- payment pills ---------- */
+    document.getElementById("pays").innerHTML = GEO.paymentMethods
+      .map(function (m) {
+        return '<span class="pay">' + esc(m.name) + "</span>";
+      })
+      .join("");
+
+    /* ---------- go ---------- */
+    paintRail();
+    renderGrid();
+    // core.js already bound the (then empty) rail on init — swap the arrow
+    // buttons for clones so re-binding does not double up their listeners.
+    document.querySelectorAll("[data-rail-prev],[data-rail-next]").forEach(function (b) {
+      b.replaceWith(b.cloneNode(true));
+    });
+    GEO.bindRails();
+    GEO.bindAccordions();
+    GEO.bindImages();
+  }
+
+  // core.js assigns GEO.cart at parse time but runs init() (which mounts
+  // #geo-shell and binds the delegated hooks) on DOMContentLoaded — so the
+  // shell is the reliable "runtime is live" signal.
+  var booted = false;
+  function once() {
+    if (booted) return;
+    booted = true;
+    boot();
+  }
+  document.addEventListener("geo:ready", once);
+  if (document.getElementById("geo-shell")) once();
+})();
+</script>
+</body>
+</html>

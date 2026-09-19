@@ -1,3 +1,4 @@
+import { isAllowedImageUrl } from "@repo/utils";
 import { z } from "zod";
 
 export const productFormSchema = z.object({
@@ -29,9 +30,28 @@ export const productFormSchema = z.object({
 	isFeatured: z.boolean(),
 	categoryId: z.string().min(1, "Choose a category."),
 	imageUrls: z
-		.array(z.string().url("Use a complete image URL."))
+		.array(
+			z
+				.string()
+				.url("Use a complete image URL.")
+				.refine(isAllowedImageUrl, {
+					message:
+						"That image host is not allowed. Upload the image instead, or use an approved host.",
+				}),
+		)
 		.min(1, "Add at least one product image."),
 	specifications: z.record(z.string(), z.string()),
+	variants: z.array(
+		z.object({
+			id: z.string().optional(),
+			name: z.string().trim().min(1),
+			sku: z.string().trim().min(3),
+			priceInPesewas: z.number().int().min(1),
+			stockQuantity: z.number().int().min(0),
+			attributes: z.record(z.string(), z.string()),
+			isActive: z.boolean(),
+		}),
+	),
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;

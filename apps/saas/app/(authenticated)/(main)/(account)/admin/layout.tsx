@@ -1,8 +1,7 @@
+import { AdminNav } from "@admin/components/AdminNav";
 import { getSession } from "@auth/lib/server";
 import { config } from "@repo/auth/config";
-import { Logo } from "@repo/ui";
-import { SettingsMenu } from "@settings/components/SettingsMenu";
-import { PageHeader } from "@shared/components/PageHeader";
+import { countOrdersAwaitingDispatch } from "@repo/database";
 import { getTranslations } from "@shared/lib/translations";
 import {
 	Building2Icon,
@@ -11,6 +10,7 @@ import {
 	PackageIcon,
 	ReceiptTextIcon,
 	ShoppingBagIcon,
+	TagsIcon,
 	UsersIcon,
 } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -28,72 +28,58 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 		redirect("/");
 	}
 
+	const ordersAwaitingDispatch = await countOrdersAwaitingDispatch();
+
 	return (
 		<>
-			<PageHeader title={t("title")} subtitle={t("description")} />
-
-			<SettingsMenu
+			<AdminNav
 				className="mb-6"
-				menuItems={[
+				items={[
 					{
-						avatar: <Logo className="size-8" withLabel={false} />,
-						title: t("title"),
-						items: [
-							{
-								title: t("menu.overview"),
-								href: "/admin/overview",
-								icon: (
-									<LayoutDashboardIcon className="size-4 opacity-50" />
-								),
-							},
-							{
-								title: t("menu.products"),
-								href: "/admin/products",
-								icon: (
-									<PackageIcon className="size-4 opacity-50" />
-								),
-							},
-							{
-								title: t("menu.orders"),
-								href: "/admin/orders",
-								icon: (
-									<ShoppingBagIcon className="size-4 opacity-50" />
-								),
-							},
-							{
-								title: t("menu.transactions"),
-								href: "/admin/transactions",
-								icon: (
-									<ReceiptTextIcon className="size-4 opacity-50" />
-								),
-							},
-							{
-								title: t("menu.analytics"),
-								href: "/admin/analytics",
-								icon: (
-									<ChartNoAxesCombinedIcon className="size-4 opacity-50" />
-								),
-							},
-							{
-								title: t("menu.users"),
-								href: "/admin/users",
-								icon: (
-									<UsersIcon className="size-4 opacity-50" />
-								),
-							},
-							...(config.organizations.enable
-								? [
-										{
-											title: t("menu.organizations"),
-											href: "/admin/organizations",
-											icon: (
-												<Building2Icon className="size-4 opacity-50" />
-											),
-										},
-									]
-								: []),
-						],
+						title: t("menu.overview"),
+						href: "/admin/overview",
+						icon: <LayoutDashboardIcon />,
 					},
+					{
+						title: t("menu.orders"),
+						href: "/admin/orders",
+						icon: <ShoppingBagIcon />,
+						count: ordersAwaitingDispatch,
+					},
+					{
+						title: t("menu.products"),
+						href: "/admin/products",
+						icon: <PackageIcon />,
+					},
+					{
+						title: t("menu.categories"),
+						href: "/admin/categories",
+						icon: <TagsIcon />,
+					},
+					{
+						title: t("menu.analytics"),
+						href: "/admin/analytics",
+						icon: <ChartNoAxesCombinedIcon />,
+					},
+					{
+						title: t("menu.transactions"),
+						href: "/admin/transactions",
+						icon: <ReceiptTextIcon />,
+					},
+					{
+						title: t("menu.users"),
+						href: "/admin/users",
+						icon: <UsersIcon />,
+					},
+					...(config.organizations.enable
+						? [
+								{
+									title: t("menu.organizations"),
+									href: "/admin/organizations",
+									icon: <Building2Icon />,
+								},
+							]
+						: []),
 				]}
 			/>
 

@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option 2 — Action Desk · GeoStore Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --brand-primary:#6b28d9; --brand-secondary:#4b13a3; --brand-accent:#8343e6;
+    --background:#f5f5f5; --foreground:#262626; --card:#fff; --border:#e5e5e5;
+    --muted:#ebebeb; --muted-foreground:#525252; --accent:#f3eeff;
+    --success:#39a561; --destructive:#ef4444;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--background);color:var(--foreground);
+    font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased}
+  .shell{max-width:1240px;margin:0 auto;padding:32px 24px 72px}
+  .tabular{font-variant-numeric:tabular-nums}
+  a{color:inherit}
+
+  /* ---------- greeting ---------- */
+  .greet{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  h1{margin:0;font-size:27px;font-weight:600;letter-spacing:-0.022em}
+  .greet .sub{margin:5px 0 0;color:var(--muted-foreground);font-size:13.5px}
+  .live{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;
+    background:#f0fdf4;border:1px solid #dcfce7;color:#166534;font-size:12.5px;font-weight:600}
+  .live i{width:6px;height:6px;border-radius:999px;background:var(--success);
+    box-shadow:0 0 0 3px rgba(57,165,97,.18)}
+  .btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:9px;
+    border:1px solid var(--border);background:var(--card);font:inherit;font-size:13px;font-weight:500;
+    color:var(--foreground);cursor:pointer;text-decoration:none;white-space:nowrap}
+  .btn-primary{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff}
+  .btn-sm{height:30px;padding:0 11px;font-size:12.5px;border-radius:8px}
+  .head-actions{display:flex;align-items:center;gap:10px}
+
+  /* ---------- action queue ---------- */
+  .queue-label{margin:28px 0 12px;display:flex;align-items:center;justify-content:space-between}
+  .eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--muted-foreground)}
+  .queue{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .task{position:relative;display:block;padding:18px;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;text-decoration:none;color:inherit;transition:border-color .12s,box-shadow .12s}
+  .task:hover{border-color:#d4d4d4;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .task::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;border-radius:14px 0 0 14px}
+  .task.urgent::before{background:var(--destructive)}
+  .task.warn::before{background:#d97706}
+  .task.info::before{background:var(--brand-primary)}
+  .task.calm::before{background:#d4d4d4}
+  .task-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .tile{width:32px;height:32px;border-radius:9px;display:grid;place-items:center}
+  .tile.violet{background:var(--accent);color:var(--brand-secondary)}
+  .tile.amber{background:#fffbeb;color:#b45309}
+  .tile.red{background:#fef2f2;color:#b91c1c}
+  .tile.grey{background:var(--muted);color:var(--muted-foreground)}
+  .task-count{font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1}
+  .task-title{margin-top:14px;font-size:13.5px;font-weight:600}
+  .task-sub{margin-top:3px;color:var(--muted-foreground);font-size:12.5px}
+  .task-cta{margin-top:12px;display:inline-flex;align-items:center;gap:5px;
+    color:var(--brand-primary);font-size:12.5px;font-weight:600}
+  .badge-now{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    padding:2px 7px;border-radius:999px;background:#fef2f2;color:#b91c1c}
+  .task-head .right-group{display:flex;align-items:center;gap:8px}
+
+  /* ---------- glance strip ---------- */
+  .glance{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;
+    display:grid;grid-template-columns:repeat(4,1fr)}
+  .g{padding:16px 20px;border-left:1px solid var(--border)}
+  .g:first-child{border-left:0}
+  .g-label{color:var(--muted-foreground);font-size:12px;font-weight:500}
+  .g-value{margin-top:6px;font-size:21px;font-weight:600;letter-spacing:-0.02em}
+  .g-delta{margin-top:4px;font-size:12px;color:var(--muted-foreground)}
+  .up{color:#166534;font-weight:600}
+  .down{color:#991b1b;font-weight:600}
+
+  /* ---------- cards ---------- */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    padding:17px 20px;border-bottom:1px solid var(--border)}
+  .card-title{margin:0;font-size:14.5px;font-weight:600}
+  .card-sub{margin:3px 0 0;color:var(--muted-foreground);font-size:12px}
+  .link{display:inline-flex;align-items:center;gap:5px;color:var(--brand-primary);
+    font-size:13px;font-weight:600;text-decoration:none}
+  .row{display:grid;gap:16px;margin-top:16px}
+  .row.main{grid-template-columns:1.6fr 1fr;align-items:start}
+  .rail{display:grid;gap:16px}
+
+  /* ---------- fulfil list ---------- */
+  .fitem{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border)}
+  .fitem:last-child{border-bottom:0}
+  .fitem:hover{background:#fcfbfe}
+  .avatar{flex:none;width:36px;height:36px;border-radius:999px;display:grid;place-items:center;
+    background:var(--accent);color:var(--brand-secondary);font-size:12.5px;font-weight:600}
+  .f-body{flex:1;min-width:0}
+  .f-top{display:flex;align-items:center;gap:8px}
+  .f-name{font-size:13.5px;font-weight:500}
+  .f-meta{margin-top:2px;color:var(--muted-foreground);font-size:12px}
+  .age{font-size:11px;font-weight:600;padding:1.5px 7px;border-radius:999px;white-space:nowrap}
+  .age.old{background:#fef2f2;color:#b91c1c}
+  .age.mid{background:#fffbeb;color:#b45309}
+  .age.new{background:var(--muted);color:var(--muted-foreground)}
+  .f-total{text-align:right;font-size:13.5px;font-weight:600;min-width:86px}
+  .f-total small{display:block;margin-top:2px;color:var(--muted-foreground);font-size:11.5px;font-weight:400}
+
+  /* ---------- low stock ---------- */
+  .stock{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border)}
+  .stock:last-child{border-bottom:0}
+  .thumb{flex:none;width:34px;height:34px;border-radius:8px;background:var(--muted);
+    display:grid;place-items:center;color:var(--muted-foreground)}
+  .s-body{flex:1;min-width:0}
+  .s-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .s-left{margin-top:4px;display:flex;align-items:center;gap:8px}
+  .s-bar{flex:1;height:4px;border-radius:999px;background:var(--muted);overflow:hidden;max-width:80px}
+  .s-bar span{display:block;height:100%;border-radius:999px}
+  .s-num{font-size:11.5px;font-weight:600;color:#b45309}
+  .s-num.crit{color:#b91c1c}
+
+  /* ---------- week bars ---------- */
+  .weekbars{display:flex;align-items:flex-end;gap:8px;height:104px;padding:20px 20px 0}
+  .wb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+  .wb span{width:100%;border-radius:5px 5px 0 0;background:var(--accent)}
+  .wb.peak span{background:linear-gradient(180deg,var(--brand-accent),var(--brand-primary))}
+  .weekdays{display:flex;gap:8px;padding:8px 20px 18px;color:var(--muted-foreground);font-size:11px}
+  .weekdays span{flex:1;text-align:center}
+
+  /* ---------- trend footer ---------- */
+  .trend-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:18px 20px 0;flex-wrap:wrap}
+  .trend-total{font-size:25px;font-weight:600;letter-spacing:-0.025em}
+  .segmented{display:flex;padding:3px;background:#fafafa;border:1px solid var(--border);border-radius:9px}
+  .segmented button{border:0;background:transparent;font:inherit;font-size:12.5px;font-weight:500;
+    color:var(--muted-foreground);padding:5px 12px;border-radius:6px;cursor:pointer}
+  .segmented button[aria-pressed="true"]{background:var(--card);color:var(--foreground);
+    box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .x-axis{display:flex;justify-content:space-between;padding:8px 20px 18px;
+    color:var(--muted-foreground);font-size:11px}
+
+  @media (max-width:1080px){
+    .queue{grid-template-columns:1fr 1fr}
+    .glance{grid-template-columns:1fr 1fr}
+    .g:nth-child(3){border-left:0}
+    .g:nth-child(-n+2){border-bottom:1px solid var(--border)}
+    .row.main{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    .shell{padding:20px 14px 56px}
+    /* fulfil row: avatar + details on line 1, money + action on line 2 */
+    .fitem{flex-wrap:wrap;gap:12px}
+    .f-body{flex:1 1 calc(100% - 50px)}
+    .f-total{order:3;margin-right:auto;text-align:left;min-width:0;
+      display:flex;align-items:baseline;gap:7px}
+    .f-total small{display:inline;margin:0}
+    .fitem .btn{order:4}
+    /* restock row: name + bar on line 1, button on line 2 */
+    .stock{flex-wrap:wrap;gap:10px}
+    .s-body{flex:1 1 calc(100% - 46px)}
+    .stock .btn{margin-left:46px}
+    .queue{grid-template-columns:1fr}
+    .glance{grid-template-columns:1fr}
+    .g{border-left:0;border-bottom:1px solid var(--border)}
+    .g:last-child{border-bottom:0}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ greeting ============ -->
+  <div class="greet">
+    <div>
+      <h1>Good morning, Kenneth</h1>
+      <p class="sub">18 September · <strong style="font-weight:600;color:var(--foreground)">38 things</strong> are waiting on you across orders, stock and payments.</p>
+    </div>
+    <div class="head-actions">
+      <span class="live"><i></i>Store live</span>
+      <a class="btn btn-primary" href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add product
+      </a>
+    </div>
+  </div>
+
+  <!-- ============ action queue ============ -->
+  <div class="queue-label">
+    <span class="eyebrow">Needs you today</span>
+    <a class="link" href="#">Notification settings</a>
+  </div>
+  <div class="queue">
+    <a class="task urgent" href="#">
+      <div class="task-head">
+        <span class="tile red">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </span>
+        <span class="right-group">
+          <span class="badge-now">Overdue</span>
+          <span class="task-count tabular">4</span>
+        </span>
+      </div>
+      <div class="task-title">Orders past dispatch SLA</div>
+      <div class="task-sub">Paid more than 48 hours ago</div>
+      <span class="task-cta">Fulfil now
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="task warn" href="#">
+      <div class="task-head">
+        <span class="tile amber">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 16.5-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 19.5h16a2 2 0 0 0 1.7-3z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </span>
+        <span class="task-count tabular">6</span>
+      </div>
+      <div class="task-title">Products low on stock</div>
+      <div class="task-sub">2 will sell out this week</div>
+      <span class="task-cta">Restock
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="task info" href="#">
+      <div class="task-head">
+        <span class="tile violet">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        <span class="task-count tabular">18</span>
+      </div>
+      <div class="task-title">Orders to fulfil</div>
+      <div class="task-sub">Paid and awaiting dispatch</div>
+      <span class="task-cta">Open queue
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="task calm" href="#">
+      <div class="task-head">
+        <span class="tile grey">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 15h-.09A5 5 0 1 1 16 6.71a4 4 0 0 1 1 7.87"/><path d="M12 13v8M9 18l3 3 3-3"/></svg>
+        </span>
+        <span class="task-count tabular">18</span>
+      </div>
+      <div class="task-title">Draft products</div>
+      <div class="task-sub">Hidden from the catalogue</div>
+      <span class="task-cta">Review drafts
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+  </div>
+
+  <!-- ============ glance strip ============ -->
+  <div class="glance">
+    <div class="g">
+      <div class="g-label">Paid revenue · 30 days</div>
+      <div class="g-value tabular">GH₵ 48,320</div>
+      <div class="g-delta"><span class="up">▲ 12.4%</span> vs previous 30 days</div>
+    </div>
+    <div class="g">
+      <div class="g-label">Orders · 30 days</div>
+      <div class="g-value tabular">312</div>
+      <div class="g-delta"><span class="up">▲ 8.1%</span> · 264 paid</div>
+    </div>
+    <div class="g">
+      <div class="g-label">Average order value</div>
+      <div class="g-value tabular">GH₵ 183</div>
+      <div class="g-delta"><span class="up">▲ 4.0%</span> across paid orders</div>
+    </div>
+    <div class="g">
+      <div class="g-label">Payment success</div>
+      <div class="g-value tabular">94%</div>
+      <div class="g-delta"><span class="down">▼ 1.8%</span> · 218 of 232</div>
+    </div>
+  </div>
+
+  <!-- ============ fulfil queue + rail ============ -->
+  <div class="row main">
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2 class="card-title">Orders to fulfil</h2>
+          <p class="card-sub">Oldest first · 18 in the queue</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <a class="btn btn-sm" href="#">Print labels</a>
+          <a class="link" href="#">View all</a>
+        </div>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">AO</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Ama Owusu</span>
+            <span class="age old">3 days</span>
+          </div>
+          <div class="f-meta tabular">GS-10402 · 3 items · Osu, Accra · Mobile money</div>
+        </div>
+        <div class="f-total tabular">GH₵ 412<small>Paid</small></div>
+        <a class="btn btn-sm btn-primary" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">KM</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Kofi Mensah</span>
+            <span class="age old">3 days</span>
+          </div>
+          <div class="f-meta tabular">GS-10404 · 1 item · Kumasi · Card</div>
+        </div>
+        <div class="f-total tabular">GH₵ 149<small>Paid</small></div>
+        <a class="btn btn-sm btn-primary" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">EB</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Esi Boateng</span>
+            <span class="age mid">2 days</span>
+          </div>
+          <div class="f-meta tabular">GS-10411 · 5 items · Takoradi · Mobile money</div>
+        </div>
+        <div class="f-total tabular">GH₵ 878<small>Paid</small></div>
+        <a class="btn btn-sm btn-primary" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">YA</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Yaw Asante</span>
+            <span class="age mid">1 day</span>
+          </div>
+          <div class="f-meta tabular">GS-10419 · 2 items · Tema · Cash on delivery</div>
+        </div>
+        <div class="f-total tabular">GH₵ 236<small>On delivery</small></div>
+        <a class="btn btn-sm" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">AN</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Adjoa Nyarko</span>
+            <span class="age new">6 hours</span>
+          </div>
+          <div class="f-meta tabular">GS-10426 · 1 item · Cape Coast · Card</div>
+        </div>
+        <div class="f-total tabular">GH₵ 94<small>Paid</small></div>
+        <a class="btn btn-sm" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">NA</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Nana Addo Sarpong</span>
+            <span class="age new">8 hours</span>
+          </div>
+          <div class="f-meta tabular">GS-10424 · 4 items · Ho · Mobile money</div>
+        </div>
+        <div class="f-total tabular">GH₵ 521<small>Paid</small></div>
+        <a class="btn btn-sm" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">AD</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Akosua Darko</span>
+            <span class="age new">11 hours</span>
+          </div>
+          <div class="f-meta tabular">GS-10423 · 2 items · Sunyani · Card</div>
+        </div>
+        <div class="f-total tabular">GH₵ 198<small>Paid</small></div>
+        <a class="btn btn-sm" href="#">Mark shipped</a>
+      </div>
+
+      <div class="fitem">
+        <span class="avatar">IT</span>
+        <div class="f-body">
+          <div class="f-top">
+            <span class="f-name">Ibrahim Tanko</span>
+            <span class="age new">14 hours</span>
+          </div>
+          <div class="f-meta tabular">GS-10422 · 1 item · Tamale · Mobile money</div>
+        </div>
+        <div class="f-total tabular">GH₵ 120<small>Paid</small></div>
+        <a class="btn btn-sm" href="#">Mark shipped</a>
+      </div>
+
+      <div style="padding:14px 20px;border-top:1px solid var(--border);text-align:center">
+        <a class="link" href="#">Show 10 more orders</a>
+      </div>
+    </section>
+
+    <!-- right rail -->
+    <div class="rail">
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Running low</h2>
+            <p class="card-sub">At or below restock threshold</p>
+          </div>
+          <a class="link" href="#">All</a>
+        </div>
+        <div class="stock">
+          <span class="thumb">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+          </span>
+          <div class="s-body">
+            <div class="s-name">Raw Shea Butter 500g</div>
+            <div class="s-left">
+              <span class="s-bar"><span style="width:10%;background:#ef4444"></span></span>
+              <span class="s-num crit tabular">2 left</span>
+            </div>
+          </div>
+          <a class="btn btn-sm" href="#">Restock</a>
+        </div>
+        <div class="stock">
+          <span class="thumb">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+          </span>
+          <div class="s-body">
+            <div class="s-name">Kente Throw Pillow Set</div>
+            <div class="s-left">
+              <span class="s-bar"><span style="width:15%;background:#ef4444"></span></span>
+              <span class="s-num crit tabular">3 left</span>
+            </div>
+          </div>
+          <a class="btn btn-sm" href="#">Restock</a>
+        </div>
+        <div class="stock">
+          <span class="thumb">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+          </span>
+          <div class="s-body">
+            <div class="s-name">Bolga Market Basket — Large</div>
+            <div class="s-left">
+              <span class="s-bar"><span style="width:20%;background:#d97706"></span></span>
+              <span class="s-num tabular">4 left</span>
+            </div>
+          </div>
+          <a class="btn btn-sm" href="#">Restock</a>
+        </div>
+        <div class="stock">
+          <span class="thumb">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+          </span>
+          <div class="s-body">
+            <div class="s-name">Ankara Tote Bag</div>
+            <div class="s-left">
+              <span class="s-bar"><span style="width:25%;background:#d97706"></span></span>
+              <span class="s-num tabular">5 left</span>
+            </div>
+          </div>
+          <a class="btn btn-sm" href="#">Restock</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">This week</h2>
+            <p class="card-sub">Paid revenue by day</p>
+          </div>
+          <span class="tabular" style="font-size:15px;font-weight:600">GH₵ 14,180</span>
+        </div>
+        <div class="weekbars" role="img" aria-label="Paid revenue by day this week">
+          <span class="wb"><span style="height:48%"></span></span>
+          <span class="wb"><span style="height:62%"></span></span>
+          <span class="wb"><span style="height:41%"></span></span>
+          <span class="wb"><span style="height:74%"></span></span>
+          <span class="wb peak"><span style="height:100%"></span></span>
+          <span class="wb"><span style="height:86%"></span></span>
+          <span class="wb"><span style="height:29%"></span></span>
+        </div>
+        <div class="weekdays">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head" style="border-bottom:0">
+          <div>
+            <h2 class="card-title">Customers</h2>
+            <p class="card-sub">Registered accounts</p>
+          </div>
+        </div>
+        <div style="padding:0 20px 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+          <div>
+            <div class="tabular" style="font-size:27px;font-weight:600;letter-spacing:-0.025em">1,842</div>
+            <div style="margin-top:4px;font-size:12.5px;color:var(--muted-foreground)">
+              <span class="up">▲ 64</span> new this month
+            </div>
+          </div>
+          <svg width="112" height="40" viewBox="0 0 112 40" fill="none" aria-hidden="true">
+            <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6b28d9" stop-opacity=".2"/>
+              <stop offset="100%" stop-color="#6b28d9" stop-opacity="0"/>
+            </linearGradient></defs>
+            <path d="M0,34 14,31 28,32 42,26 56,24 70,18 84,16 98,10 112,6 L112,40 L0,40 Z" fill="url(#cg)"/>
+            <polyline points="0,34 14,31 28,32 42,26 56,24 70,18 84,16 98,10 112,6"
+              stroke="#6b28d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ 30-day trend (secondary) ============ -->
+  <section class="card" style="margin-top:16px">
+    <div class="trend-head">
+      <div>
+        <h2 class="card-title">Revenue trend</h2>
+        <p class="card-sub">Daily paid revenue · last 30 days</p>
+        <div class="trend-total tabular" style="margin-top:10px">GH₵ 48,320</div>
+      </div>
+      <div class="segmented" role="group" aria-label="Date range">
+        <button type="button">7 days</button>
+        <button type="button" aria-pressed="true">30 days</button>
+        <button type="button">90 days</button>
+      </div>
+    </div>
+    <div style="padding:14px 20px 0">
+      <svg viewBox="0 0 1000 200" width="100%" height="180" preserveAspectRatio="none" role="img" aria-label="Daily paid revenue, last 30 days">
+        <defs><linearGradient id="fill2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6b28d9" stop-opacity=".16"/>
+          <stop offset="100%" stop-color="#6b28d9" stop-opacity="0"/>
+        </linearGradient></defs>
+        <g stroke="#ededed" stroke-width="1">
+          <line x1="0" y1="45" x2="1000" y2="45"/>
+          <line x1="0" y1="105" x2="1000" y2="105"/>
+          <line x1="0" y1="165" x2="1000" y2="165"/>
+          <line x1="0" y1="185" x2="1000" y2="185" stroke="#dcdcdc"/>
+        </g>
+        <path fill="url(#fill2)" d="M0,142 34,131 69,152 103,120 138,127 172,111 207,94 241,122 276,133 310,114 345,103 379,84 414,98 448,112 483,123 517,106 552,87 586,68 621,79 655,100 690,109 724,92 759,75 793,59 828,49 862,69 897,85 931,66 966,50 1000,36 L1000,185 L0,185 Z"/>
+        <polyline fill="none" stroke="#6b28d9" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
+          points="0,142 34,131 69,152 103,120 138,127 172,111 207,94 241,122 276,133 310,114 345,103 379,84 414,98 448,112 483,123 517,106 552,87 586,68 621,79 655,100 690,109 724,92 759,75 793,59 828,49 862,69 897,85 931,66 966,50 1000,36"/>
+        <circle cx="1000" cy="36" r="4.5" fill="#6b28d9" stroke="#fff" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="x-axis tabular">
+      <span>20 Aug</span><span>27 Aug</span><span>3 Sep</span><span>10 Sep</span><span>18 Sep</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

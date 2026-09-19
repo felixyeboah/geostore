@@ -1,277 +1,171 @@
 "use client";
 
-import { config } from "@config";
-import { cn, Logo } from "@repo/ui";
-import { Button } from "@repo/ui/components/button";
+import { CartLink } from "@commerce/components/CartLink";
+import { SearchDialog } from "@commerce/components/SearchDialog";
+import { links, PHONE_NUMBER } from "@home/data/landing";
+import { cn } from "@repo/ui";
 import {
 	Sheet,
 	SheetContent,
 	SheetTitle,
 	SheetTrigger,
 } from "@repo/ui/components/sheet";
-import {
-	MenuIcon,
-	PhoneIcon,
-	SearchIcon,
-	ShoppingBagIcon,
-	SparklesIcon,
-} from "lucide-react";
+import { BrandLogo } from "@shared/components/BrandLogo";
+import { useTranslations } from "@shared/lib/translations";
+import { MenuIcon, PhoneIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "@shared/lib/translations";
 import { useEffect, useState } from "react";
-import { useDebounceCallback } from "usehooks-ts";
 
 interface NavItem {
 	label: string;
 	href: string;
 }
 
-const phoneNumber = "+233 20 913 3372";
-
-function getStoreHref(query: string) {
-	const storeUrl = config.saasUrl
-		? String(config.saasUrl).replace(/\/$/, "")
-		: "";
-
-	return `${storeUrl}/?${query}`;
-}
-
 export function NavBar() {
 	const t = useTranslations();
 	const pathname = usePathname();
-
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-	const [isTop, setIsTop] = useState(true);
 
-	const handleMobileMenuClose = () => {
+	useEffect(() => {
 		setMobileMenuOpen(false);
-	};
-
-	const debouncedScrollHandler = useDebounceCallback(
-		() => {
-			setIsTop(window.scrollY <= 10);
-		},
-		150,
-		{
-			maxWait: 150,
-		},
-	);
-
-	useEffect(() => {
-		window.addEventListener("scroll", debouncedScrollHandler);
-		debouncedScrollHandler();
-		return () => {
-			window.removeEventListener("scroll", debouncedScrollHandler);
-		};
-	}, [debouncedScrollHandler]);
-
-	useEffect(() => {
-		handleMobileMenuClose();
 	}, [pathname]);
 
 	const menuItems: NavItem[] = [
+		{ label: t("common.menu.shop"), href: links.shop },
+		{ label: t("common.menu.phones"), href: links.category("phones") },
+		{ label: t("common.menu.computers"), href: links.category("laptops") },
+		{ label: t("common.menu.gaming"), href: links.category("gaming") },
 		{
-			label: t("common.menu.latestDrops"),
-			href: "/#latest-drops",
+			label: t("common.menu.appliances"),
+			href: links.category("appliances"),
 		},
 		{
-			label: t("common.menu.faq"),
-			href: "/#faq",
+			label: t("common.menu.accessories"),
+			href: links.category("accessories"),
 		},
-		{
-			label: t("common.menu.blog"),
-			href: "/blog",
-		},
-		{
-			label: t("common.menu.contact"),
-			href: "/contact",
-		},
+		{ label: t("common.menu.about"), href: links.about },
 	];
-
-	const brandItems: NavItem[] = [
-		{ label: "Apple", href: getStoreHref("brand=apple") },
-		{ label: "Samsung", href: getStoreHref("brand=samsung") },
-		{ label: "JBL", href: getStoreHref("brand=jbl") },
-		{ label: "Sony", href: getStoreHref("brand=sony") },
-		{ label: "LG", href: getStoreHref("brand=lg") },
-	];
-
-	const isMenuItemActive = (href: string) =>
-		href.startsWith("/#") ? false : pathname.startsWith(href);
 
 	return (
 		<nav
-			className={cn(
-				"sticky top-0 z-50 w-full border-b bg-background transition-shadow duration-200",
-				{ "shadow-sm": !isTop },
-			)}
+			className="sticky top-0 z-50 w-full border-border border-b bg-background"
 			data-test="navigation"
 		>
-			<div className="hidden bg-brand-gradient text-brand-white lg:block">
-				<div className="container flex h-9 items-center justify-between text-sm">
-					<span className="font-medium">
-						gadgets & more, delivered across Ghana
-					</span>
-					<Link
-						href="/contact"
-						className="inline-flex items-center gap-2 font-medium"
-					>
-						<PhoneIcon className="size-3.5" />
-						{phoneNumber}
-					</Link>
+			<div className="hidden border-border border-b lg:block">
+				<div className="mx-auto flex h-9 w-full max-w-[1360px] items-center justify-between px-12 text-[11px] text-muted-foreground">
+					<p>{t("common.menu.utility")}</p>
+					<div className="flex items-center gap-6">
+						<Link
+							href={links.contact}
+							className="transition-colors hover:text-foreground"
+						>
+							{t("common.menu.help")}
+						</Link>
+						<a
+							href={`tel:${PHONE_NUMBER.replace(/\s+/g, "")}`}
+							className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+						>
+							<PhoneIcon className="size-3" />
+							{PHONE_NUMBER}
+						</a>
+					</div>
 				</div>
 			</div>
+			<div className="mx-auto flex h-[72px] w-full max-w-[1360px] items-center justify-between px-6 lg:h-[84px] lg:grid lg:grid-cols-[1fr_auto_1fr] lg:px-12">
+				<Link
+					href="/"
+					className="block hover:no-underline active:no-underline"
+					aria-label="Geostoresgh"
+				>
+					<BrandLogo className="h-9 lg:h-12" />
+				</Link>
 
-			<div className="container">
-				<div className="flex items-center justify-between gap-4 py-4">
-					<Link
-						href="/"
-						className="block hover:no-underline active:no-underline"
-					>
-						<Logo />
-					</Link>
-
-					<div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
-						<span className="mr-2 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-2 font-medium text-primary text-sm">
-							<SparklesIcon className="size-4" />
-							Brands
-						</span>
-						{brandItems.map((item) => (
+				<ul className="hidden items-center gap-6 lg:flex">
+					{menuItems.map((item) => (
+						<li key={item.href}>
 							<Link
-								key={item.href}
 								href={item.href}
-								className="inline-flex items-center rounded-lg px-3 py-2 font-medium text-foreground/75 text-sm transition hover:bg-primary/10 hover:text-primary"
+								className={cn(
+									"text-[13px] text-foreground/85 transition-colors hover:text-foreground",
+									pathname === item.href && "text-foreground",
+								)}
 							>
 								{item.label}
 							</Link>
-						))}
-					</div>
+						</li>
+					))}
+				</ul>
 
-					<div className="flex items-center gap-2">
-						<Link
-							href={getStoreHref("q=")}
-							className="hidden items-center gap-2 rounded-full bg-muted px-3 py-2 font-medium text-foreground/70 text-sm transition hover:bg-primary/10 hover:text-primary xl:inline-flex"
-						>
-							<SearchIcon className="size-4" />
-							Search store
-						</Link>
-						<ShopButton />
-						<MobileMenu
-							brandItems={brandItems}
-							menuItems={menuItems}
-							open={mobileMenuOpen}
-							onOpenChange={setMobileMenuOpen}
-							onClose={handleMobileMenuClose}
-							isMenuItemActive={isMenuItemActive}
-							menuLabel={t("common.aria.menu")}
-						/>
-					</div>
+				<div className="flex items-center justify-end gap-3">
+					<SearchDialog label={t("common.menu.search")} />
+					<span
+						aria-hidden="true"
+						className="mx-1 hidden h-6 w-px bg-border lg:block"
+					/>
+					<CartLink />
+					<MobileMenu
+						items={menuItems}
+						open={mobileMenuOpen}
+						onOpenChange={setMobileMenuOpen}
+						menuLabel={t("common.aria.menu")}
+						searchLabel={t("common.menu.search")}
+					/>
 				</div>
 			</div>
 		</nav>
 	);
 }
 
-function ShopButton() {
-	if (!config.saasUrl) {
-		return null;
-	}
-
-	return (
-		<Button className="hidden lg:flex" asChild variant="secondary">
-			<Link href={config.saasUrl} prefetch>
-				<ShoppingBagIcon className="size-4" />
-				Shop now
-			</Link>
-		</Button>
-	);
-}
-
 function MobileMenu({
-	brandItems,
-	menuItems,
+	items,
 	open,
 	onOpenChange,
-	onClose,
-	isMenuItemActive,
 	menuLabel,
+	searchLabel,
 }: {
-	brandItems: NavItem[];
-	menuItems: NavItem[];
+	items: NavItem[];
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onClose: () => void;
-	isMenuItemActive: (href: string) => boolean;
 	menuLabel: string;
+	searchLabel: string;
 }) {
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
 			<SheetTrigger asChild>
-				<Button
-					className="lg:hidden"
-					size="icon"
-					variant="secondary"
+				<button
+					type="button"
+					className="ml-2 p-1 text-foreground lg:hidden"
 					aria-label={menuLabel}
 				>
-					<MenuIcon className="size-4" />
-				</Button>
+					<MenuIcon className="size-5" strokeWidth={1.75} />
+				</button>
 			</SheetTrigger>
-			<SheetContent className="w-[300px]" side="right">
-				<SheetTitle className="sr-only">Navigation menu</SheetTitle>
-				<div className="flex flex-col items-start justify-center">
-					<div className="mb-5 flex items-center gap-2 rounded-full bg-primary/10 px-3 py-2 font-medium text-primary text-sm">
-						<SparklesIcon className="size-4" />
-						Shop by brand
-					</div>
-
-					<div className="grid w-full grid-cols-2 gap-2">
-						{brandItems.map((item) => (
+			<SheetContent className="w-[300px] bg-background" side="right">
+				<SheetTitle className="sr-only">{menuLabel}</SheetTitle>
+				<ul className="mt-8 flex flex-col">
+					{items.map((item) => (
+						<li key={item.href} className="border-border border-b">
 							<Link
-								key={item.href}
 								href={item.href}
-								onClick={onClose}
-								className="rounded-lg bg-muted px-3 py-2 font-medium text-foreground/80 text-sm transition hover:bg-primary/10 hover:text-primary"
-								prefetch
+								onClick={() => onOpenChange(false)}
+								className="block py-4 font-medium text-[15px] text-foreground"
 							>
 								{item.label}
 							</Link>
-						))}
-					</div>
-
-					<div className="mt-6 h-px w-full bg-border" />
-
-					<div className="mt-4 flex w-full flex-col">
-						{menuItems.map((item) => (
-							<Link
-								key={item.href}
-								href={item.href}
-								onClick={onClose}
-								className={cn(
-									"block shrink-0 rounded-lg px-3 py-2 font-medium text-base text-foreground/80",
-									isMenuItemActive(item.href)
-										? "bg-primary/10 font-bold text-primary"
-										: "",
-								)}
-								prefetch
-							>
-								{item.label}
-							</Link>
-						))}
-					</div>
-
-					{config.saasUrl && (
+						</li>
+					))}
+					<li>
 						<Link
-							href={config.saasUrl}
-							className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground"
-							onClick={onClose}
-							prefetch
+							href={links.search}
+							onClick={() => onOpenChange(false)}
+							className="mt-4 inline-flex items-center gap-2 text-[13px] text-foreground/80"
 						>
-							<ShoppingBagIcon className="size-4" />
-							Shop now
+							<SearchIcon className="size-4" />
+							{searchLabel}
 						</Link>
-					)}
-				</div>
+					</li>
+				</ul>
 			</SheetContent>
 		</Sheet>
 	);

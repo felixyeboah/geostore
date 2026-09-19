@@ -1,16 +1,40 @@
 import { randomUUID } from "node:crypto";
+import { calculateDeliveryFeeInPesewas } from "@repo/utils";
 import { db } from "../client";
-import type {
-	OrderStatus,
+import {
+	type OrderStatus,
 	Prisma,
-	ProductStatus,
-	StorePaymentStatus,
+	type ProductStatus,
+	type StorePaymentMethod,
+	type StorePaymentStatus,
 } from "../generated/client";
+import { StoreOperationError } from "./errors";
+
+/** How a smart collection ranks the catalogue to find its own members. */
+export type StoreSmartCollectionRule = "best-selling" | "newest";
 
 export interface StoreProductFilters {
 	query?: string;
 	categorySlug?: string;
+	/** Membership of a stored (manual) collection. */
+	collectionSlug?: string;
+	/**
+	 * Rank the whole catalogue instead of reading stored membership. This is
+	 * how a smart collection such as "Best sellers" resolves; combine it with
+	 * `limit` to cap the result.
+	 */
+	smartRule?: StoreSmartCollectionRule;
+	limit?: number;
+	/** Single brand, kept for the admin catalogue. */
 	brand?: string;
+	/** Several brands at once, which is what the storefront filter bar sends. */
+	brands?: string[];
+	minPriceInPesewas?: number;
+	maxPriceInPesewas?: number;
+	/** Only products with stock on hand. */
+	inStockOnly?: boolean;
+	/** Only products carrying a compare-at price. */
+	onSaleOnly?: boolean;
 	status?: ProductStatus;
 }
 
@@ -30,6 +54,31 @@ export interface SaveStoreProductInput {
 	specifications?: Prisma.InputJsonValue;
 	categoryId: string;
 	imageUrls: string[];
+	variants?: Array<{
+		id?: string;
+		name: string;
+		sku: string;
+		priceInPesewas: number;
+		compareAtInPesewas?: number;
+		stockQuantity: number;
+		attributes: Prisma.InputJsonValue;
+		isActive: boolean;
+	}>;
+}
+
+export interface CreateStoreCategoryInput {
+	name: string;
+	slug: string;
+	description?: string;
+	imageUrl?: string;
+	isActive: boolean;
+	sortOrder: number;
+}
+
+export interface UpdateStoreCategoryInput
+	extends Omit<CreateStoreCategoryInput, "imageUrl"> {
+	/** `null` clears the stored banner; `undefined` leaves it unchanged. */
+	imageUrl?: string | null;
 }
 
 export interface CreateMockStoreOrderInput {
@@ -45,8 +94,28 @@ export interface CreateMockStoreOrderInput {
 		city: string;
 		region: string;
 	};
-	items: Array<{ productId: string; quantity: number }>;
+	items: Array<{ productId: string; variantId?: string; quantity: number }>;
 	customerNote?: string;
+	/**
+	 * Sent by the checkout form, one per attempt. A retry that carries the same
+	 * key returns the order that was already created rather than reserving the
+	 * stock and charging the customer a second time.
+	 */
+	idempotencyKey?: string;
+}
+
+/**
+ * The order a previous attempt with this key already created, if any.
+ */
+async function findOrderByIdempotencyKey(key: string | undefined) {
+	if (!key) {
+		return null;
+	}
+
+	return db.order.findUnique({
+		where: { idempotencyKey: key },
+		include: { items: true, transactions: true },
+	});
 }
 
 export async function getStoreCategories(options?: {
@@ -70,9 +139,34 @@ export async function getPublishedStoreProducts(
 			category: filters.categorySlug
 				? { slug: filters.categorySlug, isActive: true }
 				: { isActive: true },
-			brand: filters.brand
-				? { equals: filters.brand, mode: "insensitive" }
+			collections: filters.collectionSlug
+				? {
+						some: {
+							collection: {
+								slug: filters.collectionSlug,
+								isActive: true,
+							},
+						},
+					}
 				: undefined,
+			brand: filters.brands?.length
+				? { in: filters.brands, mode: "insensitive" }
+				: filters.brand
+					? { equals: filters.brand, mode: "insensitive" }
+					: undefined,
+			priceInPesewas:
+				filters.minPriceInPesewas !== undefined ||
+				filters.maxPriceInPesewas !== undefined
+					? {
+							gte: filters.minPriceInPesewas,
+							lte: filters.maxPriceInPesewas,
+						}
+					: undefined,
+			stockQuantity: filters.inStockOnly ? { gt: 0 } : undefined,
+			// A compare-at price is what marks a product as reduced. Whether it
+			// actually beats the current price is checked after mapping, where
+			// both numbers are to hand.
+			compareAtInPesewas: filters.onSaleOnly ? { not: null } : undefined,
 			OR: filters.query
 				? [
 						{
@@ -99,12 +193,36 @@ export async function getPublishedStoreProducts(
 		include: {
 			category: true,
 			images: { orderBy: { sortOrder: "asc" } },
+			variants: { where: { isActive: true }, orderBy: { name: "asc" } },
 			reviews: {
 				where: { isApproved: true },
 				select: { rating: true },
 			},
 		},
-		orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+		orderBy:
+			filters.smartRule === "best-selling"
+				? [{ unitsSold: "desc" }, { createdAt: "desc" }]
+				: filters.smartRule === "newest"
+					? [{ publishedAt: "desc" }, { createdAt: "desc" }]
+					: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+		take: filters.limit,
+	});
+}
+
+/** Stored, editor-picked collections. Smart ones are resolved by rule. */
+export async function getStoreCollections(options?: {
+	includeInactive?: boolean;
+	onLandingOnly?: boolean;
+}) {
+	return db.collection.findMany({
+		where: {
+			...(options?.includeInactive ? {} : { isActive: true }),
+			...(options?.onLandingOnly ? { onLanding: true } : {}),
+		},
+		orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+		include: {
+			_count: { select: { products: true } },
+		},
 	});
 }
 
@@ -114,6 +232,7 @@ export async function getPublishedStoreProductBySlug(slug: string) {
 		include: {
 			category: true,
 			images: { orderBy: { sortOrder: "asc" } },
+			variants: { where: { isActive: true }, orderBy: { name: "asc" } },
 			reviews: {
 				where: { isApproved: true },
 				include: {
@@ -169,12 +288,27 @@ export async function getAdminStoreProductById(id: string) {
 		include: {
 			category: true,
 			images: { orderBy: { sortOrder: "asc" } },
+			variants: { orderBy: { name: "asc" } },
 		},
 	});
 }
 
+function variantCreateData(
+	variants: NonNullable<SaveStoreProductInput["variants"]>,
+) {
+	return variants.map((variant) => ({
+		name: variant.name,
+		sku: variant.sku,
+		priceInPesewas: variant.priceInPesewas,
+		compareAtInPesewas: variant.compareAtInPesewas,
+		stockQuantity: variant.stockQuantity,
+		attributes: variant.attributes,
+		isActive: variant.isActive,
+	}));
+}
+
 export async function createStoreProduct(input: SaveStoreProductInput) {
-	const { imageUrls, ...product } = input;
+	const { imageUrls, variants = [], ...product } = input;
 	return db.product.create({
 		data: {
 			...product,
@@ -186,7 +320,9 @@ export async function createStoreProduct(input: SaveStoreProductInput) {
 					sortOrder,
 				})),
 			},
+			variants: { create: variantCreateData(variants) },
 		},
+		include: { category: { select: { slug: true } } },
 	});
 }
 
@@ -194,21 +330,57 @@ export async function updateStoreProduct(
 	id: string,
 	input: SaveStoreProductInput,
 ) {
-	const { imageUrls, ...product } = input;
-	return db.product.update({
-		where: { id },
-		data: {
-			...product,
-			publishedAt: input.status === "ACTIVE" ? new Date() : null,
-			images: {
-				deleteMany: {},
-				create: imageUrls.map((url, sortOrder) => ({
-					url,
-					alt: input.name,
-					sortOrder,
-				})),
+	const { imageUrls, variants = [], ...product } = input;
+	const existingVariantIds = variants
+		.map((variant) => variant.id)
+		.filter((variantId): variantId is string => Boolean(variantId));
+
+	return db.$transaction(async (transaction) => {
+		await transaction.productVariant.deleteMany({
+			where: {
+				productId: id,
+				id: { notIn: existingVariantIds },
 			},
-		},
+		});
+
+		for (const variant of variants) {
+			const data = {
+				name: variant.name,
+				sku: variant.sku,
+				priceInPesewas: variant.priceInPesewas,
+				compareAtInPesewas: variant.compareAtInPesewas,
+				stockQuantity: variant.stockQuantity,
+				attributes: variant.attributes,
+				isActive: variant.isActive,
+			};
+			if (variant.id) {
+				await transaction.productVariant.update({
+					where: { id: variant.id },
+					data,
+				});
+			} else {
+				await transaction.productVariant.create({
+					data: { ...data, productId: id },
+				});
+			}
+		}
+
+		return transaction.product.update({
+			where: { id },
+			data: {
+				...product,
+				publishedAt: input.status === "ACTIVE" ? new Date() : null,
+				images: {
+					deleteMany: {},
+					create: imageUrls.map((url, sortOrder) => ({
+						url,
+						alt: input.name,
+						sortOrder,
+					})),
+				},
+			},
+			include: { category: { select: { slug: true } } },
+		});
 	});
 }
 
@@ -222,6 +394,7 @@ export async function updateStoreProductStatus(
 			status,
 			publishedAt: status === "ACTIVE" ? new Date() : null,
 		},
+		include: { category: { select: { slug: true } } },
 	});
 }
 
@@ -238,6 +411,7 @@ export async function updateStoreProductStock(
 		const product = await transaction.product.update({
 			where: { id },
 			data: { stockQuantity },
+			include: { category: { select: { slug: true } } },
 		});
 		await transaction.inventoryEvent.create({
 			data: {
@@ -252,57 +426,98 @@ export async function updateStoreProductStock(
 	});
 }
 
-export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
-	if (input.items.length === 0) {
-		throw new Error("An order requires at least one item.");
-	}
+interface ReservedOrderItem {
+	productId: string;
+	variantId?: string;
+	productName: string;
+	variantName?: string;
+	sku: string;
+	imageUrl?: string;
+	unitPriceInPesewas: number;
+	quantity: number;
+	lineTotalInPesewas: number;
+}
 
-	return db.$transaction(async (transaction) => {
-		const products = await transaction.product.findMany({
-			where: {
-				id: { in: input.items.map((item) => item.productId) },
-				status: "ACTIVE",
-			},
-			include: {
-				images: { orderBy: { sortOrder: "asc" }, take: 1 },
-			},
-		});
-		const productMap = new Map(
-			products.map((product) => [product.id, product]),
-		);
-		const orderItems = input.items.map((item) => {
-			const product = productMap.get(item.productId);
+async function reserveOrderItems(
+	transaction: Prisma.TransactionClient,
+	items: CreateMockStoreOrderInput["items"],
+): Promise<ReservedOrderItem[]> {
+	const products = await transaction.product.findMany({
+		where: {
+			id: { in: items.map((item) => item.productId) },
+			status: "ACTIVE",
+		},
+		include: {
+			images: { orderBy: { sortOrder: "asc" }, take: 1 },
+			variants: true,
+		},
+	});
+	const productMap = new Map(
+		products.map((product) => [product.id, product]),
+	);
 
-			if (!product) {
-				throw new Error(
-					"A product in your bag is no longer available.",
+	const reservedItems = items.map((item) => {
+		const product = productMap.get(item.productId);
+		if (!product) {
+			throw new StoreOperationError(
+				"A product in your bag is no longer available.",
+			);
+		}
+		if (!Number.isInteger(item.quantity) || item.quantity < 1) {
+			throw new StoreOperationError(
+				`Choose a valid quantity for ${product.name}.`,
+			);
+		}
+
+		const variant = item.variantId
+			? product.variants.find(
+					(candidate) =>
+						candidate.id === item.variantId && candidate.isActive,
+				)
+			: undefined;
+		if (item.variantId && !variant) {
+			throw new StoreOperationError(
+				`${product.name} is no longer available in that option.`,
+			);
+		}
+
+		const stockQuantity = variant?.stockQuantity ?? product.stockQuantity;
+		const unitPriceInPesewas =
+			variant?.priceInPesewas ?? product.priceInPesewas;
+		if (stockQuantity < item.quantity) {
+			throw new StoreOperationError(
+				`${product.name}${variant ? ` (${variant.name})` : ""} no longer has enough stock.`,
+			);
+		}
+
+		return {
+			productId: product.id,
+			variantId: variant?.id,
+			productName: product.name,
+			variantName: variant?.name,
+			sku: variant?.sku ?? product.sku,
+			imageUrl: product.images[0]?.url,
+			unitPriceInPesewas,
+			quantity: item.quantity,
+			lineTotalInPesewas: unitPriceInPesewas * item.quantity,
+		};
+	});
+
+	for (const item of reservedItems) {
+		if (item.variantId) {
+			const updateResult = await transaction.productVariant.updateMany({
+				where: {
+					id: item.variantId,
+					stockQuantity: { gte: item.quantity },
+				},
+				data: { stockQuantity: { decrement: item.quantity } },
+			});
+			if (updateResult.count !== 1) {
+				throw new StoreOperationError(
+					`${item.productName} no longer has enough stock.`,
 				);
 			}
-			if (!Number.isInteger(item.quantity) || item.quantity < 1) {
-				throw new Error(`Choose a valid quantity for ${product.name}.`);
-			}
-			if (product.stockQuantity < item.quantity) {
-				throw new Error(`${product.name} no longer has enough stock.`);
-			}
-
-			return {
-				productId: product.id,
-				productName: product.name,
-				sku: product.sku,
-				imageUrl: product.images[0]?.url,
-				unitPriceInPesewas: product.priceInPesewas,
-				quantity: item.quantity,
-				lineTotalInPesewas: product.priceInPesewas * item.quantity,
-			};
-		});
-		const subtotalInPesewas = orderItems.reduce(
-			(total, item) => total + item.lineTotalInPesewas,
-			0,
-		);
-		const deliveryInPesewas = subtotalInPesewas >= 100_000 ? 0 : 3_500;
-		const orderNumber = `GST-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${randomUUID().slice(0, 8).toUpperCase()}`;
-
-		for (const item of orderItems) {
+		} else {
 			const updateResult = await transaction.product.updateMany({
 				where: {
 					id: item.productId,
@@ -310,17 +525,94 @@ export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
 				},
 				data: { stockQuantity: { decrement: item.quantity } },
 			});
-
 			if (updateResult.count !== 1) {
-				throw new Error(
+				throw new StoreOperationError(
 					`${item.productName} no longer has enough stock.`,
 				);
 			}
 		}
 
+		// Denormalised so the "Best sellers" collection is a single indexed
+		// read rather than an aggregate over every order item.
+		await transaction.product.update({
+			where: { id: item.productId },
+			data: { unitsSold: { increment: item.quantity } },
+		});
+	}
+
+	return reservedItems;
+}
+
+async function restockOrderItems(
+	transaction: Prisma.TransactionClient,
+	items: Array<{
+		id: string;
+		productId: string;
+		variantId: string | null;
+		productName: string;
+		quantity: number;
+	}>,
+	reason: string,
+	actorId?: string,
+) {
+	for (const item of items) {
+		if (item.variantId) {
+			await transaction.productVariant.update({
+				where: { id: item.variantId },
+				data: { stockQuantity: { increment: item.quantity } },
+			});
+		} else {
+			await transaction.product.update({
+				where: { id: item.productId },
+				data: { stockQuantity: { increment: item.quantity } },
+			});
+		}
+		await transaction.product.update({
+			where: { id: item.productId },
+			data: { unitsSold: { decrement: item.quantity } },
+		});
+		await transaction.inventoryEvent.create({
+			data: {
+				productId: item.productId,
+				variantId: item.variantId,
+				orderItemId: item.id,
+				type: "RETURN",
+				quantity: item.quantity,
+				reason,
+				actorId,
+			},
+		});
+	}
+}
+
+function createOrderNumber() {
+	return `GST-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${randomUUID().slice(0, 8).toUpperCase()}`;
+}
+
+export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
+	if (input.items.length === 0) {
+		throw new StoreOperationError("An order requires at least one item.");
+	}
+
+	const existing = await findOrderByIdempotencyKey(input.idempotencyKey);
+	if (existing) {
+		return existing;
+	}
+
+	return db.$transaction(async (transaction) => {
+		const orderItems = await reserveOrderItems(transaction, input.items);
+		const subtotalInPesewas = orderItems.reduce(
+			(total, item) => total + item.lineTotalInPesewas,
+			0,
+		);
+		const deliveryInPesewas =
+			calculateDeliveryFeeInPesewas(subtotalInPesewas);
+		const orderNumber = createOrderNumber();
+
 		const order = await transaction.order.create({
 			data: {
 				orderNumber,
+				idempotencyKey: input.idempotencyKey,
 				userId: input.userId,
 				status: "CONFIRMED",
 				paymentStatus: "PAID",
@@ -357,6 +649,7 @@ export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
 			await transaction.inventoryEvent.create({
 				data: {
 					productId: item.productId,
+					variantId: item.variantId,
 					orderItemId: item.id,
 					type: "SALE",
 					quantity: -item.quantity,
@@ -370,18 +663,327 @@ export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
 	});
 }
 
+export async function createPendingStoreOrder(
+	input: CreateMockStoreOrderInput & {
+		paymentMethod: Exclude<StorePaymentMethod, "MOCK">;
+	},
+) {
+	if (input.items.length === 0) {
+		throw new StoreOperationError("An order requires at least one item.");
+	}
+
+	const existing = await findOrderByIdempotencyKey(input.idempotencyKey);
+	if (existing) {
+		return existing;
+	}
+
+	const isCash = input.paymentMethod === "CASH_ON_DELIVERY";
+
+	return db.$transaction(async (transaction) => {
+		const orderItems = await reserveOrderItems(transaction, input.items);
+		const subtotalInPesewas = orderItems.reduce(
+			(total, item) => total + item.lineTotalInPesewas,
+			0,
+		);
+		const deliveryInPesewas =
+			calculateDeliveryFeeInPesewas(subtotalInPesewas);
+		const orderNumber = createOrderNumber();
+		const status = isCash ? "CONFIRMED" : "PENDING";
+
+		const order = await transaction.order.create({
+			data: {
+				orderNumber,
+				idempotencyKey: input.idempotencyKey,
+				userId: input.userId,
+				status,
+				paymentStatus: "PENDING",
+				paymentMethod: input.paymentMethod,
+				subtotalInPesewas,
+				deliveryInPesewas,
+				totalInPesewas: subtotalInPesewas + deliveryInPesewas,
+				customerEmail: input.customer.email,
+				customerPhone: input.customer.phone,
+				shippingAddress: {
+					...input.address,
+					recipientName: input.customer.name,
+				},
+				customerNote: input.customerNote,
+				items: { create: orderItems },
+				transactions: {
+					create: {
+						reference: `PEND-${randomUUID().toUpperCase()}`,
+						provider: isCash ? "cash" : "reevit",
+						paymentMethod: input.paymentMethod,
+						status: "PENDING",
+						amountInPesewas: subtotalInPesewas + deliveryInPesewas,
+					},
+				},
+				statusEvents: {
+					create: { status, actorId: input.userId },
+				},
+			},
+			include: { items: true, transactions: true },
+		});
+
+		for (const item of order.items) {
+			await transaction.inventoryEvent.create({
+				data: {
+					productId: item.productId,
+					variantId: item.variantId,
+					orderItemId: item.id,
+					type: "SALE",
+					quantity: -item.quantity,
+					reason: `Reserved for ${orderNumber}`,
+					actorId: input.userId,
+				},
+			});
+		}
+
+		return order;
+	});
+}
+
+export async function attachStorePaymentIntent(input: {
+	orderId: string;
+	providerPaymentId: string;
+}) {
+	return db.storeTransaction.updateMany({
+		where: { orderId: input.orderId },
+		data: {
+			providerPaymentId: input.providerPaymentId,
+			reference: input.providerPaymentId,
+		},
+	});
+}
+
+export async function markStoreOrderPaid(input: {
+	orderId: string;
+	providerPaymentId: string;
+	providerPayload: Prisma.InputJsonValue;
+}) {
+	return db.$transaction(async (transaction) => {
+		const order = await transaction.order.findUnique({
+			where: { id: input.orderId },
+		});
+		if (!order) {
+			throw new StoreOperationError("Order not found.");
+		}
+		if (order.paymentStatus === "PAID") {
+			return transaction.order.findUniqueOrThrow({
+				where: { id: order.id },
+			});
+		}
+		if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+			throw new StoreOperationError(
+				"Cannot mark a cancelled or refunded order as paid.",
+			);
+		}
+
+		await transaction.order.update({
+			where: { id: order.id },
+			data: { paymentStatus: "PAID", status: "CONFIRMED" },
+		});
+		await transaction.storeTransaction.updateMany({
+			where: { orderId: order.id },
+			data: {
+				status: "PAID",
+				providerPaymentId: input.providerPaymentId,
+				providerPayload: input.providerPayload,
+				processedAt: new Date(),
+			},
+		});
+		await transaction.orderStatusEvent.create({
+			data: {
+				orderId: order.id,
+				status: "CONFIRMED",
+				note: "Payment confirmed",
+			},
+		});
+
+		return transaction.order.findUniqueOrThrow({
+			where: { id: order.id },
+		});
+	});
+}
+
+export async function markStoreOrderPaymentFailed(orderId: string) {
+	return db.$transaction(async (transaction) => {
+		const order = await transaction.order.findUnique({
+			where: { id: orderId },
+			include: { items: true },
+		});
+		if (!order) {
+			throw new StoreOperationError("Order not found.");
+		}
+		if (order.paymentStatus === "PAID" || order.status === "CANCELLED") {
+			return order;
+		}
+
+		await restockOrderItems(
+			transaction,
+			order.items,
+			`Payment failed for ${order.orderNumber}`,
+		);
+		await transaction.order.update({
+			where: { id: orderId },
+			data: { paymentStatus: "FAILED", status: "CANCELLED" },
+		});
+		await transaction.storeTransaction.updateMany({
+			where: { orderId },
+			data: { status: "FAILED", processedAt: new Date() },
+		});
+		await transaction.orderStatusEvent.create({
+			data: { orderId, status: "CANCELLED", note: "Payment failed" },
+		});
+
+		return transaction.order.findUniqueOrThrow({ where: { id: orderId } });
+	});
+}
+
+export async function markStoreOrderRefunded(orderId: string) {
+	return db.$transaction(async (transaction) => {
+		const order = await transaction.order.findUnique({
+			where: { id: orderId },
+			include: { items: true },
+		});
+		if (!order) {
+			throw new StoreOperationError("Order not found.");
+		}
+		if (order.status === "REFUNDED") {
+			return order;
+		}
+
+		if (order.status !== "CANCELLED") {
+			await restockOrderItems(
+				transaction,
+				order.items,
+				`Refund ${order.orderNumber}`,
+			);
+		}
+
+		await transaction.order.update({
+			where: { id: orderId },
+			data: { paymentStatus: "REFUNDED", status: "REFUNDED" },
+		});
+		await transaction.storeTransaction.updateMany({
+			where: { orderId },
+			data: { status: "REFUNDED", processedAt: new Date() },
+		});
+		await transaction.orderStatusEvent.create({
+			data: { orderId, status: "REFUNDED", note: "Refund confirmed" },
+		});
+
+		return transaction.order.findUniqueOrThrow({ where: { id: orderId } });
+	});
+}
+
+export async function recordWebhookEvent(
+	id: string,
+	type: string,
+	payload: unknown,
+) {
+	try {
+		await db.webhookEvent.create({
+			data: {
+				id,
+				type,
+				payload: payload as Prisma.InputJsonValue,
+			},
+		});
+		return { duplicate: false };
+	} catch (error) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === "P2002"
+		) {
+			return { duplicate: true };
+		}
+		throw error;
+	}
+}
+
+/**
+ * Releases a webhook claim so the provider's retry is processed instead of
+ * being dropped as a duplicate. Called when handling the event threw.
+ */
+export async function releaseWebhookEvent(id: string) {
+	await db.webhookEvent.deleteMany({ where: { id } });
+}
+
+export async function getStoreOrderById(id: string) {
+	return db.order.findUnique({
+		where: { id },
+		include: {
+			items: true,
+			transactions: { orderBy: { createdAt: "desc" } },
+			statusEvents: { orderBy: { createdAt: "asc" } },
+		},
+	});
+}
+
+export async function getStoreOrderByNumber(orderNumber: string) {
+	return db.order.findUnique({
+		where: { orderNumber },
+		include: {
+			items: true,
+			transactions: { orderBy: { createdAt: "desc" } },
+		},
+	});
+}
+
+export async function getAdminStoreOrder(id: string) {
+	return getStoreOrderById(id);
+}
+
+export async function markCashOnDeliveryPaid(orderId: string, actorId: string) {
+	return db.$transaction(async (transaction) => {
+		const order = await transaction.order.findUniqueOrThrow({
+			where: { id: orderId },
+		});
+		if (order.paymentMethod !== "CASH_ON_DELIVERY") {
+			throw new StoreOperationError(
+				"Only cash on delivery orders can be marked paid this way.",
+			);
+		}
+		if (order.paymentStatus === "PAID") {
+			return order;
+		}
+
+		await transaction.order.update({
+			where: { id: orderId },
+			data: { paymentStatus: "PAID" },
+		});
+		await transaction.storeTransaction.updateMany({
+			where: { orderId },
+			data: { status: "PAID", processedAt: new Date() },
+		});
+		await transaction.orderStatusEvent.create({
+			data: {
+				orderId,
+				status: order.status,
+				note: "Cash received",
+				actorId,
+			},
+		});
+		return transaction.order.findUniqueOrThrow({ where: { id: orderId } });
+	});
+}
+
 export async function getAdminStoreOrders(filters?: {
 	status?: OrderStatus;
 	paymentStatus?: StorePaymentStatus;
+	take?: number;
 }) {
+	const { take, ...where } = filters ?? {};
 	return db.order.findMany({
-		where: filters,
+		where,
 		include: {
-			user: { select: { name: true, email: true } },
+			user: { select: { name: true, email: true, image: true } },
 			items: true,
 			transactions: { orderBy: { createdAt: "desc" } },
 		},
 		orderBy: { placedAt: "desc" },
+		take,
 	});
 }
 
@@ -415,7 +1017,7 @@ export async function createStoreReview(input: {
 	});
 
 	if (!orderItem) {
-		throw new Error(
+		throw new StoreOperationError(
 			"Only delivered products from your own orders can be reviewed.",
 		);
 	}
@@ -494,7 +1096,7 @@ export async function saveUserStoreAddress(
 				select: { id: true },
 			});
 			if (!address) {
-				throw new Error("Address not found.");
+				throw new StoreOperationError("Address not found.");
 			}
 			return transaction.address.update({
 				where: { id: input.id },
@@ -512,7 +1114,7 @@ export async function deleteUserStoreAddress(userId: string, id: string) {
 			where: { id, userId },
 		});
 		if (!address) {
-			throw new Error("Address not found.");
+			throw new StoreOperationError("Address not found.");
 		}
 
 		await transaction.address.delete({ where: { id } });
@@ -538,9 +1140,40 @@ export async function updateStoreOrderStatus(
 	actorId: string,
 ) {
 	return db.$transaction(async (transaction) => {
+		const current = await transaction.order.findUniqueOrThrow({
+			where: { id },
+			include: { items: true },
+		});
+
+		if (
+			(current.status === "REFUNDED" || current.status === "CANCELLED") &&
+			status !== current.status
+		) {
+			throw new StoreOperationError(
+				"A cancelled or refunded order cannot be reopened.",
+			);
+		}
+
+		const shouldRestock =
+			(status === "CANCELLED" || status === "REFUNDED") &&
+			current.status !== "CANCELLED" &&
+			current.status !== "REFUNDED";
+
+		if (shouldRestock) {
+			await restockOrderItems(
+				transaction,
+				current.items,
+				`${status} ${current.orderNumber}`,
+				actorId,
+			);
+		}
+
 		const order = await transaction.order.update({
 			where: { id },
-			data: { status },
+			data: {
+				status,
+				paymentStatus: status === "REFUNDED" ? "REFUNDED" : undefined,
+			},
 		});
 		await transaction.orderStatusEvent.create({
 			data: { orderId: id, status, actorId },
@@ -548,6 +1181,78 @@ export async function updateStoreOrderStatus(
 		return order;
 	});
 }
+
+export async function createStoreCategory(input: CreateStoreCategoryInput) {
+	return db.category.create({ data: input });
+}
+
+export async function updateStoreCategory(
+	id: string,
+	input: UpdateStoreCategoryInput,
+) {
+	return db.category.update({ where: { id }, data: input });
+}
+
+export async function getStoreCategoryById(id: string) {
+	return db.category.findUnique({ where: { id } });
+}
+
+/** Slugs of the storefront pages an order's inventory movement affects. */
+export async function getStorePagesForOrder(orderId: string) {
+	const items = await db.orderItem.findMany({
+		where: { orderId },
+		select: {
+			product: {
+				select: { slug: true, category: { select: { slug: true } } },
+			},
+		},
+	});
+
+	return {
+		productSlugs: [...new Set(items.map((item) => item.product.slug))],
+		categorySlugs: [
+			...new Set(items.map((item) => item.product.category.slug)),
+		],
+	};
+}
+
+/**
+ * Records an audit entry without changing the order. Used when an action has
+ * been requested from a payment provider but the order itself only moves once
+ * the confirming webhook lands.
+ */
+export async function recordStoreOrderStatusNote(
+	orderId: string,
+	status: OrderStatus,
+	actorId: string,
+	note: string,
+) {
+	return db.orderStatusEvent.create({
+		data: { orderId, status, actorId, note },
+	});
+}
+
+export function getRecipientName(shippingAddress: unknown) {
+	if (
+		shippingAddress &&
+		typeof shippingAddress === "object" &&
+		"recipientName" in shippingAddress &&
+		typeof shippingAddress.recipientName === "string"
+	) {
+		return shippingAddress.recipientName;
+	}
+	return "there";
+}
+
+/**
+ * Revenue is only real when the customer paid AND we did not hand the goods
+ * back. Cancelling a paid order restocks the inventory, so counting it as
+ * revenue would overstate the books and double-count the stock.
+ */
+const REALISED_REVENUE_WHERE: Prisma.OrderWhereInput = {
+	paymentStatus: "PAID",
+	status: { notIn: ["CANCELLED", "REFUNDED"] },
+};
 
 export async function getStoreAdminMetrics() {
 	const [
@@ -560,14 +1265,14 @@ export async function getStoreAdminMetrics() {
 	] = await Promise.all([
 		db.product.count(),
 		db.product.count({ where: { status: "ACTIVE" } }),
-		db.product.findMany({
-			where: { status: "ACTIVE", stockQuantity: { lte: 5 } },
-			select: { id: true, name: true, stockQuantity: true },
-			orderBy: { stockQuantity: "asc" },
-		}),
+		db.$queryRaw<
+			{ id: string; name: string; stockQuantity: number }[]
+		>`SELECT id, name, "stockQuantity" FROM store_product
+			WHERE status = 'ACTIVE' AND "stockQuantity" <= "lowStockThreshold"
+			ORDER BY "stockQuantity" ASC`,
 		db.order.count(),
 		db.order.aggregate({
-			where: { paymentStatus: "PAID" },
+			where: REALISED_REVENUE_WHERE,
 			_sum: { totalInPesewas: true },
 		}),
 		db.user.count(),
@@ -578,19 +1283,27 @@ export async function getStoreAdminMetrics() {
 		activeProducts,
 		lowStockProducts,
 		orders,
-		revenueInPesewas: revenue._sum.totalInPesewas ?? 0,
+		revenueInPesewas: revenue._sum?.totalInPesewas ?? 0,
 		customers,
 	};
 }
 
-export async function getStoreSalesAnalytics(days = 30) {
-	const start = new Date();
-	start.setUTCHours(0, 0, 0, 0);
-	start.setUTCDate(start.getUTCDate() - (days - 1));
+/**
+ * Sales figures for a window of `days` calendar days ending today (UTC).
+ * `periodsBack` shifts the whole window into the past by that many periods,
+ * so `getStoreSalesAnalytics(30, 1)` is the 30 days immediately before the
+ * current 30 — what the overview compares against.
+ */
+export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
+	const end = new Date();
+	end.setUTCHours(0, 0, 0, 0);
+	end.setUTCDate(end.getUTCDate() + 1 - days * periodsBack);
+	const start = new Date(end);
+	start.setUTCDate(end.getUTCDate() - days);
 
 	const [orders, statusGroups] = await Promise.all([
 		db.order.findMany({
-			where: { placedAt: { gte: start } },
+			where: { placedAt: { gte: start, lt: end } },
 			include: { items: true },
 			orderBy: { placedAt: "asc" },
 		}),
@@ -615,17 +1328,22 @@ export async function getStoreSalesAnalytics(days = 30) {
 		{ name: string; quantity: number; revenueInPesewas: number }
 	>();
 
+	const isRealisedRevenue = (order: (typeof orders)[number]) =>
+		order.paymentStatus === "PAID" &&
+		order.status !== "CANCELLED" &&
+		order.status !== "REFUNDED";
+
 	for (const order of orders) {
 		const date = order.placedAt.toISOString().slice(0, 10);
 		const day = dailyByDate.get(date);
 		if (day) {
 			day.orders += 1;
-			if (order.paymentStatus === "PAID") {
+			if (isRealisedRevenue(order)) {
 				day.revenueInPesewas += order.totalInPesewas;
 			}
 		}
 
-		if (order.paymentStatus === "PAID") {
+		if (isRealisedRevenue(order)) {
 			for (const item of order.items) {
 				const current = productPerformance.get(item.productId) ?? {
 					name: item.productName,
@@ -639,17 +1357,33 @@ export async function getStoreSalesAnalytics(days = 30) {
 		}
 	}
 
-	const paidOrders = orders.filter((order) => order.paymentStatus === "PAID");
+	const paidOrders = orders.filter(isRealisedRevenue);
 	const revenueInPesewas = paidOrders.reduce(
 		(total, order) => total + order.totalInPesewas,
 		0,
 	);
+
+	// Cash on delivery never goes through a payment provider, so including it
+	// would score every undelivered COD order as a failed payment. Likewise a
+	// refunded order is a *successful* payment that was later reversed.
+	const settledPaymentOrders = orders.filter(
+		(order) =>
+			order.paymentMethod !== "CASH_ON_DELIVERY" &&
+			(order.paymentStatus === "PAID" ||
+				order.paymentStatus === "FAILED" ||
+				order.paymentStatus === "REFUNDED"),
+	);
+	const succeededPaymentCount = settledPaymentOrders.filter(
+		(order) => order.paymentStatus !== "FAILED",
+	).length;
 
 	return {
 		days,
 		daily,
 		orderCount: orders.length,
 		paidOrderCount: paidOrders.length,
+		attemptedPaymentCount: settledPaymentOrders.length,
+		succeededPaymentCount,
 		revenueInPesewas,
 		averageOrderValueInPesewas:
 			paidOrders.length > 0
@@ -659,10 +1393,179 @@ export async function getStoreSalesAnalytics(days = 30) {
 			status: group.status,
 			count: group._count._all,
 		})),
-		topProducts: [...productPerformance.values()]
+		topProducts: [...productPerformance.entries()]
+			.map(([productId, performance]) => ({ productId, ...performance }))
 			.sort(
 				(left, right) => right.revenueInPesewas - left.revenueInPesewas,
 			)
 			.slice(0, 5),
 	};
 }
+
+// An order is waiting on the store once the customer has done their part:
+// paid online, or chosen cash on delivery (which is only ever paid at the door).
+const AWAITING_DISPATCH_WHERE: Prisma.OrderWhereInput = {
+	status: { in: ["PENDING", "CONFIRMED", "PROCESSING"] },
+	OR: [{ paymentStatus: "PAID" }, { paymentMethod: "CASH_ON_DELIVERY" }],
+};
+
+export const DISPATCH_WINDOW_HOURS = 48;
+
+export async function countOrdersAwaitingDispatch() {
+	return db.order.count({ where: AWAITING_DISPATCH_WHERE });
+}
+
+export interface StoreOverviewOptions {
+	/** Length of the reporting window in days. */
+	days?: number;
+	/** How many of the newest orders to return. */
+	recentOrders?: number;
+}
+
+export async function getStoreOverview({
+	days = 30,
+	recentOrders = 6,
+}: StoreOverviewOptions = {}) {
+	const now = new Date();
+	const dispatchDeadline = new Date(
+		now.getTime() - DISPATCH_WINDOW_HOURS * 60 * 60 * 1000,
+	);
+	const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+	const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+	const windowStart = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+	const [
+		metrics,
+		analytics,
+		previous,
+		orders,
+		lowStock,
+		awaitingDispatch,
+		pastDispatchWindow,
+		failedPayments,
+		draftProducts,
+		newCustomers,
+	] = await Promise.all([
+		getStoreAdminMetrics(),
+		getStoreSalesAnalytics(days),
+		getStoreSalesAnalytics(days, 1),
+		getAdminStoreOrders({ take: recentOrders }),
+		db.product.findMany({
+			where: {
+				status: "ACTIVE",
+				stockQuantity: { lte: db.product.fields.lowStockThreshold },
+			},
+			select: {
+				id: true,
+				name: true,
+				slug: true,
+				stockQuantity: true,
+				lowStockThreshold: true,
+				images: {
+					orderBy: { sortOrder: "asc" },
+					take: 1,
+					select: { url: true, alt: true },
+				},
+			},
+			orderBy: { stockQuantity: "asc" },
+			take: 6,
+		}),
+		db.order.count({ where: AWAITING_DISPATCH_WHERE }),
+		db.order.count({
+			where: {
+				AND: [
+					AWAITING_DISPATCH_WHERE,
+					{ placedAt: { lt: dispatchDeadline } },
+				],
+			},
+		}),
+		db.order.count({
+			where: { paymentStatus: "FAILED", placedAt: { gte: sevenDaysAgo } },
+		}),
+		db.product.count({ where: { status: "DRAFT" } }),
+		db.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+	]);
+
+	const productIds = [
+		...new Set([
+			...lowStock.map((product) => product.id),
+			...analytics.topProducts.map((product) => product.productId),
+		]),
+	];
+
+	const [velocity, productDetails] = await Promise.all([
+		productIds.length
+			? db.orderItem.groupBy({
+					by: ["productId"],
+					where: {
+						productId: { in: productIds },
+						order: {
+							placedAt: { gte: windowStart },
+							...REALISED_REVENUE_WHERE,
+						},
+					},
+					_sum: { quantity: true },
+				})
+			: [],
+		productIds.length
+			? db.product.findMany({
+					where: { id: { in: productIds } },
+					select: {
+						id: true,
+						slug: true,
+						category: { select: { name: true } },
+						images: {
+							orderBy: { sortOrder: "asc" },
+							take: 1,
+							select: { url: true, alt: true },
+						},
+					},
+				})
+			: [],
+	]);
+
+	const unitsSoldByProduct = new Map(
+		velocity.map((row) => [row.productId, row._sum.quantity ?? 0]),
+	);
+	const detailsByProduct = new Map(
+		productDetails.map((product) => [product.id, product]),
+	);
+
+	return {
+		days,
+		generatedAt: now,
+		metrics,
+		analytics,
+		previous,
+		queues: {
+			awaitingDispatch,
+			pastDispatchWindow,
+			failedPayments,
+			draftProducts,
+			newCustomers,
+		},
+		recentOrders: orders,
+		lowStock: lowStock.map((product) => ({
+			id: product.id,
+			name: product.name,
+			slug: product.slug,
+			stockQuantity: product.stockQuantity,
+			lowStockThreshold: product.lowStockThreshold,
+			imageUrl: product.images[0]?.url ?? null,
+			imageAlt: product.images[0]?.alt ?? product.name,
+			unitsPerDay: (unitsSoldByProduct.get(product.id) ?? 0) / days,
+		})),
+		topProducts: analytics.topProducts.map((product) => {
+			const details = detailsByProduct.get(product.productId);
+			return {
+				...product,
+				slug: details?.slug ?? null,
+				categoryName: details?.category?.name ?? null,
+				imageUrl: details?.images[0]?.url ?? null,
+				imageAlt: details?.images[0]?.alt ?? product.name,
+			};
+		}),
+	};
+}
+
+export type StoreOverview = Awaited<ReturnType<typeof getStoreOverview>>;

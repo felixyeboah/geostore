@@ -28,6 +28,39 @@ import { invitationOnlyPlugin } from "./plugins/invitation-only";
 
 const appUrl = getBaseUrl(process.env.NEXT_PUBLIC_SAAS_URL, 3000);
 
+/**
+ * Headers trusted to carry the real client IP.
+ *
+ * This is a security boundary, not a convenience. Better Auth reads the *first*
+ * entry of the first matching header and silently skips rate limiting when it
+ * cannot resolve an IP, so the header list decides whether the limiter works at
+ * all and whether a caller can pick their own bucket.
+ *
+ * Its default, `x-forwarded-for`, is the wrong choice behind Cloudflare.
+ * Cloudflare *appends* to a client-supplied `X-Forwarded-For` rather than
+ * replacing it, so the first entry is attacker-controlled: a fresh value per
+ * request yields a fresh counter per request and the limiter never fires.
+ * `CF-Connecting-IP` is set by the edge and overwrites anything the client
+ * sent, so it is the only one we trust in production.
+ *
+ * `IP_ADDRESS_HEADERS` overrides this for deployments that terminate somewhere
+ * other than Cloudflare. Only list headers your proxy is known to overwrite.
+ */
+function getTrustedIpHeaders(): string[] {
+	const configured = process.env.IP_ADDRESS_HEADERS;
+
+	if (configured) {
+		return configured
+			.split(",")
+			.map((header) => header.trim().toLowerCase())
+			.filter(Boolean);
+	}
+
+	return process.env.NODE_ENV === "production"
+		? ["cf-connecting-ip"]
+		: ["x-forwarded-for"];
+}
+
 export const auth = betterAuth({
 	baseURL: appUrl,
 	trustedOrigins: [appUrl],
@@ -38,10 +71,57 @@ export const auth = betterAuth({
 		database: {
 			generateId: false,
 		},
+		ipAddress: {
+			ipAddressHeaders: getTrustedIpHeaders(),
+		},
+	},
+	/**
+	 * Enabled by default in production only, which is what we want: the limiter
+	 * is a real defence in front of credential stuffing, but tripping it in local
+	 * development just makes the app look broken.
+	 *
+	 * Storage must be "database". The default is an in-process Map, and on
+	 * Workers that is one counter per isolate — the effective limit becomes the
+	 * configured max multiplied by however many isolates are warm.
+	 *
+	 * Better Auth already ships strict defaults for `/sign-in`, `/sign-up`,
+	 * `/change-password`, `/change-email` (3 per 10s) and the password-reset and
+	 * verification-email sends (3 per 60s). The rules below cover the endpoints
+	 * it does not: the ones where a short secret can be guessed by repetition.
+	 */
+	rateLimit: {
+		// undefined defers to Better Auth's own default, which is "on in
+		// production". RATE_LIMIT_ENABLED exists so the Playwright suite can turn
+		// it off explicitly: that suite runs a production build and signs in
+		// nine times over, well past the 3-per-10s default, and relying on the
+		// limiter happening to no-op because no proxy sets an IP header is the
+		// kind of accident that breaks the day someone adds one.
+		enabled: process.env.RATE_LIMIT_ENABLED
+			? process.env.RATE_LIMIT_ENABLED === "true"
+			: undefined,
+		storage: "database",
+		customRules: {
+			// A TOTP code is six digits and a backup code is short. Without a
+			// limit here, second-factor verification is brute-forceable in
+			// minutes once a password is known, which defeats the point of it.
+			"/two-factor/*": { window: 60, max: 5 },
+			// Guessing a reset token, and replaying a known-good one.
+			"/reset-password": { window: 60, max: 5 },
+			"/verify-email": { window: 60, max: 10 },
+			// Invitation ids are the only thing standing between an outsider and
+			// membership of an organisation.
+			"/organization/accept-invitation": { window: 60, max: 10 },
+			// Account-destroying operations; no legitimate client repeats these.
+			"/delete-user": { window: 60, max: 3 },
+		},
 	},
 	session: {
 		expiresIn: config.sessionCookieMaxAge,
-		freshAge: 0,
+		// 0 disabled re-authentication entirely, so a stolen 29-day-old cookie
+		// could change the account email, disable 2FA or delete the account.
+		// Sensitive operations now require a session authenticated within the
+		// last 15 minutes.
+		freshAge: 60 * 15,
 	},
 	databaseHooks: {
 		session: {

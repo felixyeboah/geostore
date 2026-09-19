@@ -9,9 +9,9 @@ import {
 	toastSuccess,
 } from "@repo/ui/components/toast";
 import { SettingsItem } from "@shared/components/SettingsItem";
+import { useFormatter, useTranslations } from "@shared/lib/translations";
 import { useQueryClient } from "@tanstack/react-query";
 import { KeyIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useFormatter, useTranslations } from "@shared/lib/translations";
 
 export function PasskeysBlock() {
 	const t = useTranslations();

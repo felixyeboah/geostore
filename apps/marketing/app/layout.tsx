@@ -1,6 +1,9 @@
 import { AnalyticsScript } from "@analytics";
+import { CartDrawer } from "@commerce/components/CartDrawer";
+import { CartProvider } from "@commerce/components/CartProvider";
 import { config } from "@config";
 import { cn } from "@repo/ui";
+import { Toaster } from "@repo/ui/components/toast";
 import { ClientProviders } from "@shared/components/ClientProviders";
 import { ConsentBanner } from "@shared/components/ConsentBanner";
 import { ConsentProvider } from "@shared/components/ConsentProvider";
@@ -38,12 +41,24 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 					"min-h-screen bg-background text-foreground antialiased",
 				)}
 			>
-				<ConsentProvider initialConsent={consentCookie?.value === "true"}>
+				<ConsentProvider
+					initialConsent={consentCookie?.value === "true"}
+				>
 					<ClientProviders>
-						<NavBar />
-						<main className="min-h-screen">{children}</main>
-						<Footer />
-						<ConsentBanner />
+						<CartProvider>
+							<NavBar />
+							<main className="min-h-screen">{children}</main>
+							<Footer />
+							<ConsentBanner />
+							<CartDrawer />
+							<Toaster
+								position="bottom-center"
+								toastOptions={{
+									unstyled: true,
+									classNames: { toast: "w-full" },
+								}}
+							/>
+						</CartProvider>
 						<AnalyticsScript />
 					</ClientProviders>
 				</ConsentProvider>

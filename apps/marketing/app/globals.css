@@ -33,3 +33,62 @@
 		border-color: var(--border);
 	}
 }
+
+/* Landing palette: warm paper, near-black ink, hairline borders. */
+@layer base {
+	:root {
+		--background: #fbf8f7;
+		--foreground: #1d1c1c;
+		--border: #e6e3e2;
+		--input: #e6e3e2;
+		--muted: #efede9;
+		--muted-foreground: #5f5c5a;
+		--card: #ffffff;
+		--card-foreground: #1d1c1c;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+}
+
+/* Editorial catalogue surfaces — /shop, /categories/[slug] and
+   /products/[slug] — matching design/landing-v5/02-editorial.html.
+
+   Scoped rather than global on purpose: the home page is still the
+   video-based design and is tuned for the warmer paper above. Only ink,
+   hairline and muted are redefined here; --background is deliberately left
+   alone so there is no visible seam where the shared header and footer meet
+   the page. */
+.editorial {
+	--foreground: #111110;
+	--muted-foreground: #6f6e69;
+	--border: #e2e1dc;
+	--input: #e2e1dc;
+	--muted: #f1f0ec;
+	--ed-accent: #6b28d9;
+
+	/* tooling/tailwind/theme.css uses a plain `@theme`, not `@theme inline`,
+	   so every --color-* is resolved once at :root. Redefining --foreground
+	   alone would never reach `text-foreground`; the matching --color-* has
+	   to be set here too. */
+	--color-foreground: #111110;
+	--color-muted-foreground: #6f6e69;
+	--color-border: #e2e1dc;
+	--color-input: #e2e1dc;
+	--color-muted: #f1f0ec;
+}
+
+/* The editorial mockup sets its small caps a touch tighter than the
+   site-wide utility. */
+.editorial .eyebrow {
+	letter-spacing: 0.12em;
+}
+
+@utility eyebrow {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	line-height: 1;
+	text-transform: uppercase;
+}

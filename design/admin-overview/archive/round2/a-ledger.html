@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A — Ledger · GeoStore Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#18181b;        /* numbers, headings */
+    --text:#3f3f46;       /* body */
+    --muted:#71717a;      /* labels */
+    --faint:#a1a1aa;      /* axis, tertiary */
+    --rule:#ececec;       /* hairlines */
+    --rule-strong:#dcdcdc;
+    --accent:#6b28d9;     /* used three times on this page, deliberately */
+    --pos:#15803d; --neg:#b91c1c; --warn:#a16207;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:#fff;color:var(--text);
+    font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;font-feature-settings:"cv05","ss03"}
+  .shell{max-width:1120px;margin:0 auto;padding:44px 40px 96px}
+  .num{font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+  a{color:inherit;text-decoration:none}
+  hr{border:0;border-top:1px solid var(--rule);margin:0}
+
+  /* ---------- masthead ---------- */
+  .mast{display:flex;align-items:center;justify-content:space-between;gap:24px;
+    padding-bottom:22px}
+  h1{margin:0;font-size:20px;font-weight:600;color:var(--ink);letter-spacing:-0.015em}
+  .mast-right{display:flex;align-items:center;gap:8px}
+  .range{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;
+    border:1px solid var(--rule-strong);border-radius:7px;background:#fff;
+    font:inherit;font-size:13px;color:var(--text);cursor:pointer;white-space:nowrap}
+  .range svg{color:var(--faint)}
+  .primary{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;
+    border-radius:7px;background:var(--ink);color:#fff;font-size:13px;font-weight:500;
+    border:1px solid var(--ink);cursor:pointer;white-space:nowrap}
+
+  /* ---------- hero ---------- */
+  .hero{padding:34px 0 8px}
+  .label{color:var(--muted);font-size:13px}
+  .hero-num{margin-top:6px;font-size:40px;font-weight:600;color:var(--ink);
+    letter-spacing:-0.032em;line-height:1.05}
+  .hero-cmp{margin-top:8px;font-size:13px;color:var(--muted)}
+  .pos{color:var(--pos);font-weight:500}
+  .neg{color:var(--neg);font-weight:500}
+  .chartwrap{margin-top:26px;position:relative}
+  .axis-x{display:flex;justify-content:space-between;margin-top:10px;
+    color:var(--faint);font-size:11.5px}
+
+  /* ---------- divided metric row ---------- */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--rule);margin-top:30px}
+  .m{padding:24px 28px 26px;border-left:1px solid var(--rule)}
+  .m:first-child{border-left:0;padding-left:0}
+  .m-num{margin-top:7px;font-size:26px;font-weight:600;color:var(--ink);letter-spacing:-0.025em}
+  .m-cmp{margin-top:5px;font-size:12.5px;color:var(--muted)}
+
+  /* ---------- two-column sections ---------- */
+  .split{display:grid;grid-template-columns:1.45fr 1fr;
+    border-top:1px solid var(--rule)}
+  .pane{padding:30px 34px 34px 0;min-width:0}
+  .pane + .pane{border-left:1px solid var(--rule);padding:30px 0 34px 34px}
+  .pane-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    padding-bottom:6px}
+  h2{margin:0;font-size:14px;font-weight:600;color:var(--ink)}
+  .more{color:var(--accent);font-size:13px;font-weight:500}
+
+  /* ---------- plain order list ---------- */
+  .ord{display:grid;grid-template-columns:1fr auto;gap:8px 20px;
+    padding:13px 0;border-bottom:1px solid var(--rule);align-items:center}
+  .ord:last-of-type{border-bottom:0}
+  .ord-a{min-width:0}
+  .ord-name{display:block;color:var(--ink);font-size:13.5px;font-weight:500}
+  .ord-meta{display:block;margin-top:2px;color:var(--muted);font-size:12.5px}
+  .ord-b{text-align:right;white-space:nowrap}
+  .ord-total{display:block;color:var(--ink);font-size:13.5px;font-weight:500}
+  .ord-state{margin-top:3px;font-size:12px;color:var(--muted);
+    display:flex;align-items:center;gap:6px;justify-content:flex-end}
+  .dot{width:5px;height:5px;border-radius:999px;display:inline-block;flex:none}
+  .d-green{background:var(--pos)} .d-blue{background:#4338ca}
+  .d-amber{background:var(--warn)} .d-grey{background:#a1a1aa}
+
+  /* ---------- attention rows ---------- */
+  .att{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    padding:13px 0;border-bottom:1px solid var(--rule)}
+  .att:last-of-type{border-bottom:0}
+  .att-a{color:var(--ink);font-size:13.5px}
+  .att-a small{display:block;margin-top:2px;color:var(--muted);font-size:12.5px}
+  .att-n{color:var(--ink);font-size:16px;font-weight:600;white-space:nowrap}
+  .att-n.flag{color:var(--neg)}
+
+  /* ---------- product rows ---------- */
+  .prow{display:grid;grid-template-columns:1fr 64px 84px;gap:16px;align-items:center;
+    padding:12px 0;border-bottom:1px solid var(--rule);font-size:13.5px}
+  .prow:last-of-type{border-bottom:0}
+  .prow .pn{color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .prow .pu{color:var(--muted);font-size:12.5px;text-align:right}
+  .prow .pv{color:var(--ink);font-weight:500;text-align:right}
+
+  /* ---------- fulfilment rows ---------- */
+  .frow{display:grid;grid-template-columns:86px 1fr 34px;gap:14px;align-items:center;
+    padding:11px 0;font-size:13px}
+  .frow .fk{color:var(--text)}
+  .frow .fn{color:var(--ink);font-weight:500;text-align:right;font-size:13px}
+  .track{height:3px;background:#f1f1f1;border-radius:999px;overflow:hidden}
+  .track span{display:block;height:100%;background:var(--ink);border-radius:999px}
+  .track span.mut{background:#c7c7c7}
+
+  @media (max-width:900px){
+    .shell{padding:32px 24px 72px}
+    .metrics{grid-template-columns:1fr 1fr}
+    .m{padding:20px 22px 22px}
+    .m:nth-child(3){border-left:0;padding-left:0}
+    .m:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+    .split{grid-template-columns:1fr}
+    .pane{padding-right:0}
+    .pane + .pane{border-left:0;padding-left:0;border-top:1px solid var(--rule)}
+  }
+  @media (max-width:560px){
+    .shell{padding:24px 18px 64px}
+    .mast{flex-wrap:wrap;gap:14px}
+    .mast-right{flex:1;justify-content:flex-end}
+    .hero-num{font-size:32px}
+    .metrics{grid-template-columns:1fr}
+    .m{border-left:0;padding:18px 0;border-bottom:1px solid var(--rule)}
+    .m:last-child{border-bottom:0}
+    .prow{grid-template-columns:1fr 78px}
+    .prow .pu{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===================== masthead ===================== -->
+  <div class="mast">
+    <h1>Overview</h1>
+    <div class="mast-right">
+      <button class="range" type="button">Last 30 days
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <button class="primary" type="button">Add product</button>
+    </div>
+  </div>
+  <hr />
+
+  <!-- ===================== hero ===================== -->
+  <section class="hero">
+    <div class="label">Paid revenue</div>
+    <div class="hero-num num">GH₵ 48,320</div>
+    <div class="hero-cmp"><span class="pos">+12.4%</span> from GH₵ 42,990 in the previous 30 days</div>
+
+    <div class="chartwrap">
+      <svg viewBox="0 0 1040 196" width="100%" height="188" preserveAspectRatio="none"
+           role="img" aria-label="Daily paid revenue over the last 30 days">
+        <g stroke="#f4f4f4" stroke-width="1">
+          <line x1="0" y1="20" x2="1040" y2="20"/>
+          <line x1="0" y1="80" x2="1040" y2="80"/>
+          <line x1="0" y1="140" x2="1040" y2="140"/>
+        </g>
+        <line x1="0" y1="190" x2="1040" y2="190" stroke="#e4e4e4" stroke-width="1"/>
+        <polyline fill="none" stroke="#18181b" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"
+          points="6,148 41,136 76,158 111,124 146,132 181,114 216,96 251,125 286,137 321,117 356,105 391,84 426,99 461,114 496,126 531,108 566,89 601,69 636,81 671,102 706,112 741,94 776,76 811,59 846,48 881,70 916,87 951,66 986,50 1030,38"/>
+        <circle cx="1030" cy="38" r="3" fill="#18181b"/>
+      </svg>
+      <div class="axis-x num">
+        <span>20 Aug</span><span>27 Aug</span><span>3 Sep</span><span>10 Sep</span><span>18 Sep</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== divided metrics ===================== -->
+  <div class="metrics">
+    <div class="m">
+      <div class="label">Orders</div>
+      <div class="m-num num">312</div>
+      <div class="m-cmp"><span class="pos">+8.1%</span> · 264 paid</div>
+    </div>
+    <div class="m">
+      <div class="label">Average order value</div>
+      <div class="m-num num">GH₵ 183</div>
+      <div class="m-cmp"><span class="pos">+4.0%</span> across paid orders</div>
+    </div>
+    <div class="m">
+      <div class="label">Payment success</div>
+      <div class="m-num num">94%</div>
+      <div class="m-cmp"><span class="neg">−1.8%</span> · 218 of 232 online</div>
+    </div>
+    <div class="m">
+      <div class="label">Customers</div>
+      <div class="m-num num">1,842</div>
+      <div class="m-cmp"><span class="pos">+64</span> new this month</div>
+    </div>
+  </div>
+
+  <!-- ===================== orders / attention ===================== -->
+  <div class="split">
+    <section class="pane">
+      <div class="pane-head">
+        <h2>Recent orders</h2>
+        <a class="more" href="#">View all</a>
+      </div>
+      <a class="ord" href="#">
+        <span class="ord-a">
+          <span class="ord-name">Ama Owusu</span>
+          <span class="ord-meta num">GS-10428 · 3 items · 6 minutes ago</span>
+        </span>
+        <span class="ord-b">
+          <span class="ord-total num">GH₵ 412</span>
+          <span class="ord-state"><i class="dot d-amber"></i>Processing</span>
+        </span>
+      </a>
+      <a class="ord" href="#">
+        <span class="ord-a">
+          <span class="ord-name">Kofi Mensah</span>
+          <span class="ord-meta num">GS-10427 · 1 item · 42 minutes ago</span>
+        </span>
+        <span class="ord-b">
+          <span class="ord-total num">GH₵ 149</span>
+          <span class="ord-state"><i class="dot d-blue"></i>Shipped</span>
+        </span>
+      </a>
+      <a class="ord" href="#">
+        <span class="ord-a">
+          <span class="ord-name">Esi Boateng</span>
+          <span class="ord-meta num">GS-10426 · 5 items · 2 hours ago</span>
+        </span>
+        <span class="ord-b">
+          <span class="ord-total num">GH₵ 878</span>
+          <span class="ord-state"><i class="dot d-green"></i>Delivered</span>
+        </span>
+      </a>
+      <a class="ord" href="#">
+        <span class="ord-a">
+          <span class="ord-name">Yaw Asante</span>
+          <span class="ord-meta num">GS-10425 · 2 items · 5 hours ago</span>
+        </span>
+        <span class="ord-b">
+          <span class="ord-total num">GH₵ 236</span>
+          <span class="ord-state"><i class="dot d-grey"></i>Pending</span>
+        </span>
+      </a>
+      <a class="ord" href="#">
+        <span class="ord-a">
+          <span class="ord-name">Adjoa Nyarko</span>
+          <span class="ord-meta num">GS-10424 · 1 item · 9 hours ago</span>
+        </span>
+        <span class="ord-b">
+          <span class="ord-total num">GH₵ 94</span>
+          <span class="ord-state"><i class="dot d-green"></i>Delivered</span>
+        </span>
+      </a>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <h2>Waiting on you</h2>
+      </div>
+      <a class="att" href="#">
+        <span class="att-a">Past dispatch SLA<small>Paid over 48 hours ago</small></span>
+        <span class="att-n flag num">4</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-a">Orders to fulfil<small>Paid, awaiting dispatch</small></span>
+        <span class="att-n num">18</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-a">Low on stock<small>At or below threshold</small></span>
+        <span class="att-n num">6</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-a">Failed payments<small>Last 7 days</small></span>
+        <span class="att-n num">14</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-a">Draft products<small>Hidden from the catalogue</small></span>
+        <span class="att-n num">18</span>
+      </a>
+    </section>
+  </div>
+
+  <!-- ===================== products / fulfilment ===================== -->
+  <div class="split">
+    <section class="pane">
+      <div class="pane-head">
+        <h2>Top products</h2>
+        <a class="more" href="#">Analytics</a>
+      </div>
+      <div class="prow">
+        <span class="pn">Bolga Market Basket — Large</span>
+        <span class="pu num">82 units</span>
+        <span class="pv num">GH₵ 9,840</span>
+      </div>
+      <div class="prow">
+        <span class="pn">Kente Throw Pillow Set</span>
+        <span class="pu num">65 units</span>
+        <span class="pv num">GH₵ 7,215</span>
+      </div>
+      <div class="prow">
+        <span class="pn">Raw Shea Butter 500g</span>
+        <span class="pu num">156 units</span>
+        <span class="pv num">GH₵ 5,460</span>
+      </div>
+      <div class="prow">
+        <span class="pn">Ankara Tote Bag</span>
+        <span class="pu num">47 units</span>
+        <span class="pv num">GH₵ 4,120</span>
+      </div>
+      <div class="prow">
+        <span class="pn">Adinkra Wall Print A2</span>
+        <span class="pu num">38 units</span>
+        <span class="pv num">GH₵ 2,980</span>
+      </div>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <h2>Fulfilment</h2>
+        <span class="label num">312 orders</span>
+      </div>
+      <div class="frow">
+        <span class="fk">Delivered</span>
+        <span class="track"><span style="width:63.5%"></span></span>
+        <span class="fn num">198</span>
+      </div>
+      <div class="frow">
+        <span class="fk">Shipped</span>
+        <span class="track"><span style="width:13.1%"></span></span>
+        <span class="fn num">41</span>
+      </div>
+      <div class="frow">
+        <span class="fk">Processing</span>
+        <span class="track"><span style="width:7.7%"></span></span>
+        <span class="fn num">24</span>
+      </div>
+      <div class="frow">
+        <span class="fk">Pending</span>
+        <span class="track"><span class="mut" style="width:5.8%"></span></span>
+        <span class="fn num">18</span>
+      </div>
+      <div class="frow">
+        <span class="fk">Cancelled</span>
+        <span class="track"><span class="mut" style="width:2.9%"></span></span>
+        <span class="fn num">9</span>
+      </div>
+      <div class="frow">
+        <span class="fk">Refunded</span>
+        <span class="track"><span class="mut" style="width:1.9%"></span></span>
+        <span class="fn num">6</span>
+      </div>
+    </section>
+  </div>
+
+</div>
+</body>
+</html>

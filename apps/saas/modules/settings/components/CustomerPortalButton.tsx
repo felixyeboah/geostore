@@ -3,9 +3,9 @@
 import { Button } from "@repo/ui/components/button";
 import { toastError } from "@repo/ui/components/toast";
 import { orpc } from "@shared/lib/orpc-query-utils";
+import { useTranslations } from "@shared/lib/translations";
 import { useMutation } from "@tanstack/react-query";
 import { CreditCardIcon } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 
 export function CustomerPortalButton({ purchaseId }: { purchaseId: string }) {
 	const t = useTranslations();

@@ -1,4 +1,4 @@
-import { formatMoney } from "@commerce/lib/money";
+import { formatMoney } from "@repo/commerce";
 import { getStoreSalesAnalytics } from "@repo/database";
 import { Card } from "@repo/ui";
 import { BarChart3Icon, CircleDollarSignIcon, ReceiptIcon } from "lucide-react";
@@ -13,8 +13,15 @@ export default async function AdminAnalyticsPage() {
 		...analytics.topProducts.map((product) => product.revenueInPesewas),
 		1,
 	);
-	const paidRate = analytics.orderCount
-		? Math.round((analytics.paidOrderCount / analytics.orderCount) * 100)
+	// Payment success is a property of payment *attempts*, not of every order:
+	// counting cash-on-delivery and still-pending checkouts in the denominator
+	// made a perfectly healthy store look like it was declining half its cards.
+	const paymentSuccessRate = analytics.attemptedPaymentCount
+		? Math.round(
+				(analytics.succeededPaymentCount /
+					analytics.attemptedPaymentCount) *
+					100,
+			)
 		: 0;
 
 	return (
@@ -46,8 +53,12 @@ export default async function AdminAnalyticsPage() {
 						},
 						{
 							label: "Payment success",
-							value: `${paidRate}%`,
-							detail: `${analytics.orderCount} checkout records`,
+							value: analytics.attemptedPaymentCount
+								? `${paymentSuccessRate}%`
+								: "—",
+							detail: analytics.attemptedPaymentCount
+								? `${analytics.succeededPaymentCount} of ${analytics.attemptedPaymentCount} online payments`
+								: "No online payments yet",
 							icon: BarChart3Icon,
 						},
 					].map((metric) => (
@@ -136,7 +147,7 @@ export default async function AdminAnalyticsPage() {
 					) : (
 						<div className="divide-y">
 							{analytics.topProducts.map((product) => (
-								<div key={product.name} className="p-5">
+								<div key={product.productId} className="p-5">
 									<div className="flex justify-between gap-4 text-sm">
 										<span className="font-medium">
 											{product.name}

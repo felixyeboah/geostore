@@ -2,8 +2,8 @@ import { Heading, Link, Text } from "@react-email/components";
 import React from "react";
 import PrimaryButton from "../components/PrimaryButton";
 import Wrapper from "../components/Wrapper";
-import { createTranslator } from "../lib/translator";
 import { defaultLocale, defaultTranslations } from "../lib/translations";
+import { createTranslator } from "../lib/translator";
 import type { BaseMailProps } from "../types";
 
 export function OrganizationInvitation({

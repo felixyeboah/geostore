@@ -5,8 +5,8 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@repo/ui/components/tooltip";
-import { CheckIcon, ClockIcon } from "lucide-react";
 import { useTranslations } from "@shared/lib/translations";
+import { CheckIcon, ClockIcon } from "lucide-react";
 
 export function EmailVerified({
 	verified,

@@ -6,8 +6,8 @@ import { createPurchasesHelper } from "@repo/payments/lib/helper";
 import { SettingsList } from "@shared/components/SettingsList";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { getServerQueryClient } from "@shared/lib/server";
-import { notFound } from "next/navigation";
 import { getTranslations } from "@shared/lib/translations";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
 	const t = await getTranslations("settings.billing");

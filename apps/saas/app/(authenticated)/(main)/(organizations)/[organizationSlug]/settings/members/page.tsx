@@ -3,8 +3,8 @@ import { InviteMemberForm } from "@organizations/components/InviteMemberForm";
 import { OrganizationMembersBlock } from "@organizations/components/OrganizationMembersBlock";
 import { isOrganizationAdmin } from "@repo/auth/lib/helper";
 import { SettingsList } from "@shared/components/SettingsList";
-import { notFound } from "next/navigation";
 import { getTranslations } from "@shared/lib/translations";
+import { notFound } from "next/navigation";
 export async function generateMetadata() {
 	const t = await getTranslations("organizations.settings");
 

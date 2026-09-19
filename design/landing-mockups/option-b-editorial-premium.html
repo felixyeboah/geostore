@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore — Option B · Editorial Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0b0b0e; --black-2:#141419; --cream:#f5f3ee; --cream-2:#ebe8e0;
+    --ink:#16161a; --muted:#6f6f78; --faint:#a0a0aa; --line:#e0ddd5; --line-d:rgba(255,255,255,.14);
+    --primary:#6b28d9; --primary-l:#a97cf0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--cream); color:var(--ink);
+    font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;width:100%;height:100%;object-fit:cover}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+  @media(max-width:700px){.wrap{padding:0 18px}}
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-0.012em}
+  .display{font-family:"Instrument Serif",Georgia,serif;font-weight:400;line-height:1.02;letter-spacing:-0.022em}
+  .kicker{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .kicker.on-dark{color:rgba(255,255,255,.5)}
+  .tnum{font-variant-numeric:tabular-nums}
+  .rule{height:1px;background:var(--line);border:0}
+
+  /* ---------- chrome ---------- */
+  .ticker{background:var(--black);color:rgba(255,255,255,.72);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase}
+  .ticker .wrap{display:flex;align-items:center;justify-content:space-between;min-height:36px;gap:20px}
+  .ticker .mid{color:#fff}
+  header.site{position:absolute;top:36px;left:0;right:0;z-index:30}
+  .hdr{display:flex;align-items:center;gap:28px;padding:22px 0;color:#fff}
+  .logo{font-family:"Instrument Serif",Georgia,serif;font-size:25px;letter-spacing:-0.02em}
+  .navlinks{display:flex;gap:26px;font-size:13.5px;letter-spacing:.01em}
+  .navlinks a{opacity:.78}.navlinks a:hover{opacity:1}
+  .hdr .right{margin-left:auto;display:flex;align-items:center;gap:22px;font-size:13.5px}
+  .hdr .right a{display:inline-flex;align-items:center;gap:7px;opacity:.85}
+  .hdr .right a:hover{opacity:1}
+  .cartnum{font-variant-numeric:tabular-nums}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;min-height:92vh;background:var(--black);color:#fff;display:flex;align-items:flex-end;overflow:hidden}
+  .hero .bg{position:absolute;inset:0}
+  .hero .bg img{opacity:.55;object-position:70% 50%}
+  .hero .veil{position:absolute;inset:0;background:linear-gradient(100deg,rgba(11,11,14,.95) 0%,rgba(11,11,14,.72) 38%,rgba(11,11,14,.12) 78%)}
+  .hero .inner{position:relative;z-index:2;width:100%;padding:0 0 70px}
+  .hero h1{font-size:clamp(44px,7.4vw,104px);max-width:14ch}
+  .hero h1 em{font-style:italic;color:var(--primary-l)}
+  .hero .lede{margin-top:26px;max-width:46ch;font-size:16.5px;line-height:1.72;color:rgba(255,255,255,.72)}
+  .hero .acts{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 26px;border-radius:999px;font-size:14.5px;font-weight:500;border:1px solid transparent;transition:.18s;cursor:pointer}
+  .btn-light{background:#fff;color:var(--black)}.btn-light:hover{background:rgba(255,255,255,.88)}
+  .btn-outline{border-color:rgba(255,255,255,.3);color:#fff}.btn-outline:hover{background:rgba(255,255,255,.08)}
+  .btn-dark{background:var(--black);color:#fff}.btn-dark:hover{background:#25252d}
+  .btn-line{border-color:var(--ink);color:var(--ink)}.btn-line:hover{background:var(--ink);color:#fff}
+  .hero .chip{
+    position:absolute;right:32px;bottom:70px;z-index:3;display:flex;gap:14px;align-items:center;
+    background:rgba(255,255,255,.1);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.16);
+    border-radius:16px;padding:12px 18px 12px 12px
+  }
+  .hero .chip .t{width:56px;height:56px;border-radius:11px;overflow:hidden;flex:none}
+  .hero .chip .n{font-size:14px;font-weight:500}
+  .hero .chip .m{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+  .hero .chip .p{font-size:15px;margin-top:4px;letter-spacing:-0.01em}
+  @media(max-width:860px){.hero .chip{display:none}}
+
+  /* ---------- word strip ---------- */
+  .strip{background:var(--black);color:rgba(255,255,255,.55);border-top:1px solid var(--line-d);padding:16px 0;overflow:hidden}
+  .strip .row{display:flex;gap:44px;justify-content:center;flex-wrap:wrap;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase}
+  .strip .row span.hi{color:#fff}
+
+  /* ---------- sections ---------- */
+  section.blk{padding:110px 0}
+  @media(max-width:860px){section.blk{padding:64px 0}}
+  .sec-top{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;margin-bottom:44px}
+  .sec-top h2{font-size:clamp(30px,4.2vw,54px);max-width:16ch;margin-top:14px}
+  .sec-top .note{max-width:36ch;color:var(--muted);font-size:14.5px;line-height:1.7;padding-bottom:6px}
+
+  /* mosaic */
+  .mosaic{display:grid;grid-template-columns:1.35fr 1fr 1fr;grid-template-rows:290px 290px;gap:14px}
+  .tile{position:relative;overflow:hidden;background:var(--cream-2)}
+  .tile img{transition:transform .9s cubic-bezier(.16,.8,.24,1);filter:saturate(.96)}
+  .tile:hover img{transform:scale(1.045)}
+  .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,14,.88),rgba(11,11,14,.18) 52%,rgba(11,11,14,0) 78%)}
+  .tile .cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px;color:#fff}
+  .tile .cap h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:30px;letter-spacing:-0.015em}
+  .tile .cap p{font-size:13px;color:rgba(255,255,255,.72);margin-top:5px;max-width:34ch;line-height:1.5}
+  .tile .idx{position:absolute;top:20px;left:24px;z-index:2;color:rgba(255,255,255,.6);font-size:11px;letter-spacing:.14em}
+  .t-lead{grid-row:span 2}
+  .t-wide{grid-column:span 2}
+
+  /* rail */
+  .rail{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .pcard .frame{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--cream-2)}
+  .pcard .frame img{transition:transform .8s cubic-bezier(.16,.8,.24,1)}
+  .pcard:hover .frame img{transform:scale(1.04)}
+  .pcard .mark{position:absolute;top:16px;left:16px;z-index:2;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;background:rgba(255,255,255,.94);padding:6px 11px;border-radius:999px}
+  .pcard .quick{position:absolute;inset:auto 16px 16px;z-index:2;opacity:0;transform:translateY(6px);transition:.25s;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:500}
+  .pcard:hover .quick{opacity:1;transform:none}
+  .pcard .line{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-top:20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .pcard h3{font-size:18px;font-weight:500;letter-spacing:-0.015em}
+  .pcard .brand{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .pcard .price{font-family:"Instrument Serif",Georgia,serif;font-size:21px;white-space:nowrap}
+  .pcard .foot{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:12.5px;color:var(--muted)}
+
+  /* statement */
+  .statement{background:var(--black);color:#fff;padding:120px 0}
+  .statement q{quotes:none}
+  .statement .big{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(30px,4.6vw,60px);line-height:1.12;letter-spacing:-0.02em;max-width:19ch}
+  .statement .big em{font-style:italic;color:var(--primary-l)}
+  .st-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-d);margin-top:80px;border-top:1px solid var(--line-d)}
+  .st-grid .c{background:var(--black);padding:34px 30px 36px}
+  .st-grid .n{font-family:"Instrument Serif",Georgia,serif;font-size:42px;color:var(--primary-l)}
+  .st-grid h4{font-size:15px;font-weight:500;margin-top:14px}
+  .st-grid p{font-size:13.5px;color:rgba(255,255,255,.58);margin-top:8px;line-height:1.65;max-width:32ch}
+
+  /* index list */
+  .idx-list{border-top:1px solid var(--line)}
+  .irow{display:grid;grid-template-columns:52px 1fr 1.1fr 130px 44px;gap:24px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);transition:.2s}
+  .irow:hover{padding-left:10px;background:linear-gradient(90deg,rgba(107,40,217,.05),transparent)}
+  .irow .th{width:52px;height:52px;overflow:hidden;background:var(--cream-2);border-radius:6px}
+  .irow .nm{font-size:16.5px;font-weight:500;letter-spacing:-0.012em}
+  .irow .br{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:3px}
+  .irow .ds{font-size:13.5px;color:var(--muted);line-height:1.5}
+  .irow .pr{font-family:"Instrument Serif",Georgia,serif;font-size:19px;text-align:right}
+  .irow .pr small{display:block;font-family:Inter,sans-serif;font-size:11.5px;color:var(--faint);text-decoration:line-through;margin-top:1px}
+  .irow .go{width:38px;height:38px;border:1px solid var(--line);border-radius:999px;display:grid;place-items:center;color:var(--muted);transition:.2s}
+  .irow:hover .go{background:var(--ink);border-color:var(--ink);color:#fff}
+  @media(max-width:860px){
+    .irow{grid-template-columns:44px 1fr auto;gap:14px}
+    .irow .ds,.irow .go{display:none}
+  }
+
+  /* advice */
+  .advice{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);align-items:center}
+  .advice .l{padding:64px 56px}
+  .advice h2{font-size:clamp(28px,3.6vw,46px);max-width:15ch;margin-top:20px}
+  .advice p{color:var(--muted);margin-top:18px;max-width:44ch;line-height:1.75}
+  .advice .r{position:relative;min-height:400px}
+  .advice .r img{position:absolute;inset:0}
+
+  /* footer */
+  footer{background:var(--black);color:rgba(255,255,255,.62);padding:76px 0 34px;font-size:13.5px}
+  .fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px}
+  .fg h4{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:16px}
+  .fg li{list-style:none;margin-bottom:10px}
+  .fg li a:hover{color:#fff}
+  .fbot{margin-top:60px;padding-top:24px;border-top:1px solid var(--line-d);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12px;color:rgba(255,255,255,.4)}
+
+  @media(max-width:1000px){
+    .mosaic{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+    .t-lead{grid-row:span 1;min-height:280px}.t-wide{grid-column:span 2;min-height:230px}
+    .tile{min-height:250px}
+    .rail{grid-template-columns:1fr 1fr}
+    .st-grid{grid-template-columns:1fr}
+    .advice{grid-template-columns:1fr}
+    .advice .l{padding:40px 28px}
+    .fg{grid-template-columns:1fr 1fr}
+    .navlinks{display:none}
+  }
+  @media(max-width:620px){
+    .rail{grid-template-columns:1fr}
+    .mosaic{grid-template-columns:1fr}.t-wide{grid-column:span 1}
+    .sec-top{flex-direction:column;align-items:flex-start;gap:18px}
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker"><div class="wrap">
+  <span>Accra &middot; Ghana</span>
+  <span class="mid">Free delivery from GH&#8373; 1,000</span>
+  <span>Mobile money &amp; card</span>
+</div></div>
+
+<header class="site"><div class="wrap hdr">
+  <div class="logo">GeoStore</div>
+  <nav class="navlinks"><a>Phones</a><a>Audio</a><a>Wearables</a><a>Home&nbsp;tech</a></nav>
+  <div class="right">
+    <a><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search</a>
+    <a>Account</a>
+    <a>Cart <span class="cartnum">(2)</span></a>
+  </div>
+</div></header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="bg"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=2000&q=90" alt=""></div>
+  <div class="veil"></div>
+  <div class="inner"><div class="wrap">
+    <div class="kicker on-dark">Considered technology &mdash; No. 01</div>
+    <h1 class="display">The right one,<br><em>not</em> the loudest one.</h1>
+    <p class="lede">A small, deliberate catalogue of phones, audio, wearables and home tech. Every listing states its condition, storage and warranty before you reach checkout.</p>
+    <div class="acts">
+      <a class="btn btn-light">Browse the catalogue</a>
+      <a class="btn btn-outline">Speak to us first</a>
+    </div>
+  </div></div>
+  <div class="chip">
+    <div class="t"><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=300&q=85" alt=""></div>
+    <div>
+      <div class="n">iPhone 15 Pro</div>
+      <div class="m">Apple &middot; 256 GB &middot; 6 in stock</div>
+      <div class="p tnum">GH&#8373; 12,900</div>
+    </div>
+  </div>
+</section>
+
+<div class="strip"><div class="wrap"><div class="row">
+  <span class="hi">Apple</span><span>Samsung</span><span>Google</span><span>JBL</span><span>Sony</span><span class="hi">12-month warranty</span><span>Nationwide delivery</span>
+</div></div></div>
+
+<!-- MOSAIC -->
+<section class="blk"><div class="wrap">
+  <div class="sec-top">
+    <div>
+      <div class="kicker">The departments</div>
+      <h2 class="display">Four rooms, carefully stocked.</h2>
+    </div>
+    <p class="note">We keep the catalogue small on purpose. Fewer options, each one we can actually stand behind and service locally.</p>
+  </div>
+  <div class="mosaic">
+    <a class="tile t-lead"><span class="idx">01</span><img src="https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1200&q=88" alt=""><div class="cap"><h3>Phones</h3><p>Flagships, everyday smartphones, and dependable upgrades.</p></div></a>
+    <a class="tile"><span class="idx">02</span><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1000&q=88" alt=""><div class="cap"><h3>Audio</h3><p>Earbuds, headphones, and speakers.</p></div></a>
+    <a class="tile"><span class="idx">03</span><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=88" alt=""><div class="cap"><h3>Wearables</h3><p>Watches and fitness tech.</p></div></a>
+    <a class="tile t-wide"><span class="idx">04</span><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1400&q=88" alt=""><div class="cap"><h3>Home tech</h3><p>Screens and practical gadgets for a better connected home.</p></div></a>
+  </div>
+</div></section>
+
+<!-- RAIL -->
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="sec-top">
+    <div><div class="kicker">Selected this month</div><h2 class="display">Worth a closer look.</h2></div>
+    <a class="btn btn-line" style="height:46px">See all 8 products</a>
+  </div>
+  <div class="rail">
+    <a class="pcard">
+      <div class="frame"><span class="mark">Price drop</span><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1000&q=88" alt=""><span class="quick">Add to bag</span></div>
+      <div class="line"><div><div class="brand">Apple</div><h3>iPhone 15 Pro</h3></div><div class="price tnum">GH&#8373; 12,900</div></div>
+      <div class="foot"><span>Titanium &middot; 256 GB</span><span class="tnum">4.8 &#9733; (34)</span></div>
+    </a>
+    <a class="pcard">
+      <div class="frame"><span class="mark">New in</span><img src="https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1000&q=88" alt=""><span class="quick">Add to bag</span></div>
+      <div class="line"><div><div class="brand">Samsung</div><h3>Galaxy S24 Ultra</h3></div><div class="price tnum">GH&#8373; 11,400</div></div>
+      <div class="foot"><span>S Pen &middot; 4 in stock</span><span class="tnum">4.7 &#9733; (27)</span></div>
+    </a>
+    <a class="pcard">
+      <div class="frame"><span class="mark">Most loved</span><img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1000&q=88" alt=""><span class="quick">Add to bag</span></div>
+      <div class="line"><div><div class="brand">Apple</div><h3>AirPods Pro</h3></div><div class="price tnum">GH&#8373; 2,350</div></div>
+      <div class="foot"><span>2nd generation</span><span class="tnum">4.9 &#9733; (52)</span></div>
+    </a>
+  </div>
+</div></section>
+
+<!-- STATEMENT -->
+<section class="statement"><div class="wrap">
+  <div class="kicker on-dark">Why people buy here</div>
+  <p class="big" style="margin-top:26px">We would rather sell you the <em>cheaper</em> phone that suits you than the expensive one that doesn&rsquo;t.</p>
+  <div class="st-grid">
+    <div class="c"><div class="n">01</div><h4>Stated, not implied</h4><p>Condition, storage, warranty length and stock count appear on every listing before checkout.</p></div>
+    <div class="c"><div class="n">02</div><h4>Priced in cedis</h4><p>No exchange-rate surprises. Delivery is calculated and shown before you pay, never after.</p></div>
+    <div class="c"><div class="n">03</div><h4>Reachable afterwards</h4><p>A real person in Accra handles warranty claims and setup questions once the box is open.</p></div>
+  </div>
+</div></section>
+
+<!-- INDEX -->
+<section class="blk"><div class="wrap">
+  <div class="sec-top">
+    <div><div class="kicker">The full index</div><h2 class="display">Everything in stock.</h2></div>
+    <p class="note">Eight products, updated today. Sorted by what people reach for most.</p>
+  </div>
+  <div class="idx-list">
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Apple</div><div class="nm">iPhone 15 Pro</div></div><div class="ds">Titanium design, A17 Pro performance, and a flexible camera system.</div><div class="pr tnum">GH&#8373; 12,900<small>GH&#8373; 13,650</small></div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Samsung</div><div class="nm">Galaxy S24 Ultra</div></div><div class="ds">Big-screen Android flagship with S Pen and a sharp zoom camera.</div><div class="pr tnum">GH&#8373; 11,400</div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Google</div><div class="nm">Pixel 8a</div></div><div class="ds">A compact phone with a clean Android experience and strong cameras.</div><div class="pr tnum">GH&#8373; 6,250</div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Apple</div><div class="nm">Watch Series 9</div></div><div class="ds">Everyday activity, health, and notification tracking on your wrist.</div><div class="pr tnum">GH&#8373; 4,750</div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Samsung</div><div class="nm">55&#8243; Crystal UHD TV</div></div><div class="ds">A sharp 4K smart TV sized for movie nights and football.</div><div class="pr tnum">GH&#8373; 4,700</div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Samsung</div><div class="nm">Galaxy Watch6</div></div><div class="ds">A slim Android smartwatch for health insights and daily movement.</div><div class="pr tnum">GH&#8373; 2,850</div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">Apple</div><div class="nm">AirPods Pro (2nd gen)</div></div><div class="ds">Comfortable earbuds with strong noise cancellation and clear calls.</div><div class="pr tnum">GH&#8373; 2,350<small>GH&#8373; 2,600</small></div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+    <a class="irow"><div class="th"><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=200&q=80" alt=""></div><div><div class="br">JBL</div><div class="nm">Charge 5</div></div><div class="ds">Portable waterproof speaker with full sound and long battery life.</div><div class="pr tnum">GH&#8373; 1,450</div><span class="go"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></a>
+  </div>
+</div></section>
+
+<!-- ADVICE -->
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="advice">
+    <div class="l">
+      <div class="kicker">Before you spend</div>
+      <h2 class="display">Ask us first. It&rsquo;s free, and we&rsquo;ll be honest.</h2>
+      <p>Tell us how you actually use your device and what you want to spend. We&rsquo;ll narrow it to two or three options and tell you plainly where the extra money does &mdash; and doesn&rsquo;t &mdash; buy you anything.</p>
+      <div style="display:flex;gap:12px;margin-top:34px;flex-wrap:wrap">
+        <a class="btn btn-dark">Ask the store</a>
+        <a class="btn btn-line">Read the FAQ</a>
+      </div>
+    </div>
+    <div class="r"><img src="https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=1200&q=88" alt=""></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fg">
+    <div>
+      <div class="logo" style="color:#fff">GeoStore</div>
+      <p style="margin-top:14px;max-width:32ch;line-height:1.7">Phones, audio, wearables and home tech &mdash; considered, stated plainly, delivered across Ghana.</p>
+    </div>
+    <div><h4>Shop</h4><ul><li><a>Phones</a></li><li><a>Audio</a></li><li><a>Wearables</a></li><li><a>Home tech</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a>Delivery</a></li><li><a>Returns</a></li><li><a>Warranty</a></li><li><a>Contact</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a>About</a></li><li><a>Privacy</a></li><li><a>Terms</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>&copy; 2026 GeoStore Ghana</span><span>Accra &middot; support@geostoresgh.com</span></div>
+</div></footer>
+
+</body></html>

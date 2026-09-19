@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore — Option E · Showroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfaf8; --surface:#ffffff; --panel:#f0efeb; --panel-2:#e9e8e3;
+    --ink:#1a1a1c; --ink-2:#4a4a50; --muted:#78787f; --faint:#a5a5ab;
+    --line:#e6e4df; --accent:#6b28d9;
+    --r:20px; --r-lg:28px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--ink);
+    font-size:15px;line-height:1.6;letter-spacing:-0.008em;-webkit-font-smoothing:antialiased
+  }
+  img{display:block;width:100%;height:100%;object-fit:cover}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  @media(max-width:700px){.wrap{padding:0 16px}}
+  h1,h2,h3{font-weight:600;letter-spacing:-0.038em;line-height:1.08}
+  .tnum{font-variant-numeric:tabular-nums}
+  .kick{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---- chrome ---- */
+  .bar{background:var(--ink);color:rgba(255,255,255,.82);font-size:12.5px}
+  .bar .wrap{display:flex;align-items:center;justify-content:center;min-height:36px;gap:8px}
+  header.site{position:sticky;top:0;z-index:40;background:rgba(251,250,248,.9);backdrop-filter:blur(16px)}
+  .hdr{display:flex;align-items:center;gap:26px;padding:16px 0}
+  .mark{font-size:18px;font-weight:700;letter-spacing:-0.05em}
+  .nav{display:flex;gap:4px}
+  .nav a{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-2)}
+  .nav a:hover{background:var(--panel);color:var(--ink)}
+  .hr{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .pill{display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13.5px;color:var(--muted);min-width:230px}
+  .ic{width:42px;height:42px;border-radius:999px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;position:relative;color:var(--ink-2)}
+  .ic:hover{border-color:var(--ink)}
+  .ic .b{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;border-radius:999px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;padding:0 5px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 26px;border-radius:999px;font-size:15px;font-weight:600;border:1px solid transparent;transition:.16s;cursor:pointer}
+  .btn-ink{background:var(--ink);color:#fff}.btn-ink:hover{background:#34343a}
+  .btn-out{border-color:var(--line);background:var(--surface);color:var(--ink)}.btn-out:hover{border-color:var(--ink)}
+  .btn-sm{height:42px;padding:0 20px;font-size:14px}
+
+  /* ---- hero ---- */
+  .hero{padding:12px 0 0}
+  .stage{
+    background:var(--surface);border-radius:var(--r-lg);overflow:hidden;
+    display:grid;grid-template-columns:1fr 1fr;align-items:stretch;min-height:520px
+  }
+  .stage .copy{padding:60px 56px;display:flex;flex-direction:column;justify-content:center}
+  .stage h1{font-size:clamp(32px,4.1vw,52px);margin-top:16px;max-width:14ch;text-wrap:balance}
+  .stage p{margin-top:18px;max-width:42ch;color:var(--ink-2);font-size:16px;line-height:1.7}
+  .stage .price{display:flex;align-items:baseline;gap:12px;margin-top:26px}
+  .stage .price .now{font-size:24px;font-weight:600;letter-spacing:-0.035em}
+  .stage .price .was{font-size:15px;color:var(--faint);text-decoration:line-through}
+  .stage .price .off{font-size:12.5px;font-weight:600;color:var(--accent);background:#f3ecff;padding:4px 10px;border-radius:999px}
+  .stage .acts{display:flex;gap:11px;margin-top:28px;flex-wrap:wrap}
+  .stage .shot{background:var(--panel);position:relative}
+  .stage .shot img{object-position:center}
+
+  /* ---- quiet facts ---- */
+  .facts{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;padding:34px 0 8px;color:var(--muted);font-size:13.5px}
+  .facts span{display:inline-flex;align-items:center;gap:9px}
+  .facts svg{color:var(--ink-2)}
+
+  /* ---- sections ---- */
+  .sec{padding:64px 0}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(24px,2.9vw,34px);margin-top:10px}
+
+  /* two-up rooms */
+  .rooms{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .room{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+  .room .im{aspect-ratio:16/10;background:var(--panel)}
+  .room .im img{transition:transform .8s cubic-bezier(.16,.8,.24,1)}
+  .room:hover .im img{transform:scale(1.04)}
+  .room .cap{padding:24px 26px 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+  .room h3{font-size:21px}
+  .room p{color:var(--muted);font-size:13.5px;margin-top:6px;max-width:34ch}
+  .room .go{width:42px;height:42px;border-radius:999px;border:1px solid var(--line);display:grid;place-items:center;flex:none;color:var(--ink-2)}
+  .room:hover .go{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  /* product grid */
+  .pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .card{background:var(--surface);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 30px -18px rgba(20,20,26,.28)}
+  .card .im{aspect-ratio:1/1;background:var(--panel);position:relative}
+  .card .im img{transition:transform .6s cubic-bezier(.16,.8,.24,1)}
+  .card:hover .im img{transform:scale(1.045)}
+  .card .mk{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.95);border-radius:999px;padding:5px 11px;font-size:11px;font-weight:600;letter-spacing:.02em}
+  .card .mk.a{color:var(--accent)}
+  .card .body{padding:18px 18px 20px;display:flex;flex-direction:column;flex:1}
+  .card .br{font-size:11.5px;color:var(--faint);font-weight:500}
+  .card h3{font-size:15px;font-weight:600;margin-top:5px;letter-spacing:-0.025em;line-height:1.3}
+  .card .sub{font-size:12.5px;color:var(--muted);margin-top:5px}
+  .card .foot{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .card .pr{font-size:16px;font-weight:600;letter-spacing:-0.03em;white-space:nowrap}
+  .card .rt{font-size:12px;color:var(--muted);white-space:nowrap}
+
+  /* advice */
+  .advice{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;display:grid;grid-template-columns:1fr 1fr;align-items:center}
+  .advice .c{padding:56px 52px}
+  .advice h2{font-size:clamp(25px,3vw,36px);max-width:15ch;margin-top:14px}
+  .advice p{color:var(--ink-2);margin-top:16px;max-width:42ch;line-height:1.72}
+  .advice .im{background:var(--panel);aspect-ratio:4/3}
+
+  /* aspect-ratio boxes must clip and pin their image, otherwise the img's
+     intrinsic height wins and stretches the whole card grid */
+  .stage .shot,.room .im,.card .im,.advice .im{position:relative;overflow:hidden}
+  .stage .shot img,.room .im img,.card .im img,.advice .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+  /* footer */
+  footer{padding:56px 0 34px;border-top:1px solid var(--line);margin-top:56px}
+  .fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:38px}
+  .fg h4{font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .fg li{list-style:none;margin-bottom:9px;font-size:14px;color:var(--muted)}
+  .fg li a:hover{color:var(--ink)}
+  .fbot{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--faint)}
+
+  @media(max-width:1000px){
+    .stage{grid-template-columns:1fr}
+    .stage .copy{padding:40px 30px;order:2}
+    .stage .shot{order:1;aspect-ratio:4/3}
+    .rooms{grid-template-columns:1fr}
+    .pgrid{grid-template-columns:1fr 1fr}
+    .advice{grid-template-columns:1fr}
+    .advice .c{padding:36px 26px}
+    .fg{grid-template-columns:1fr 1fr}
+    .nav,.pill{display:none}
+  }
+  @media(max-width:600px){
+    .facts{gap:18px;font-size:12.5px}
+    .sec{padding:44px 0}
+    .sec-head{flex-direction:column;align-items:flex-start;gap:14px}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="wrap">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+  Free delivery on orders from GH&#8373; 1,000 in Accra
+</div></div>
+
+<header class="site"><div class="wrap hdr">
+  <div class="mark">GeoStore</div>
+  <nav class="nav"><a>Phones</a><a>Audio</a><a>Wearables</a><a>Home tech</a></nav>
+  <div class="hr">
+    <span class="pill"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search the catalogue</span>
+    <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.66a8 8 0 0 1 10 0"/></svg></span>
+    <span class="ic"><span class="b">2</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+  </div>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div class="stage">
+    <div class="copy">
+      <div class="kick">This week</div>
+      <h1>iPhone 15 Pro, in titanium.</h1>
+      <p>A17 Pro, 256 GB, and the camera system that made people stop carrying a second device. Unlocked for Ghanaian networks, twelve-month warranty.</p>
+      <div class="price">
+        <span class="now tnum">GH&#8373; 12,900</span>
+        <span class="was tnum">GH&#8373; 13,650</span>
+        <span class="off">Save GH&#8373; 750</span>
+      </div>
+      <div class="acts">
+        <a class="btn btn-ink">Add to bag</a>
+        <a class="btn btn-out">See specifications</a>
+      </div>
+    </div>
+    <div class="shot"><img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=1400&q=88" alt="iPhone 15 Pro"></div>
+  </div>
+
+  <div class="facts">
+    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.95a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>12-month warranty, stated on every listing</span>
+    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Mobile money, Visa and Mastercard</span>
+    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Support you can actually reach</span>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="kick">Departments</div><h2>Start where you need to.</h2></div>
+    <a class="btn btn-out btn-sm">All 8 products</a>
+  </div>
+  <div class="rooms">
+    <a class="room">
+      <div class="im"><img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=1200&q=88" alt=""></div>
+      <div class="cap"><div><h3>Phones</h3><p>Flagships and dependable everyday upgrades, unlocked for Ghanaian networks.</p></div>
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+    </a>
+    <a class="room">
+      <div class="im"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1200&q=88" alt=""></div>
+      <div class="cap"><div><h3>Audio</h3><p>Earbuds, headphones and speakers for the commute, the office and the weekend.</p></div>
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+    </a>
+    <a class="room">
+      <div class="im"><img src="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1200&q=88" alt=""></div>
+      <div class="cap"><div><h3>Wearables</h3><p>Watches and fitness tech that fit an ordinary routine, not a training plan.</p></div>
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+    </a>
+    <a class="room">
+      <div class="im"><img src="https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=1200&q=88" alt=""></div>
+      <div class="cap"><div><h3>Home tech</h3><p>Screens and practical gadgets for movie nights, football and a connected home.</p></div>
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+    </a>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="kick">The catalogue</div><h2>Everything in stock.</h2></div>
+    <span style="color:var(--muted);font-size:13.5px" class="tnum">8 products &middot; updated today</span>
+  </div>
+  <div class="pgrid">
+    <a class="card"><div class="im"><span class="mk a">Price drop</span><img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Apple</span><h3>iPhone 15 Pro</h3><span class="sub">256 GB &middot; 6 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 12,900</span><span class="rt tnum">4.8 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><span class="mk">New</span><img src="https://images.unsplash.com/photo-1512054502232-10a0a035d672?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Samsung</span><h3>Galaxy S24 Ultra</h3><span class="sub">S Pen &middot; 4 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 11,400</span><span class="rt tnum">4.7 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><span class="mk">New</span><img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Google</span><h3>Pixel 8a</h3><span class="sub">128 GB &middot; 8 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 6,250</span><span class="rt tnum">4.5 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><span class="mk a">Price drop</span><img src="https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Apple</span><h3>AirPods Pro</h3><span class="sub">2nd generation &middot; 14 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 2,350</span><span class="rt tnum">4.9 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Apple</span><h3>Watch Series 9</h3><span class="sub">45 mm &middot; 5 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 4,750</span><span class="rt tnum">4.7 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><img src="https://images.unsplash.com/photo-1544117519-31a4b719223d?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Samsung</span><h3>Galaxy Watch6</h3><span class="sub">44 mm &middot; 7 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 2,850</span><span class="rt tnum">4.4 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">JBL</span><h3>Charge 5</h3><span class="sub">Waterproof &middot; 9 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 1,450</span><span class="rt tnum">4.6 &#9733;</span></div></div></a>
+    <a class="card"><div class="im"><span class="mk">3 left</span><img src="https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Samsung</span><h3>55&#8243; Crystal UHD TV</h3><span class="sub">4K smart TV &middot; 3 in stock</span>
+      <div class="foot"><span class="pr tnum">GH&#8373; 4,700</span><span class="rt tnum">4.5 &#9733;</span></div></div></a>
+  </div>
+</div></section>
+
+<section class="sec" style="padding-top:0"><div class="wrap">
+  <div class="advice">
+    <div class="c">
+      <div class="kick">Before you spend</div>
+      <h2>Ask us first. We&rsquo;ll be honest about it.</h2>
+      <p>Tell us how you actually use your device and what you want to spend. We&rsquo;ll narrow it to two or three options, and say plainly where the extra money stops buying you anything useful.</p>
+      <div style="display:flex;gap:11px;margin-top:30px;flex-wrap:wrap">
+        <a class="btn btn-ink">Ask the store</a>
+        <a class="btn btn-out">Delivery &amp; returns</a>
+      </div>
+    </div>
+    <div class="im"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1200&q=88" alt=""></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fg">
+    <div>
+      <div class="mark">GeoStore</div>
+      <p style="color:var(--muted);font-size:14px;margin-top:12px;max-width:32ch;line-height:1.65">Phones, audio, wearables and home tech, delivered across Ghana.</p>
+    </div>
+    <div><h4>Shop</h4><ul><li><a>Phones</a></li><li><a>Audio</a></li><li><a>Wearables</a></li><li><a>Home tech</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a>Delivery</a></li><li><a>Returns</a></li><li><a>Warranty</a></li><li><a>Contact</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a>About</a></li><li><a>Privacy</a></li><li><a>Terms</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>&copy; 2026 GeoStore Ghana</span><span>Accra &middot; support@geostoresgh.com</span></div>
+</div></footer>
+
+</body></html>

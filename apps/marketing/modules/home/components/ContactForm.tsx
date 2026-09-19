@@ -13,8 +13,8 @@ import {
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
 import { Textarea } from "@repo/ui/components/textarea";
-import { MailCheckIcon, MailIcon } from "lucide-react";
 import { useTranslations } from "@shared/lib/translations";
+import { MailCheckIcon, MailIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -61,7 +61,7 @@ export function ContactForm() {
 				<Form {...form}>
 					<form
 						onSubmit={onSubmit}
-						className="flex flex-col items-stretch gap-6"
+						className="flex flex-col items-stretch gap-7"
 					>
 						{form.formState.errors.root?.message && (
 							<Alert variant="error">
@@ -77,11 +77,14 @@ export function ContactForm() {
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
+									<FormLabel className="eyebrow text-muted-foreground">
 										{t("contact.form.name")}
 									</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input
+											className="h-12 rounded-[2px] border-border bg-transparent px-3.5 text-[14px] shadow-none focus-visible:border-foreground focus-visible:ring-0"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -93,11 +96,14 @@ export function ContactForm() {
 							name="email"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
+									<FormLabel className="eyebrow text-muted-foreground">
 										{t("contact.form.email")}
 									</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input
+											className="h-12 rounded-[2px] border-border bg-transparent px-3.5 text-[14px] shadow-none focus-visible:border-foreground focus-visible:ring-0"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -109,11 +115,14 @@ export function ContactForm() {
 							name="message"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
+									<FormLabel className="eyebrow text-muted-foreground">
 										{t("contact.form.message")}
 									</FormLabel>
 									<FormControl>
-										<Textarea {...field} />
+										<Textarea
+											className="rounded-[2px] border-border bg-transparent px-3.5 py-3 text-[14px] shadow-none focus-visible:border-foreground focus-visible:ring-0"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -122,7 +131,7 @@ export function ContactForm() {
 
 						<Button
 							type="submit"
-							className="w-full"
+							className="mt-2 h-12 w-full rounded-[2px] px-[26px] font-semibold text-[14.5px] tracking-[-0.01em]"
 							variant="primary"
 							loading={form.formState.isSubmitting}
 						>

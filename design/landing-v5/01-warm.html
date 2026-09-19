@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geostoresgh — gadgets &amp; more</title>
+<meta name="description" content="Phones, audio, wearables and home tech in stock in Accra. Real prices in Ghana cedis, VAT included, delivered across Ghana.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="shared/core.css">
+<style>
+/* ============================================================
+   1. TOKENS
+   ============================================================ */
+:root{
+  --ink:#16150F;
+  --ink-2:#3B382F;
+  --muted:#6B675C;
+  --cream:#F4F2EC;
+  --cream-2:#EDEAE1;
+  --line:#E3DFD4;
+  --accent:#6b28d9;
+  --accent-soft:#F1EBFC;
+  --white:#ffffff;
+
+  /* themes core.js drawer / quick view / toasts to match this page */
+  --geo-accent:#6b28d9;
+  --geo-ink:#16150F;
+  --geo-ink-2:#3B382F;
+  --geo-muted:#6B675C;
+  --geo-panel:#F4F2EC;
+  --geo-line:#E3DFD4;
+  --geo-radius:18px;
+  --geo-accent-soft:#F1EBFC;
+}
+
+/* ============================================================
+   2. BASE + LAYOUT PRIMITIVES
+   ============================================================ */
+body{background:var(--white);color:var(--ink);font-size:16px}
+h1,h2,h3,h4,p,figure,blockquote{margin:0}
+ul{margin:0;padding:0;list-style:none}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.sect{padding:96px 0}
+.sect--cream{background:var(--cream)}
+.sect--tight{padding:72px 0}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+h2.h2{font-size:clamp(30px,4vw,42px);font-weight:700;letter-spacing:-.038em;line-height:1.06}
+.lede{font-size:16px;color:var(--muted);max-width:46ch;margin-top:14px;line-height:1.6}
+.sect-head{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.textlink{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;font-weight:600;color:var(--accent);white-space:nowrap}
+.textlink:hover{text-decoration:underline;text-underline-offset:3px}
+.tnum{font-variant-numeric:tabular-nums}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border-radius:999px;font-size:15px;font-weight:600;letter-spacing:-.01em;border:1px solid transparent;transition:background .15s,color .15s,border-color .15s;white-space:nowrap}
+.btn--ink{background:var(--ink);color:#fff}
+.btn--ink:hover{background:#000}
+.btn--white{background:#fff;color:var(--ink)}
+.btn--white:hover{background:var(--cream-2)}
+.btn--ghost-dark{border-color:rgba(255,255,255,.28);color:#fff}
+.btn--ghost-dark:hover{background:rgba(255,255,255,.1)}
+.btn--accent{background:var(--accent);color:#fff}
+.btn--accent:hover{background:#5a1fbd}
+.btn--line{border-color:var(--line);background:#fff;color:var(--ink)}
+.btn--line:hover{background:var(--cream)}
+
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ic.lg{width:22px;height:22px;stroke-width:1.5}
+
+/* ============================================================
+   3. TOP BAR
+   ============================================================ */
+.topbar{background:var(--ink);color:rgba(255,255,255,.82);font-size:12.5px}
+.topbar__in{display:flex;align-items:center;justify-content:center;gap:24px;min-height:38px;position:relative}
+.topbar__msg{text-align:center}
+.topbar__links{position:absolute;right:28px;display:flex;gap:20px}
+.topbar__links a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+
+/* ============================================================
+   4. HEADER
+   ============================================================ */
+.hdr{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line)}
+.hdr__row{display:flex;align-items:center;gap:26px;min-height:74px}
+.logo{display:inline-flex;align-items:center;gap:9px;font-size:19px;font-weight:700;letter-spacing:-.04em;color:var(--ink);flex:none}
+.logo svg{color:var(--accent)}
+
+.hsearch{position:relative;flex:1;min-width:0;display:flex;align-items:center;height:46px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 5px 0 16px;transition:border-color .15s,box-shadow .15s}
+.hsearch:focus-within{border-color:#C9C2B1;box-shadow:0 0 0 4px rgba(107,40,217,.07)}
+.hsearch .ic{color:var(--muted)}
+.hsearch input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:14.5px;padding:0 12px;-webkit-appearance:none}
+.hsearch input::placeholder{color:#9A9488}
+.hsearch input::-webkit-search-cancel-button{display:none}
+.hsearch__btn{height:36px;padding:0 20px;border-radius:999px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;flex:none}
+.hsearch__btn:hover{background:#5a1fbd}
+
+.hdr__right{display:flex;align-items:center;gap:6px;flex:none}
+.hdr__deliver{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink-2);padding:8px 12px;border-radius:999px}
+.hdr__deliver:hover{background:var(--cream)}
+.hdr__deliver .ic{color:var(--muted)}
+.iconbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;color:var(--ink)}
+.iconbtn:hover{background:var(--cream)}
+.bagpill{display:inline-flex;align-items:center;gap:9px;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--ink)}
+.bagpill:hover{background:var(--cream)}
+.count{min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.count[hidden]{display:none}
+.count--dot{position:absolute;top:2px;right:0}
+
+.hdr__nav{display:flex;align-items:center;gap:26px;min-height:50px;border-top:1px solid var(--line)}
+.allcats{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--ink);flex:none}
+.hdr__links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--ink-2);overflow:hidden}
+.hdr__links a:hover{color:var(--ink)}
+.hdr__links a.is-accent{color:var(--accent);font-weight:600}
+
+/* categories panel */
+.catpanel{display:none;border-top:1px solid var(--line);background:#fff}
+.catpanel.is-open{display:block}
+.catpanel__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:22px 0 26px}
+.catpanel__item{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--white)}
+.catpanel__item:hover{background:var(--cream);border-color:#D6D0C1}
+.catpanel__item b{display:block;font-size:15px;font-weight:600;letter-spacing:-.015em}
+.catpanel__item span{display:block;font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}
+.catpanel__item em{display:block;font-style:normal;font-size:11.5px;color:var(--muted);margin-top:9px;letter-spacing:.06em;text-transform:uppercase}
+
+/* mobile */
+.hdr__burger{display:none}
+.mnav{display:none;border-top:1px solid var(--line);background:#fff}
+.mnav.is-open{display:block}
+.mnav ul{padding:12px 0 20px}
+.mnav li a{display:block;padding:12px 0;font-size:15.5px;font-weight:500;border-bottom:1px solid var(--line)}
+.mnav li:last-child a{border-bottom:0}
+.hdr__msearch{display:none;padding:0 0 14px}
+
+/* ============================================================
+   5. HERO
+   ============================================================ */
+.hero{padding:96px 0 90px}
+.hero__grid{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.86fr);gap:72px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 15px;border-radius:999px;background:var(--cream);font-size:12.5px;font-weight:600;color:var(--ink-2);letter-spacing:-.005em}
+.badge i{width:7px;height:7px;border-radius:999px;background:#2E7D5B;flex:none}
+.hero h1{font-size:clamp(42px,6.2vw,68px);font-weight:700;letter-spacing:-.045em;line-height:1.02;margin:26px 0 0}
+.hero__sub{font-size:16.5px;color:var(--muted);line-height:1.62;max-width:44ch;margin-top:22px}
+
+.bigsearch{position:relative;display:flex;align-items:center;height:60px;margin-top:34px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 7px 0 20px;max-width:560px;transition:border-color .15s,box-shadow .15s}
+.bigsearch:focus-within{border-color:#C9C2B1;box-shadow:0 0 0 5px rgba(107,40,217,.07)}
+.bigsearch .ic{color:var(--muted)}
+.bigsearch input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:15.5px;padding:0 14px;-webkit-appearance:none}
+.bigsearch input::-webkit-search-cancel-button{display:none}
+.bigsearch__btn{height:46px;padding:0 26px;border-radius:999px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;flex:none}
+.bigsearch__btn:hover{background:#5a1fbd}
+.bigsearch__ph{position:absolute;left:54px;top:50%;transform:translateY(-50%);font-size:15.5px;color:#9A9488;pointer-events:none;white-space:nowrap;overflow:hidden;max-width:calc(100% - 180px)}
+.bigsearch__ph b{color:var(--ink-2);font-weight:600;display:inline-block;animation:phin .45s ease}
+.bigsearch.has-value .bigsearch__ph{display:none}
+@keyframes phin{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+.trustrow{display:flex;flex-wrap:wrap;gap:22px 28px;margin-top:28px}
+.trustrow li{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-2)}
+.trustrow .ic{color:var(--muted);width:17px;height:17px}
+.micronote{margin-top:22px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+.herocard{position:relative;display:block;border-radius:22px;overflow:hidden;background:var(--cream);aspect-ratio:4/5}
+.herocard img{width:100%;height:100%;object-fit:cover}
+.herocard__pill{position:absolute;top:18px;left:18px;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px;border-radius:999px;background:#fff;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:0 2px 10px rgba(22,21,15,.1)}
+.herocard__pill i{width:6px;height:6px;border-radius:999px;background:var(--accent);flex:none}
+.herocard__foot{position:absolute;inset:auto 0 0 0;padding:96px 22px 22px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;background:linear-gradient(to top,rgba(12,11,7,.94) 6%,rgba(12,11,7,.72) 38%,rgba(12,11,7,.3) 68%,rgba(12,11,7,0));color:#fff}
+.herocard__foot>span:first-child{display:block;min-width:0}
+.herocard__name{display:block;font-size:17px;font-weight:600;letter-spacing:-.02em}
+.herocard__meta{display:block;font-size:12.5px;color:rgba(255,255,255,.76);margin-top:4px}
+.herocard__price{font-size:21px;font-weight:700;letter-spacing:-.03em;white-space:nowrap}
+.herocard:hover img{transform:scale(1.015)}
+.herocard img{transition:transform .5s ease}
+
+/* ============================================================
+   6. TRUST STRIP
+   ============================================================ */
+.strip{background:var(--cream);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip__grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.strip__item{padding:30px 32px;border-left:1px solid var(--line);display:flex;gap:14px}
+.strip__item:first-child{border-left:0;padding-left:0}
+.strip__item:last-child{padding-right:0}
+.strip__item .ic{color:var(--ink-2);margin-top:2px}
+.strip__item b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.015em}
+.strip__item p{font-size:13px;color:var(--muted);line-height:1.5;margin-top:5px;max-width:30ch}
+
+/* ============================================================
+   7. CATEGORIES
+   ============================================================ */
+.cattiles{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:44px}
+.cattile{display:block}
+.cattile__media{display:block;aspect-ratio:4/3;border-radius:18px;overflow:hidden;background:var(--cream)}
+.cattile__media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.cattile:hover .cattile__media img{transform:scale(1.035)}
+.cattile__name{display:block;font-size:17px;font-weight:600;letter-spacing:-.02em;margin-top:16px}
+.cattile:hover .cattile__name{text-decoration:underline;text-underline-offset:3px}
+.cattile__count{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+
+.chiprow{display:flex;flex-wrap:wrap;gap:9px;margin-top:40px;padding-top:34px;border-top:1px solid var(--line)}
+.chip{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:13.5px;font-weight:500;color:var(--ink-2);transition:background .15s,border-color .15s,color .15s}
+.chip:hover{background:var(--cream)}
+.chip i{width:7px;height:7px;border-radius:999px;flex:none}
+.chip.is-on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip.is-on i{background:#fff !important}
+
+/* ============================================================
+   8. PRODUCT GRID
+   ============================================================ */
+#products{scroll-margin-top:96px}
+.filters{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:38px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13.5px;font-weight:500;color:var(--ink-2)}
+.pill:hover{background:var(--cream)}
+.pill.is-on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.filters__right{display:flex;align-items:center;gap:16px}
+.count-live{font-size:13px;color:var(--muted);white-space:nowrap}
+.sortwrap{position:relative;display:inline-flex;align-items:center}
+.sortwrap select{appearance:none;-webkit-appearance:none;height:36px;padding:0 34px 0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13.5px;color:var(--ink-2);outline:none}
+.sortwrap .ic{position:absolute;right:11px;pointer-events:none;color:var(--muted);width:15px;height:15px}
+
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:34px 24px;margin-top:34px}
+.pcard{display:flex;flex-direction:column}
+.pcard__media{position:relative;aspect-ratio:1/1;border-radius:18px;overflow:hidden;background:var(--cream)}
+.pcard__hit{display:block;width:100%;height:100%}
+.pcard__hit img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.pcard:hover .pcard__hit img{transform:scale(1.035)}
+.pcard__tag{position:absolute;top:11px;left:11px;height:26px;padding:0 11px;border-radius:999px;background:#fff;font-size:11.5px;font-weight:600;color:var(--ink);display:inline-flex;align-items:center;pointer-events:none;box-shadow:0 1px 6px rgba(22,21,15,.08)}
+.pcard__off{position:absolute;top:11px;right:11px;height:26px;padding:0 10px;border-radius:999px;background:var(--accent);color:#fff;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;pointer-events:none}
+.pcard__heart{position:absolute;right:11px;bottom:11px;width:34px;height:34px;border-radius:999px;background:rgba(255,255,255,.94);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2);opacity:0;transition:opacity .18s,color .18s;box-shadow:0 1px 6px rgba(22,21,15,.1)}
+.pcard:hover .pcard__heart,.pcard__heart:focus-visible{opacity:1}
+.pcard__heart.is-on{opacity:1;color:var(--accent)}
+.pcard__heart.is-on .geo-ic{fill:currentColor}
+@media (hover:none){.pcard__heart{opacity:1}}
+.pcard__body{display:block}
+.pcard__brand{display:block;font-size:12px;color:var(--muted);margin-top:15px}
+.pcard__name{font-size:15px;font-weight:600;letter-spacing:-.015em;line-height:1.3;margin-top:5px}
+.pcard__body:hover .pcard__name{text-decoration:underline;text-underline-offset:3px}
+.pcard__price{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;margin-top:7px;font-size:15.5px;font-weight:600;letter-spacing:-.02em}
+.pcard__price b{font-weight:600;white-space:nowrap}
+.pcard__price s{font-size:13px;font-weight:400;color:var(--muted);white-space:nowrap}
+.pcard__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.pcard__chips span{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.pcard__chips span.low{color:#A4552B;border-color:#EBD8C7;background:#FDF6F0}
+.pcard__add{margin-top:14px;align-self:flex-start;height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;color:var(--ink);display:inline-flex;align-items:center;gap:7px;transition:background .15s,border-color .15s}
+.pcard__add:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.pcard__add.is-added{background:#2E7D5B;border-color:#2E7D5B;color:#fff}
+.pcard__foot{margin-top:auto}
+
+.empty{grid-column:1/-1;text-align:center;padding:66px 20px;border:1px dashed var(--line);border-radius:18px;background:var(--cream)}
+.empty b{display:block;font-size:17px;font-weight:600;letter-spacing:-.02em}
+.empty p{font-size:14px;color:var(--muted);margin:8px 0 18px}
+
+/* ============================================================
+   9. HOW ORDERING WORKS
+   ============================================================ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:46px}
+.step{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 24px 24px;display:flex;flex-direction:column}
+.step__n{width:44px;height:44px;border-radius:999px;background:var(--cream);display:inline-flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.step h3{font-size:18px;font-weight:600;letter-spacing:-.025em;margin-top:18px}
+.step p{font-size:14px;color:var(--muted);line-height:1.6;margin-top:9px}
+.mock{margin-top:22px;border:1px solid var(--line);border-radius:14px;background:var(--cream);padding:12px;font-size:12px}
+.mock__bar{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted)}
+.mock__bar .ic{width:14px;height:14px}
+.mock__row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-top:8px}
+.mock__sw{width:32px;height:32px;border-radius:8px;background:var(--cream-2);flex:none;overflow:hidden}
+.mock__sw img{width:100%;height:100%;object-fit:cover}
+.mock__row b{font-size:12px;font-weight:600;display:block;letter-spacing:-.01em}
+.mock__row span{font-size:11px;color:var(--muted)}
+.mock__row .pr{margin-left:auto;font-size:12px;font-weight:600;white-space:nowrap}
+.mock__card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}
+.mock__li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:12px;color:var(--ink-2)}
+.mock__li span{color:var(--muted)}
+.mock__tot{display:flex;justify-content:space-between;gap:12px;padding-top:9px;margin-top:5px;border-top:1px solid var(--line);font-size:12.5px;font-weight:600}
+.mock__tl{display:flex;flex-direction:column;gap:0}
+.mock__ti{display:flex;gap:11px;align-items:flex-start;position:relative;padding-bottom:14px}
+.mock__ti:last-child{padding-bottom:0}
+.mock__ti::before{content:"";position:absolute;left:6px;top:15px;bottom:0;width:1px;background:var(--line)}
+.mock__ti:last-child::before{display:none}
+.mock__dot{width:13px;height:13px;border-radius:999px;border:2px solid var(--line);background:#fff;flex:none;margin-top:1px;z-index:1}
+.mock__ti.done .mock__dot{background:#2E7D5B;border-color:#2E7D5B}
+.mock__ti.now .mock__dot{border-color:var(--accent);box-shadow:0 0 0 3px rgba(107,40,217,.14)}
+.mock__ti b{font-size:12px;font-weight:600;display:block;letter-spacing:-.01em}
+.mock__ti span{font-size:11px;color:var(--muted)}
+
+/* ============================================================
+   10. DELIVERY
+   ============================================================ */
+#delivery{scroll-margin-top:96px}
+.delgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.85fr);gap:56px;margin-top:44px;align-items:start}
+.deltable{width:100%;border-collapse:collapse}
+.deltable th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 0 14px;border-bottom:1px solid var(--line)}
+.deltable td{padding:20px 0;border-bottom:1px solid var(--line);font-size:15px;vertical-align:baseline}
+.deltable td:first-child{font-weight:600;letter-spacing:-.015em}
+.deltable td:nth-child(2){color:var(--muted)}
+.deltable td:last-child{text-align:right;font-weight:600;white-space:nowrap}
+.delcard{background:var(--cream);border-radius:20px;padding:28px 26px}
+.delcard .ic{color:var(--ink-2)}
+.delcard p{font-size:15px;line-height:1.55;letter-spacing:-.01em;margin-top:16px}
+.delcard a.textlink{margin-top:18px}
+
+/* ============================================================
+   11. REVIEWS
+   ============================================================ */
+.revgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:44px}
+.rev{border:1px solid var(--line);border-radius:20px;padding:28px 26px;display:flex;flex-direction:column}
+.rev blockquote{font-size:16px;line-height:1.58;letter-spacing:-.012em;margin-top:16px}
+.rev__who{margin-top:auto;padding-top:22px;font-size:13.5px;font-weight:600}
+.rev__who span{font-weight:400;color:var(--muted)}
+.rev__ver{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+.rev__ver a{color:var(--accent)}
+.rev__ver a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ============================================================
+   12. DARK CTA BAND
+   ============================================================ */
+.ctaband{padding:0 0 96px}
+.ctaband__in{background:var(--ink);color:#fff;border-radius:24px;padding:62px 56px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:56px;align-items:center}
+.ctaband h2{color:#fff}
+.ctaband p{font-size:16px;color:rgba(255,255,255,.7);line-height:1.6;max-width:46ch;margin-top:16px}
+.ctaband__btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.statrow{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 20px}
+.stat b{display:block;font-size:28px;font-weight:700;letter-spacing:-.035em;line-height:1}
+.stat span{display:block;font-size:12.5px;color:rgba(255,255,255,.62);margin-top:8px;line-height:1.4}
+
+/* ============================================================
+   13. NEWSLETTER
+   ============================================================ */
+.nl{text-align:center}
+.nl p{font-size:16px;color:var(--muted);margin-top:14px}
+.nl form{margin-top:30px}
+.geo-nl-form{display:flex;gap:10px;max-width:470px;margin:0 auto}
+.geo-nl-form input{flex:1;min-width:0;height:52px;padding:0 22px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:15px;outline:none}
+.geo-nl-form input:focus{border-color:#C9C2B1;box-shadow:0 0 0 4px rgba(107,40,217,.07)}
+.geo-nl-form button{height:52px;padding:0 26px;border-radius:999px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;flex:none}
+.geo-nl-form button:hover{background:#5a1fbd}
+.geo-nl-success{align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:600;color:#2E7D5B}
+.nl__note{font-size:12.5px;color:var(--muted);margin-top:16px}
+
+/* ============================================================
+   14. FAQ
+   ============================================================ */
+.faqwrap{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:56px;align-items:start}
+.faq{border-top:1px solid var(--line)}
+.faq [data-accordion]{border-bottom:1px solid var(--line)}
+.faq .faq__q{padding:24px 0;font-size:16.5px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.faq .faq__q .geo-ic{color:var(--muted)}
+.faq [data-panel]>div>p{font-size:15px;color:var(--muted);line-height:1.62;padding-bottom:24px;max-width:62ch}
+
+/* ============================================================
+   15. FOOTER
+   ============================================================ */
+.ftr{background:var(--ink);color:#fff;padding:76px 0 0}
+.ftr__grid{display:grid;grid-template-columns:repeat(3,minmax(0,.8fr)) minmax(0,1.3fr);gap:40px}
+.ftr h3{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:18px}
+.ftr li{margin-bottom:11px}
+.ftr li a{font-size:14.5px;color:rgba(255,255,255,.82)}
+.ftr li a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.ftr__brand .logo{color:#fff;font-size:19px}
+.ftr__brand .logo svg{color:#fff}
+.ftr__blurb{font-size:14px;color:rgba(255,255,255,.62);line-height:1.6;margin-top:16px;max-width:38ch}
+.paypills{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.paypills span{font-size:11.5px;font-weight:500;color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 12px}
+.ftr__bot{margin-top:60px;border-top:1px solid rgba(255,255,255,.14);padding:24px 0 30px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12.5px;color:rgba(255,255,255,.55)}
+
+/* ============================================================
+   16. RESPONSIVE
+   ============================================================ */
+@media (max-width:1080px){
+  .hero__grid{gap:48px}
+  .ctaband__in{padding:52px 40px;gap:40px}
+  .faqwrap,.delgrid{gap:40px}
+}
+@media (max-width:980px){
+  .hero__grid{grid-template-columns:1fr;gap:44px}
+  .herocard{max-width:460px}
+  .strip__grid{grid-template-columns:repeat(2,1fr)}
+  .strip__item{padding:24px 24px}
+  .strip__item:nth-child(odd){border-left:0;padding-left:0}
+  .strip__item:nth-child(even){padding-right:0}
+  .strip__item:nth-child(n+3){border-top:1px solid var(--line)}
+  .cattiles{grid-template-columns:repeat(2,1fr)}
+  .pgrid{grid-template-columns:repeat(2,1fr);gap:34px 22px}
+  .steps,.revgrid{grid-template-columns:1fr}
+  .delgrid{grid-template-columns:1fr}
+  .ctaband__in{grid-template-columns:1fr;padding:44px 32px}
+  .faqwrap{grid-template-columns:1fr;gap:30px}
+  .catpanel__grid{grid-template-columns:repeat(2,1fr)}
+  .ftr__grid{grid-template-columns:repeat(2,1fr);gap:36px}
+  .ftr__brand{grid-column:1/-1;order:-1;margin-bottom:8px}
+}
+@media (max-width:860px){
+  .hdr__row{min-height:62px;gap:12px}
+  .hdr__burger{display:inline-flex}
+  .hdr__row .hsearch,.hdr__deliver,.hdr__wish,.hdr__nav{display:none}
+  .hdr__msearch{display:block;padding-bottom:14px}
+  .hdr__msearch .hsearch{display:flex}
+  .hdr__right{margin-left:auto}
+}
+@media (max-width:660px){
+  .strip__grid{grid-template-columns:1fr}
+  .strip__item{padding:22px 0 !important;border-left:0;border-top:1px solid var(--line)}
+  .strip__item:first-child{border-top:0}
+}
+@media (max-width:760px){
+  .wrap{padding:0 18px}
+  .sect{padding:56px 0}
+  .sect--tight{padding:48px 0}
+  .hero{padding:48px 0 52px}
+  .topbar__links{display:none}
+  .topbar__in{min-height:36px}
+  .logo{font-size:17px}
+  .bagpill{padding:0 13px}
+  .pgrid{grid-template-columns:repeat(2,1fr);gap:28px 16px}
+  .cattiles{gap:16px}
+  .cattile__name{font-size:15.5px;margin-top:12px}
+  .ctaband{padding-bottom:56px}
+  .ctaband__in{border-radius:20px;padding:36px 24px}
+  .statrow{gap:22px 16px}
+  .geo-nl-form{flex-direction:column;align-items:stretch}
+  .geo-nl-form button{width:100%}
+  .catpanel__grid{grid-template-columns:1fr;padding:14px 0 20px}
+  .ftr__grid{grid-template-columns:1fr;gap:28px}
+  .ftr{padding-top:52px}
+  .ftr__bot{margin-top:40px}
+  .deltable td{font-size:14px;padding:16px 0}
+  .step{padding:22px 20px 20px}
+  .pcard__add{width:100%;justify-content:center}
+}
+@media (max-width:400px){
+  .hero h1{font-size:38px}
+  .bigsearch{height:54px;padding-left:16px}
+  .bigsearch__ph{left:46px;max-width:calc(100% - 150px)}
+  .bigsearch__btn{padding:0 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 1. TOP BAR ============ -->
+<div class="topbar">
+  <div class="wrap topbar__in">
+    <p class="topbar__msg">Free delivery in Accra on orders over GH&#8373; 1,000</p>
+    <div class="topbar__links">
+      <a href="http://localhost:3000/dashboard" data-url="account">Track your order</a>
+      <a href="mailto:support@geostoresgh.com" data-url="support">Help</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2. HEADER ============ -->
+<header class="hdr">
+  <div class="wrap">
+    <div class="hdr__row">
+      <button class="iconbtn hdr__burger" type="button" data-menu-toggle="mobile-nav" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a class="logo" href="http://localhost:3000" data-url="store" aria-label="Geostoresgh home">
+        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+        Geostoresgh
+      </a>
+      <form class="hsearch geo-search" role="search" aria-label="Search products">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="header-search" type="search" placeholder="Search phones, audio, wearables" aria-label="Search products">
+        <button class="hsearch__btn" type="submit">Search</button>
+      </form>
+      <div class="hdr__right">
+        <a class="hdr__deliver" href="#delivery">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          Deliver to Accra
+        </a>
+        <button class="iconbtn hdr__wish" type="button" id="wish-btn" aria-label="Saved items">
+          <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9-8.5C1.5 8 3.5 4.5 7 4.5c2 0 3.5 1 5 3 1.5-2 3-3 5-3 3.5 0 5.5 3.5 4 7-2 4.1-9 8.5-9 8.5z"/></svg>
+          <span class="count count--dot" data-wishlist-count data-hide-empty hidden>0</span>
+        </button>
+        <button class="bagpill" type="button" data-cart-open aria-label="Open shopping bag">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          Bag
+          <span class="count" data-cart-count data-hide-empty hidden>0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="hdr__msearch">
+      <form class="hsearch geo-search" role="search" aria-label="Search products">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="mobile-search" type="search" placeholder="Search phones, audio, wearables" aria-label="Search products">
+        <button class="hsearch__btn" type="submit">Search</button>
+      </form>
+    </div>
+
+    <nav class="hdr__nav" aria-label="Primary">
+      <button class="allcats" type="button" data-menu-toggle="cat-panel" aria-expanded="false" aria-controls="cat-panel">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        All categories
+      </button>
+      <div class="hdr__links">
+        <a class="is-accent" href="#products" data-jump="deals">Deals</a>
+        <a href="http://localhost:3000/categories/phones" data-url="cat:phones">Phones</a>
+        <a href="http://localhost:3000/categories/audio" data-url="cat:audio">Audio</a>
+        <a href="http://localhost:3000/categories/wearables" data-url="cat:wearables">Wearables</a>
+        <a href="http://localhost:3000/categories/home-tech" data-url="cat:home-tech">Home tech</a>
+        <a href="#products" data-jump="new">New in</a>
+        <a href="mailto:support@geostoresgh.com" data-url="support">Support</a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="catpanel" id="cat-panel">
+    <div class="wrap">
+      <div class="catpanel__grid" id="cat-panel-grid"></div>
+    </div>
+  </div>
+
+  <div class="mnav" id="mobile-nav">
+    <div class="wrap">
+      <ul id="mobile-nav-list"></ul>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============ 3. HERO ============ -->
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <p class="badge"><i></i> In stock in Accra today</p>
+      <h1>Real stock.<br>Real prices.</h1>
+      <p class="hero__sub">Phones, audio, wearables and home tech you can actually buy today — with the stock count on every listing.</p>
+
+      <form class="bigsearch geo-search" role="search" aria-label="Search the store">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="hero-search" type="search" aria-label="Search for a product">
+        <span class="bigsearch__ph" aria-hidden="true">Search for <b id="hero-rot">iPhone 15 Pro</b></span>
+        <button class="bigsearch__btn" type="submit">Search</button>
+      </form>
+
+      <ul class="trustrow">
+        <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg> 12-month warranty</li>
+        <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg> Tracked delivery</li>
+        <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/></svg> MoMo, card or cash</li>
+      </ul>
+      <p class="micronote">All prices in Ghana cedis, VAT included</p>
+    </div>
+
+    <div>
+      <a class="herocard" id="hero-card" href="http://localhost:3000/products/iphone-15-pro" data-quickview="prod_iphone_15_pro" aria-label="Quick view: iPhone 15 Pro"></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. TRUST STRIP ============ -->
+<section class="strip" aria-label="Why shop with us">
+  <div class="wrap">
+    <div class="strip__grid">
+      <div class="strip__item">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5 12 4l8 5.5V20H4z"/><path d="M9.5 20v-6h5v6"/></svg>
+        <div><b>Every item is in our Accra store</b><p>Nothing is drop-shipped. The stock count you see is what sits on the shelf.</p></div>
+      </div>
+      <div class="strip__item">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>
+        <div><b>Tracked from the moment you order</b><p>You get an order number straight away, and it follows the parcel to your door.</p></div>
+      </div>
+      <div class="strip__item">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6 14.5h4"/></svg>
+        <div><b>Pay with MoMo, Telecel Cash, card or cash</b><p>Approve a prompt, tap a card, or pay the rider when the order reaches you.</p></div>
+      </div>
+      <div class="strip__item">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div><b>12-month warranty on flagships</b><p>We tell you exactly what the cover includes before you pay, not after.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. SHOP BY CATEGORY ============ -->
+<section class="sect">
+  <div class="wrap">
+    <div class="sect-head">
+      <div>
+        <p class="eyebrow">The shop</p>
+        <h2 class="h2">Shop by category.</h2>
+        <p class="lede">Four departments, 8 products, every price in the open.</p>
+      </div>
+      <a class="textlink" href="http://localhost:3000" data-url="store">Browse all products
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="cattiles" id="cat-tiles"></div>
+    <div class="chiprow" id="chip-row" role="group" aria-label="Quick filters"></div>
+  </div>
+</section>
+
+<!-- ============ 6. PRODUCT GRID ============ -->
+<section class="sect" id="products" style="padding-top:0">
+  <div class="wrap">
+    <div class="sect-head">
+      <div>
+        <p class="eyebrow">In stock now</p>
+        <h2 class="h2">Worth a look this week.</h2>
+        <p class="lede">Every price includes VAT and the stock count is live.</p>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="pills" id="filter-pills" role="group" aria-label="Filter products"></div>
+      <div class="filters__right">
+        <p class="count-live" id="product-count" aria-live="polite">8 products</p>
+        <div class="sortwrap">
+          <label class="sr-only" for="sort">Sort products</label>
+          <select id="sort">
+            <option value="featured">Sort: Featured</option>
+            <option value="rating">Sort: Top rated</option>
+            <option value="price-asc">Sort: Price, low to high</option>
+            <option value="price-desc">Sort: Price, high to low</option>
+            <option value="newest">Sort: Newest</option>
+          </select>
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="pgrid" id="pgrid"></div>
+  </div>
+</section>
+
+<!-- ============ 7. HOW ORDERING WORKS ============ -->
+<section class="sect sect--cream">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2 class="h2">From tap to doorstep.</h2>
+    <p class="lede">Three steps, no surprises between the price you see and the price you pay.</p>
+    <div class="steps" id="steps"></div>
+  </div>
+</section>
+
+<!-- ============ 8. DELIVERY ============ -->
+<section class="sect" id="delivery">
+  <div class="wrap">
+    <p class="eyebrow">Delivery</p>
+    <h2 class="h2">Where we deliver.</h2>
+    <p class="lede">Fees are flat and shown before you pay. Accra and Tema orders over GH&#8373; 1,000 ship free.</p>
+    <div class="delgrid">
+      <table class="deltable">
+        <thead><tr><th scope="col">Zone</th><th scope="col">Time</th><th scope="col" style="text-align:right">Fee</th></tr></thead>
+        <tbody id="delivery-rows"></tbody>
+      </table>
+      <aside class="delcard">
+        <svg class="ic lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3.5 20.5l1.7-5A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        <p>Not sure? Message us on WhatsApp and we'll confirm before you pay.</p>
+        <a class="textlink" href="https://wa.me/233000000000" data-url="whatsapp">Chat with us
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. REVIEWS ============ -->
+<section class="sect" style="padding-top:0">
+  <div class="wrap">
+    <p class="eyebrow">Proof</p>
+    <h2 class="h2">What customers say.</h2>
+    <p class="lede">Reviews left by people who bought from this shop, not a marketplace average.</p>
+    <div class="revgrid" id="reviews"></div>
+  </div>
+</section>
+
+<!-- ============ 10. DARK CTA BAND ============ -->
+<section class="ctaband">
+  <div class="wrap">
+    <div class="ctaband__in">
+      <div>
+        <h2 class="h2">Still deciding?</h2>
+        <p>Tell us your budget and what you need it for. We'll send two or three options that are actually in stock.</p>
+        <div class="ctaband__btns">
+          <a class="btn btn--white" href="https://wa.me/233000000000" data-url="whatsapp">Message us on WhatsApp</a>
+          <a class="btn btn--ghost-dark" href="http://localhost:3000" data-url="store">Browse all products</a>
+        </div>
+      </div>
+      <div class="statrow" id="stats"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11. NEWSLETTER ============ -->
+<section class="sect sect--tight sect--cream">
+  <div class="wrap nl">
+    <p class="eyebrow">Price alerts</p>
+    <h2 class="h2">Know when prices drop.</h2>
+    <p>One short email when something you're watching drops or lands back in stock.</p>
+    <form data-newsletter novalidate>
+      <div class="geo-nl-form">
+        <label class="sr-only" for="nl-email">Email address</label>
+        <input id="nl-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <button type="submit">Notify me</button>
+      </div>
+      <p class="geo-nl-error" role="alert">Enter a valid email address.</p>
+      <p class="geo-nl-success">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>
+        You're on the list. We'll be in touch.
+      </p>
+    </form>
+    <p class="nl__note">No more than two emails a month. Unsubscribe any time.</p>
+  </div>
+</section>
+
+<!-- ============ 12. FAQ ============ -->
+<section class="sect">
+  <div class="wrap faqwrap">
+    <div>
+      <p class="eyebrow">Questions</p>
+      <h2 class="h2">Good to know.</h2>
+      <p class="lede">Anything else, <a href="mailto:support@geostoresgh.com" data-url="support" style="color:var(--accent);font-weight:600">email support</a> and a person replies.</p>
+    </div>
+    <div class="faq" id="faq" data-accordion-group></div>
+  </div>
+</section>
+</main>
+
+<!-- ============ 13. FOOTER ============ -->
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__grid">
+      <div>
+        <h3>Shop</h3>
+        <ul>
+          <li><a href="http://localhost:3000" data-url="store">Featured products</a></li>
+          <li><a href="http://localhost:3000/categories/phones" data-url="cat:phones">Phones</a></li>
+          <li><a href="http://localhost:3000/categories/audio" data-url="cat:audio">Audio</a></li>
+          <li><a href="http://localhost:3000/categories/wearables" data-url="cat:wearables">Wearables</a></li>
+          <li><a href="http://localhost:3000/categories/home-tech" data-url="cat:home-tech">Home tech</a></li>
+          <li><a href="http://localhost:3000/cart" data-url="cart">Shopping bag</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Help</h3>
+        <ul>
+          <li><a href="http://localhost:3000/dashboard" data-url="account">Orders and account</a></li>
+          <li><a href="mailto:support@geostoresgh.com" data-url="support">Contact support</a></li>
+          <li><a href="http://localhost:3000/legal/delivery" data-url="legal:delivery">Delivery</a></li>
+          <li><a href="http://localhost:3000/legal/returns" data-url="legal:returns">Returns</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="http://localhost:3000/legal/privacy-policy" data-url="legal:privacy-policy">Privacy policy</a></li>
+          <li><a href="http://localhost:3000/legal/terms" data-url="legal:terms">Terms</a></li>
+        </ul>
+      </div>
+      <div class="ftr__brand">
+        <a class="logo" href="http://localhost:3000" data-url="store">
+          <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+          Geostoresgh
+        </a>
+        <p class="ftr__blurb">Useful tech, honest product details, and support you can reach. Delivered across Ghana.</p>
+        <div class="paypills" id="pay-pills"></div>
+      </div>
+    </div>
+    <div class="ftr__bot">
+      <p>&copy; <span data-year>2026</span> Geostoresgh</p>
+      <p>Prices are shown in Ghana cedis.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="shared/data.js"></script>
+<script src="shared/core.js"></script>
+<script>
+(function () {
+	"use strict";
+
+	function boot() {
+		var G = window.GEO;
+		var esc = G.esc;
+		var $ = function (s, r) { return (r || document).querySelector(s); };
+		var money = G.formatMoney;
+		var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+		var ARROW = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+		/* ---------- resolve every link through GEO.urls ---------- */
+		document.querySelectorAll("[data-url]").forEach(function (a) {
+			var v = a.dataset.url;
+			if (v === "store") a.href = G.urls.store;
+			else if (v === "cart") a.href = G.urls.cart;
+			else if (v === "account") a.href = G.urls.account;
+			else if (v === "support") a.href = G.urls.support;
+			else if (v === "whatsapp") a.href = G.urls.whatsapp;
+			else if (v.indexOf("cat:") === 0) a.href = G.urls.category(v.slice(4));
+			else if (v.indexOf("legal:") === 0) a.href = G.urls.legal(v.slice(6));
+		});
+
+		/* ---------- header: categories panel + mobile nav ---------- */
+		$("#cat-panel-grid").innerHTML = G.categories.map(function (c) {
+			return '<a class="catpanel__item" href="' + G.urls.category(c.slug) + '">' +
+				"<b>" + esc(c.name) + "</b>" +
+				"<span>" + esc(c.blurb) + "</span>" +
+				"<em>" + c.count + " product" + (c.count === 1 ? "" : "s") + "</em></a>";
+		}).join("");
+
+		$("#mobile-nav-list").innerHTML =
+			'<li><a href="#products" data-jump="deals" data-menu-close>Deals</a></li>' +
+			G.categories.map(function (c) {
+				return '<li><a href="' + G.urls.category(c.slug) + '">' + esc(c.name) + "</a></li>";
+			}).join("") +
+			'<li><a href="#products" data-jump="new" data-menu-close>New in</a></li>' +
+			'<li><a href="#delivery" data-menu-close>Delivery</a></li>' +
+			'<li><a href="' + G.urls.support + '">Support</a></li>' +
+			'<li><a href="' + G.urls.account + '">Orders and account</a></li>';
+
+		/* ---------- hero product card ---------- */
+		var hp = G.byId.prod_iphone_15_pro;
+		var saved = hp.compareAtInPesewas ? hp.compareAtInPesewas - hp.priceInPesewas : 0;
+		$("#hero-card").innerHTML =
+			'<img src="' + esc(hp.heroImageUrl || hp.imageUrl) + '" alt="' + esc(hp.name) + '" width="720" height="900" fetchpriority="high">' +
+			'<span class="herocard__pill"><i></i>Price drop &middot; save ' + money(saved) + "</span>" +
+			'<span class="herocard__foot">' +
+			'<span><span class="herocard__name">' + esc(hp.name) + "</span>" +
+			'<span class="herocard__meta">' + esc(hp.brand) + " &middot; " + hp.stockQuantity + " in stock</span></span>" +
+			'<span class="herocard__price tnum">' + money(hp.priceInPesewas) + "</span></span>";
+
+		/* ---------- hero rotating placeholder ---------- */
+		var heroInput = $("#hero-search");
+		var bigsearch = heroInput.closest(".bigsearch");
+		heroInput.addEventListener("input", function () {
+			bigsearch.classList.toggle("has-value", heroInput.value.length > 0);
+		});
+		if (!reduced) {
+			var words = ["iPhone 15 Pro", "AirPods Pro", "Galaxy Watch", "55-inch TV"];
+			var wi = 0;
+			var rot = $("#hero-rot");
+			setInterval(function () {
+				wi = (wi + 1) % words.length;
+				rot.textContent = words[wi];
+				rot.style.animation = "none";
+				void rot.offsetWidth;
+				rot.style.animation = "";
+			}, 2600);
+		}
+
+		/* ---------- search inputs ---------- */
+		G.bindSearch(heroInput, {});
+		G.bindSearch($("#header-search"), {});
+		G.bindSearch($("#mobile-search"), {});
+
+		/* ---------- category tiles ---------- */
+		$("#cat-tiles").innerHTML = G.categories.map(function (c) {
+			return '<a class="cattile" href="' + G.urls.category(c.slug) + '">' +
+				'<span class="cattile__media"><img src="' + esc(c.imageUrl) + '" alt="' + esc(c.name) +
+				'" loading="lazy" data-fade width="600" height="450"></span>' +
+				'<span class="cattile__name">' + esc(c.name) + "</span>" +
+				'<span class="cattile__count">' + c.count + " product" + (c.count === 1 ? "" : "s") + "</span></a>";
+		}).join("");
+
+		/* ---------- filter state ---------- */
+		var CHIPS = [
+			{ id: "apple", label: "Apple", dot: "#16150F", f: { brand: "Apple" } },
+			{ id: "samsung", label: "Samsung", dot: "#1F4FD8", f: { brand: "Samsung" } },
+			{ id: "google", label: "Google", dot: "#2E8B57", f: { brand: "Google" } },
+			{ id: "jbl", label: "JBL", dot: "#E2622B", f: { brand: "JBL" } },
+			{ id: "budget", label: "Under GH₵ 3,000", dot: "#B08A2E", f: { maxPrice: 300000 } },
+			{ id: "drops", label: "Price drops", dot: "#6b28d9", f: { onSale: true } },
+			{ id: "new", label: "New in", dot: "#2E7D5B", f: { isNew: true } }
+		];
+		var PILLS = [
+			{ id: "all", label: "All" },
+			{ id: "deals", label: "Deals" },
+			{ id: "new", label: "New in" },
+			{ id: "rated", label: "Best rated" }
+		];
+		var state = { chip: null, pill: "all", sort: "featured" };
+
+		$("#chip-row").innerHTML = CHIPS.map(function (c) {
+			return '<button class="chip" type="button" data-chip="' + c.id + '" aria-pressed="false">' +
+				'<i style="background:' + c.dot + '"></i>' + esc(c.label) + "</button>";
+		}).join("");
+
+		$("#filter-pills").innerHTML = PILLS.map(function (p) {
+			return '<button class="pill' + (p.id === "all" ? " is-on" : "") + '" type="button" data-pill="' + p.id +
+				'" aria-pressed="' + (p.id === "all") + '">' + esc(p.label) + "</button>";
+		}).join("");
+
+		function currentFilters() {
+			var f = {};
+			if (state.chip) {
+				var c = CHIPS.filter(function (x) { return x.id === state.chip; })[0];
+				if (c) { Object.keys(c.f).forEach(function (k) { f[k] = c.f[k]; }); }
+			}
+			if (state.pill === "deals") f.onSale = true;
+			if (state.pill === "new") f.isNew = true;
+			f.sort = state.sort;
+			return f;
+		}
+
+		function paintControls() {
+			document.querySelectorAll("[data-chip]").forEach(function (b) {
+				var on = b.dataset.chip === state.chip;
+				b.classList.toggle("is-on", on);
+				b.setAttribute("aria-pressed", on ? "true" : "false");
+			});
+			document.querySelectorAll("[data-pill]").forEach(function (b) {
+				var on = b.dataset.pill === state.pill;
+				b.classList.toggle("is-on", on);
+				b.setAttribute("aria-pressed", on ? "true" : "false");
+			});
+			$("#sort").value = state.sort;
+		}
+
+		/* ---------- product grid ---------- */
+		function cardHTML(p) {
+			var cat = G.categoryBySlug[p.categorySlug];
+			var off = G.discountPct(p);
+			var specKeys = Object.keys(p.specifications || {});
+			var chips = [];
+			if (specKeys.length) chips.push('<span>' + esc(p.specifications[specKeys[0]]) + "</span>");
+			if (p.stockQuantity <= 5) chips.push('<span class="low">Only ' + p.stockQuantity + " left</span>");
+			else chips.push("<span>" + p.stockQuantity + " in stock</span>");
+			var href = G.urls.product(p.slug);
+			return '<article class="pcard">' +
+				'<div class="pcard__media">' +
+					'<a class="pcard__hit" href="' + href + '" data-quickview="' + p.id + '" tabindex="-1" aria-hidden="true">' +
+						'<img src="' + esc(p.imageUrl) + '" alt="" loading="lazy" data-fade width="600" height="600"></a>' +
+					'<span class="pcard__tag">' + esc(p.tag) + "</span>" +
+					(off ? '<span class="pcard__off">-' + off + "%</span>" : "") +
+					'<button class="pcard__heart" type="button" data-wishlist="' + p.id + '" aria-pressed="false" aria-label="Save ' + esc(p.name) + '">' +
+						'<svg class="geo-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9-8.5C1.5 8 3.5 4.5 7 4.5c2 0 3.5 1 5 3 1.5-2 3-3 5-3 3.5 0 5.5 3.5 4 7-2 4.1-9 8.5-9 8.5z"/></svg></button>' +
+				"</div>" +
+				'<a class="pcard__body" href="' + href + '" data-quickview="' + p.id + '">' +
+					'<span class="pcard__brand">' + esc(p.brand) + " &middot; " + esc(cat.name) + "</span>" +
+					'<h3 class="pcard__name">' + esc(p.name) + "</h3>" +
+					'<span class="pcard__price tnum"><b>' + money(p.priceInPesewas) + "</b>" +
+						(p.compareAtInPesewas ? "<s>" + money(p.compareAtInPesewas) + "</s>" : "") + "</span>" +
+				"</a>" +
+				'<div class="pcard__foot">' +
+					'<div class="pcard__chips">' + chips.join("") + "</div>" +
+					'<button class="pcard__add" type="button" data-add="' + p.id + '">' +
+						'<svg class="geo-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add to bag</button>' +
+				"</div></article>";
+		}
+
+		function renderGrid() {
+			var list = G.filterProducts(currentFilters());
+			var grid = $("#pgrid");
+			if (!list.length) {
+				grid.innerHTML = '<div class="empty"><b>Nothing matches that combination.</b>' +
+					"<p>Try a different brand or clear the filters to see all 8 products.</p>" +
+					'<button class="btn btn--line" type="button" id="reset-filters">Clear filters</button></div>';
+			} else {
+				grid.innerHTML = list.map(cardHTML).join("");
+			}
+			$("#product-count").textContent = list.length + (list.length === 1 ? " product" : " products");
+			paintControls();
+			G.paintWishlist();
+			G.bindImages();
+		}
+
+		document.addEventListener("click", function (e) {
+			var chip = e.target.closest("[data-chip]");
+			if (chip) {
+				state.chip = state.chip === chip.dataset.chip ? null : chip.dataset.chip;
+				renderGrid();
+				document.getElementById("products").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+				return;
+			}
+			var jump = e.target.closest("[data-jump]");
+			if (jump) {
+				state.chip = null;
+				state.pill = jump.dataset.jump;
+				renderGrid();
+				return;
+			}
+			var pill = e.target.closest("[data-pill]");
+			if (pill) {
+				state.pill = pill.dataset.pill;
+				if (state.pill === "rated") state.sort = "rating";
+				else if (state.pill === "all") state.sort = "featured";
+				renderGrid();
+				return;
+			}
+			if (e.target.closest("#reset-filters")) {
+				state.chip = null;
+				state.pill = "all";
+				state.sort = "featured";
+				renderGrid();
+			}
+		});
+
+		$("#sort").addEventListener("change", function (e) {
+			state.sort = e.target.value;
+			if (state.pill === "rated" && state.sort !== "rating") state.pill = "all";
+			renderGrid();
+		});
+
+		renderGrid();
+
+		/* ---------- how ordering works ---------- */
+		var pick = G.byId.prod_pixel_8a;
+		var mocks = [
+			'<div class="mock">' +
+				'<div class="mock__bar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>pixel 8a</div>' +
+				'<div class="mock__row"><span class="mock__sw"><img src="' + esc(pick.imageUrl) + '" alt="" loading="lazy"></span>' +
+					"<span><b>" + esc(pick.name) + "</b><span>" + pick.stockQuantity + " in stock</span></span>" +
+					'<span class="pr tnum">' + money(pick.priceInPesewas) + "</span></div>" +
+			"</div>",
+			'<div class="mock"><div class="mock__card">' +
+				'<div class="mock__li">Galaxy Watch6 <span>&times;1</span><span class="tnum" style="margin-left:auto;color:inherit">' + money(285000) + "</span></div>" +
+				'<div class="mock__li">JBL Charge 5 <span>&times;1</span><span class="tnum" style="margin-left:auto;color:inherit">' + money(145000) + "</span></div>" +
+				'<div class="mock__li" style="padding-top:0">Delivery, Accra <span style="margin-left:auto">Free</span></div>' +
+				'<div class="mock__tot"><span>Total</span><span class="tnum">' + money(430000) + "</span></div>" +
+			"</div></div>",
+			'<div class="mock"><div class="mock__card"><div class="mock__tl">' +
+				'<div class="mock__ti done"><span class="mock__dot"></span><span><b>Order confirmed</b><span>Today, 09:14</span></span></div>' +
+				'<div class="mock__ti now"><span class="mock__dot"></span><span><b>Out for delivery</b><span>Rider en route, Accra</span></span></div>' +
+				'<div class="mock__ti"><span class="mock__dot"></span><span><b>Delivered</b><span>Expected before 17:00</span></span></div>' +
+			"</div></div></div>"
+		];
+		$("#steps").innerHTML = G.steps.map(function (s, i) {
+			return '<article class="step"><span class="step__n">' + esc(s.n) + "</span>" +
+				"<h3>" + esc(s.title) + "</h3><p>" + esc(s.body) + "</p>" + mocks[i] + "</article>";
+		}).join("");
+
+		/* ---------- delivery ---------- */
+		$("#delivery-rows").innerHTML = G.deliveryZones.map(function (z) {
+			return "<tr><td>" + esc(z.zone) + "</td><td>" + esc(z.time) + "</td><td>" + esc(z.fee) + "</td></tr>";
+		}).join("");
+
+		/* ---------- reviews ---------- */
+		$("#reviews").innerHTML = G.reviews.map(function (r) {
+			var p = G.byId[r.productId];
+			return '<figure class="rev">' + G.stars(r.rating) +
+				"<blockquote>&ldquo;" + esc(r.quote) + "&rdquo;</blockquote>" +
+				'<figcaption class="rev__who">' + esc(r.name) + " <span>&middot; " + esc(r.place) + "</span>" +
+				'<span class="rev__ver">Verified purchase &middot; <a href="' + G.urls.product(p.slug) + '">' + esc(p.name) + "</a></span>" +
+				"</figcaption></figure>";
+		}).join("");
+
+		/* ---------- stats ---------- */
+		$("#stats").innerHTML = G.stats.map(function (s) {
+			return '<div class="stat"><b class="tnum">' + esc(s.value) + "</b><span>" + esc(s.label) + "</span></div>";
+		}).join("");
+
+		/* ---------- faq ---------- */
+		$("#faq").innerHTML = G.faqs.map(function (f) {
+			return '<div data-accordion><button class="faq__q" type="button" aria-expanded="false"><span>' + esc(f.q) + "</span>" +
+				'<svg class="geo-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>' +
+				'<div data-panel><div><p>' + esc(f.a) + "</p></div></div></div>";
+		}).join("");
+		G.bindAccordions();
+
+		/* ---------- footer payments ---------- */
+		$("#pay-pills").innerHTML = G.paymentMethods.map(function (m) {
+			return "<span>" + esc(m.name) + "</span>";
+		}).join("");
+
+		/* ---------- saved items button ---------- */
+		$("#wish-btn").addEventListener("click", function () {
+			var n = G.wishlist.ids.size;
+			G.toast({
+				title: n ? n + (n === 1 ? " item saved" : " items saved") : "Nothing saved yet",
+				sub: n ? "Saved items follow you to checkout." : "Tap the heart on a product to save it."
+			});
+		});
+
+		G.bindImages();
+	}
+
+	if (document.getElementById("geo-shell")) boot();
+	else document.addEventListener("geo:ready", boot, { once: true });
+})();
+</script>
+</body>
+</html>

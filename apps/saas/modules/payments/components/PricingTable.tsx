@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { useDefaultCurrency } from "@shared/hooks/currency";
 import { useRouter } from "@shared/hooks/router";
 import { orpc } from "@shared/lib/orpc-query-utils";
+import { useFormatter, useTranslations } from "@shared/lib/translations";
 import { useMutation } from "@tanstack/react-query";
 import {
 	ArrowRightIcon,
@@ -17,7 +18,6 @@ import {
 	CheckIcon,
 	StarIcon,
 } from "lucide-react";
-import { useFormatter, useTranslations } from "@shared/lib/translations";
 import { useState } from "react";
 
 const plans = paymentsConfig.plans;

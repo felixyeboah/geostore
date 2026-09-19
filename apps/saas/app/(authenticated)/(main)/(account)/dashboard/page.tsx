@@ -6,6 +6,7 @@ import { config } from "@repo/auth/config";
 import { Card } from "@repo/ui";
 import { Button } from "@repo/ui/components/button";
 import { PageHeader } from "@shared/components/PageHeader";
+import { storefront } from "@shared/lib/storefront";
 import { ArrowRightIcon, SettingsIcon, ShoppingBagIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -59,7 +60,7 @@ export default async function AppStartPage() {
 							started on this device.
 						</p>
 						<Button asChild size="sm" className="mt-4">
-							<Link href="/">
+							<Link href={storefront.shop}>
 								Open the store{" "}
 								<ArrowRightIcon className="size-4" />
 							</Link>

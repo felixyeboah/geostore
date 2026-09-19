@@ -9,6 +9,7 @@
 		"@prisma/nextjs-monorepo-workaround-plugin": "catalog:",
 		"@repo/api": "workspace:*",
 		"@repo/auth": "workspace:*",
+		"@repo/commerce": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/logs": "workspace:*",
 		"@repo/mail": "workspace:*",
@@ -68,6 +69,7 @@
 		"@types/mdx": "catalog:",
 		"@types/node": "catalog:",
 		"@types/nprogress": "catalog:",
+		"@types/pg": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@types/uuid": "catalog:",
@@ -78,6 +80,7 @@
 		"postcss": "catalog:",
 		"start-server-and-test": "catalog:",
 		"tailwindcss": "catalog:",
+		"tsx": "catalog:",
 		"typescript": "catalog:"
 	},
 	"name": "saas",
@@ -89,6 +92,7 @@
 		"e2e": "pnpm exec playwright test --ui",
 		"e2e:ci": "pnpm exec playwright install && pnpm exec playwright test",
 		"start": "next start",
+		"test:unit": "tsx --test \"modules/**/*.test.ts\"",
 		"type-check": "tsc --noEmit"
 	},
 	"version": "0.0.0"

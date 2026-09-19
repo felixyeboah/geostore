@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Option C — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --border: #e5e5e5;
+    --fg: #262626;
+    --muted-fg: #6b6b6b;
+    --faint: #9c9c9c;
+    --primary: #6b28d9;
+    --primary-deep: #4b13a3;
+    --primary-light: #8343e6;
+    --accent-soft: #f3eeff;
+    --success: #39a561;
+    --success-soft: #e9f6ee;
+    --amber: #b45309;
+    --amber-soft: #fdf3e3;
+    --gray-soft: #f0f0f0;
+    --danger: #dc2626;
+    --danger-soft: #fdeaea;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--fg); font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .topbar {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+  .brand-mark {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: linear-gradient(135deg, #4b13a3, #8343e6);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-weight: 700;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 14px; color: var(--muted-fg); }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--primary-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+  }
+  .tabs {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 0 28px; display: flex; gap: 4px; overflow-x: auto;
+  }
+  .tab {
+    padding: 12px 12px 11px; font-size: 13.5px; font-weight: 500;
+    color: var(--muted-fg); border-bottom: 2px solid transparent;
+    white-space: nowrap; cursor: pointer;
+  }
+  .tab.active { color: var(--fg); border-bottom-color: var(--primary); font-weight: 600; }
+
+  .page { max-width: 1200px; margin: 0 auto; padding: 26px 28px 60px; }
+
+  /* greeting band */
+  .greeting { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+  .greeting h1 { font-family: "Nunito Sans", "Inter", sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+  .greeting .sub { color: var(--muted-fg); font-size: 13px; margin-top: 4px; }
+  .storechip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 14px; font-size: 12.5px; font-weight: 600;
+  }
+  .storechip .live { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 3px var(--success-soft); }
+  .storechip span.light { color: var(--faint); font-weight: 500; }
+
+  /* attention tasks (Etsy top-tasks pattern) */
+  .section-label { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 12px; }
+  .section-label h2 { font-size: 15px; font-weight: 700; }
+  .section-label span { font-size: 12px; color: var(--faint); }
+
+  .tasks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 26px; }
+  .task {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 17px 19px; display: flex; flex-direction: column; gap: 12px;
+    text-decoration: none; color: inherit; position: relative;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .task:hover { border-color: var(--primary-light); box-shadow: 0 4px 14px rgba(107,40,217,.08); }
+  .task .top { display: flex; align-items: center; justify-content: space-between; }
+  .task .t-ic {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .task .t-ic svg { width: 17px; height: 17px; }
+  .task .arrow { color: var(--faint); }
+  .task h3 { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .task .count {
+    background: var(--danger); color: #fff; font-size: 11px; font-weight: 700;
+    min-width: 20px; height: 20px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center; padding: 0 6px;
+  }
+  .task .count.warn { background: var(--amber); }
+  .task .count.ok { background: var(--success); }
+  .task p { font-size: 12.5px; color: var(--muted-fg); line-height: 1.5; }
+  .task .cta { font-size: 12.5px; font-weight: 700; color: var(--primary); margin-top: auto; }
+
+  /* stats strip (Etsy stats pattern) */
+  .statcard { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 26px; }
+  .statcard-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border); }
+  .statcard-head h2 { font-size: 14.5px; font-weight: 700; }
+  .range { font-size: 12px; font-weight: 600; color: var(--muted-fg); background: var(--gray-soft); padding: 5px 11px; border-radius: 8px; }
+  .statgrid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .statcell { padding: 18px 20px; border-right: 1px solid var(--border); }
+  .statcell:last-child { border-right: none; }
+  .statcell .lbl { font-size: 12.5px; font-weight: 500; color: var(--muted-fg); display: flex; align-items: center; gap: 6px; }
+  .statcell .val { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 6px; }
+  .statcell .chg { font-size: 11.5px; font-weight: 600; margin-top: 4px; }
+  .chg.up { color: var(--success); }
+  .chg.down { color: var(--danger); }
+  .chg.flat { color: var(--faint); }
+
+  /* main split */
+  .split { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; align-items: start; }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border); }
+  .panel-head h2 { font-size: 14.5px; font-weight: 700; }
+  .panel-head .sub { font-size: 12px; color: var(--muted-fg); margin-top: 2px; }
+  .viewall { font-size: 12.5px; font-weight: 700; color: var(--primary); text-decoration: none; }
+
+  .order-row { display: flex; align-items: center; gap: 13px; padding: 12px 20px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; }
+  .order-row:hover { background: #faf9fd; }
+  .order-row:last-child { border-bottom: none; }
+  .o-ava { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .o-main { min-width: 0; }
+  .o-line1 { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .o-line1 .ono { font-variant-numeric: tabular-nums; color: var(--primary-deep); }
+  .o-line2 { font-size: 11.5px; color: var(--faint); margin-top: 2px; }
+  .o-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+  .o-right b { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .pills { display: flex; gap: 5px; margin-top: 4px; justify-content: flex-end; }
+  .pill { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .pill.paid { background: var(--success-soft); color: var(--success); }
+  .pill.pending { background: var(--amber-soft); color: var(--amber); }
+  .pill.refunded { background: var(--gray-soft); color: var(--muted-fg); }
+  .pill.ship { background: var(--accent-soft); color: var(--primary-deep); }
+
+  .rail { display: flex; flex-direction: column; gap: 18px; }
+
+  /* mini chart card */
+  .minichart { padding: 16px 20px 8px; }
+  .minichart .mlabel { font-size: 12px; font-weight: 600; color: var(--muted-fg); }
+  .minichart .mval { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .minichart .mval span { font-size: 12px; color: var(--success); font-weight: 700; margin-left: 8px; }
+
+  /* stock list compact */
+  .srow { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .srow:last-child { border-bottom: none; }
+  .srow .bar { flex: 1; height: 6px; border-radius: 99px; background: var(--gray-soft); overflow: hidden; margin: 0 8px; }
+  .srow .bar > div { height: 100%; border-radius: 99px; }
+  .srow .n { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 52px; text-align: right; font-size: 12px; }
+  .srow .nm { font-weight: 500; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .todo { padding: 6px 20px 16px; }
+  .todo-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; font-size: 13px; }
+  .todo-row .box { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid var(--border); margin-top: 1px; flex-shrink: 0; }
+  .todo-row .box.done { background: var(--success); border-color: var(--success); display: flex; align-items: center; justify-content: center; }
+  .todo-row .box.done svg { width: 10px; height: 10px; color: #fff; }
+  .todo-row .txt b { font-weight: 600; }
+  .todo-row .txt span { display: block; font-size: 11.5px; color: var(--faint); margin-top: 1px; }
+  .todo-row.done .txt { color: var(--faint); text-decoration: line-through; }
+  .progress-wrap { padding: 14px 20px 4px; }
+  .progress-line { height: 6px; border-radius: 99px; background: var(--gray-soft); overflow: hidden; }
+  .progress-line > div { height: 100%; width: 60%; border-radius: 99px; background: linear-gradient(90deg, var(--primary-deep), var(--primary-light)); }
+  .progress-txt { font-size: 11.5px; color: var(--muted-fg); margin-top: 7px; }
+
+  @media (max-width: 1020px) {
+    .tasks { grid-template-columns: 1fr; }
+    .statgrid { grid-template-columns: 1fr 1fr; }
+    .statcell:nth-child(2) { border-right: none; }
+    .statcell:nth-child(1), .statcell:nth-child(2) { border-bottom: 1px solid var(--border); }
+    .split { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="brand-mark">G</div> Geostoresgh <span style="font-weight:500;color:var(--faint);font-size:12px;margin-left:2px">Admin</span></div>
+  <div class="topbar-right">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+    <div class="avatar">NO</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active">Overview</div>
+  <div class="tab">Products</div>
+  <div class="tab">Categories</div>
+  <div class="tab">Orders</div>
+  <div class="tab">Transactions</div>
+  <div class="tab">Analytics</div>
+  <div class="tab">Users</div>
+  <div class="tab">Organizations</div>
+</div>
+
+<div class="page">
+
+  <!-- greeting -->
+  <div class="greeting">
+    <div>
+      <h1>Good morning, Nana 👋</h1>
+      <p class="sub">Friday, 18 September — your store at a glance</p>
+    </div>
+    <div class="storechip"><span class="live"></span> Store live <span class="light">· geostoresgh.com</span></div>
+  </div>
+
+  <!-- attention tasks -->
+  <div class="section-label">
+    <h2>Needs your attention</h2>
+    <span>Activity from the last 30 days</span>
+  </div>
+  <div class="tasks">
+    <a class="task" href="#">
+      <div class="top">
+        <div class="t-ic" style="background:var(--danger-soft);color:var(--danger)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h12l1 13H5L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        </div>
+        <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </div>
+      <h3>Unfulfilled orders <span class="count">24</span></h3>
+      <p>24 paid orders are waiting to be packed and shipped. 6 are older than 48 hours.</p>
+      <span class="cta">Fulfil orders →</span>
+    </a>
+    <a class="task" href="#">
+      <div class="top">
+        <div class="t-ic" style="background:var(--amber-soft);color:var(--amber)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+        </div>
+        <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </div>
+      <h3>Low stock <span class="count warn">3</span></h3>
+      <p>Raw Shea Butter 500g is down to 2 units. Two more products are below their thresholds.</p>
+      <span class="cta">Restock products →</span>
+    </a>
+    <a class="task" href="#">
+      <div class="top">
+        <div class="t-ic" style="background:var(--accent-soft);color:var(--primary)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </div>
+      <h3>Pending payments <span class="count warn">35</span></h3>
+      <p>35 orders await payment confirmation — GH₵ 4,820 in unsettled transactions.</p>
+      <span class="cta">Review transactions →</span>
+    </a>
+  </div>
+
+  <!-- stats strip -->
+  <div class="section-label">
+    <h2>Store performance</h2>
+  </div>
+  <div class="statcard">
+    <div class="statcard-head">
+      <h2>Stats</h2>
+      <span class="range">Date range: Last 30 days ▾</span>
+    </div>
+    <div class="statgrid">
+      <div class="statcell">
+        <p class="lbl">Revenue</p>
+        <p class="val">GH₵ 48,230</p>
+        <p class="chg up">▲ 12.4% vs. previous</p>
+      </div>
+      <div class="statcell">
+        <p class="lbl">Orders</p>
+        <p class="val">312</p>
+        <p class="chg up">▲ 8.1% vs. previous</p>
+      </div>
+      <div class="statcell">
+        <p class="lbl">Avg. order value</p>
+        <p class="val">GH₵ 154</p>
+        <p class="chg up">▲ 3.9% vs. previous</p>
+      </div>
+      <div class="statcell">
+        <p class="lbl">Customers</p>
+        <p class="val">1,284</p>
+        <p class="chg up">▲ 41 new this month</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- split -->
+  <div class="split">
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2>Recent orders</h2><p class="sub">Newest customer activity</p></div>
+        <a class="viewall" href="#">View all →</a>
+      </div>
+      <a class="order-row" href="#">
+        <div class="o-ava" style="background:#f3eeff;color:#4b13a3">AS</div>
+        <div class="o-main">
+          <div class="o-line1"><span class="ono">#1042</span> Ama Serwaa</div>
+          <div class="o-line2">3 items · Today, 9:41 am</div>
+        </div>
+        <div class="o-right"><b>GH₵ 420.00</b><div class="pills"><span class="pill paid">Paid</span><span class="pill ship">To ship</span></div></div>
+      </a>
+      <a class="order-row" href="#">
+        <div class="o-ava" style="background:#e9f6ee;color:#2c7a4b">KM</div>
+        <div class="o-main">
+          <div class="o-line1"><span class="ono">#1041</span> Kofi Mensah</div>
+          <div class="o-line2">1 item · Today, 8:15 am</div>
+        </div>
+        <div class="o-right"><b>GH₵ 185.50</b><div class="pills"><span class="pill paid">Paid</span><span class="pill ship">To ship</span></div></div>
+      </a>
+      <a class="order-row" href="#">
+        <div class="o-ava" style="background:#fdf3e3;color:#8a4a08">EB</div>
+        <div class="o-main">
+          <div class="o-line1"><span class="ono">#1040</span> Efua Boateng</div>
+          <div class="o-line2">5 items · Yesterday, 6:02 pm</div>
+        </div>
+        <div class="o-right"><b>GH₵ 764.00</b><div class="pills"><span class="pill pending">Pending</span></div></div>
+      </a>
+      <a class="order-row" href="#">
+        <div class="o-ava" style="background:#fdeaea;color:#a33">KA</div>
+        <div class="o-main">
+          <div class="o-line1"><span class="ono">#1039</span> Kwame Asante</div>
+          <div class="o-line2">2 items · Yesterday, 2:47 pm</div>
+        </div>
+        <div class="o-right"><b>GH₵ 312.75</b><div class="pills"><span class="pill paid">Paid</span><span class="pill paid">Fulfilled</span></div></div>
+      </a>
+      <a class="order-row" href="#">
+        <div class="o-ava" style="background:#f0f0f0;color:#525252">AO</div>
+        <div class="o-main">
+          <div class="o-line1"><span class="ono">#1038</span> Akosua Owusu</div>
+          <div class="o-line2">1 item · Yesterday, 11:20 am</div>
+        </div>
+        <div class="o-right"><b>GH₵ 96.00</b><div class="pills"><span class="pill refunded">Refunded</span></div></div>
+      </a>
+      <a class="order-row" href="#">
+        <div class="o-ava" style="background:#f3eeff;color:#4b13a3">YD</div>
+        <div class="o-main">
+          <div class="o-line1"><span class="ono">#1037</span> Yaw Darko</div>
+          <div class="o-line2">4 items · 16 Sep, 4:33 pm</div>
+        </div>
+        <div class="o-right"><b>GH₵ 540.00</b><div class="pills"><span class="pill paid">Paid</span><span class="pill paid">Fulfilled</span></div></div>
+      </a>
+    </div>
+
+    <div class="rail">
+      <!-- revenue mini chart -->
+      <div class="panel">
+        <div class="minichart">
+          <p class="mlabel">Revenue · last 14 days</p>
+          <p class="mval">GH₵ 22,410 <span>▲ 9.2%</span></p>
+        </div>
+        <svg width="100%" height="90" viewBox="0 0 340 90" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="minifill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6b28d9" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#6b28d9" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,66 L24,62 L49,66 L73,55 L97,60 L122,46 L146,52 L170,38 L194,44 L219,30 L243,36 L267,24 L292,28 L316,16 L340,12 L340,90 L0,90 Z" fill="url(#minifill)"/>
+          <path d="M0,66 L24,62 L49,66 L73,55 L97,60 L122,46 L146,52 L170,38 L194,44 L219,30 L243,36 L267,24 L292,28 L316,16 L340,12" fill="none" stroke="#6b28d9" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <div style="border-top:1px solid var(--border);padding:11px 20px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:12px;color:var(--muted-fg)">Best day: <b style="color:var(--fg)">GH₵ 3,120</b> on 14 Sep</span>
+          <a class="viewall" href="#">Analytics →</a>
+        </div>
+      </div>
+
+      <!-- stock levels -->
+      <div class="panel">
+        <div class="panel-head">
+          <div><h2>Stock levels</h2><p class="sub">Lowest first</p></div>
+          <a class="viewall" href="#">Inventory →</a>
+        </div>
+        <div class="srow"><span class="nm">Raw Shea Butter</span><div class="bar"><div style="width:8%;background:var(--danger)"></div></div><span class="n" style="color:var(--danger)">2 left</span></div>
+        <div class="srow"><span class="nm">Kente Stole — Royal</span><div class="bar"><div style="width:18%;background:var(--amber)"></div></div><span class="n" style="color:var(--amber)">4 left</span></div>
+        <div class="srow"><span class="nm">Dark Cocoa Bar 70%</span><div class="bar"><div style="width:26%;background:var(--amber)"></div></div><span class="n" style="color:var(--amber)">5 left</span></div>
+        <div class="srow"><span class="nm">Ankara Print Tote</span><div class="bar"><div style="width:54%;background:var(--primary-light)"></div></div><span class="n">23 left</span></div>
+        <div class="srow"><span class="nm">Spiced Honey Jar</span><div class="bar"><div style="width:72%;background:var(--success)"></div></div><span class="n">41 left</span></div>
+      </div>
+
+      <!-- setup checklist (Teachable pattern) -->
+      <div class="panel">
+        <div class="progress-wrap">
+          <div class="progress-line"><div></div></div>
+          <p class="progress-txt"><b>3 of 5</b> store setup steps complete</p>
+        </div>
+        <div class="todo">
+          <div class="todo-row done"><span class="box done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 7 9 18l-5-5"/></svg></span><span class="txt">Add your first products</span></div>
+          <div class="todo-row done"><span class="box done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 7 9 18l-5-5"/></svg></span><span class="txt">Configure payment methods</span></div>
+          <div class="todo-row done"><span class="box done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 7 9 18l-5-5"/></svg></span><span class="txt">Set up delivery zones</span></div>
+          <div class="todo-row"><span class="box"></span><span class="txt"><b>Enable customer reviews</b><span>Boost trust on product pages</span></span></div>
+          <div class="todo-row"><span class="box"></span><span class="txt"><b>Create your first discount</b><span>Run a promo for returning customers</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

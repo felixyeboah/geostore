@@ -15,42 +15,37 @@ import {
 	FormField,
 	FormItem,
 	FormLabel,
+	FormMessage,
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
 import { useRouter } from "@shared/hooks/router";
+import { useTranslations } from "@shared/lib/translations";
 import { useQueryClient } from "@tanstack/react-query";
 import {
 	AlertTriangleIcon,
-	ArrowRightIcon,
 	EyeIcon,
 	EyeOffIcon,
-	KeyIcon,
 	MailboxIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "@shared/lib/translations";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
 import { z } from "zod";
-import {
-	type OAuthProvider,
-	oAuthProviders,
-} from "../constants/oauth-providers";
 import { useSession } from "../hooks/use-session";
+import { AUTH_BUTTON, AUTH_FIELD, AUTH_LABEL, AuthHeader } from "./AuthShell";
 import { LoginModeSwitch } from "./LoginModeSwitch";
-import { SocialSigninButton } from "./SocialSigninButton";
 
 const formSchema = z.union([
 	z.object({
 		mode: z.literal("magic-link"),
-		email: z.email(),
+		email: z.string().trim().email("Enter a valid email address."),
 	}),
 	z.object({
 		mode: z.literal("password"),
-		email: z.email(),
-		password: z.string().min(1),
+		email: z.string().trim().email("Enter a valid email address."),
+		password: z.string().min(1, "Password is required."),
 	}),
 ]);
 
@@ -133,36 +128,19 @@ export function LoginForm() {
 		}
 	});
 
-	const signInWithPasskey = async () => {
-		try {
-			await authClient.signIn.passkey();
-
-			router.replace(redirectPath);
-		} catch (e) {
-			form.setError("root", {
-				message: getAuthErrorMessage(
-					e && typeof e === "object" && "code" in e
-						? (e.code as string)
-						: undefined,
-				),
-			});
-		}
-	};
-
 	const signinMode = form.watch("mode");
 
 	return (
-		<div>
-			<h1 className="font-bold text-xl md:text-2xl">
-				{t("auth.login.title")}
-			</h1>
-			<p className="mt-1 mb-6 text-foreground/60">
-				{t("auth.login.subtitle")}
-			</p>
+		<>
+			<AuthHeader
+				eyebrow={t("auth.login.customerAccount")}
+				title={t("auth.login.title")}
+				subtitle={t("auth.login.subtitle")}
+			/>
 
 			{form.formState.isSubmitSuccessful &&
 			signinMode === "magic-link" ? (
-				<Alert variant="success">
+				<Alert className="rounded-[2px]" variant="success">
 					<MailboxIcon />
 					<AlertTitle>
 						{t("auth.login.hints.linkSent.title")}
@@ -178,7 +156,15 @@ export function LoginForm() {
 					)}
 
 					<Form {...form}>
-						<form className="space-y-4" onSubmit={onSubmit}>
+						<form
+							// Until React hydrates, a submit is a native one. Without a
+							// method the browser defaults to GET and writes the typed
+							// password into the URL, the address bar, and session history.
+							method="post"
+							className="space-y-6"
+							onSubmit={onSubmit}
+							noValidate
+						>
 							{authConfig.enableMagicLink &&
 								authConfig.enablePasswordLogin && (
 									<LoginModeSwitch
@@ -194,7 +180,10 @@ export function LoginForm() {
 
 							{form.formState.isSubmitted &&
 								form.formState.errors.root?.message && (
-									<Alert variant="error">
+									<Alert
+										variant="error"
+										className="rounded-[2px]"
+									>
 										<AlertTriangleIcon />
 										<AlertTitle>
 											{form.formState.errors.root.message}
@@ -207,15 +196,20 @@ export function LoginForm() {
 								name="email"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>
+										<FormLabel className={AUTH_LABEL}>
 											{t("auth.signup.email")}
 										</FormLabel>
 										<FormControl>
 											<Input
 												{...field}
 												autoComplete="email"
+												className={AUTH_FIELD}
+												placeholder={t(
+													"auth.login.emailPlaceholder",
+												)}
 											/>
 										</FormControl>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
@@ -227,16 +221,17 @@ export function LoginForm() {
 										name="password"
 										render={({ field }) => (
 											<FormItem>
-												<div className="flex justify-between gap-4">
-													<FormLabel>
+												<div className="flex items-center justify-between gap-4">
+													<FormLabel
+														className={AUTH_LABEL}
+													>
 														{t(
 															"auth.signup.password",
 														)}
 													</FormLabel>
-
 													<Link
 														href="/forgot-password"
-														className="text-foreground/60 text-xs"
+														className="text-[12px] text-muted-foreground underline decoration-1 underline-offset-[3px] hover:text-foreground"
 													>
 														{t(
 															"auth.login.forgotPassword",
@@ -251,7 +246,7 @@ export function LoginForm() {
 																	? "text"
 																	: "password"
 															}
-															className="pr-10"
+															className={`${AUTH_FIELD} pr-12`}
 															{...field}
 															autoComplete="current-password"
 														/>
@@ -262,7 +257,12 @@ export function LoginForm() {
 																	!showPassword,
 																)
 															}
-															className="absolute inset-y-0 right-0 flex items-center pr-4 text-primary text-xl"
+															className="absolute inset-y-0 right-0 flex items-center pr-4 text-muted-foreground transition-colors hover:text-foreground"
+															aria-label={
+																showPassword
+																	? "Hide password"
+																	: "Show password"
+															}
 														>
 															{showPassword ? (
 																<EyeOffIcon className="size-4" />
@@ -272,13 +272,14 @@ export function LoginForm() {
 														</button>
 													</div>
 												</FormControl>
+												<FormMessage />
 											</FormItem>
 										)}
 									/>
 								)}
 
 							<Button
-								className="w-full"
+								className={AUTH_BUTTON}
 								type="submit"
 								variant="primary"
 								loading={form.formState.isSubmitting}
@@ -289,64 +290,26 @@ export function LoginForm() {
 							</Button>
 						</form>
 					</Form>
-
-					{(authConfig.enablePasskeys ||
-						(authConfig.enableSignup &&
-							authConfig.enableSocialLogin)) && (
-						<>
-							<div className="relative my-6 h-4">
-								<hr className="relative top-2" />
-								<p className="-translate-x-1/2 absolute top-0 left-1/2 mx-auto inline-block h-4 bg-card px-2 text-center font-medium text-foreground/60 text-sm leading-tight">
-									{t("auth.login.continueWith")}
-								</p>
-							</div>
-
-							<div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
-								{authConfig.enableSignup &&
-									authConfig.enableSocialLogin &&
-									Object.keys(oAuthProviders).map(
-										(providerId) => (
-											<SocialSigninButton
-												key={providerId}
-												provider={
-													providerId as OAuthProvider
-												}
-											/>
-										),
-									)}
-
-								{authConfig.enablePasskeys && (
-									<Button
-										variant="secondary"
-										className="w-full sm:col-span-2"
-										onClick={() => signInWithPasskey()}
-									>
-										<KeyIcon className="mr-1.5 size-4 text-primary" />
-										{t("auth.login.loginWithPasskey")}
-									</Button>
-								)}
-							</div>
-						</>
-					)}
-
-					{authConfig.enableSignup && (
-						<div className="mt-6 text-center text-sm">
-							<span className="text-foreground/60">
-								{t("auth.login.dontHaveAnAccount")}{" "}
-							</span>
-							<Link
-								href={withQuery(
-									"/signup",
-									Object.fromEntries(searchParams.entries()),
-								)}
-							>
-								{t("auth.login.createAnAccount")}
-								<ArrowRightIcon className="ml-1 inline size-4 align-middle" />
-							</Link>
-						</div>
-					)}
 				</>
 			)}
-		</div>
+
+			<p className="mt-6 text-[12px] text-muted-foreground leading-[1.6]">
+				{t("auth.login.legal")}{" "}
+				<Link
+					className="underline decoration-1 underline-offset-[3px] hover:text-foreground"
+					href="/legal/terms"
+				>
+					{t("auth.login.terms")}
+				</Link>{" "}
+				and{" "}
+				<Link
+					className="underline decoration-1 underline-offset-[3px] hover:text-foreground"
+					href="/legal/privacy-policy"
+				>
+					{t("auth.login.privacy")}
+				</Link>
+				.
+			</p>
+		</>
 	);
 }

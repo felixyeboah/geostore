@@ -24,6 +24,18 @@
 		"confirmEmail": "Confirm email",
 		"subject": "Confirm your email"
 	},
+	"orderConfirmation": {
+		"subject": "Your Geostoresgh order is confirmed"
+	},
+	"orderFailed": {
+		"subject": "We could not complete payment for your Geostoresgh order"
+	},
+	"orderShipped": {
+		"subject": "Your Geostoresgh order is on the way"
+	},
+	"orderRefunded": {
+		"subject": "Refund issued for your Geostoresgh order"
+	},
 	"organizationInvitation": {
 		"body": "You have been invited to join the organization {organizationName}. Click the button below or copy and paste the link into your browser of choice to accept the invitation and join the organization.",
 		"headline": "Join the organization {organizationName}",

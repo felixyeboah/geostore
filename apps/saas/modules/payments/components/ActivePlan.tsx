@@ -3,8 +3,8 @@
 import { usePlanData } from "@payments/hooks/plan-data";
 import { usePurchases } from "@payments/hooks/purchases";
 import { SettingsItem } from "@shared/components/SettingsItem";
-import { BadgeCheckIcon, CheckIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "@shared/lib/translations";
+import { BadgeCheckIcon, CheckIcon } from "lucide-react";
 import { CustomerPortalButton } from "../../settings/components/CustomerPortalButton";
 import { SubscriptionStatusBadge } from "../../settings/components/SubscriptionStatusBadge";
 

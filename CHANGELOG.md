@@ -4,18 +4,59 @@
 
 ### Added
 
+- Reevit checkout for Ghana mobile money and card, cash on delivery, signature-verified webhooks, and restocking on failed or refunded payments.
+- Product variants, category admin, and order confirmation, failure, shipped, and refund emails.
 - End-to-end Ghana-focused storefront with product discovery, categories, search, sorting, product detail pages, persistent cart, stock validation, and responsive checkout.
 - Commerce data model for categories, products, product images and variants, addresses, orders, order items, reviews, transactions, fulfilment events, and inventory events.
 - Database-backed mock payment flow that atomically records orders, decrements inventory, and creates payment and status history without collecting real funds.
 - Customer order history, live fulfilment state, verified delivered-item reviews, account overview, and saved delivery address management.
 - Administration for product publishing, image uploads, inventory, order fulfilment, transactions, users, organizations, store metrics, low-stock alerts, and 30-day sales analytics.
 - Store loading, empty, error, not-found, out-of-stock, validation, and legal-policy states.
+- Rate limiting on the authentication surface, backed by a shared `rateLimit` table rather than per-process memory, with stricter rules for two-factor verification, password reset, email verification, invitation acceptance, and account deletion.
+- Boot-time configuration checks that refuse to start a production server with a mock payment provider, a missing base URL, or a missing signing secret.
+- `ORDER_TOKEN_SECRET` for signing guest order links, with `ORDER_TOKEN_SECRET_PREVIOUS` for zero-downtime key rotation.
 
 ### Changed
 
 - Storefront catalogue now reads the same live database records managed by administrators.
 - Mail providers load lazily so local console mail does not require third-party API credentials.
 - Local Docker services use GeoStore-specific container names and PostgreSQL port `55432` to avoid common local conflicts.
+- The payment provider is read from `STORE_PAYMENT_PROVIDER` and never inferred; a production build refuses to fall back to the mock provider, which marks orders paid without charging.
+- Guest order links are signed with their own key instead of the session secret, so session rotation no longer invalidates links already emailed to customers.
+- `getBaseUrl` throws in production instead of silently falling back to `http://localhost:3000`, which had been becoming the trusted auth origin and the host in order emails.
+- Sensitive account operations require a session authenticated within the last 15 minutes; re-authentication had been disabled outright.
+- The OpenAPI reference UI, which enumerates every route including the auth surface, is no longer served in production.
+- Unit tests and a dependency audit now run in CI, and Biome skips the scratch design mockups and generated Prisma output.
+
+### Fixed
+
+Full end-to-end QA pass over the buyer and admin journeys — see `QA-REPORT.md`
+for the complete list, reproductions, and verification.
+
+- Checkout is now idempotent: a retried or double-submitted order no longer charges and restocks twice.
+- A failed payment webhook releases its claim, so the provider's retry is processed instead of being dropped as a duplicate and stranding a charged customer on an unpaid order.
+- Cart additions made before hydration are no longer discarded, so "Added to bag" can no longer leave the bag empty.
+- Unpaid `PENDING` orders no longer show a green "Confirmed" badge; payment status and method are read from the order rather than hardcoded.
+- Cancelled and refunded orders are excluded from revenue, and payment success rate is measured against payment *attempts* rather than all orders.
+- Order confirmation emails are sent for mock and cash-on-delivery orders, which previously received none, and carry a tokenised link so guests can reach their order.
+- A mail-provider failure can no longer roll back a committed order status change or report it to the admin as failed.
+- Validation errors on array fields (product image URLs, variants) show the schema's message instead of the literal word `undefined`.
+- Passwords are no longer serialised into the URL when a login, signup, or reset form is submitted before hydration.
+- Guest order details require an HMAC access token instead of a guessable order number.
+- Prisma and Zod internals no longer reach customer- or admin-facing messages.
+- Delivery-fee calculation, allowed image hosts, and the free-delivery copy are each derived from a single source of truth.
+- Next.js upgraded to 16.3.5, closing two critical unauthenticated remote-code-execution advisories, one of them in the Image Optimization API that the storefront relies on. This is also the version `@opennextjs/cloudflare` requires.
+- Better Auth upgraded to 1.6.33, closing a critical OAuth refresh-token replay advisory.
+- `fast-xml-parser` pinned to a patched release, closing a critical entity-encoding bypass reached through the AWS S3 client.
+- A single `zod` version is enforced across the workspace; a second copy gave `zodResolver` two incompatible schema types and broke the marketing forms.
+- Rate limiting is keyed on `CF-Connecting-IP` in production. The default `X-Forwarded-For` is appended to rather than replaced by Cloudflare, so a caller could pick a fresh counter on every request and never be limited.
+- Reevit webhooks are rejected when their signature timestamp is outside a five-minute window, closing an unbounded replay window that opened once the idempotency record was pruned.
+- Purchase listing and checkout-link creation verify organisation membership; the organisation id had been trusted from the request, letting any signed-in user read another organisation's billing.
+- `clearCache`, a public server action, requires a session and no longer accepts a caller-supplied path.
+- Organisation slug generation requires a session and bounds its input, closing anonymous enumeration of existing organisations.
+- Image URLs pointing at `localhost` or `127.0.0.1` are refused in production. `next/image` fetches these server-side, so they were a path to reading internal services.
+- The uploaded-image allowlist reads `NEXT_PUBLIC_STORAGE_URL`, not an undefined `NEXT_PUBLIC_S3_URL`; a bucket behind a CDN or custom domain previously had every image rejected.
+- `pnpm test:commerce` runs under `tsx`, fixing the module-resolution failure that made the commerce and payments unit tests unrunnable.
 
 ## 2026-03-18 v3.0.3
 

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore storefront — round 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#15151a;--muted:#6e6e79;--faint:#9c9ca6;--line:#e8e8ec;--panel:#f7f7f8;--accent:#6b28d9}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);line-height:1.6;padding:56px 24px 80px;font-size:15px}
+  .wrap{max-width:1100px;margin:0 auto}
+  h1{font-size:38px;letter-spacing:-0.04em;line-height:1.08}
+  .lede{color:var(--muted);margin-top:16px;max-width:66ch}
+  .note{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-top:28px;font-size:14px;color:var(--muted)}
+  .note b{color:var(--ink)}
+  .note code{font-family:ui-monospace,monospace;font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .card{border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column}
+  .tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+  .card h2{font-size:20px;letter-spacing:-0.03em;margin-top:9px}
+  .card .one{font-size:13px;color:var(--faint);margin-top:2px}
+  .card p{color:var(--muted);font-size:14px;margin-top:12px}
+  .card ul{margin:14px 0 0;padding-left:17px;font-size:13.5px;color:var(--muted)}
+  .card li{margin-bottom:6px}
+  .best{margin-top:15px;font-size:13px;background:var(--panel);border-radius:10px;padding:11px 13px}
+  .best b{color:var(--ink)}
+  .card a{margin-top:auto;padding-top:20px}
+  .btn{display:flex;align-items:center;justify-content:center;height:44px;border-radius:11px;background:var(--ink);color:#fff;font-weight:600;font-size:14.5px;text-decoration:none}
+  .btn:hover{background:var(--accent)}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+  <h1>Storefront, round two</h1>
+  <p class="lede">Three new directions, built on a different premise from the first set. The earlier ones leaned on lifestyle photos with headlines and gradients laid over them, plus a lot of badges and purple. These don't. In all three, product images sit contained on flat neutral panels and text never sits on top of a photo &mdash; the pattern every genuinely clean retailer uses.</p>
+
+  <div class="note">
+    <b>The photography was most of the problem.</b> The images currently in <code>apps/saas/modules/commerce/data/catalog.ts</code> are moody and inconsistent &mdash; a purple neon gaming setup for Home&nbsp;tech, red-lit earbuds, wrist shots for the watches. No layout survives that. I screened about 50 candidates and these mockups use a consistent light, plain-background set instead. That swap alone accounts for a large share of the difference you're seeing.
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Option D</span>
+      <h2>Catalogue</h2>
+      <div class="one">Swiss, typographic, hairline</div>
+      <p>No hero image at all. A statement, a rule, a row of departments, then straight into the product grid. Near-monochrome, tight type, prices aligned to the right of each name.</p>
+      <ul>
+        <li>The most restrained and the most confident</li>
+        <li>Fastest page &mdash; almost no decoration to load</li>
+        <li>Depends entirely on good copy and spacing</li>
+        <li>Least "shoppy" &mdash; may feel austere for a mass audience</li>
+      </ul>
+      <div class="best"><b>Pick this if</b> you want GeoStore to look like it has taste and nothing to prove.</div>
+      <a href="./option-d-catalogue.html"><span class="btn">Open Option D</span></a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option E</span>
+      <h2>Showroom</h2>
+      <div class="one">Soft neutral, generous, Apple-adjacent</div>
+      <p>Warm off-white background with large rounded panels. One featured product stage, four department cards, then a calm product grid. Roomy and premium without going dark or fussy.</p>
+      <ul>
+        <li>Most immediately &ldquo;expensive&rdquo; looking</li>
+        <li>Friendliest of the three &mdash; still clearly retail</li>
+        <li>Big panels need decent images to fill them</li>
+        <li>Tallest page; more scrolling to reach products</li>
+      </ul>
+      <div class="best"><b>Pick this if</b> you want premium but still warm and easy for any shopper.</div>
+      <a href="./option-e-showroom.html"><span class="btn">Open Option E</span></a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option F</span>
+      <h2>Counter</h2>
+      <div class="one">Structured, information-first</div>
+      <p>No hero. A filter rail on the left, products immediately on the right, each showing specs, stock and price. Organised like a shop that expects you to know what you came for.</p>
+      <ul>
+        <li>Easiest to understand &mdash; nothing to decode</li>
+        <li>Scales best as the catalogue grows past 8 items</li>
+        <li>Filters are already real in your data model</li>
+        <li>Least atmospheric; more tool than showroom</li>
+      </ul>
+      <div class="best"><b>Pick this if</b> you'd rather people find and buy quickly than be impressed.</div>
+      <a href="./option-f-counter.html"><span class="btn">Open Option F</span></a>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Still static HTML &mdash; nothing in <code>apps/</code> has been touched.</b> All three use your real catalogue: the 8 seeded products, 4 categories, actual GH&#8373; prices, ratings and stock counts. Once you pick one, I'll build it as server components in <code>apps/saas</code> wired to <code>getLiveCategories()</code> and <code>getLiveProducts()</code>, using <code>@repo/ui</code>, the Tailwind tokens and translations. Mixing is fine &mdash; F's filter rail under E's styling is a sensible combination.
+  </div>
+</div></body></html>

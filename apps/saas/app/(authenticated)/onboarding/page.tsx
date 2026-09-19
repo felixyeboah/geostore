@@ -2,8 +2,8 @@ import { getSession } from "@auth/lib/server";
 import { OnboardingForm } from "@onboarding/components/OnboardingForm";
 import { config } from "@repo/auth/config";
 import { AuthWrapper } from "@shared/components/AuthWrapper";
-import { redirect } from "next/navigation";
 import { getTranslations } from "@shared/lib/translations";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

@@ -1,0 +1,22 @@
+{
+	"name": "@repo/commerce",
+	"version": "0.0.0",
+	"main": "./index.ts",
+	"types": "./index.ts",
+	"scripts": {
+		"clean": "git clean -xdf .cache .turbo dist node_modules",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@repo/database": "workspace:*",
+		"@repo/logs": "workspace:*",
+		"@repo/utils": "workspace:*",
+		"server-only": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "catalog:",
+		"@repo/tsconfig": "workspace:*",
+		"@types/node": "catalog:"
+	}
+}

@@ -1,4 +1,5 @@
 import { Button } from "@repo/ui/components/button";
+import { storefront } from "@shared/lib/storefront";
 import { SearchXIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ export default function NotFoundPage() {
 					existed.
 				</p>
 				<Button asChild className="mt-7">
-					<Link href="/">Browse the store</Link>
+					<Link href={storefront.shop}>Browse the store</Link>
 				</Button>
 			</div>
 		</main>

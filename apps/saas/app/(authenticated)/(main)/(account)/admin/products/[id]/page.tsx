@@ -46,6 +46,15 @@ export default async function EditProductPage({
 		categoryId: product.categoryId,
 		imageUrls: product.images.map((image) => image.url),
 		specifications: parseSpecifications(product.specifications),
+		variants: product.variants.map((variant) => ({
+			id: variant.id,
+			name: variant.name,
+			sku: variant.sku,
+			priceInPesewas: variant.priceInPesewas,
+			stockQuantity: variant.stockQuantity,
+			attributes: parseSpecifications(variant.attributes),
+			isActive: variant.isActive,
+		})),
 	};
 
 	return (

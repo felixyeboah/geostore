@@ -1,5 +1,5 @@
 import { OrderStatusSelect } from "@admin/components/orders/OrderStatusSelect";
-import { formatMoney } from "@commerce/lib/money";
+import { formatMoney } from "@repo/commerce";
 import { getAdminStoreOrders } from "@repo/database";
 import { Badge } from "@repo/ui/components/badge";
 import {
@@ -124,6 +124,12 @@ export default async function AdminOrdersPage() {
 											<OrderStatusSelect
 												orderId={order.id}
 												status={order.status}
+												paymentStatus={
+													order.paymentStatus
+												}
+												paymentMethod={
+													order.paymentMethod
+												}
 											/>
 										</TableCell>
 									</TableRow>

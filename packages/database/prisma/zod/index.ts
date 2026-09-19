@@ -76,9 +76,21 @@ export const CategoryScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'desc
 
 export type CategoryScalarFieldEnum = z.infer<typeof CategoryScalarFieldEnumSchema>;
 
+// File: CollectionScalarFieldEnum.schema.ts
+
+export const CollectionScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'description', 'imageUrl', 'isActive', 'onLanding', 'sortOrder', 'createdAt', 'updatedAt'])
+
+export type CollectionScalarFieldEnum = z.infer<typeof CollectionScalarFieldEnumSchema>;
+
+// File: ProductCollectionScalarFieldEnum.schema.ts
+
+export const ProductCollectionScalarFieldEnumSchema = z.enum(['productId', 'collectionId', 'sortOrder', 'createdAt'])
+
+export type ProductCollectionScalarFieldEnum = z.infer<typeof ProductCollectionScalarFieldEnumSchema>;
+
 // File: ProductScalarFieldEnum.schema.ts
 
-export const ProductScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'shortDescription', 'description', 'brand', 'sku', 'status', 'priceInPesewas', 'compareAtInPesewas', 'stockQuantity', 'lowStockThreshold', 'isFeatured', 'specifications', 'categoryId', 'publishedAt', 'createdAt', 'updatedAt'])
+export const ProductScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'shortDescription', 'description', 'brand', 'sku', 'status', 'priceInPesewas', 'compareAtInPesewas', 'stockQuantity', 'lowStockThreshold', 'isFeatured', 'unitsSold', 'specifications', 'categoryId', 'publishedAt', 'createdAt', 'updatedAt'])
 
 export type ProductScalarFieldEnum = z.infer<typeof ProductScalarFieldEnumSchema>;
 
@@ -102,7 +114,7 @@ export type AddressScalarFieldEnum = z.infer<typeof AddressScalarFieldEnumSchema
 
 // File: OrderScalarFieldEnum.schema.ts
 
-export const OrderScalarFieldEnumSchema = z.enum(['id', 'orderNumber', 'userId', 'status', 'paymentStatus', 'paymentMethod', 'currency', 'subtotalInPesewas', 'deliveryInPesewas', 'discountInPesewas', 'totalInPesewas', 'customerEmail', 'customerPhone', 'shippingAddress', 'customerNote', 'placedAt', 'updatedAt'])
+export const OrderScalarFieldEnumSchema = z.enum(['id', 'orderNumber', 'idempotencyKey', 'userId', 'status', 'paymentStatus', 'paymentMethod', 'currency', 'subtotalInPesewas', 'deliveryInPesewas', 'discountInPesewas', 'totalInPesewas', 'customerEmail', 'customerPhone', 'shippingAddress', 'customerNote', 'placedAt', 'updatedAt'])
 
 export type OrderScalarFieldEnum = z.infer<typeof OrderScalarFieldEnumSchema>;
 
@@ -120,9 +132,15 @@ export type ReviewScalarFieldEnum = z.infer<typeof ReviewScalarFieldEnumSchema>;
 
 // File: StoreTransactionScalarFieldEnum.schema.ts
 
-export const StoreTransactionScalarFieldEnumSchema = z.enum(['id', 'orderId', 'reference', 'provider', 'paymentMethod', 'status', 'amountInPesewas', 'currency', 'providerPayload', 'processedAt', 'createdAt', 'updatedAt'])
+export const StoreTransactionScalarFieldEnumSchema = z.enum(['id', 'orderId', 'reference', 'provider', 'paymentMethod', 'status', 'amountInPesewas', 'currency', 'providerPaymentId', 'providerPayload', 'processedAt', 'createdAt', 'updatedAt'])
 
 export type StoreTransactionScalarFieldEnum = z.infer<typeof StoreTransactionScalarFieldEnumSchema>;
+
+// File: WebhookEventScalarFieldEnum.schema.ts
+
+export const WebhookEventScalarFieldEnumSchema = z.enum(['id', 'type', 'processedAt', 'payload'])
+
+export type WebhookEventScalarFieldEnum = z.infer<typeof WebhookEventScalarFieldEnumSchema>;
 
 // File: OrderStatusEventScalarFieldEnum.schema.ts
 
@@ -135,6 +153,12 @@ export type OrderStatusEventScalarFieldEnum = z.infer<typeof OrderStatusEventSca
 export const InventoryEventScalarFieldEnumSchema = z.enum(['id', 'productId', 'variantId', 'orderItemId', 'type', 'quantity', 'reason', 'actorId', 'createdAt'])
 
 export type InventoryEventScalarFieldEnum = z.infer<typeof InventoryEventScalarFieldEnumSchema>;
+
+// File: RateLimitScalarFieldEnum.schema.ts
+
+export const RateLimitScalarFieldEnumSchema = z.enum(['id', 'key', 'count', 'lastRequest'])
+
+export type RateLimitScalarFieldEnum = z.infer<typeof RateLimitScalarFieldEnumSchema>;
 
 // File: SortOrder.schema.ts
 
@@ -198,7 +222,7 @@ export type StorePaymentStatus = z.infer<typeof StorePaymentStatusSchema>;
 
 // File: StorePaymentMethod.schema.ts
 
-export const StorePaymentMethodSchema = z.enum(['MOCK', 'CARD', 'MOBILE_MONEY', 'CASH_ON_DELIVERY'])
+export const StorePaymentMethodSchema = z.enum(['MOCK', 'ONLINE', 'CARD', 'MOBILE_MONEY', 'CASH_ON_DELIVERY'])
 
 export type StorePaymentMethod = z.infer<typeof StorePaymentMethodSchema>;
 
@@ -398,6 +422,36 @@ export const CategorySchema = z.object({
 export type CategoryType = z.infer<typeof CategorySchema>;
 
 
+// File: Collection.schema.ts
+
+export const CollectionSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().nullish(),
+  imageUrl: z.string().nullish(),
+  isActive: z.boolean().default(true),
+  onLanding: z.boolean(),
+  sortOrder: z.number().int(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type CollectionType = z.infer<typeof CollectionSchema>;
+
+
+// File: ProductCollection.schema.ts
+
+export const ProductCollectionSchema = z.object({
+  productId: z.string(),
+  collectionId: z.string(),
+  sortOrder: z.number().int(),
+  createdAt: z.date(),
+});
+
+export type ProductCollectionType = z.infer<typeof ProductCollectionSchema>;
+
+
 // File: Product.schema.ts
 
 export const ProductSchema = z.object({
@@ -414,6 +468,7 @@ export const ProductSchema = z.object({
   stockQuantity: z.number().int(),
   lowStockThreshold: z.number().int().default(5),
   isFeatured: z.boolean(),
+  unitsSold: z.number().int(),
   specifications: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
   categoryId: z.string(),
   publishedAt: z.date().nullish(),
@@ -484,6 +539,7 @@ export type AddressType = z.infer<typeof AddressSchema>;
 export const OrderSchema = z.object({
   id: z.string(),
   orderNumber: z.string(),
+  idempotencyKey: z.string().nullish(),
   userId: z.string().nullish(),
   status: OrderStatusSchema.default("PENDING"),
   paymentStatus: StorePaymentStatusSchema.default("PENDING"),
@@ -552,6 +608,7 @@ export const StoreTransactionSchema = z.object({
   status: StorePaymentStatusSchema.default("PENDING"),
   amountInPesewas: z.number().int(),
   currency: z.string().default("GHS"),
+  providerPaymentId: z.string().nullish(),
   providerPayload: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
   processedAt: z.date().nullish(),
   createdAt: z.date(),
@@ -559,6 +616,18 @@ export const StoreTransactionSchema = z.object({
 });
 
 export type StoreTransactionType = z.infer<typeof StoreTransactionSchema>;
+
+
+// File: WebhookEvent.schema.ts
+
+export const WebhookEventSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  processedAt: z.date(),
+  payload: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
+});
+
+export type WebhookEventType = z.infer<typeof WebhookEventSchema>;
 
 
 // File: OrderStatusEvent.schema.ts
@@ -590,3 +659,15 @@ export const InventoryEventSchema = z.object({
 });
 
 export type InventoryEventModel = z.infer<typeof InventoryEventSchema>;
+
+// File: RateLimit.schema.ts
+
+export const RateLimitSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  count: z.number().int(),
+  lastRequest: z.bigint(),
+});
+
+export type RateLimitType = z.infer<typeof RateLimitSchema>;
+

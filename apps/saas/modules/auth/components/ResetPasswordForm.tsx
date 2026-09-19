@@ -18,12 +18,13 @@ import {
 import { passwordSchema } from "@repo/utils";
 import { PasswordInput } from "@shared/components/PasswordInput";
 import { useRouter } from "@shared/hooks/router";
+import { useTranslations } from "@shared/lib/translations";
 import { AlertTriangleIcon, ArrowLeftIcon, MailboxIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "@shared/lib/translations";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { AUTH_BUTTON, AUTH_FIELD, AUTH_LABEL } from "./AuthShell";
 
 const formSchema = z.object({
 	password: passwordSchema,
@@ -71,10 +72,13 @@ export function ResetPasswordForm() {
 
 	return (
 		<>
-			<h1 className="font-bold text-xl md:text-2xl">
+			<p className="eyebrow mb-4 text-muted-foreground">
+				{t("auth.login.customerAccount")}
+			</p>
+			<h1 className="max-w-[16ch] font-semibold text-[clamp(28px,3vw,40px)] text-foreground leading-[1.05] tracking-[-0.042em]">
 				{t("auth.resetPassword.title")}
 			</h1>
-			<p className="mt-1 mb-6 text-foreground/60">
+			<p className="mt-4 mb-9 max-w-[44ch] text-[14.5px] text-muted-foreground leading-[1.6]">
 				{t("auth.resetPassword.message")}{" "}
 			</p>
 
@@ -88,7 +92,10 @@ export function ResetPasswordForm() {
 			) : (
 				<Form {...form}>
 					<form
-						className="flex flex-col items-stretch gap-4"
+						// Keeps a pre-hydration submit from putting the new password
+						// in the URL. See LoginForm.
+						method="post"
+						className="flex flex-col items-stretch gap-6"
 						onSubmit={onSubmit}
 					>
 						{form.formState.errors.root && (
@@ -105,11 +112,12 @@ export function ResetPasswordForm() {
 							name="password"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
+									<FormLabel className={AUTH_LABEL}>
 										{t("auth.resetPassword.newPassword")}
 									</FormLabel>
 									<FormControl>
 										<PasswordInput
+											inputClassName={AUTH_FIELD}
 											autoComplete="new-password"
 											showPasswordCriteria
 											showGenerateButton
@@ -121,14 +129,18 @@ export function ResetPasswordForm() {
 							)}
 						/>
 
-						<Button loading={form.formState.isSubmitting}>
+						<Button
+							className={AUTH_BUTTON}
+							variant="primary"
+							loading={form.formState.isSubmitting}
+						>
 							{t("auth.resetPassword.submit")}
 						</Button>
 					</form>
 				</Form>
 			)}
 
-			<div className="mt-6 text-center text-sm">
+			<div className="mt-9 border-border border-t pt-6 text-[13.5px] text-muted-foreground">
 				<Link href="/login">
 					<ArrowLeftIcon className="mr-1 inline size-4 align-middle" />
 					{t("auth.resetPassword.backToSignin")}

@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geostoresgh — gadgets &amp; more, Accra</title>
+<meta name="description" content="A short list of phones, audio, watches and home screens, held in real stock in Accra. Prices in Ghana cedis, warranty published on every product.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="shared/core.css">
+<style>
+/* ============================================================
+   00 · TOKENS
+   ============================================================ */
+:root{
+  --paper:#FAFAF8;
+  --white:#ffffff;
+  --ink:#111110;
+  --muted:#6F6E69;
+  --line:#E2E1DC;
+  --tint:#F1F0EC;
+  --accent:#6b28d9;
+
+  /* shared runtime theming (drawer, modal, toasts, suggestions) */
+  --geo-accent:#6b28d9;
+  --geo-ink:#111110;
+  --geo-muted:#6F6E69;
+  --geo-panel:#F1F0EC;
+  --geo-line:#E2E1DC;
+  --geo-radius:4px;
+  --geo-radius-sm:2px;
+
+  --maxw:1560px;
+  --pad:40px;
+  --sec:110px;
+}
+/* square off the shared drawer / modal / toast / suggestion chrome
+   (the circular bag + heart icon buttons are left alone) */
+.geo-btn{border-radius:2px}
+.geo-modal__card{border-radius:4px}
+.geo-modal__tag{border-radius:2px}
+.geo-qty{border-radius:2px}
+.geo-suggest{border-radius:4px}
+.geo-suggest__item,.geo-suggest__all{border-radius:2px}
+.geo-toast{border-radius:4px}
+.geo-toast button{border-radius:2px}
+.geo-progress,.geo-progress i{border-radius:0}
+#geo-shell img,.geo-toast img,.geo-suggest__item img,.geo-suggest__item .ico{border-radius:2px}
+@media (max-width:640px){.geo-drawer{border-radius:0}}
+
+/* ============================================================
+   01 · BASE
+   ============================================================ */
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.55;
+}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.035em;line-height:1.05}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+::selection{background:#e6dcfb}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+.sec{padding:var(--sec) 0}
+.band-white{background:var(--white)}
+.band-paper{background:var(--paper)}
+.rule{border:0;border-top:1px solid var(--line);margin:0}
+
+/* small caps labels */
+.eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin:0;
+}
+.eyebrow--ink{color:var(--ink)}
+.eyebrow--accent{color:var(--accent)}
+
+h1{font-size:clamp(40px,6.2vw,88px);letter-spacing:-0.05em;line-height:0.98}
+h2{font-size:clamp(30px,3.9vw,52px);letter-spacing:-0.042em;line-height:1.03}
+h3{font-size:20px;letter-spacing:-0.025em}
+
+.lede{font-size:17px;line-height:1.62;color:var(--muted);max-width:44ch}
+.mast__note{display:flex;gap:26px;flex-wrap:wrap;margin-top:32px}
+
+.link-u{
+  color:var(--accent);text-decoration:underline;
+  text-underline-offset:3px;text-decoration-thickness:1px;
+}
+.link-u:hover{text-decoration-thickness:2px}
+
+/* buttons ---------------------------------------------------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:48px;padding:0 26px;border-radius:2px;
+  font-size:14.5px;font-weight:600;letter-spacing:-0.01em;
+  background:var(--accent);color:#fff;border:1px solid var(--accent);
+  transition:background .16s ease,border-color .16s ease;
+}
+.btn:hover{background:#5a1fbd;border-color:#5a1fbd}
+.btn.is-added{background:#2f8c52;border-color:#2f8c52}
+.btn .geo-ic{width:16px;height:16px}
+
+.txtlink{
+  font-size:13.5px;font-weight:500;color:var(--ink);
+  border-bottom:1px solid var(--line);padding-bottom:2px;
+  transition:border-color .16s ease,color .16s ease;
+}
+.txtlink:hover{border-color:var(--ink)}
+
+.txtbtn{
+  font-size:13px;font-weight:500;color:var(--ink);
+  border-bottom:1px solid transparent;padding-bottom:1px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.txtbtn:hover{border-color:var(--ink)}
+.txtbtn.is-added{color:#2f8c52;border-color:transparent}
+.txtbtn .geo-ic{width:13px;height:13px;stroke-width:2.2}
+
+/* ============================================================
+   02 · HEADER
+   ============================================================ */
+.hdr{
+  position:sticky;top:0;z-index:50;
+  background:var(--paper);border-bottom:1px solid var(--line);
+}
+.hdr__in{
+  height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;
+  max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);
+}
+.logo{display:inline-flex;align-items:center;gap:9px;color:var(--ink)}
+.logo svg{flex:none}
+.logo b{font-size:17px;font-weight:600;letter-spacing:-0.04em}
+
+.hdr__right{display:flex;align-items:center;gap:26px}
+.nav{display:flex;align-items:center;gap:22px}
+.nav a{
+  font-size:13px;color:var(--muted);
+  border-bottom:1px solid transparent;padding-bottom:2px;
+  transition:color .15s ease,border-color .15s ease;
+}
+.nav a:hover{color:var(--ink);border-color:var(--ink)}
+
+.hdr__tools{display:flex;align-items:center;gap:20px}
+.hdr-search{position:relative;display:flex;align-items:center}
+.hdr-search__btn{display:grid;place-items:center;width:24px;height:24px;color:var(--ink)}
+.hdr-search__btn .geo-ic{width:17px;height:17px}
+.hdr-search input{
+  width:0;padding:0;opacity:0;border:0;border-bottom:1px solid var(--ink);
+  background:transparent;font-size:13px;height:26px;
+  transition:width .28s ease,opacity .2s ease,margin .28s ease;
+}
+.hdr-search input::placeholder{color:var(--muted)}
+.hdr-search input:focus{outline:none}
+.hdr-search.is-open input{width:190px;opacity:1;margin-right:10px}
+.hdr-search .geo-suggest{width:340px;left:auto;right:-10px}
+
+.hdr__link{font-size:13px;color:var(--muted);white-space:nowrap;
+  border-bottom:1px solid transparent;padding-bottom:2px}
+.hdr__link:hover{color:var(--ink);border-color:var(--ink)}
+.hdr__link b{font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+
+.burger{display:none;width:26px;height:26px;place-items:center;color:var(--ink)}
+.burger span{display:block;width:20px;height:1.5px;background:currentColor;position:relative}
+.burger span::before,.burger span::after{
+  content:"";position:absolute;left:0;width:20px;height:1.5px;background:currentColor;
+}
+.burger span::before{top:-6px}
+.burger span::after{top:6px}
+
+/* mobile nav panel */
+.mnav{
+  position:fixed;inset:0;z-index:80;background:var(--paper);
+  display:none;flex-direction:column;padding:0 20px 40px;overflow-y:auto;
+}
+.mnav.is-open{display:flex}
+.mnav__top{height:64px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line);margin:0 -20px;padding:0 20px}
+.mnav__close{width:28px;height:28px;display:grid;place-items:center;color:var(--ink)}
+.mnav__search{margin:28px 0 8px;position:relative}
+.mnav__search input{
+  width:100%;height:44px;border:0;border-bottom:1px solid var(--ink);
+  background:transparent;font-size:16px;
+}
+.mnav__search input:focus{outline:none}
+.mnav ul{margin-top:18px}
+.mnav li{border-bottom:1px solid var(--line)}
+.mnav li a{display:block;padding:16px 0;font-size:28px;font-weight:600;letter-spacing:-0.04em}
+.mnav__foot{margin-top:32px;display:flex;flex-direction:column;gap:14px}
+
+/* ============================================================
+   03 · MASTHEAD
+   ============================================================ */
+.mast{padding:92px 0 84px}
+.mast__meta{
+  display:flex;gap:40px;flex-wrap:wrap;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:13px 0;margin-bottom:64px;
+}
+/* Split hero: statement + search on the left, one product on the right. */
+.mast__hero{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:72px;align-items:center}
+.mast h1{max-width:13ch;font-size:clamp(34px,4.6vw,66px);margin-bottom:26px}
+.mast .lede{max-width:46ch}
+
+.mast__search{
+  display:flex;align-items:center;gap:12px;position:relative;
+  border-bottom:1px solid var(--ink);padding-bottom:13px;margin-top:36px;max-width:540px;
+}
+.mast__search input{flex:1;min-width:0;border:0;background:none;padding:0;font-size:16.5px;outline:none;color:var(--ink)}
+.mast__search input::placeholder{color:var(--muted)}
+.mast__search input::-webkit-search-cancel-button{display:none}
+.mast__search button{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  white-space:nowrap;color:var(--ink);transition:color .15s ease;
+}
+.mast__search button:hover{color:var(--accent)}
+.mast__search .ic{width:17px;height:17px;stroke:var(--muted);fill:none;stroke-width:1.7;flex:none}
+
+.mast__trust{margin-top:30px;list-style:none;border-top:1px solid var(--line);max-width:540px}
+.mast__trust li{
+  display:flex;align-items:center;gap:11px;padding:11px 0;
+  border-bottom:1px solid var(--line);
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+}
+.mast__trust svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;flex:none}
+.mast__fine{
+  margin-top:18px;font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+}
+
+/* One product, presented like a plate: image, hairline, caption. */
+.heroshot{margin:0}
+.heroshot__btn{display:block;width:100%;text-align:left;cursor:pointer}
+.heroshot__img{display:block;position:relative;aspect-ratio:1/1;background:var(--tint);overflow:hidden}
+.heroshot__img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.heroshot__btn:hover .heroshot__img img{transform:scale(1.035)}
+.heroshot__tag{
+  position:absolute;top:0;left:0;background:var(--white);color:var(--ink);
+  font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:9px 13px;
+}
+.heroshot__cap{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:24px;
+  border-top:1px solid var(--ink);padding-top:15px;margin-top:15px;
+}
+.heroshot__cap b{display:block;font-size:17px;font-weight:600;letter-spacing:-.025em}
+.heroshot__cap .eyebrow{display:block;margin-top:6px}
+.heroshot__price{font-size:17px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;text-align:right}
+.heroshot__was{display:block;margin-top:5px;font-size:12.5px;color:var(--muted);text-decoration:line-through;font-weight:400}
+
+/* Category index, now a hairline strip beneath the hero. */
+.index{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);margin-top:78px}
+.index a{display:block;padding:18px 26px 4px 26px;border-right:1px solid var(--line);
+  transition:padding-left .18s ease}
+.index a:first-child{padding-left:0}
+.index a:last-child{border-right:0;padding-right:0}
+.index a:hover{padding-left:31px}
+.index a:first-child:hover{padding-left:5px}
+.index a:hover .index__name{color:var(--accent)}
+.index__n{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.index__name{display:block;font-size:17px;font-weight:600;letter-spacing:-0.025em;margin-top:8px}
+.index__c{display:block;margin-top:5px;font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+
+/* ============================================================
+   04 · FEATURE
+   ============================================================ */
+.feature__grid{display:grid;grid-template-columns:60fr 40fr;gap:0;align-items:stretch}
+.feature__media{background:var(--tint);position:relative;min-height:600px;overflow:hidden}
+.feature__media img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.feature__body{padding:0 0 0 64px;display:flex;flex-direction:column;justify-content:center}
+.feature__name{font-size:38px;letter-spacing:-0.04em;margin:18px 0 16px}
+.feature__lede{font-size:15.5px;line-height:1.65;color:var(--muted);margin-bottom:32px}
+
+.specs{border-top:1px solid var(--line);margin-bottom:32px}
+.specs div{display:flex;justify-content:space-between;align-items:baseline;gap:20px;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+.specs dt{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.specs dd{margin:0;font-size:13.5px;font-weight:500;text-align:right}
+
+.price-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.price{font-size:26px;font-weight:600;letter-spacing:-0.035em;font-variant-numeric:tabular-nums}
+.price-was{font-size:15px;color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
+.price-save{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.feature__actions{display:flex;align-items:center;gap:24px;margin-top:28px;flex-wrap:wrap}
+
+/* ============================================================
+   04b · CATEGORY LOOKBOOK
+   Full-bleed image band. Carries no background of its own, so it slots
+   between any two sections without disturbing the paper/white alternation.
+   ============================================================ */
+.look{padding:var(--sec) 0 0}
+.look__head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:32px;
+  flex-wrap:wrap;margin-bottom:44px;
+}
+.look__head h2{max-width:16ch}
+.look__lede{font-size:15.5px;color:var(--muted);margin-top:14px;max-width:46ch}
+.look__grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.look__tile{
+  position:relative;display:block;overflow:hidden;
+  aspect-ratio:4/5;background:var(--tint);
+}
+.look__tile img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .7s cubic-bezier(.2,.7,.2,1);
+}
+.look__tile:hover img,.look__tile:focus-visible img{transform:scale(1.035)}
+/* Keeps the label legible over a light or dark photo without tinting the whole image. */
+.look__tile::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:45%;pointer-events:none;
+  background:linear-gradient(to top,rgba(17,17,16,.34),rgba(17,17,16,0));
+}
+.look__label{
+  position:absolute;left:16px;bottom:16px;z-index:1;
+  display:flex;align-items:center;gap:10px;
+  background:var(--white);color:var(--ink);
+  padding:10px 13px;border-radius:2px;
+}
+.look__label b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-0.02em}
+.look__label span{
+  display:block;margin-top:3px;
+  font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+}
+.look__arrow{
+  width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:2;
+  opacity:0;transform:translateX(-4px);
+  transition:opacity .2s ease,transform .2s ease;
+}
+.look__tile:hover .look__arrow,.look__tile:focus-visible .look__arrow{opacity:1;transform:none}
+
+/* ============================================================
+   04c · COLLECTIONS
+   The second taxonomy layer. A department says what a thing is; a
+   collection says what it is for, and a product can sit in as many as it
+   earns. Landscape tiles with the caption below, so the band reads as a
+   different object from the full-bleed portrait lookbook above it.
+   ============================================================ */
+.coll__head{margin-bottom:44px}
+.coll__head h2{max-width:15ch;margin-top:16px}
+.coll__lede{font-size:15.5px;line-height:1.62;color:var(--muted);margin-top:16px;max-width:58ch}
+.coll__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.coll__tile{display:flex;flex-direction:column;height:100%}
+.coll__media{display:block;position:relative;background:var(--tint);aspect-ratio:16/10;overflow:hidden}
+.coll__media img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .7s cubic-bezier(.2,.7,.2,1);
+}
+.coll__tile:hover .coll__media img,.coll__tile:focus-within .coll__media img{transform:scale(1.035)}
+.coll__body{border-top:1px solid var(--ink);padding-top:14px;display:flex;flex-direction:column;flex:1}
+.coll__row{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.coll__name{display:block;font-size:19px;font-weight:600;letter-spacing:-0.03em;line-height:1.2;
+  transition:color .16s ease}
+.coll__tile:hover .coll__name{color:var(--accent)}
+.coll__n{
+  display:block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.coll__say{display:block;font-size:13.5px;line-height:1.55;color:var(--muted);margin-top:9px}
+/* The departments the collection reaches into — the whole argument for the
+   layer, stated on the tile rather than left implicit. */
+.coll__from{
+  display:block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin-top:auto;padding-top:14px;
+}
+.coll__cta{margin-top:12px;align-self:flex-start}
+.coll__tile:hover .coll__cta{border-color:var(--ink)}
+
+/* ============================================================
+   04d · BEST SELLERS / NEW IN
+   One section, two rules, one row — rather than two near-identical bands
+   stacked on top of each other.
+   ============================================================ */
+.rail__head{margin-bottom:34px}
+.rail__head h2{max-width:16ch;margin-top:16px}
+.rail__bar{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--line);
+  padding:12px 0;margin-bottom:48px;
+}
+.rail__tabs{display:flex;align-items:center;gap:24px}
+.rail__tabs button{
+  font-size:14px;color:var(--muted);padding-bottom:6px;margin-bottom:-6px;
+  border-bottom:2px solid transparent;transition:color .15s ease;
+}
+.rail__tabs button:hover{color:var(--ink)}
+.rail__tabs button.is-on{color:var(--ink);font-weight:500;border-bottom-color:var(--ink)}
+/* States the rule behind the ranking, so the order does not look invented. */
+.rail__rule{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-align:right;
+}
+.rail__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
+.rail__item{display:flex;flex-direction:column}
+.rail__media{position:relative;background:var(--tint);aspect-ratio:1/1;overflow:hidden;margin-bottom:14px}
+.rail__media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.rail__item:hover .rail__media img{transform:scale(1.035)}
+.rail__rank{
+  position:absolute;top:0;left:0;background:var(--white);color:var(--ink);
+  font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 11px;font-variant-numeric:tabular-nums;
+}
+.rail__body{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;flex:1}
+.rail__row{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+.rail__name{font-size:15px;font-weight:600;letter-spacing:-0.02em;line-height:1.3;min-width:0}
+.rail__name a:hover{color:var(--accent)}
+.rail__price{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.rail__price s{color:var(--muted);font-weight:400;margin-left:6px;font-size:12.5px}
+.rail__meta{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin-top:auto;padding-top:10px;
+}
+.rail__acts{margin-top:12px}
+
+/* ============================================================
+   04e · BRAND STRIP
+   The third layer, and deliberately the thinnest: one line of wordmarks,
+   not a section. Whoever already knows the brand gets in from here.
+   ============================================================ */
+.brandbar{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.brandbar__in{
+  max-width:var(--maxw);margin:0 auto;padding:24px var(--pad);
+  display:flex;align-items:center;gap:40px;flex-wrap:wrap;justify-content:space-between;
+}
+.brandbar__lab{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+.brandbar__set{flex:1;display:flex;align-items:baseline;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.brandbar__set a{
+  font-size:27px;font-weight:600;letter-spacing:-0.045em;color:var(--muted);
+  transition:color .16s ease;
+}
+.brandbar__set a:hover{color:var(--ink)}
+.brandbar__set a.is-on{color:var(--accent)}
+.brandbar__c{
+  font-size:10.5px;font-weight:600;letter-spacing:.1em;margin-left:7px;
+  vertical-align:super;font-variant-numeric:tabular-nums;
+}
+
+/* ============================================================
+   06b · INSIDE THE SHOP
+   ============================================================ */
+.shop__grid{display:grid;grid-template-columns:55fr 45fr;gap:0;align-items:stretch}
+.shop__media{position:relative;background:var(--tint);min-height:520px;overflow:hidden}
+.shop__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* Marks the frame while a real or generated photo is pending. */
+.shop__media--placeholder{
+  display:grid;place-items:center;text-align:center;padding:32px;
+  border:1px dashed var(--line);
+}
+.shop__ph{max-width:30ch}
+.shop__ph b{
+  display:block;font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+}
+.shop__ph span{display:block;margin-top:10px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+.shop__body{padding:0 0 0 64px;display:flex;flex-direction:column;justify-content:center}
+.shop__body h2{margin:18px 0 20px;max-width:14ch}
+.shop__lede{font-size:16px;line-height:1.65;color:var(--muted);max-width:46ch}
+.shop__facts{border-top:1px solid var(--line);margin-top:32px}
+.shop__facts div{
+  display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  padding:13px 0;border-bottom:1px solid var(--line);
+}
+.shop__facts dt{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+}
+.shop__facts dd{margin:0;font-size:14.5px;font-weight:500;letter-spacing:-0.01em}
+.shop__actions{display:flex;align-items:center;gap:24px;margin-top:32px;flex-wrap:wrap}
+
+/* ============================================================
+   05 · CATALOGUE
+   ============================================================ */
+#catalogue{scroll-margin-top:64px}
+.cat__head{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:44px}
+.cat__head h2{max-width:14ch}
+.cat__count{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* Two rows in one bordered block: departments and sort above, brands and any
+   active collection below, separated by a single hairline rather than by a
+   second full-weight bar. */
+.filters{
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--line);
+  margin-bottom:52px;
+}
+.filters__row{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  padding:12px 0;
+}
+.filters__row + .filters__row{border-top:1px solid var(--line)}
+.filters__lead{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.filters__lab{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+/* Shown when a collection tile sent the visitor here, so the narrowed grid
+   explains itself and can be undone in one click. */
+.chip{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--ink);border-radius:2px;padding:5px 10px;
+  font-size:12.5px;font-weight:500;color:var(--ink);
+  transition:background .15s ease,color .15s ease;
+}
+.chip i{font-style:normal;font-size:14px;line-height:1;color:var(--muted)}
+.chip:hover{background:var(--ink);color:#fff}
+.chip:hover i{color:rgba(255,255,255,.75)}
+.filters__set{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.filters__set button{
+  font-size:13px;color:var(--muted);padding-bottom:6px;margin-bottom:-6px;
+  border-bottom:2px solid transparent;transition:color .15s ease;
+}
+.filters__set button:hover{color:var(--ink)}
+.filters__set button.is-on{color:var(--ink);font-weight:500;border-bottom-color:var(--ink)}
+.sortwrap{display:flex;align-items:center;gap:8px}
+.sortwrap label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.sortwrap select{
+  border:0;background:transparent;font-size:13px;color:var(--ink);font-weight:500;
+  padding:2px 0;cursor:pointer;
+}
+.sortwrap select:focus{outline:none;text-decoration:underline}
+
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:52px 28px}
+
+.item{display:flex;flex-direction:column;height:100%}
+.item__media{position:relative;background:var(--tint);aspect-ratio:4/5;overflow:hidden;margin-bottom:16px}
+.item__media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.item:hover .item__media img{transform:scale(1.035)}
+.item__heart{
+  position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:999px;
+  background:rgba(255,255,255,.9);display:grid;place-items:center;color:var(--ink);
+  opacity:0;transition:opacity .18s ease,color .18s ease;
+}
+.item:hover .item__heart,.item__heart:focus-visible{opacity:1}
+.item__heart .geo-ic{width:15px;height:15px}
+.item__heart.is-on{opacity:1;color:var(--accent)}
+.item__heart.is-on .geo-ic{fill:currentColor}
+@media (hover:none){.item__heart{opacity:1}}
+
+.item__body{border-top:1px solid var(--line);padding-top:13px;display:flex;flex-direction:column;flex:1}
+.item__row{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.item__name{font-size:15px;font-weight:600;letter-spacing:-0.02em;line-height:1.3}
+.item__name a:hover{color:var(--accent)}
+.item__price{font-size:14px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.item__price s{color:var(--muted);font-weight:400;margin-left:6px;font-size:12.5px}
+.item__desc{font-size:13px;line-height:1.5;color:var(--muted);margin-top:7px}
+.item__stock{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin-top:auto;padding-top:11px}
+.item__stock.low{color:var(--ink)}
+.item__acts{display:flex;align-items:center;gap:9px;margin-top:13px}
+.item__acts .dot{color:var(--line);font-size:12px}
+
+.empty{padding:64px 0;text-align:center;border-top:1px solid var(--line)}
+.empty p{font-size:20px;font-weight:600;letter-spacing:-0.03em;margin-bottom:10px}
+.empty span{display:block;font-size:14px;color:var(--muted);margin-bottom:18px}
+
+/* ============================================================
+   06 · NUMBERS
+   ============================================================ */
+.numbers{background:var(--ink);color:#fff;padding:96px 0}
+.numbers__head{margin-bottom:52px}
+.numbers__head .eyebrow{color:rgba(255,255,255,.55);margin-bottom:16px}
+.numbers__say{font-size:clamp(23px,2.6vw,34px);font-weight:600;letter-spacing:-0.035em;
+  line-height:1.16;max-width:30ch}
+/* Rule across the top with full-height dividers between cells, echoing the
+   category index strip in the hero. */
+.numbers__grid{display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(255,255,255,.28)}
+.numbers__cell{padding:28px 32px 4px 32px;border-right:1px solid rgba(255,255,255,.14)}
+.numbers__cell:first-child{padding-left:0}
+.numbers__cell:last-child{border-right:0;padding-right:0}
+.numbers__v{font-size:clamp(42px,4.4vw,60px);font-weight:600;letter-spacing:-0.045em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.numbers__l{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);margin-top:16px}
+
+/* ============================================================
+   07 · STEPS
+   ============================================================ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.step{background:var(--white);border:1px solid var(--line);padding:28px 26px 26px;display:flex;flex-direction:column}
+.step__n{
+  width:44px;height:44px;background:var(--tint);border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11.5px;font-weight:600;letter-spacing:.1em;font-variant-numeric:tabular-nums;
+}
+.step h3{margin:20px 0 10px;font-size:20px;letter-spacing:-.03em}
+.step p{font-size:14.5px;line-height:1.6;color:var(--muted)}
+
+/* Small product-UI mocks inside each step. Squared to match the page. */
+.mock{margin-top:24px;border:1px solid var(--line);background:var(--tint);padding:12px;font-size:12px;flex:1}
+.mock__bar{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line);
+  padding:8px 12px;color:var(--muted)}
+.mock__bar .ic{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;flex:none}
+.mock__row{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--line);
+  padding:9px 10px;margin-top:8px}
+.mock__sw{display:block;width:32px;height:32px;background:var(--line);flex:none;overflow:hidden}
+.mock__sw img{width:100%;height:100%;object-fit:cover;display:block}
+.mock__row span{font-size:11px;color:var(--muted)}
+.mock__row b{display:block;font-size:12px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.mock__row .pr{margin-left:auto;font-size:12px;font-weight:600;white-space:nowrap;color:var(--ink)}
+.mock__card{background:var(--white);border:1px solid var(--line);padding:12px}
+.mock__li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:12px;color:var(--ink)}
+.mock__li span{color:var(--muted)}
+.mock__tot{display:flex;justify-content:space-between;gap:12px;padding-top:9px;margin-top:5px;
+  border-top:1px solid var(--line);font-size:12.5px;font-weight:600}
+.mock__tl{display:flex;flex-direction:column}
+.mock__ti{display:flex;gap:11px;align-items:flex-start;position:relative;padding-bottom:14px}
+.mock__ti:last-child{padding-bottom:0}
+.mock__ti::before{content:"";position:absolute;left:6px;top:15px;bottom:0;width:1px;background:var(--line)}
+.mock__ti:last-child::before{display:none}
+.mock__dot{width:13px;height:13px;border-radius:999px;border:2px solid var(--line);background:var(--white);
+  flex:none;margin-top:1px;z-index:1}
+.mock__ti.done .mock__dot{background:#2E7D5B;border-color:#2E7D5B}
+.mock__ti.now .mock__dot{border-color:var(--accent);box-shadow:0 0 0 3px rgba(107,40,217,.14)}
+.mock__ti b{display:block;font-size:12px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.mock__ti span{font-size:11px;color:var(--muted)}
+
+/* ============================================================
+   08 · DELIVERY & PAYMENT
+   ============================================================ */
+.dp{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:64px}
+.dp h3{margin-bottom:22px}
+.dtable{border-top:1px solid var(--ink)}
+.dtable__row{display:grid;grid-template-columns:1fr auto auto;gap:20px;align-items:baseline;
+  padding:14px 0;border-bottom:1px solid var(--line)}
+.dtable__zone{font-size:14.5px;font-weight:500}
+.dtable__time{font-size:13px;color:var(--muted);text-align:right}
+.dtable__fee{font-size:13px;font-weight:500;text-align:right;min-width:130px;font-variant-numeric:tabular-nums}
+.plist{border-top:1px solid var(--ink)}
+.plist li{padding:14px 0;border-bottom:1px solid var(--line)}
+.plist b{display:block;font-size:14.5px;font-weight:500}
+.plist span{display:block;font-size:13px;color:var(--muted);margin-top:3px}
+.dp__sub{font-size:13.5px;line-height:1.6;color:var(--muted);margin-top:20px;max-width:46ch}
+.dp__note{grid-column:1/-1;font-size:13px;color:var(--muted);
+  border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
+
+/* ============================================================
+   09 · REVIEWS
+   ============================================================ */
+.reviews{border-top:1px solid var(--ink);margin-top:48px}
+.review{padding:40px 0;border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:56px;align-items:start}
+.review blockquote{margin:0;font-size:22px;line-height:1.5;letter-spacing:-0.02em;font-weight:400}
+.review__meta{padding-top:6px}
+.review__stars{margin-bottom:14px}
+.review__who{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);line-height:1.7}
+.review__prod{display:inline-block;margin-top:10px;font-size:13px}
+
+/* ============================================================
+   10 · FAQ
+   ============================================================ */
+.faq{border-top:1px solid var(--ink);margin-top:44px;max-width:840px}
+.faq [data-accordion]{border-bottom:1px solid var(--line)}
+.faq [data-accordion] > button{padding:22px 0;font-size:18px;font-weight:500;letter-spacing:-0.025em}
+.faq [data-accordion] > button .geo-ic{width:16px;height:16px;stroke-width:1.4;color:var(--muted)}
+.faq [data-panel] p{font-size:15px;line-height:1.6;color:var(--muted);max-width:60ch;
+  padding:2px 60px 26px 0}
+
+/* ============================================================
+   11 · CLOSING
+   ============================================================ */
+.closing{padding:140px 0;text-align:center}
+.closing h2{font-size:clamp(28px,3.6vw,44px);letter-spacing:-0.04em;line-height:1.14;
+  max-width:18ch;margin:0 auto 40px}
+.closing__cta{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap}
+.nl{max-width:420px;margin:72px auto 0;text-align:left}
+.nl__label{margin-bottom:12px;text-align:center}
+.nl__row{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ink);padding-bottom:8px}
+.nl__row input{flex:1;min-width:0;border:0;background:transparent;font-size:15px;height:28px}
+.nl__row input:focus{outline:none}
+.nl__row input::placeholder{color:var(--muted)}
+.nl__submit{font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap}
+.nl__submit:hover{text-decoration:underline;text-underline-offset:3px}
+.geo-nl-success{align-items:center;gap:8px;font-size:14px;color:var(--ink);
+  border-bottom:1px solid var(--line);padding-bottom:10px}
+.nl .geo-nl-error{text-align:left}
+.nl__fine{font-size:12px;color:var(--muted);margin-top:12px;text-align:center}
+
+/* ============================================================
+   12 · FOOTER
+   ============================================================ */
+.ftr{border-top:1px solid var(--line);padding:72px 0 48px}
+.ftr__cols{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-bottom:64px}
+.ftr__cols h4{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink);margin-bottom:16px}
+.ftr__cols li{margin-bottom:9px}
+.ftr__cols a{font-size:13.5px;color:var(--muted)}
+.ftr__cols a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.ftr__bot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  border-top:1px solid var(--line);padding-top:26px}
+.ftr__bot p{font-size:12px;color:var(--muted)}
+
+/* ============================================================
+   13 · RESPONSIVE
+   ============================================================ */
+@media (max-width:1240px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:48px 28px}
+  .coll__grid{gap:22px}
+  .rail__grid{gap:22px}
+  .brandbar__set{gap:36px}
+}
+@media (max-width:1080px){
+  .review{grid-template-columns:1fr;gap:20px}
+  .review__meta{padding-top:0}
+  .feature__body{padding-left:44px}
+}
+@media (max-width:900px){
+  :root{--sec:72px}
+  .look__grid{grid-template-columns:repeat(2,1fr)}
+  .look__head{margin-bottom:32px}
+  /* Three tiles never split evenly into two columns, so the band becomes a
+     scroll strip here rather than leaving an orphan. */
+  .coll__grid{
+    display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .coll__grid::-webkit-scrollbar{display:none}
+  .coll__tile{flex:0 0 70%;scroll-snap-align:start}
+  .coll__head{margin-bottom:32px}
+  .rail__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 22px}
+  .rail__bar{margin-bottom:36px}
+  .brandbar__in{gap:20px}
+  .brandbar__set{gap:30px}
+  .brandbar__set a{font-size:23px}
+  .shop__grid{grid-template-columns:1fr}
+  .shop__media{min-height:0;aspect-ratio:4/3}
+  .shop__body{padding:32px 0 0}
+  .shop__body h2{max-width:none}
+  .nav,.hdr-search,.hdr__link--saved{display:none}
+  .burger{display:grid}
+  .hdr__right{gap:18px}
+  .mast{padding:72px 0 64px}
+  .mast__hero{grid-template-columns:1fr;gap:48px}
+  .mast h1{max-width:none}
+  .mast__search,.mast__trust{max-width:none}
+  .heroshot__img{aspect-ratio:4/5}
+  .index{grid-template-columns:repeat(2,1fr);margin-top:56px}
+  .index a{padding-right:22px;padding-left:22px}
+  .index a:nth-child(2n+1){padding-left:0}
+  .index a:nth-child(2n+1):hover{padding-left:5px}
+  .index a:nth-child(2n){border-right:0;padding-right:0}
+  .index a:nth-child(2n):hover{padding-left:27px}
+  .index a:nth-child(-n+2){border-bottom:1px solid var(--line);padding-bottom:16px}
+  .feature__grid{grid-template-columns:1fr}
+  .feature__media{min-height:0;aspect-ratio:4/3;position:relative}
+  .feature__body{padding:32px 0 0}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 24px}
+  .numbers__grid{grid-template-columns:repeat(2,1fr)}
+  .numbers__cell{padding-right:24px;padding-left:24px}
+  .numbers__cell:nth-child(2n+1){padding-left:0}
+  .numbers__cell:nth-child(2n){border-right:0;padding-right:0}
+  .numbers__cell:nth-child(n+3){border-top:1px solid rgba(255,255,255,.14);margin-top:34px;padding-top:28px}
+  .numbers__head{margin-bottom:36px}
+  .steps{grid-template-columns:1fr;gap:20px}
+  .dp{grid-template-columns:1fr;gap:48px}
+  .ftr__cols{grid-template-columns:repeat(2,1fr);gap:40px 24px}
+}
+@media (max-width:620px){
+  :root{--pad:20px;--sec:64px}
+  .look__grid{
+    display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .look__grid::-webkit-scrollbar{display:none}
+  .look__tile{flex:0 0 68%;scroll-snap-align:start}
+  .coll__tile{flex:0 0 82%}
+  .coll__head h2,.rail__head h2{max-width:none}
+  .rail__bar{gap:10px}
+  .rail__rule{text-align:left}
+  /* Label above, wordmarks spread across one row — wrapping them beside the
+     label left the four names stacked in a lopsided block. */
+  .brandbar__in{padding-top:20px;padding-bottom:20px;gap:13px;flex-direction:column;align-items:flex-start}
+  .brandbar__set{width:100%;gap:18px}
+  .brandbar__set a{font-size:20px}
+  .filters__row{gap:14px}
+  .shop__media{aspect-ratio:3/2}
+  .shop__actions{gap:18px}
+  body{font-size:14.5px}
+  .mast{padding:56px 0 56px}
+  .mast__meta{gap:8px 28px;font-size:10.5px;margin-bottom:40px}
+  .mast h1{margin-bottom:40px}
+  .cat__head{flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:32px}
+  .filters{margin-bottom:36px;gap:14px}
+  .filters__set{gap:18px}
+  .grid{grid-template-columns:minmax(0,1fr);gap:44px}
+  .item__media{aspect-ratio:1/1}
+  .numbers{padding:56px 0}
+  .numbers__v{font-size:40px}
+  .review blockquote{font-size:19px}
+  .closing{padding:84px 0}
+  .closing__cta{gap:20px}
+  .dtable__row{grid-template-columns:1fr auto;gap:4px 16px}
+  .dtable__zone{grid-column:1}
+  .dtable__time{grid-column:1;grid-row:2;text-align:left}
+  .dtable__fee{grid-column:2;grid-row:1/3;align-self:center;min-width:0}
+  .feature__name{font-size:30px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ HEADER ============================ -->
+<header class="hdr">
+  <div class="hdr__in">
+    <a class="logo" href="http://localhost:3000" id="logo-link" aria-label="Geostoresgh — home">
+      <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+      <b>Geostoresgh</b>
+    </a>
+
+    <div class="hdr__right">
+      <nav class="nav" aria-label="Categories">
+        <a href="#catalogue" data-cat="phones">Phones</a>
+        <a href="#catalogue" data-cat="audio">Audio</a>
+        <a href="#catalogue" data-cat="watches-wearables">Watches</a>
+        <a href="#catalogue" data-cat="home-tv">Home &amp; TV</a>
+        <a href="#catalogue" data-cat="__sale">Deals</a>
+      </nav>
+
+      <div class="hdr__tools">
+        <div class="hdr-search geo-search" id="hdr-search">
+          <label class="sr-only" for="hdr-q">Search products</label>
+          <input id="hdr-q" type="search" placeholder="Search products" tabindex="-1">
+          <button type="button" class="hdr-search__btn" id="hdr-search-btn" aria-label="Search" aria-expanded="false">
+            <svg class="geo-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </button>
+        </div>
+
+        <a class="hdr__link hdr__link--saved" href="http://localhost:3000/dashboard">Saved (<b data-wishlist-count>0</b>)</a>
+        <a class="hdr__link" href="http://localhost:3000/cart" data-cart-open>Bag (<b data-cart-count>0</b>)</a>
+
+        <button type="button" class="burger" data-menu-toggle="mobile-nav" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav"><span></span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- mobile nav -->
+<div class="mnav" id="mobile-nav">
+  <div class="mnav__top">
+    <a class="logo" href="http://localhost:3000" aria-label="Geostoresgh — home">
+      <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+      <b>Geostoresgh</b>
+    </a>
+    <button type="button" class="mnav__close" data-menu-close aria-label="Close menu">
+      <svg class="geo-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="mnav__search geo-search">
+    <label class="sr-only" for="mnav-q">Search products</label>
+    <input id="mnav-q" type="search" placeholder="Search products">
+  </div>
+  <nav aria-label="Mobile">
+    <ul>
+      <li><a href="#catalogue" data-cat="phones" data-menu-close>Phones</a></li>
+      <li><a href="#catalogue" data-cat="audio" data-menu-close>Audio</a></li>
+      <li><a href="#catalogue" data-cat="watches-wearables" data-menu-close>Watches &amp; wearables</a></li>
+      <li><a href="#catalogue" data-cat="home-tv" data-menu-close>Home &amp; TV</a></li>
+      <li><a href="#catalogue" data-cat="__sale" data-menu-close>Deals</a></li>
+    </ul>
+  </nav>
+  <div class="mnav__foot">
+    <a class="txtlink" href="http://localhost:3000/dashboard">Saved items (<span data-wishlist-count>0</span>)</a>
+    <a class="txtlink" href="http://localhost:3000/cart" data-cart-open>Your bag (<span data-cart-count>0</span>)</a>
+    <a class="txtlink" href="mailto:support@geostoresgh.com">Support</a>
+  </div>
+</div>
+
+<main>
+<!-- ============================ MASTHEAD ============================ -->
+<section class="mast band-paper">
+  <div class="wrap">
+    <div class="mast__meta">
+      <p class="eyebrow eyebrow--ink">Geostoresgh — Accra, Ghana</p>
+      <p class="eyebrow">Est. 2024</p>
+      <p class="eyebrow">8 products in stock</p>
+    </div>
+
+    <div class="mast__hero">
+      <div class="mast__text">
+        <h1>Eight things worth buying. Nothing else.</h1>
+        <p class="lede">We keep a short list of phones, audio, watches and home screens, hold real stock in Accra, and publish what the warranty actually covers.</p>
+
+        <form class="mast__search geo-search" id="mast-form" role="search">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <label class="sr-only" for="mast-q">Search products</label>
+          <input id="mast-q" type="search" placeholder="Search for iPhone 15 Pro">
+          <button type="submit">Search →</button>
+        </form>
+
+        <ul class="mast__trust">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.6-7 8.5-4.1-.9-7-4.2-7-8.5V6l7-3z"/><path d="m9 12 2 2 4-4"/></svg>12-month warranty</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>Tracked delivery</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18"/></svg>MoMo, card or cash</li>
+        </ul>
+
+        <p class="mast__fine">All prices in Ghana cedis, VAT included</p>
+      </div>
+
+      <figure class="heroshot" id="heroshot"></figure>
+    </div>
+
+    <nav class="index" id="index" aria-label="Category index"></nav>
+  </div>
+</section>
+
+<!-- ============================ FEATURE ============================ -->
+<section class="sec band-white" id="feature" aria-labelledby="feature-name">
+  <div class="wrap">
+    <div class="feature__grid" id="feature-grid"></div>
+  </div>
+</section>
+
+<!-- ============================ CATEGORY LOOKBOOK ============================ -->
+<section class="look" aria-labelledby="look-title">
+  <div class="wrap">
+    <div class="look__head">
+      <div>
+        <p class="eyebrow" style="margin-bottom:16px">Departments</p>
+        <h2 id="look-title">Start with what you came for.</h2>
+        <p class="look__lede">Four departments, kept small on purpose. Tap one and the list below narrows to it.</p>
+      </div>
+      <a class="link-u" href="#catalogue" data-cat="">All products &#8594;</a>
+    </div>
+  </div>
+  <div class="look__grid" id="lookbook"></div>
+</section>
+
+<!-- ============================ COLLECTIONS ============================ -->
+<section class="sec band-white" id="collections" aria-labelledby="coll-title">
+  <div class="wrap">
+    <div class="coll__head">
+      <p class="eyebrow">Collections</p>
+      <h2 id="coll-title">Shop by what you&#8217;re doing.</h2>
+      <p class="coll__lede">A department tells you what a thing is. A collection tells you what it is for &#8212; which is why one pair of earbuds turns up under fitness, at home and on the road.</p>
+    </div>
+    <div class="coll__grid" id="collections-grid"></div>
+  </div>
+</section>
+
+<!-- ============================ BEST SELLERS / NEW IN ============================ -->
+<section class="sec band-paper" id="moving" aria-labelledby="rail-title">
+  <div class="wrap">
+    <div class="rail__head">
+      <p class="eyebrow">What&#8217;s moving</p>
+      <h2 id="rail-title">Selling fastest, and just landed.</h2>
+    </div>
+    <div class="rail__bar">
+      <div class="rail__tabs" id="rail-tabs" role="group" aria-label="Choose a list"></div>
+      <p class="rail__rule" id="rail-rule"></p>
+    </div>
+    <div class="rail__grid" id="rail-grid"></div>
+  </div>
+</section>
+
+<!-- ============================ BRAND STRIP ============================ -->
+<section class="brandbar" aria-labelledby="brandbar-lab">
+  <div class="brandbar__in">
+    <p class="brandbar__lab" id="brandbar-lab">Brands we stock</p>
+    <div class="brandbar__set" id="brandbar" role="group" aria-labelledby="brandbar-lab"></div>
+  </div>
+</section>
+
+<!-- ============================ CATALOGUE ============================ -->
+<section class="sec band-paper" id="catalogue" aria-labelledby="cat-title">
+  <div class="wrap">
+    <div class="cat__head">
+      <div>
+        <p class="eyebrow" style="margin-bottom:16px">The catalogue</p>
+        <h2 id="cat-title">Everything we stock, all eight.</h2>
+      </div>
+      <p class="cat__count" id="cat-count">08 — items</p>
+    </div>
+
+    <div class="filters">
+      <div class="filters__row">
+        <div class="filters__set" id="filters" role="group" aria-label="Filter by department"></div>
+        <div class="sortwrap">
+          <label for="sort">Sort</label>
+          <select id="sort">
+            <option value="featured">Featured</option>
+            <option value="price-asc">Price, low to high</option>
+            <option value="price-desc">Price, high to low</option>
+            <option value="rating">Best rated</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters__row">
+        <div class="filters__lead">
+          <span class="filters__lab">Brand</span>
+          <div class="filters__set" id="brandfilters" role="group" aria-label="Filter by brand"></div>
+        </div>
+        <div id="activechip"></div>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div id="empty" hidden></div>
+  </div>
+</section>
+
+<!-- ============================ NUMBERS ============================ -->
+<section class="numbers" aria-labelledby="numbers-say">
+  <div class="wrap">
+    <div class="numbers__head">
+      <p class="eyebrow">Geostoresgh in numbers</p>
+      <p class="numbers__say" id="numbers-say">A short catalogue, held in Accra, backed by people you can reach.</p>
+    </div>
+    <div class="numbers__grid" id="stats"></div>
+  </div>
+</section>
+
+<!-- ============================ INSIDE THE SHOP ============================ -->
+<section class="sec band-white" aria-labelledby="shop-title">
+  <div class="wrap">
+    <div class="shop__grid">
+      <!-- Swap this placeholder for the real or generated photograph; the frame is already sized. -->
+      <div class="shop__media shop__media--placeholder" id="shop-media">
+        <div class="shop__ph">
+          <b>Photograph pending</b>
+          <span>Shelves, packing bench or shopfront. Plain daylight, no signage &#8212; to sit with the rest of the page.</span>
+        </div>
+      </div>
+      <div class="shop__body">
+        <p class="eyebrow">Accra</p>
+        <h2 id="shop-title">Everything we sell is in one room.</h2>
+        <p class="shop__lede">Nothing here is ordered in after you pay. Stock sits on a shelf in Accra, gets counted when it lands and photographed before it goes up &#8212; which is why the number on every listing is the real one.</p>
+        <dl class="shop__facts">
+          <div><dt>Stock held</dt><dd>All 8 products, on site</dd></div>
+          <div><dt>Dispatched</dt><dd>Same day before 3pm</dd></div>
+          <div><dt>Come and look</dt><dd>Open Monday to Saturday</dd></div>
+        </dl>
+        <div class="shop__actions">
+          <!-- Swap for the real shop address once confirmed. -->
+          <a class="btn" href="https://maps.google.com/?q=Geostoresgh%2C%20Accra%2C%20Ghana" target="_blank" rel="noopener noreferrer">Find us in Accra</a>
+          <a class="txtlink" id="shop-wa" href="https://wa.me/233000000000">Message us on WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ STEPS ============================ -->
+<section class="sec band-paper" aria-labelledby="steps-title">
+  <div class="wrap">
+    <p class="eyebrow" style="margin-bottom:16px">How ordering works</p>
+    <h2 id="steps-title">From tap to doorstep.</h2>
+    <p class="lede" style="margin-top:18px">Three steps, no surprises between the price you see and the price you pay.</p>
+    <div class="steps" id="steps"></div>
+  </div>
+</section>
+
+<!-- ============================ DELIVERY & PAYMENT ============================ -->
+<section class="sec band-white" aria-labelledby="dp-title">
+  <div class="wrap">
+    <p class="eyebrow" style="margin-bottom:16px">Getting it to you</p>
+    <h2 id="dp-title">Delivery and payment, in plain terms.</h2>
+    <div class="dp">
+      <div>
+        <h3>Delivery</h3>
+        <div class="dtable" id="zones"></div>
+        <p class="dp__sub">Everything ships from our own stock in Accra. You get an order number the moment we accept it, and the same number follows the parcel to your door.</p>
+      </div>
+      <div>
+        <h3>Payment</h3>
+        <ul class="plist" id="pays"></ul>
+      </div>
+      <p class="dp__note">Prices include VAT. Warranty length is listed on every product page.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ REVIEWS ============================ -->
+<section class="sec band-paper" aria-labelledby="rev-title">
+  <div class="wrap">
+    <p class="eyebrow" style="margin-bottom:16px">Reviews</p>
+    <h2 id="rev-title">In their words.</h2>
+    <div class="reviews" id="reviews"></div>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section class="sec band-white" aria-labelledby="faq-title">
+  <div class="wrap">
+    <p class="eyebrow" style="margin-bottom:16px">Questions</p>
+    <h2 id="faq-title">Before you order.</h2>
+    <div class="faq" id="faqs" data-accordion-group></div>
+  </div>
+</section>
+
+<!-- ============================ CLOSING ============================ -->
+<section class="closing band-paper">
+  <div class="wrap">
+    <h2>Everything is in Accra. Most of it reaches you tomorrow.</h2>
+    <div class="closing__cta">
+      <a class="btn" href="http://localhost:3000">Browse all products</a>
+      <a class="link-u" id="wa-link" href="https://wa.me/233000000000">Message us on WhatsApp</a>
+    </div>
+
+    <form class="nl" data-newsletter>
+      <p class="eyebrow nl__label">Tell me when something lands</p>
+      <div class="geo-nl-form nl__row">
+        <label class="sr-only" for="nl-email">Email address</label>
+        <input id="nl-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <button type="submit" class="nl__submit">Notify me →</button>
+      </div>
+      <p class="geo-nl-success">You are on the list. We only write when stock changes.</p>
+      <p class="geo-nl-error">Please enter a valid email address.</p>
+      <p class="nl__fine">One short email a month. Unsubscribe any time.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="ftr band-paper">
+  <div class="wrap">
+    <div class="ftr__cols">
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="http://localhost:3000/categories/phones">Phones</a></li>
+          <li><a href="http://localhost:3000/categories/audio">Audio</a></li>
+          <li><a href="http://localhost:3000/categories/watches-wearables">Watches &amp; wearables</a></li>
+          <li><a href="http://localhost:3000/categories/home-tv">Home &amp; TV</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <ul>
+          <li><a href="mailto:support@geostoresgh.com">Contact support</a></li>
+          <li><a href="https://wa.me/233000000000">WhatsApp</a></li>
+          <li><a href="http://localhost:3000/dashboard">Your orders</a></li>
+          <li><a href="http://localhost:3000/cart">Your bag</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="http://localhost:3000/legal/terms">Terms of sale</a></li>
+          <li><a href="http://localhost:3000/legal/privacy-policy">Privacy policy</a></li>
+          <li><a href="http://localhost:3000/legal/returns">Returns &amp; warranty</a></li>
+          <li><a href="http://localhost:3000/legal/delivery">Delivery</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:support@geostoresgh.com">support@geostoresgh.com</a></li>
+          <li><a href="https://wa.me/233000000000">+233 00 000 0000</a></li>
+          <li><a href="http://localhost:3000/login">Sign in</a></li>
+          <li><a href="http://localhost:3000/signup">Create account</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__bot">
+      <a class="logo" href="http://localhost:3000" aria-label="Geostoresgh — home">
+        <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+        <b>Geostoresgh</b>
+      </a>
+      <p>© <span data-year>2025</span> Geostoresgh · Prices are shown in Ghana cedis · Accra, Ghana</p>
+    </div>
+  </div>
+</footer>
+
+<script src="shared/data.js"></script>
+<script src="shared/core.js"></script>
+<script>
+function boot() {
+  var G = window.GEO;
+  var esc = G.esc;
+  var money = G.formatMoney;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var pad2 = function (n) { return String(n).padStart(2, "0"); };
+  var imgId = function (url) { return url.split("/").pop().split("?")[0]; };
+
+  /* ---------- real URLs everywhere ---------- */
+  $$("a.logo").forEach(function (a) { a.href = G.urls.store; });
+  $$("#wa-link, #mast-wa, #shop-wa").forEach(function (a) { a.href = G.urls.whatsapp; });
+
+  /* ---------- masthead index ---------- */
+  $("#index").innerHTML = G.stockedCategories.map(function (c, i) {
+    return '<a href="#catalogue" data-cat="' + c.slug + '">' +
+      '<span class="index__n">' + pad2(i + 1) + '</span>' +
+      '<span class="index__name">' + esc(c.name) + '</span>' +
+      '<span class="index__c">' + c.count + ' in stock</span>' +
+      '</a>';
+  }).join("");
+
+  /* ---------- category lookbook ---------- */
+  $("#lookbook").innerHTML = G.stockedCategories.map(function (c) {
+    return '<a class="look__tile" href="#catalogue" data-cat="' + c.slug +
+        '" aria-label="Shop ' + esc(c.name) + '">' +
+      '<img src="' + esc(c.imageUrl) + '" alt="" loading="lazy" data-fade width="900" height="1125">' +
+      '<span class="look__label">' +
+        '<span><b>' + esc(c.name) + '</b><span>' + c.count + ' in stock</span></span>' +
+        '<svg class="look__arrow" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+      '</span>' +
+    '</a>';
+  }).join("");
+
+  /* ---------- collections ----------
+     The three tiled on the landing page. Best sellers and new in are also
+     collections, but they get their own band below rather than a tile. */
+  $("#collections-grid").innerHTML = G.collections.filter(function (c) {
+    return c.onLanding;
+  }).map(function (c) {
+    return '<a class="coll__tile" href="#catalogue" data-coll="' + c.slug +
+        '" aria-label="Shop ' + esc(c.name) + '">' +
+      '<span class="coll__media">' +
+        '<img src="' + esc(c.imageUrl) + '" alt="" loading="lazy" data-fade width="900" height="563">' +
+      '</span>' +
+      '<span class="coll__body">' +
+        '<span class="coll__row">' +
+          '<span class="coll__name">' + esc(c.name) + '</span>' +
+          '<span class="coll__n">' + pad2(c.count) + ' items</span>' +
+        '</span>' +
+        '<span class="coll__say">' + esc(c.lede) + '</span>' +
+        '<span class="coll__from">Across ' + esc(c.departments.join(" \u00b7 ")) + '</span>' +
+        '<span class="coll__cta txtbtn">See all ' + esc(c.count) + ' \u2192</span>' +
+      '</span>' +
+    '</a>';
+  }).join("");
+
+  /* ---------- best sellers / new in ----------
+     One row, two rules. Both are smart collections, so the copy states the
+     rule rather than leaving the order looking hand-picked. */
+  var RAILS = ["best-sellers", "new-in"];
+  var railOn = RAILS[0];
+
+  $("#rail-tabs").innerHTML = RAILS.map(function (slug) {
+    var c = G.collectionBySlug[slug];
+    return '<button type="button" data-rail="' + slug + '" aria-pressed="false">' + esc(c.name) + "</button>";
+  }).join("");
+
+  function addedOn(iso) {
+    var d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  }
+
+  function renderRail() {
+    var c = G.collectionBySlug[railOn];
+    var best = railOn === "best-sellers";
+    $("#rail-rule").textContent = c.lede;
+    $("#rail-grid").innerHTML = c.items.map(function (p, i) {
+      return '<article class="rail__item">' +
+        '<div class="rail__media">' +
+          '<a href="' + G.urls.product(p.slug) + '" tabindex="-1" aria-hidden="true">' +
+            '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy" data-fade width="900" height="900">' +
+          '</a>' +
+          '<span class="rail__rank">' + esc(best ? pad2(i + 1) : addedOn(p.addedAt)) + '</span>' +
+        '</div>' +
+        '<div class="rail__body">' +
+          '<div class="rail__row">' +
+            '<h3 class="rail__name"><a href="' + G.urls.product(p.slug) + '">' + esc(p.name) + '</a></h3>' +
+            '<div class="rail__price">' + money(p.priceInPesewas) +
+              (p.compareAtInPesewas ? '<s>' + money(p.compareAtInPesewas) + "</s>" : "") +
+            '</div>' +
+          '</div>' +
+          '<p class="rail__meta">' +
+            (best
+              ? p.unitsSold + " sold \u00b7 " + esc(p.brand)
+              : esc(p.brand) + " \u00b7 " + esc(G.categoryBySlug[p.categorySlug].name)) +
+          '</p>' +
+          '<div class="rail__acts">' +
+            '<button type="button" class="txtbtn" data-add="' + p.id + '">Add to bag</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join("");
+
+    $$("#rail-tabs button").forEach(function (b) {
+      var on = b.dataset.rail === railOn;
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+
+    G.bindImages();
+  }
+
+  $("#rail-tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rail]");
+    if (!b) return;
+    railOn = b.dataset.rail;
+    renderRail();
+  });
+  renderRail();
+
+  /* ---------- brand strip ---------- */
+  $("#brandbar").innerHTML = G.brands.map(function (b) {
+    return '<a href="#catalogue" data-brand="' + esc(b.name) + '">' + esc(b.name) +
+      '<span class="brandbar__c">' + b.count + "</span></a>";
+  }).join("");
+
+  /* ---------- feature ---------- */
+  (function () {
+    /* The hero already carries the iPhone; feature a different device so the
+       page does not show the same product twice. */
+    var p = G.bySlug["galaxy-s24-ultra"];
+    var saved = p.compareAtInPesewas ? p.compareAtInPesewas - p.priceInPesewas : 0;
+    var specs = Object.keys(p.specifications).map(function (k) {
+      return '<div><dt>' + esc(k) + '</dt><dd>' + esc(p.specifications[k]) + '</dd></div>';
+    }).join("");
+    $("#feature-grid").innerHTML =
+      '<div class="feature__media"><img src="' + esc(G.img(imgId(p.imageUrl), 1200)) + '" alt="' + esc(p.name) + '" width="1200" height="1500"></div>' +
+      '<div class="feature__body">' +
+        '<p class="eyebrow">This week’s pick</p>' +
+        '<h2 class="feature__name" id="feature-name">' + esc(p.name) + '</h2>' +
+        '<p class="feature__lede">' + esc(p.description) + '</p>' +
+        '<dl class="specs">' + specs + '</dl>' +
+        '<div class="price-row">' +
+          '<span class="price">' + money(p.priceInPesewas) + '</span>' +
+          (p.compareAtInPesewas ? '<s class="price-was">' + money(p.compareAtInPesewas) + '</s>' : "") +
+          (saved ? '<span class="price-save">Save ' + money(saved) + '</span>' : "") +
+        '</div>' +
+        '<p class="eyebrow">' + stockLine(p) + ' · ships from Accra</p>' +
+        '<div class="feature__actions">' +
+          '<button type="button" class="btn" data-add="' + p.id + '">Add to bag</button>' +
+          '<a class="link-u" href="' + G.urls.product(p.slug) + '">Full details →</a>' +
+        '</div>' +
+      '</div>';
+  })();
+
+  function stockLine(p) {
+    return p.stockQuantity <= 3 ? "Only " + p.stockQuantity + " left" : "In stock · " + p.stockQuantity;
+  }
+
+  /* ---------- catalogue ---------- */
+  /* Only stocked departments appear here; Computing and Accessories & power
+     exist in the data but stay hidden until they have something in them. */
+  var FILTERS = [{ id: "", label: "All" }]
+    .concat(G.stockedCategories.map(function (c) { return { id: c.slug, label: c.name }; }))
+    .concat([{ id: "__sale", label: "Price drops" }]);
+
+  var BRAND_FILTERS = [{ id: "", label: "All" }]
+    .concat(G.brands.map(function (b) { return { id: b.name, label: b.name }; }));
+
+  /* Department and collection are both entry points into the same grid, so
+     picking one clears the other. Brand compounds with whichever is active. */
+  var state = { category: "", collection: "", brand: "", sort: "featured" };
+
+  $("#filters").innerHTML = FILTERS.map(function (f) {
+    return '<button type="button" data-filter="' + f.id + '" aria-pressed="false">' + esc(f.label) + "</button>";
+  }).join("");
+
+  $("#brandfilters").innerHTML = BRAND_FILTERS.map(function (f) {
+    return '<button type="button" data-brandfilter="' + esc(f.id) + '" aria-pressed="false">' + esc(f.label) + "</button>";
+  }).join("");
+
+  function currentList() {
+    var opts = { sort: state.sort };
+    if (state.category === "__sale") opts.onSale = true;
+    else if (state.category) opts.category = state.category;
+    if (state.collection) opts.collection = state.collection;
+    if (state.brand) opts.brand = state.brand;
+    return G.filterProducts(opts);
+  }
+
+  function cardHTML(p) {
+    var cat = G.categoryBySlug[p.categorySlug];
+    return '<article class="item">' +
+      '<div class="item__media">' +
+        '<a href="' + G.urls.product(p.slug) + '" tabindex="-1" aria-hidden="true">' +
+          '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy" data-fade width="900" height="1125">' +
+        '</a>' +
+        '<button type="button" class="item__heart" data-wishlist="' + p.id + '" aria-pressed="false" aria-label="Save ' + esc(p.name) + ' for later">' + G.ICONS.heart + '</button>' +
+      '</div>' +
+      '<div class="item__body">' +
+        '<div class="item__row">' +
+          '<h3 class="item__name"><a href="' + G.urls.product(p.slug) + '">' + esc(p.name) + '</a></h3>' +
+          '<div class="item__price">' + money(p.priceInPesewas) +
+            (p.compareAtInPesewas ? '<s>' + money(p.compareAtInPesewas) + "</s>" : "") +
+          '</div>' +
+        '</div>' +
+        '<p class="item__desc">' + esc(p.shortDescription) + '</p>' +
+        '<p class="item__stock' + (p.stockQuantity <= 3 ? " low" : "") + '">' + stockLine(p) + ' · ' + esc(cat.name) + '</p>' +
+        '<div class="item__acts">' +
+          '<button type="button" class="txtbtn" data-add="' + p.id + '">Add to bag</button>' +
+          '<span class="dot" aria-hidden="true">·</span>' +
+          '<button type="button" class="txtbtn" data-quickview="' + p.id + '">Quick look</button>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function render() {
+    var list = currentList();
+    $("#grid").innerHTML = list.map(cardHTML).join("");
+    $("#cat-count").textContent = pad2(list.length) + " — " + (list.length === 1 ? "item" : "items");
+
+    var empty = $("#empty");
+    if (!list.length) {
+      empty.hidden = false;
+      empty.innerHTML = '<div class="empty"><p>Nothing in that filter right now.</p>' +
+        '<span>Our whole list is eight products, so some filters come up short.</span>' +
+        '<button type="button" class="txtlink" id="reset">Show all eight products</button></div>';
+      $("#reset").addEventListener("click", clearFilters);
+    } else {
+      empty.hidden = true;
+      empty.innerHTML = "";
+    }
+
+    $$("#filters button").forEach(function (b) {
+      var on = b.dataset.filter === state.category;
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+
+    $$("#brandfilters button").forEach(function (b) {
+      var on = b.dataset.brandfilter === state.brand;
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+
+    $$("#brandbar a").forEach(function (a) {
+      a.classList.toggle("is-on", a.dataset.brand === state.brand);
+    });
+
+    /* A collection has no pill of its own, so an active one is shown as a
+       removable chip — otherwise the narrowed grid has no explanation. */
+    var chip = $("#activechip");
+    if (state.collection) {
+      var c = G.collectionBySlug[state.collection];
+      chip.innerHTML = '<button type="button" class="chip" data-clearcoll>' +
+        esc(c.name) + ' <i aria-hidden="true">\u00d7</i>' +
+        '<span class="sr-only">Clear the ' + esc(c.name) + ' filter</span></button>';
+    } else {
+      chip.innerHTML = "";
+    }
+
+    G.bindImages();
+    G.paintWishlist();
+  }
+
+  function setCategory(slug) {
+    state.category = slug || "";
+    state.collection = "";
+    render();
+  }
+
+  function setCollection(slug) {
+    state.collection = slug || "";
+    state.category = "";
+    render();
+  }
+
+  function setBrand(name) {
+    state.brand = state.brand === name ? "" : name || "";
+    render();
+  }
+
+  function clearFilters() {
+    state.category = "";
+    state.collection = "";
+    state.brand = "";
+    render();
+  }
+
+  $("#filters").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-filter]");
+    if (b) setCategory(b.dataset.filter);
+  });
+  $("#brandfilters").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-brandfilter]");
+    if (!b) return;
+    state.brand = b.dataset.brandfilter;
+    render();
+  });
+  $("#activechip").addEventListener("click", function (e) {
+    if (e.target.closest("[data-clearcoll]")) setCollection("");
+  });
+  $("#sort").addEventListener("change", function (e) {
+    state.sort = e.target.value;
+    render();
+  });
+
+  /* Category, collection and brand links all filter the catalogue and let the
+     browser handle the scroll through their #catalogue href. */
+  document.addEventListener("click", function (e) {
+    var cat = e.target.closest("a[data-cat]");
+    if (cat) { setCategory(cat.dataset.cat); return; }
+    var coll = e.target.closest("a[data-coll]");
+    if (coll) { setCollection(coll.dataset.coll); return; }
+    var brand = e.target.closest("a[data-brand]");
+    if (brand) setBrand(brand.dataset.brand);
+  });
+
+  render();
+
+  /* ---------- stats ---------- */
+  $("#stats").innerHTML = G.stats.map(function (s) {
+    return '<div class="numbers__cell"><div class="numbers__v">' + esc(s.value) + '</div>' +
+      '<div class="numbers__l">' + esc(s.label) + '</div></div>';
+  }).join("");
+
+  /* ---------- hero product ---------- */
+  (function () {
+    var hp = G.byId.prod_iphone_15_pro;
+    var save = hp.compareAtInPesewas ? hp.compareAtInPesewas - hp.priceInPesewas : 0;
+    $("#heroshot").innerHTML =
+      '<button class="heroshot__btn" type="button" data-quickview="' + hp.id +
+        '" aria-label="Quick look at ' + esc(hp.name) + '">' +
+        '<span class="heroshot__img">' +
+          '<img src="' + esc(hp.heroImageUrl || hp.imageUrl) + '" alt="' + esc(hp.name) +
+            '" width="900" height="1125" fetchpriority="high">' +
+          (save > 0 ? '<span class="heroshot__tag">Price drop · save ' + money(save) + '</span>' : "") +
+        "</span>" +
+      "</button>" +
+      '<figcaption class="heroshot__cap">' +
+        "<span><b>" + esc(hp.name) + '</b><span class="eyebrow">' + esc(hp.brand) + " · " +
+          hp.stockQuantity + " in stock</span></span>" +
+        '<span class="heroshot__price tnum">' + money(hp.priceInPesewas) +
+          (save > 0 ? '<span class="heroshot__was">' + money(hp.compareAtInPesewas) + "</span>" : "") +
+        "</span>" +
+      "</figcaption>";
+  })();
+
+  /* ---------- steps ---------- */
+  var pick = G.byId.prod_pixel_8a;
+  var mocks = [
+    '<div class="mock">' +
+      '<div class="mock__bar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>pixel 8a</div>' +
+      '<div class="mock__row"><span class="mock__sw"><img src="' + esc(pick.imageUrl) + '" alt="" loading="lazy"></span>' +
+        "<span><b>" + esc(pick.name) + "</b><span>" + pick.stockQuantity + " in stock</span></span>" +
+        '<span class="pr tnum">' + money(pick.priceInPesewas) + "</span></div>" +
+    "</div>",
+    '<div class="mock"><div class="mock__card">' +
+      '<div class="mock__li">Galaxy Watch6 <span>&times;1</span><span class="tnum" style="margin-left:auto;color:inherit">' + money(285000) + "</span></div>" +
+      '<div class="mock__li">JBL Charge 5 <span>&times;1</span><span class="tnum" style="margin-left:auto;color:inherit">' + money(145000) + "</span></div>" +
+      '<div class="mock__li" style="padding-top:0">Delivery, Accra <span style="margin-left:auto">Free</span></div>' +
+      '<div class="mock__tot"><span>Total</span><span class="tnum">' + money(430000) + "</span></div>" +
+    "</div></div>",
+    '<div class="mock"><div class="mock__card"><div class="mock__tl">' +
+      '<div class="mock__ti done"><span class="mock__dot"></span><span><b>Order confirmed</b><span>Today, 09:14</span></span></div>' +
+      '<div class="mock__ti now"><span class="mock__dot"></span><span><b>Out for delivery</b><span>Rider en route, Accra</span></span></div>' +
+      '<div class="mock__ti"><span class="mock__dot"></span><span><b>Delivered</b><span>Expected before 17:00</span></span></div>' +
+    "</div></div></div>"
+  ];
+  $("#steps").innerHTML = G.steps.map(function (s, i) {
+    return '<article class="step"><span class="step__n">' + esc(s.n) + "</span>" +
+      "<h3>" + esc(s.title) + "</h3><p>" + esc(s.body) + "</p>" + mocks[i] + "</article>";
+  }).join("");
+
+  /* ---------- delivery + payment ---------- */
+  $("#zones").innerHTML = G.deliveryZones.map(function (z) {
+    return '<div class="dtable__row">' +
+      '<span class="dtable__zone">' + esc(z.zone) + '</span>' +
+      '<span class="dtable__time">' + esc(z.time) + '</span>' +
+      '<span class="dtable__fee">' + esc(z.fee) + '</span></div>';
+  }).join("");
+
+  var PAY_NOTE = {
+    momo: "Approve the prompt on your phone.",
+    telecel: "Approve the prompt on your phone.",
+    card: "Tap or enter your card at checkout.",
+    cod: "Pay the rider on arrival.",
+  };
+  $("#pays").innerHTML = G.paymentMethods.map(function (m) {
+    return "<li><b>" + esc(m.name) + "</b><span>" + esc(PAY_NOTE[m.id] || "") + "</span></li>";
+  }).join("");
+
+  /* ---------- reviews ---------- */
+  $("#reviews").innerHTML = G.reviews.map(function (r) {
+    var p = G.byId[r.productId];
+    return '<div class="review">' +
+      "<blockquote>“" + esc(r.quote) + "”</blockquote>" +
+      '<div class="review__meta">' +
+        '<div class="review__stars">' + G.stars(r.rating) + "</div>" +
+        '<p class="review__who">' + esc(r.name) + " — " + esc(r.place) + " · Verified purchase</p>" +
+        '<a class="link-u review__prod" href="' + G.urls.product(p.slug) + '">' + esc(p.name) + "</a>" +
+      "</div></div>";
+  }).join("");
+
+  /* ---------- faq ---------- */
+  $("#faqs").innerHTML = G.faqs.map(function (f) {
+    return '<div data-accordion><button type="button" class="faq__q" aria-expanded="false"><span>' + esc(f.q) + "</span>" +
+      '<svg class="geo-ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>' +
+      '<div data-panel><div><p>' + esc(f.a) + "</p></div></div></div>";
+  }).join("");
+  G.bindAccordions();
+
+  /* ---------- header search (expand in place) ---------- */
+  var wrap = $("#hdr-search");
+  var input = $("#hdr-q");
+  var btn = $("#hdr-search-btn");
+  var hdrSearch = G.bindSearch(input, {
+    onSelect: function (p) { G.openQuickView(p.id); },
+    onSubmit: function (q) { window.location.href = G.urls.search(q); },
+  });
+  btn.addEventListener("click", function () {
+    var open = wrap.classList.toggle("is-open");
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    input.tabIndex = open ? 0 : -1;
+    if (open) input.focus();
+    else if (hdrSearch) hdrSearch.close();
+  });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !input.value) {
+      wrap.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+      input.tabIndex = -1;
+      btn.focus();
+    }
+  });
+
+  /* ---------- hero search ---------- */
+  G.bindSearch($("#mast-q"), {
+    onSelect: function (p) { G.openQuickView(p.id); },
+    onSubmit: function (q) { window.location.href = G.urls.search(q); },
+  });
+
+  G.bindSearch($("#mnav-q"), {
+    onSelect: function (p) {
+      document.getElementById("mobile-nav").classList.remove("is-open");
+      document.body.classList.remove("geo-menu-open");
+      G.openQuickView(p.id);
+    },
+    onSubmit: function (q) { window.location.href = G.urls.search(q); },
+  });
+}
+
+if (document.getElementById("geo-shell")) boot();
+else document.addEventListener("geo:ready", boot, { once: true });
+</script>
+</body>
+</html>

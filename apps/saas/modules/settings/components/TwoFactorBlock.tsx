@@ -16,6 +16,7 @@ import { Label } from "@repo/ui/components/label";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { PasswordInput } from "@shared/components/PasswordInput";
 import { SettingsItem } from "@shared/components/SettingsItem";
+import { useTranslations } from "@shared/lib/translations";
 import { useMutation } from "@tanstack/react-query";
 import {
 	ArrowRightIcon,
@@ -24,7 +25,6 @@ import {
 	TabletSmartphoneIcon,
 	XIcon,
 } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "react-qr-code";
 

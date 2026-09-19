@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option 1 — Command Center · GeoStore Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --brand-primary:#6b28d9; --brand-secondary:#4b13a3; --brand-accent:#8343e6;
+    --background:#f5f5f5; --foreground:#262626; --card:#fff; --border:#e5e5e5;
+    --muted:#ebebeb; --muted-foreground:#525252; --accent:#f3eeff;
+    --success:#39a561; --destructive:#ef4444; --amber:#b45309; --amber-bg:#fffbeb;
+    --radius:0.75rem;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--background);color:var(--foreground);
+    font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased}
+  .shell{max-width:1240px;margin:0 auto;padding:32px 24px 72px}
+  .tabular{font-variant-numeric:tabular-nums}
+
+  /* ---------- page header ---------- */
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em}
+  .page-head .sub{margin:4px 0 0;color:var(--muted-foreground);font-size:13px}
+  .head-actions{display:flex;align-items:center;gap:10px}
+  .segmented{display:flex;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:9px}
+  .segmented button{border:0;background:transparent;font:inherit;font-size:12.5px;font-weight:500;
+    color:var(--muted-foreground);padding:5px 12px;border-radius:6px;cursor:pointer}
+  .segmented button[aria-pressed="true"]{background:var(--foreground);color:#fff}
+  .btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:9px;
+    border:1px solid var(--border);background:var(--card);font:inherit;font-size:13px;font-weight:500;
+    color:var(--foreground);cursor:pointer;text-decoration:none}
+  .btn-primary{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff}
+
+  /* ---------- KPI band ---------- */
+  .kpi-band{margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:14px;
+    display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden}
+  .kpi{padding:18px 20px 16px;border-left:1px solid var(--border)}
+  .kpi:first-child{border-left:0}
+  .kpi-label{display:flex;align-items:center;gap:6px;color:var(--muted-foreground);font-size:12.5px;font-weight:500}
+  .kpi-label svg{opacity:.45}
+  .kpi-value{margin-top:10px;font-size:27px;font-weight:600;letter-spacing:-0.025em}
+  .kpi-foot{margin-top:10px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+  .delta{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;
+    padding:2px 7px;border-radius:999px}
+  .delta.up{color:#166534;background:#f0fdf4}
+  .delta.down{color:#991b1b;background:#fef2f2}
+  .delta.flat{color:var(--muted-foreground);background:var(--muted)}
+  .vs{color:var(--muted-foreground);font-size:11.5px}
+  .spark{flex:none}
+
+  /* ---------- cards ---------- */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;min-width:0}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 20px}
+  .card-head.bordered{border-bottom:1px solid var(--border)}
+  .card-title{margin:0;font-size:14.5px;font-weight:600}
+  .card-sub{margin:3px 0 0;color:var(--muted-foreground);font-size:12px}
+  .link{display:inline-flex;align-items:center;gap:5px;color:var(--brand-primary);
+    font-size:13px;font-weight:600;text-decoration:none}
+
+  /* ---------- hero chart ---------- */
+  .hero{margin-top:16px}
+  .legend{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--muted-foreground)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .chart-wrap{padding:4px 20px 18px}
+  .chart-grid{display:grid;grid-template-columns:44px 1fr;align-items:stretch}
+  .y-axis{display:flex;flex-direction:column;justify-content:space-between;
+    padding:0 10px 22px 0;text-align:right;color:var(--muted-foreground);font-size:11px}
+  .x-axis{display:flex;justify-content:space-between;margin:8px 0 0 44px;
+    color:var(--muted-foreground);font-size:11px}
+
+  /* ---------- layout rows ---------- */
+  .row{display:grid;gap:16px;margin-top:16px;align-items:start}
+  .row.two-one{grid-template-columns:1.55fr 1fr}
+  .row.halves{grid-template-columns:1fr 1fr}
+
+  /* ---------- orders table ---------- */
+  .table-scroll{overflow-x:auto;border-radius:0 0 13px 13px}
+  table{width:100%;border-collapse:collapse}
+  thead th{text-align:left;padding:9px 20px;background:#fafafa;border-bottom:1px solid var(--border);
+    color:var(--muted-foreground);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  tbody td{padding:13px 20px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fcfbfe}
+  .order-no{font-weight:600}
+  .cust{color:var(--muted-foreground);font-size:12px;margin-top:2px}
+  .right{text-align:right}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;
+    font-size:11.5px;font-weight:600;border:1px solid transparent}
+  .pill i{width:5px;height:5px;border-radius:999px;display:inline-block}
+  .pill.delivered{color:#166534;background:#f0fdf4;border-color:#dcfce7}
+  .pill.delivered i{background:var(--success)}
+  .pill.shipped{color:#3730a3;background:#eef2ff;border-color:#e0e7ff}
+  .pill.shipped i{background:#4f46e5}
+  .pill.processing{color:var(--amber);background:var(--amber-bg);border-color:#fef3c7}
+  .pill.processing i{background:#d97706}
+  .pill.pending{color:var(--muted-foreground);background:var(--muted);border-color:#e0e0e0}
+  .pill.pending i{background:#737373}
+
+  /* ---------- attention list ---------- */
+  .att{display:flex;align-items:center;gap:13px;padding:14px 20px;border-bottom:1px solid var(--border);
+    text-decoration:none;color:inherit}
+  .att:last-child{border-bottom:0}
+  .att:hover{background:#fcfbfe}
+  .tile{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center}
+  .tile.violet{background:var(--accent);color:var(--brand-secondary)}
+  .tile.amber{background:var(--amber-bg);color:var(--amber)}
+  .tile.red{background:#fef2f2;color:#b91c1c}
+  .att-body{flex:1;min-width:0}
+  .att-title,.att-sub{display:block}
+  .att-title{font-size:13px;font-weight:500}
+  .att-sub{color:var(--muted-foreground);font-size:12px;margin-top:1px}
+  .att-count{font-size:15px;font-weight:600}
+
+  /* ---------- top products ---------- */
+  .prod{padding:14px 20px;border-bottom:1px solid var(--border)}
+  .prod:last-child{border-bottom:0}
+  .prod-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .prod-name{font-size:13px;font-weight:500}
+  .prod-val{font-size:13px;font-weight:600}
+  .bar{margin-top:9px;height:6px;border-radius:999px;background:var(--muted);overflow:hidden}
+  .bar span{display:block;height:100%;border-radius:999px;
+    background:linear-gradient(90deg,var(--brand-secondary),var(--brand-accent))}
+  .prod-sub{margin-top:6px;color:var(--muted-foreground);font-size:11.5px}
+
+  /* ---------- fulfilment ---------- */
+  .stack{display:flex;height:10px;border-radius:999px;overflow:hidden;margin:0 20px}
+  .stack span{display:block}
+  .mix{margin:18px 20px 4px;display:grid;grid-template-columns:1fr 1fr;gap:2px 20px}
+  .mix-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;
+    border-bottom:1px solid var(--border);font-size:13px}
+  .mix-row:nth-last-child(-n+2){border-bottom:0}
+  .mix-key{display:flex;align-items:center;gap:8px;color:var(--muted-foreground)}
+  .mix-key i{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .mix-val{font-weight:600}
+
+  @media (max-width:1080px){
+    .kpi-band{grid-template-columns:1fr 1fr}
+    .kpi:nth-child(3){border-left:0}
+    .kpi:nth-child(-n+2){border-bottom:1px solid var(--border)}
+    .row.two-one,.row.halves{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    .shell{padding:20px 14px 56px}
+    thead th,tbody td{padding-left:14px;padding-right:14px}
+    table{min-width:430px}
+    .kpi-band{grid-template-columns:1fr}
+    .kpi{border-left:0;border-bottom:1px solid var(--border)}
+    .kpi:last-child{border-bottom:0}
+    .mix{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ header ============ -->
+  <div class="page-head">
+    <div>
+      <h1>Overview</h1>
+      <p class="sub">Thursday, 18 September · all figures exclude cancelled and refunded orders</p>
+    </div>
+    <div class="head-actions">
+      <div class="segmented" role="group" aria-label="Date range">
+        <button type="button">7 days</button>
+        <button type="button" aria-pressed="true">30 days</button>
+        <button type="button">90 days</button>
+      </div>
+      <a class="btn" href="#">Export</a>
+      <a class="btn btn-primary" href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add product
+      </a>
+    </div>
+  </div>
+
+  <!-- ============ KPI band ============ -->
+  <div class="kpi-band">
+    <div class="kpi">
+      <div class="kpi-label">Paid revenue
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      </div>
+      <div class="kpi-value tabular">GH₵ 48,320</div>
+      <div class="kpi-foot">
+        <div>
+          <span class="delta up">▲ 12.4%</span>
+          <div class="vs">vs GH₵ 42,990</div>
+        </div>
+        <svg class="spark" width="88" height="30" viewBox="0 0 88 30" fill="none" aria-hidden="true">
+          <polyline points="0,23 9,20 18,24 27,16 36,18 45,11 54,14 63,8 72,10 81,5 88,3"
+            stroke="#6b28d9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Orders</div>
+      <div class="kpi-value tabular">312</div>
+      <div class="kpi-foot">
+        <div>
+          <span class="delta up">▲ 8.1%</span>
+          <div class="vs">264 paid · 48 open</div>
+        </div>
+        <svg class="spark" width="88" height="30" viewBox="0 0 88 30" fill="none" aria-hidden="true">
+          <polyline points="0,20 9,22 18,17 27,19 36,13 45,15 54,10 63,12 72,7 81,9 88,6"
+            stroke="#6b28d9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Average order value</div>
+      <div class="kpi-value tabular">GH₵ 183</div>
+      <div class="kpi-foot">
+        <div>
+          <span class="delta up">▲ 4.0%</span>
+          <div class="vs">across 264 paid orders</div>
+        </div>
+        <svg class="spark" width="88" height="30" viewBox="0 0 88 30" fill="none" aria-hidden="true">
+          <polyline points="0,18 9,16 18,19 27,15 36,17 45,14 54,16 63,12 72,14 81,11 88,10"
+            stroke="#6b28d9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Payment success</div>
+      <div class="kpi-value tabular">94%</div>
+      <div class="kpi-foot">
+        <div>
+          <span class="delta down">▼ 1.8%</span>
+          <div class="vs">218 of 232 online payments</div>
+        </div>
+        <svg class="spark" width="88" height="30" viewBox="0 0 88 30" fill="none" aria-hidden="true">
+          <polyline points="0,8 9,7 18,9 27,8 36,11 45,9 54,12 63,10 72,13 81,11 88,12"
+            stroke="#6b28d9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ hero chart ============ -->
+  <section class="card hero">
+    <div class="card-head">
+      <div>
+        <h2 class="card-title">Paid revenue</h2>
+        <p class="card-sub">Daily, last 30 days · compared to previous 30 days</p>
+      </div>
+      <div class="legend">
+        <span><i style="background:#6b28d9"></i>This period</span>
+        <span><i style="background:#cbc2dd"></i>Previous</span>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-grid">
+        <div class="y-axis tabular">
+          <span>3.6k</span><span>2.7k</span><span>1.8k</span><span>900</span><span>0</span>
+        </div>
+        <svg viewBox="0 0 1000 270" width="100%" height="250" preserveAspectRatio="none" role="img" aria-label="Daily paid revenue, last 30 days">
+          <defs>
+            <linearGradient id="fill1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6b28d9" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#6b28d9" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g stroke="#ededed" stroke-width="1">
+            <line x1="0" y1="35" x2="1000" y2="35"/>
+            <line x1="0" y1="89" x2="1000" y2="89"/>
+            <line x1="0" y1="143" x2="1000" y2="143"/>
+            <line x1="0" y1="196" x2="1000" y2="196"/>
+            <line x1="0" y1="250" x2="1000" y2="250" stroke="#dcdcdc"/>
+          </g>
+          <!-- previous period -->
+          <polyline fill="none" stroke="#cbc2dd" stroke-width="2" stroke-dasharray="5 5" stroke-linejoin="round"
+            points="0,206 34,193 69,215 103,178 138,186 172,166 207,143 241,180 276,196 310,172 345,158 379,131 414,149 448,168 483,183 517,160 552,137 586,114 621,128 655,152 690,163 724,142 759,121 793,101 828,88 862,113 897,133 931,108 966,92 1000,74"/>
+          <!-- this period -->
+          <path fill="url(#fill1)" d="M0,191.5 34,175.9 69,204.6 103,159.8 138,170.6 172,147.3 207,124.6 241,163.4 276,179.5 310,153.2 345,137.1 379,110.2 414,130 448,150.3 483,165.2 517,140.7 552,115.6 586,89.9 621,106 655,133.5 690,146.1 724,122.8 759,99.5 793,77.4 828,63.7 862,91.7 897,113.8 931,86.3 966,66 1000,46.3 L1000,250 L0,250 Z"/>
+          <polyline fill="none" stroke="#6b28d9" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
+            points="0,191.5 34,175.9 69,204.6 103,159.8 138,170.6 172,147.3 207,124.6 241,163.4 276,179.5 310,153.2 345,137.1 379,110.2 414,130 448,150.3 483,165.2 517,140.7 552,115.6 586,89.9 621,106 655,133.5 690,146.1 724,122.8 759,99.5 793,77.4 828,63.7 862,91.7 897,113.8 931,86.3 966,66 1000,46.3"/>
+          <circle cx="1000" cy="46.3" r="4.5" fill="#6b28d9" stroke="#fff" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="x-axis tabular">
+        <span>20 Aug</span><span>27 Aug</span><span>3 Sep</span><span>10 Sep</span><span>18 Sep</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ orders + attention ============ -->
+  <div class="row two-one">
+    <section class="card">
+      <div class="card-head bordered">
+        <div>
+          <h2 class="card-title">Recent orders</h2>
+          <p class="card-sub">Newest customer activity</p>
+        </div>
+        <a class="link" href="#">View all
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Order</th><th>Items</th><th>Status</th><th class="right">Total</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="order-no tabular">GS-10428</div><div class="cust">ama.owusu@gmail.com</div></td>
+            <td class="tabular">3 items</td>
+            <td><span class="pill processing"><i></i>Processing</span></td>
+            <td class="right tabular" style="font-weight:600">GH₵ 412</td>
+          </tr>
+          <tr>
+            <td><div class="order-no tabular">GS-10427</div><div class="cust">kofi.mensah@outlook.com</div></td>
+            <td class="tabular">1 item</td>
+            <td><span class="pill shipped"><i></i>Shipped</span></td>
+            <td class="right tabular" style="font-weight:600">GH₵ 149</td>
+          </tr>
+          <tr>
+            <td><div class="order-no tabular">GS-10426</div><div class="cust">esi.boateng@gmail.com</div></td>
+            <td class="tabular">5 items</td>
+            <td><span class="pill delivered"><i></i>Delivered</span></td>
+            <td class="right tabular" style="font-weight:600">GH₵ 878</td>
+          </tr>
+          <tr>
+            <td><div class="order-no tabular">GS-10425</div><div class="cust">yaw.asante@gmail.com</div></td>
+            <td class="tabular">2 items</td>
+            <td><span class="pill pending"><i></i>Pending</span></td>
+            <td class="right tabular" style="font-weight:600">GH₵ 236</td>
+          </tr>
+          <tr>
+            <td><div class="order-no tabular">GS-10424</div><div class="cust">adjoa.nyarko@yahoo.com</div></td>
+            <td class="tabular">1 item</td>
+            <td><span class="pill delivered"><i></i>Delivered</span></td>
+            <td class="right tabular" style="font-weight:600">GH₵ 94</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head bordered">
+        <div>
+          <h2 class="card-title">Needs attention</h2>
+          <p class="card-sub">Queues waiting on you</p>
+        </div>
+      </div>
+      <a class="att" href="#">
+        <span class="tile violet">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        <span class="att-body">
+          <span class="att-title">Orders to fulfil</span>
+          <span class="att-sub">Paid and awaiting dispatch</span>
+        </span>
+        <span class="att-count tabular">18</span>
+      </a>
+      <a class="att" href="#">
+        <span class="tile amber">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 16.5-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 19.5h16a2 2 0 0 0 1.7-3z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </span>
+        <span class="att-body">
+          <span class="att-title">Low stock products</span>
+          <span class="att-sub">At or below restock threshold</span>
+        </span>
+        <span class="att-count tabular">6</span>
+      </a>
+      <a class="att" href="#">
+        <span class="tile red">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </span>
+        <span class="att-body">
+          <span class="att-title">Failed payments</span>
+          <span class="att-sub">Last 7 days · retry or cancel</span>
+        </span>
+        <span class="att-count tabular">14</span>
+      </a>
+      <a class="att" href="#">
+        <span class="tile violet">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 15h-.09A5 5 0 1 1 16 6.71a4 4 0 0 1 1 7.87"/><path d="M12 13v8M9 18l3 3 3-3"/></svg>
+        </span>
+        <span class="att-body">
+          <span class="att-title">Draft products</span>
+          <span class="att-sub">Not yet visible in the catalogue</span>
+        </span>
+        <span class="att-count tabular">18</span>
+      </a>
+      <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <span style="color:var(--muted-foreground);font-size:12px">128 of 146 products active</span>
+        <a class="link" href="#">Catalogue</a>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ products + fulfilment ============ -->
+  <div class="row halves">
+    <section class="card">
+      <div class="card-head bordered">
+        <div>
+          <h2 class="card-title">Top products</h2>
+          <p class="card-sub">Ranked by 30-day paid revenue</p>
+        </div>
+        <a class="link" href="#">Analytics</a>
+      </div>
+      <div class="prod">
+        <div class="prod-top"><span class="prod-name">Bolga Market Basket — Large</span><span class="prod-val tabular">GH₵ 9,840</span></div>
+        <div class="bar"><span style="width:100%"></span></div>
+        <div class="prod-sub tabular">82 units sold · GH₵ 120 avg</div>
+      </div>
+      <div class="prod">
+        <div class="prod-top"><span class="prod-name">Kente Throw Pillow Set</span><span class="prod-val tabular">GH₵ 7,215</span></div>
+        <div class="bar"><span style="width:73%"></span></div>
+        <div class="prod-sub tabular">65 units sold · GH₵ 111 avg</div>
+      </div>
+      <div class="prod">
+        <div class="prod-top"><span class="prod-name">Raw Shea Butter 500g</span><span class="prod-val tabular">GH₵ 5,460</span></div>
+        <div class="bar"><span style="width:55%"></span></div>
+        <div class="prod-sub tabular">156 units sold · GH₵ 35 avg</div>
+      </div>
+      <div class="prod">
+        <div class="prod-top"><span class="prod-name">Ankara Tote Bag</span><span class="prod-val tabular">GH₵ 4,120</span></div>
+        <div class="bar"><span style="width:42%"></span></div>
+        <div class="prod-sub tabular">47 units sold · GH₵ 88 avg</div>
+      </div>
+      <div class="prod">
+        <div class="prod-top"><span class="prod-name">Adinkra Wall Print A2</span><span class="prod-val tabular">GH₵ 2,980</span></div>
+        <div class="bar"><span style="width:30%"></span></div>
+        <div class="prod-sub tabular">38 units sold · GH₵ 78 avg</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head bordered">
+        <div>
+          <h2 class="card-title">Fulfilment mix</h2>
+          <p class="card-sub">Current status across all 312 orders</p>
+        </div>
+        <a class="link" href="#">Orders</a>
+      </div>
+      <div style="padding:20px 0 0">
+        <div class="stack">
+          <span style="width:63.5%;background:#39a561"></span>
+          <span style="width:13.1%;background:#4f46e5"></span>
+          <span style="width:7.7%;background:#d97706"></span>
+          <span style="width:5.8%;background:#a3a3a3"></span>
+          <span style="width:2.9%;background:#ef4444"></span>
+          <span style="width:1.9%;background:#8343e6"></span>
+        </div>
+        <div class="mix">
+          <div class="mix-row"><span class="mix-key"><i style="background:#39a561"></i>Delivered</span><span class="mix-val tabular">198</span></div>
+          <div class="mix-row"><span class="mix-key"><i style="background:#a3a3a3"></i>Pending</span><span class="mix-val tabular">18</span></div>
+          <div class="mix-row"><span class="mix-key"><i style="background:#4f46e5"></i>Shipped</span><span class="mix-val tabular">41</span></div>
+          <div class="mix-row"><span class="mix-key"><i style="background:#ef4444"></i>Cancelled</span><span class="mix-val tabular">9</span></div>
+          <div class="mix-row"><span class="mix-key"><i style="background:#d97706"></i>Processing</span><span class="mix-val tabular">24</span></div>
+          <div class="mix-row"><span class="mix-key"><i style="background:#8343e6"></i>Refunded</span><span class="mix-val tabular">6</span></div>
+        </div>
+        <div style="margin-top:16px;padding:14px 20px;border-top:1px solid var(--border);
+          display:flex;align-items:center;gap:10px;background:#fafafa;border-radius:0 0 13px 13px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#39a561" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span style="font-size:12.5px;color:var(--muted-foreground)">
+            <strong style="color:var(--foreground);font-weight:600">76.6%</strong> of orders reach delivered or shipped
+          </span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+</body>
+</html>

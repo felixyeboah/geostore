@@ -8,8 +8,8 @@ import { authClient } from "@repo/auth/client";
 import { Button } from "@repo/ui/components/button";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { SettingsItem } from "@shared/components/SettingsItem";
-import { CheckCircle2Icon, LinkIcon } from "lucide-react";
 import { useTranslations } from "@shared/lib/translations";
+import { CheckCircle2Icon, LinkIcon } from "lucide-react";
 
 export function ConnectedAccountsBlock() {
 	const t = useTranslations();

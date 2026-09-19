@@ -27,9 +27,9 @@ import {
 import { UserAvatar } from "@shared/components/UserAvatar";
 import { useRouter } from "@shared/hooks/router";
 import { clearCache } from "@shared/lib/cache";
+import { useTranslations } from "@shared/lib/translations";
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { useTranslations } from "@shared/lib/translations";
 import { OrganizationLogo } from "./OrganizationLogo";
 
 export function OrganzationSelect({

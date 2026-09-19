@@ -1,3 +1,4 @@
+import { ORPCError } from "@orpc/server";
 import {
 	getPurchasesByOrganizationId,
 	getPurchasesByUserId,
@@ -8,6 +9,7 @@ import {
 } from "@repo/payments";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
+import { verifyOrganizationMembership } from "../../organizations/lib/membership";
 
 export const listPurchases = protectedProcedure
 	.route({
@@ -20,10 +22,23 @@ export const listPurchases = protectedProcedure
 	})
 	.input(
 		z.object({
-			organizationId: z.string().optional(),
+			organizationId: z.string().min(1).max(64).optional(),
 		}),
 	)
 	.handler(async ({ input: { organizationId }, context: { user } }) => {
+		if (organizationId) {
+			// Without this the id is simply trusted, so any signed-in user
+			// could read any organisation's purchase history by guessing one.
+			const membership = await verifyOrganizationMembership(
+				organizationId,
+				user.id,
+			);
+
+			if (!membership) {
+				throw new ORPCError("FORBIDDEN");
+			}
+		}
+
 		const purchases = organizationId
 			? await getPurchasesByOrganizationId(organizationId)
 			: await getPurchasesByUserId(user.id);

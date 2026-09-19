@@ -1,19 +1,37 @@
-import { FaqSection } from "@home/components/FaqSection";
-import { FeaturesSection } from "@home/components/FeaturesSection";
+import { AboutSection } from "@home/components/AboutSection";
+import { AppliancesSection } from "@home/components/AppliancesSection";
+import { BrandsSection } from "@home/components/BrandsSection";
+import { CategoriesSection } from "@home/components/CategoriesSection";
+import { ComputingSection } from "@home/components/ComputingSection";
+import { DepartmentsSection } from "@home/components/DepartmentsSection";
+import { EditSection } from "@home/components/EditSection";
+import { EnquirySection } from "@home/components/EnquirySection";
+import { GamingSection } from "@home/components/GamingSection";
 import { HeroSection } from "@home/components/HeroSection";
-import { LatestDropsSection } from "@home/components/LatestDropsSection";
+import { KitchenBundleSection } from "@home/components/KitchenBundleSection";
+import { NeedsSection } from "@home/components/NeedsSection";
 import { NewsletterSection } from "@home/components/NewsletterSection";
-import { PopularPicksSection } from "@home/components/PopularPicksSection";
+import { ProductRail } from "@home/components/ProductRail";
+import { TrustStrip } from "@home/components/TrustStrip";
 
 export default function Home() {
 	return (
 		<>
 			<HeroSection />
-			<FeaturesSection />
-			<LatestDropsSection />
-			<PopularPicksSection />
-			<FaqSection />
+			<TrustStrip />
+			<BrandsSection />
+			<CategoriesSection />
+			<EditSection />
+			<ProductRail />
+			<GamingSection />
+			<ComputingSection />
+			<KitchenBundleSection />
+			<AppliancesSection />
+			<DepartmentsSection />
+			<NeedsSection />
+			<AboutSection />
 			<NewsletterSection />
+			<EnquirySection />
 		</>
 	);
 }

@@ -18,6 +18,7 @@ const DEFAULT_VALUES: ProductFormValues = {
 	categoryId: "",
 	imageUrls: [],
 	specifications: {},
+	variants: [],
 };
 
 export default async function NewProductPage() {

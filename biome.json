@@ -42,7 +42,13 @@
 			}
 		}
 	},
-	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
 	"files": {
 		"includes": [
 			"**",
@@ -50,7 +56,11 @@
 			"!tailwind-animate.css",
 			"!**/globals.css",
 			"!**/global.css",
-			"!**/theme.css"
+			"!**/theme.css",
+			"!design",
+			"!designs",
+			"!**/prisma/generated",
+			"!**/prisma/zod"
 		]
 	},
 	"javascript": {

@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore — Option C · Conversion Storefront</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#121118; --ink-2:#3a3844; --muted:#6a6878; --faint:#9b99a8;
+    --bg:#ffffff; --surface:#f6f5f9; --surface-2:#efeef4; --line:#e6e4ee;
+    --primary:#6b28d9; --primary-d:#551eae; --primary-l:#f3ecff; --primary-xl:#faf7ff;
+    --save:#d92b4b; --save-bg:#ffeef1; --go:#0a7c46; --go-bg:#e8f7ef; --warn:#b26a00;
+    --r:14px; --r-lg:22px;
+    --sh:0 1px 2px rgba(18,17,24,.05), 0 8px 24px -12px rgba(18,17,24,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased
+  }
+  img{display:block;width:100%;height:100%;object-fit:cover}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 24px}
+  @media(max-width:640px){.wrap{padding:0 14px}}
+  h1,h2,h3,.jak{font-family:"Plus Jakarta Sans",Inter,sans-serif;letter-spacing:-0.035em;line-height:1.08;font-weight:800}
+  .h1{font-size:clamp(32px,4.6vw,54px)}
+  .h2{font-size:clamp(23px,2.9vw,34px)}
+  .tnum{font-variant-numeric:tabular-nums}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--primary)}
+
+  /* ---------- ticker ---------- */
+  .ticker{background:var(--primary);color:#fff;overflow:hidden;font-size:12.5px;font-weight:600;letter-spacing:.02em}
+  .ticker .track{display:flex;gap:44px;white-space:nowrap;padding:9px 0;animation:slide 32s linear infinite;width:max-content}
+  .ticker .track span{display:inline-flex;align-items:center;gap:8px}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.ticker .track{animation:none;justify-content:center;width:100%}}
+
+  /* ---------- header ---------- */
+  header.site{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line)}
+  .hdr{display:flex;align-items:center;gap:18px;padding:13px 0}
+  .logo{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:21px;letter-spacing:-0.05em;white-space:nowrap}
+  .logo span{color:var(--primary)}
+  .srch{flex:1;max-width:620px;display:flex;height:46px;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:#fff}
+  .srch input{flex:1;border:0;outline:none;padding:0 16px;font:inherit;font-size:14.5px;background:transparent}
+  .srch input::placeholder{color:var(--faint)}
+  .srch button{border:0;background:var(--ink);color:#fff;padding:0 20px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .srch button:hover{background:var(--primary)}
+  .hicons{display:flex;align-items:center;gap:6px;margin-left:auto}
+  .hic{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:10px;font-size:10.5px;font-weight:600;color:var(--ink-2);position:relative}
+  .hic:hover{background:var(--surface)}
+  .hic .b{position:absolute;top:2px;right:4px;min-width:18px;height:18px;border-radius:9px;background:var(--save);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;padding:0 5px}
+  nav.cats{border-top:1px solid var(--line);background:#fff}
+  nav.cats .wrap{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:0 24px;scrollbar-width:none}
+  nav.cats .wrap::-webkit-scrollbar{display:none}
+  nav.cats a{padding:12px 14px;font-size:14px;font-weight:600;color:var(--ink-2);white-space:nowrap;border-bottom:2.5px solid transparent}
+  nav.cats a:hover{color:var(--primary);border-color:var(--primary)}
+  nav.cats a.hot{color:var(--save)}
+  nav.cats .sep{width:1px;height:20px;background:var(--line);margin:0 8px;flex:none}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 24px;border-radius:12px;font-weight:700;font-size:15px;border:2px solid transparent;cursor:pointer;transition:.15s;font-family:inherit}
+  .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-d)}
+  .btn-dark{background:var(--ink);color:#fff}.btn-dark:hover{background:#2c2a36}
+  .btn-white{background:#fff;color:var(--ink)}.btn-white:hover{background:#f1f1f5}
+  .btn-out{border-color:var(--line);background:#fff;color:var(--ink)}.btn-out:hover{border-color:var(--ink)}
+  .btn-sm{height:40px;padding:0 16px;font-size:13.5px;border-radius:10px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:20px 0 0}
+  .hgrid{display:grid;grid-template-columns:1.62fr 1fr;gap:16px}
+  .hmain{position:relative;min-height:470px;border-radius:var(--r-lg);overflow:hidden;background:#171422;color:#fff;display:flex;align-items:flex-end}
+  .hmain img{position:absolute;inset:0;object-position:68% 50%;opacity:.62}
+  .hmain .veil{position:absolute;inset:0;background:linear-gradient(95deg,rgba(23,20,34,.96) 6%,rgba(23,20,34,.72) 44%,rgba(23,20,34,.05) 88%)}
+  .hmain .c{position:relative;z-index:2;padding:40px}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--save);color:#fff;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;letter-spacing:.02em}
+  .hmain h1{margin-top:16px;max-width:13ch}
+  .hmain p{margin-top:14px;max-width:44ch;color:rgba(255,255,255,.76);font-size:15.5px;line-height:1.6}
+  .hmain .acts{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+  .hside{display:grid;grid-template-rows:1fr 1fr;gap:16px}
+  .hcard{position:relative;border-radius:var(--r-lg);overflow:hidden;padding:26px;display:flex;flex-direction:column;justify-content:space-between;min-height:227px}
+  .hcard.a{background:var(--primary-l)}
+  .hcard.b{background:var(--ink);color:#fff}
+  .hcard .lab{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+  .hcard h3{font-size:24px;margin-top:8px;max-width:11ch}
+  .hcard .pr{font-size:15px;font-weight:700;margin-top:6px}
+  .hcard .thumb{position:absolute;right:-14px;bottom:-14px;width:150px;height:150px;border-radius:18px;overflow:hidden;transform:rotate(-6deg);box-shadow:0 18px 40px -18px rgba(0,0,0,.5)}
+  .hcard .go{align-self:flex-start;margin-top:14px;display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;background:#fff;color:var(--ink);padding:9px 15px;border-radius:10px;position:relative;z-index:2}
+  .hcard.a .go{background:var(--primary);color:#fff}
+
+  /* ---------- trust ---------- */
+  .trustbar{margin-top:16px;background:var(--surface);border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)}
+  .trustbar .c{display:flex;align-items:center;gap:11px;padding:18px 22px;border-right:1px solid var(--line)}
+  .trustbar .c:last-child{border-right:0}
+  .trustbar svg{color:var(--primary);flex:none}
+  .trustbar b{display:block;font-size:13.5px;font-weight:700}
+  .trustbar p{font-size:12px;color:var(--muted);margin-top:1px}
+
+  /* ---------- section ---------- */
+  section.blk{padding:60px 0}
+  .shead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px}
+  .shead h2{margin-top:9px}
+  .shead .d{color:var(--muted);font-size:14.5px;margin-top:8px;max-width:56ch}
+
+  /* category circles */
+  .circles{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .circ{text-align:center}
+  .circ .im{aspect-ratio:1/1;border-radius:999px;overflow:hidden;background:var(--surface-2);border:2px solid var(--line);transition:.2s}
+  .circ:hover .im{border-color:var(--primary);transform:translateY(-3px)}
+  .circ .nm{margin-top:11px;font-size:13.5px;font-weight:600}
+  .circ .ct{font-size:11.5px;color:var(--faint);margin-top:1px}
+
+  /* deals */
+  .deals{background:var(--ink);border-radius:var(--r-lg);padding:32px;color:#fff}
+  .deals-top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+  .deals-top h2{font-size:clamp(22px,2.6vw,30px)}
+  .clock{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.72)}
+  .clock .u{background:rgba(255,255,255,.12);border-radius:8px;padding:6px 9px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;font-size:14px}
+  .dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .dcard{background:#fff;color:var(--ink);border-radius:var(--r);padding:12px;display:flex;flex-direction:column}
+  .dcard .im{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:var(--surface)}
+  .dcard .off{position:absolute;top:8px;left:8px;background:var(--save);color:#fff;font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:7px}
+  .dcard h3{font-size:14px;font-weight:700;letter-spacing:-0.02em;margin-top:11px;line-height:1.3}
+  .dcard .row{display:flex;align-items:baseline;gap:7px;margin-top:7px}
+  .dcard .p{font-size:16px;font-weight:800;letter-spacing:-0.025em}
+  .dcard .w{font-size:12px;color:var(--faint);text-decoration:line-through}
+  .dcard .save{font-size:11.5px;font-weight:700;color:var(--save);background:var(--save-bg);padding:3px 7px;border-radius:6px;margin-top:8px;align-self:flex-start}
+  .bar{height:5px;border-radius:3px;background:var(--surface-2);margin-top:12px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--save);border-radius:3px}
+  .left{font-size:11.5px;color:var(--muted);margin-top:6px}
+
+  /* filters + grid */
+  .filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:26px}
+  .chip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);font-size:13.5px;font-weight:600;background:#fff;cursor:pointer}
+  .chip:hover{border-color:var(--ink)}
+  .chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .filters .sp{margin-left:auto;font-size:13.5px;color:var(--muted)}
+  .filters select{height:36px;border:1.5px solid var(--line);border-radius:999px;padding:0 12px;font:inherit;font-size:13.5px;font-weight:600;background:#fff;color:var(--ink)}
+
+  .pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .pc{border:1px solid var(--line);border-radius:var(--r);background:#fff;padding:12px;display:flex;flex-direction:column;transition:.18s}
+  .pc:hover{box-shadow:var(--sh);border-color:#d5d1e6;transform:translateY(-2px)}
+  .pc .im{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:var(--surface)}
+  .pc .im img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+  .pc:hover .im img{transform:scale(1.05)}
+  .pc .tags{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:5px;align-items:flex-start;z-index:2}
+  .t{font-size:11px;font-weight:700;padding:4px 8px;border-radius:7px;letter-spacing:.01em}
+  .t.new{background:var(--ink);color:#fff}
+  .t.off{background:var(--save);color:#fff}
+  .t.stock{background:#fff;color:var(--warn);box-shadow:var(--sh)}
+  .wish{position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.94);display:grid;place-items:center;color:var(--muted)}
+  .wish:hover{color:var(--save)}
+  .pc .br{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:12px}
+  .pc h3{font-size:14.5px;font-weight:700;letter-spacing:-0.022em;margin-top:5px;line-height:1.32}
+  .rate{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-top:7px}
+  .rate .s{color:#f0a500}
+  .pc .prow{display:flex;align-items:baseline;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .pc .p,.pc .w{white-space:nowrap}
+  .pc .p{font-size:17px;font-weight:800;letter-spacing:-0.03em}
+  .pc .w{font-size:12.5px;color:var(--faint);text-decoration:line-through}
+  .instock{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--go);background:var(--go-bg);padding:3px 8px;border-radius:6px;margin-top:9px;align-self:flex-start}
+  .atc{margin-top:12px;height:42px;border-radius:10px;background:var(--surface);color:var(--ink);font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .pc:hover .atc{background:var(--primary);color:#fff}
+
+  /* value band */
+  .value{background:var(--primary-xl);border:1px solid #e9e1fb;border-radius:var(--r-lg);padding:44px;display:grid;grid-template-columns:1.1fr 1fr;gap:44px;align-items:center}
+  .value ul{list-style:none;margin-top:22px;display:grid;gap:14px}
+  .value li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px}
+  .value li svg{color:var(--primary);flex:none;margin-top:3px}
+  .value li b{font-weight:700}
+  .value li span{color:var(--muted);display:block;font-size:13.5px;margin-top:1px}
+  .nl{background:#fff;border-radius:var(--r);padding:26px;box-shadow:var(--sh)}
+  .nl h3{font-size:19px}
+  .nl p{color:var(--muted);font-size:13.5px;margin-top:8px}
+  .nl form{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .nl input{flex:1;min-width:180px;height:46px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px;font:inherit;font-size:14px;outline:none}
+  .nl input:focus{border-color:var(--primary)}
+  .nl small{display:block;margin-top:11px;color:var(--faint);font-size:11.5px}
+
+  /* footer */
+  footer{background:var(--ink);color:rgba(255,255,255,.66);margin-top:56px;padding:56px 0 30px;font-size:14px}
+  .fg{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:40px}
+  .fg h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:14px}
+  .fg li{list-style:none;margin-bottom:9px}.fg li a:hover{color:#fff}
+  .pay{display:flex;gap:7px;margin-top:16px;flex-wrap:wrap}
+  .pay span{background:rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:600;color:#fff}
+  .fbot{margin-top:44px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-size:12.5px;color:rgba(255,255,255,.44)}
+
+  @media(max-width:1080px){
+    .hgrid{grid-template-columns:1fr}
+    .hside{grid-template-rows:auto;grid-template-columns:1fr 1fr}
+    .circles{grid-template-columns:repeat(3,1fr)}
+    .dgrid{grid-template-columns:repeat(2,1fr)}
+    .pgrid{grid-template-columns:repeat(3,1fr)}
+    .value{grid-template-columns:1fr;padding:30px}
+    .fg{grid-template-columns:1fr 1fr}
+    .trustbar{grid-template-columns:1fr 1fr}
+    .trustbar .c:nth-child(2){border-right:0}
+  }
+  @media(max-width:700px){
+    .srch{display:none}
+    .hside{grid-template-columns:1fr}
+    .pgrid{grid-template-columns:1fr 1fr;gap:12px}
+    .trustbar{grid-template-columns:1fr}
+    .trustbar .c{border-right:0;border-bottom:1px solid var(--line)}
+    .shead{flex-direction:column;align-items:flex-start;gap:14px}
+    .deals{padding:20px}
+    section.blk{padding:44px 0}
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker"><div class="track">
+  <span>&#9889; Price drops live now &mdash; up to 10% off Apple</span><span>&#128666; Free delivery from GH&#8373; 1,000 in Accra</span><span>&#128179; Pay with MoMo, Visa or Mastercard</span><span>&#9989; 12-month warranty on every device</span>
+  <span>&#9889; Price drops live now &mdash; up to 10% off Apple</span><span>&#128666; Free delivery from GH&#8373; 1,000 in Accra</span><span>&#128179; Pay with MoMo, Visa or Mastercard</span><span>&#9989; 12-month warranty on every device</span>
+</div></div>
+
+<header class="site">
+  <div class="wrap hdr">
+    <div class="logo">Geo<span>Store</span></div>
+    <div class="srch">
+      <input placeholder="Search for iPhone, AirPods, Galaxy Watch&hellip;">
+      <button><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search</button>
+    </div>
+    <div class="hicons">
+      <a class="hic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Saved</a>
+      <a class="hic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.66a8 8 0 0 1 10 0"/></svg>Account</a>
+      <a class="hic"><span class="b">2</span><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Cart</a>
+    </div>
+  </div>
+  <nav class="cats"><div class="wrap">
+    <a>Shop all</a><a>Phones</a><a>Audio</a><a>Wearables</a><a>Home tech</a>
+    <span class="sep"></span>
+    <a class="hot">Price drops</a><a>New arrivals</a><a>Under GH&#8373; 3,000</a>
+  </div></nav>
+</header>
+
+<!-- HERO -->
+<section class="hero"><div class="wrap">
+  <div class="hgrid">
+    <div class="hmain">
+      <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1800&q=90" alt="">
+      <div class="veil"></div>
+      <div class="c">
+        <span class="pill">&#9889; Save GH&#8373; 750 this week</span>
+        <h1 class="h1">iPhone 15 Pro, now GH&#8373; 12,900</h1>
+        <p>Titanium build, A17 Pro, 256 GB. Unlocked for Ghanaian networks with a 12-month warranty &mdash; and only 6 left in stock.</p>
+        <div class="acts">
+          <a class="btn btn-white">Shop the deal
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+          <a class="btn" style="border-color:rgba(255,255,255,.28);color:#fff">All phones</a>
+        </div>
+      </div>
+    </div>
+    <div class="hside">
+      <div class="hcard a">
+        <div>
+          <div class="lab" style="color:var(--primary)">Most loved</div>
+          <h3>AirPods Pro</h3>
+          <div class="pr tnum">GH&#8373; 2,350 <span style="color:var(--save);font-size:13px">&minus;10%</span></div>
+        </div>
+        <a class="go">Shop audio <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        <div class="thumb"><img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=500&q=85" alt=""></div>
+      </div>
+      <div class="hcard b">
+        <div>
+          <div class="lab">Just landed</div>
+          <h3>Galaxy S24 Ultra</h3>
+          <div class="pr tnum">GH&#8373; 11,400</div>
+        </div>
+        <a class="go">Shop new <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        <div class="thumb"><img src="https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=500&q=85" alt=""></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trustbar">
+    <div class="c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><div><b>Free delivery over GH&#8373; 1,000</b><p>Same-day in Accra, 2&ndash;4 days nationwide</p></div></div>
+    <div class="c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div><b>MoMo, Visa &amp; Mastercard</b><p>Pay on delivery inside Accra</p></div></div>
+    <div class="c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.95a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><div><b>12-month warranty</b><p>Stated on every single listing</p></div></div>
+    <div class="c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div><b>7-day returns</b><p>Unopened items, no questions</p></div></div>
+  </div>
+</div></section>
+
+<!-- CATEGORY CIRCLES -->
+<section class="blk"><div class="wrap">
+  <div class="shead">
+    <div><div class="eyebrow">Shop by category</div><h2 class="h2">What are you looking for?</h2></div>
+    <a class="btn btn-out btn-sm">View all 8 products</a>
+  </div>
+  <div class="circles">
+    <a class="circ"><div class="im"><img src="https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=500&q=85" alt=""></div><div class="nm">Phones</div><div class="ct tnum">3 products</div></a>
+    <a class="circ"><div class="im"><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=85" alt=""></div><div class="nm">Audio</div><div class="ct tnum">2 products</div></a>
+    <a class="circ"><div class="im"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=85" alt=""></div><div class="nm">Wearables</div><div class="ct tnum">2 products</div></a>
+    <a class="circ"><div class="im"><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=500&q=85" alt=""></div><div class="nm">Home tech</div><div class="ct tnum">1 product</div></a>
+    <a class="circ"><div class="im"><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=500&q=85" alt=""></div><div class="nm">Speakers</div><div class="ct tnum">1 product</div></a>
+    <a class="circ"><div class="im"><img src="https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=500&q=85" alt=""></div><div class="nm">Watches</div><div class="ct tnum">2 products</div></a>
+  </div>
+</div></section>
+
+<!-- DEALS -->
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="deals">
+    <div class="deals-top">
+      <div>
+        <div class="eyebrow" style="color:#c9a6ff">Price drops</div>
+        <h2 class="h2" style="color:#fff;margin-top:8px">Deals ending this week</h2>
+      </div>
+      <div class="clock">Ends in <span class="u">02</span>d <span class="u">14</span>h <span class="u">06</span>m</div>
+    </div>
+    <div class="dgrid">
+      <a class="dcard">
+        <div class="im"><span class="off">&minus;6%</span><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=700&q=85" alt=""></div>
+        <h3>iPhone 15 Pro</h3>
+        <div class="row"><span class="p tnum">GH&#8373; 12,900</span><span class="w tnum">GH&#8373; 13,650</span></div>
+        <span class="save tnum">You save GH&#8373; 750</span>
+        <div class="bar"><i style="width:62%"></i></div><div class="left tnum">6 of 16 left</div>
+      </a>
+      <a class="dcard">
+        <div class="im"><span class="off">&minus;10%</span><img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=700&q=85" alt=""></div>
+        <h3>AirPods Pro (2nd gen)</h3>
+        <div class="row"><span class="p tnum">GH&#8373; 2,350</span><span class="w tnum">GH&#8373; 2,600</span></div>
+        <span class="save tnum">You save GH&#8373; 250</span>
+        <div class="bar"><i style="width:44%"></i></div><div class="left tnum">14 of 32 left</div>
+      </a>
+      <a class="dcard">
+        <div class="im"><span class="off">Low stock</span><img src="https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=700&q=85" alt=""></div>
+        <h3>Galaxy S24 Ultra</h3>
+        <div class="row"><span class="p tnum">GH&#8373; 11,400</span></div>
+        <span class="save tnum">Free delivery included</span>
+        <div class="bar"><i style="width:80%"></i></div><div class="left tnum">4 of 20 left</div>
+      </a>
+      <a class="dcard">
+        <div class="im"><span class="off">Low stock</span><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=700&q=85" alt=""></div>
+        <h3>Samsung 55&#8243; Crystal UHD</h3>
+        <div class="row"><span class="p tnum">GH&#8373; 4,700</span></div>
+        <span class="save tnum">Free Accra delivery</span>
+        <div class="bar"><i style="width:85%"></i></div><div class="left tnum">3 of 20 left</div>
+      </a>
+    </div>
+  </div>
+</div></section>
+
+<!-- GRID -->
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="shead">
+    <div>
+      <div class="eyebrow">Customer favourites</div>
+      <h2 class="h2">Everything in stock right now</h2>
+      <p class="d tnum">8 products &middot; prices in Ghana cedis &middot; updated today</p>
+    </div>
+  </div>
+
+  <div class="filters">
+    <span class="chip on">All</span><span class="chip">Apple</span><span class="chip">Samsung</span><span class="chip">Google</span><span class="chip">JBL</span>
+    <span class="chip">Under GH&#8373; 3,000</span><span class="chip">In stock</span>
+    <span class="sp">Sort by</span>
+    <select><option>Featured</option><option>Top rated</option><option>Price: low to high</option><option>Price: high to low</option></select>
+  </div>
+
+  <div class="pgrid">
+    <!-- 1 -->
+    <a class="pc"><div class="im"><div class="tags"><span class="t off">&minus;6%</span></div><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Apple</div><h3>iPhone 15 Pro</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.8</span> (34)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 12,900</span><span class="w tnum">GH&#8373; 13,650</span></div>
+      <span class="instock tnum">&#9679; 6 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 2 -->
+    <a class="pc"><div class="im"><div class="tags"><span class="t new">New</span><span class="t stock">Only 4 left</span></div><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Samsung</div><h3>Galaxy S24 Ultra</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.7</span> (27)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 11,400</span></div>
+      <span class="instock tnum">&#9679; 4 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 3 -->
+    <a class="pc"><div class="im"><div class="tags"><span class="t off">&minus;10%</span></div><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Apple</div><h3>AirPods Pro (2nd generation)</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.9</span> (52)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 2,350</span><span class="w tnum">GH&#8373; 2,600</span></div>
+      <span class="instock tnum">&#9679; 14 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 4 -->
+    <a class="pc"><div class="im"><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Apple</div><h3>Apple Watch Series 9</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.7</span> (16)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 4,750</span></div>
+      <span class="instock tnum">&#9679; 5 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 5 -->
+    <a class="pc"><div class="im"><div class="tags"><span class="t new">New</span></div><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Google</div><h3>Google Pixel 8a</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.5</span> (18)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 6,250</span></div>
+      <span class="instock tnum">&#9679; 8 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 6 -->
+    <a class="pc"><div class="im"><div class="tags"><span class="t stock">Only 3 left</span></div><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Samsung</div><h3>Samsung 55&#8243; Crystal UHD TV</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.5</span> (9)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 4,700</span></div>
+      <span class="instock tnum">&#9679; 3 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 7 -->
+    <a class="pc"><div class="im"><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">JBL</div><h3>JBL Charge 5</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.6</span> (21)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 1,450</span></div>
+      <span class="instock tnum">&#9679; 9 in stock</span>
+      <div class="atc">Add to cart</div></a>
+    <!-- 8 -->
+    <a class="pc"><div class="im"><span class="wish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="br">Samsung</div><h3>Galaxy Watch6</h3>
+      <span class="rate"><span class="s">&#9733;</span><span class="tnum">4.4</span> (12)</span>
+      <div class="prow"><span class="p tnum">GH&#8373; 2,850</span></div>
+      <span class="instock tnum">&#9679; 7 in stock</span>
+      <div class="atc">Add to cart</div></a>
+  </div>
+</div></section>
+
+<!-- VALUE + NEWSLETTER -->
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="value">
+    <div>
+      <div class="eyebrow">Why shop with GeoStore</div>
+      <h2 class="h2" style="margin-top:9px">Buying tech shouldn&rsquo;t feel risky.</h2>
+      <ul>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>No hidden delivery fees.</b><span>Your exact delivery cost appears before you pay, not after.</span></div></li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Condition stated on every listing.</b><span>Storage, warranty length and stock count, up front.</span></div></li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Someone answers afterwards.</b><span>Warranty claims and setup help handled from Accra.</span></div></li>
+      </ul>
+    </div>
+    <div class="nl">
+      <h3 class="jak">Get price drops first</h3>
+      <p>One email a week, only when something you&rsquo;re watching actually drops in price. No spam.</p>
+      <form onsubmit="return false">
+        <input type="email" placeholder="your@email.com">
+        <button class="btn btn-primary" style="height:46px">Notify me</button>
+      </form>
+      <small>Unsubscribe any time. We never share your details.</small>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fg">
+    <div>
+      <div class="logo" style="color:#fff;font-size:20px">Geo<span style="color:#a97cf0">Store</span></div>
+      <p style="margin-top:12px;max-width:34ch;line-height:1.65">Phones, audio, wearables and home tech, delivered across Ghana with warranty you can actually claim.</p>
+      <div class="pay"><span>MTN MoMo</span><span>Telecel Cash</span><span>Visa</span><span>Mastercard</span><span>Pay on delivery</span></div>
+    </div>
+    <div><h4>Shop</h4><ul><li><a>Phones</a></li><li><a>Audio</a></li><li><a>Wearables</a></li><li><a>Home tech</a></li><li><a>Price drops</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a>Delivery &amp; fees</a></li><li><a>Returns</a></li><li><a>Warranty claims</a></li><li><a>Track your order</a></li><li><a>Contact us</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a>About GeoStore</a></li><li><a>Privacy policy</a></li><li><a>Terms of sale</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>&copy; 2026 GeoStore Ghana. All rights reserved.</span><span>Accra, Ghana &middot; support@geostoresgh.com</span></div>
+</div></footer>
+
+</body></html>

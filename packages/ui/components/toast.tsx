@@ -265,13 +265,13 @@ const toastPromise = <T,>(
 };
 
 export {
+	dismiss,
 	Toaster,
 	toast,
-	toastSuccess,
 	toastError,
 	toastInfo,
-	toastWarning,
 	toastLoading,
 	toastPromise,
-	dismiss,
+	toastSuccess,
+	toastWarning,
 };

@@ -1,8 +1,8 @@
 import { Button } from "@repo/ui/components/button";
 import { AppWrapper } from "@shared/components/AppWrapper";
+import { getTranslations } from "@shared/lib/translations";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
-import { getTranslations } from "@shared/lib/translations";
 
 export default async function NotFoundPage() {
 	const t = await getTranslations("notFound");

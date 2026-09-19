@@ -1,4 +1,4 @@
-import { formatMoney } from "@commerce/lib/money";
+import { formatMoney } from "@repo/commerce";
 import { getAdminStoreOrders } from "@repo/database";
 import { Badge } from "@repo/ui/components/badge";
 import {

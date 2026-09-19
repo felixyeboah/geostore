@@ -1,5 +1,5 @@
 import { ProductRowActions } from "@admin/components/products/ProductRowActions";
-import { formatMoney } from "@commerce/lib/money";
+import { formatMoney } from "@repo/commerce";
 import { getAdminStoreProducts } from "@repo/database";
 import { Button } from "@repo/ui/components/button";
 import {

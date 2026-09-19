@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Overview — Design Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Inter", system-ui, sans-serif; background: #14141a; color: #f5f5f5; padding: 34px 30px 60px; }
+  .wrap { max-width: 1500px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; }
+  .sub { color: #9b9ba4; font-size: 13px; margin-top: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 28px; align-items: start; }
+  .card { display: flex; flex-direction: column; gap: 12px; }
+  .shot {
+    display: block; border-radius: 12px; overflow: hidden; border: 1px solid #2e2e38;
+    transition: border-color .15s;
+  }
+  .shot:hover { border-color: #8343e6; }
+  .shot img { display: block; width: 100%; height: auto; }
+  .card h2 { font-size: 15px; font-weight: 700; }
+  .card h2 span { color: #a78bfa; font-weight: 500; }
+  .card p { font-size: 12.5px; color: #9b9ba4; line-height: 1.55; }
+  .tag { display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#a78bfa; background:rgba(131,67,230,.16); border-radius:999px; padding:3px 10px; margin-bottom:5px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Admin overview — pick a direction</h1>
+  <p class="sub">Three full-page mockups for the Geostoresgh admin landing page. Click any preview to open it full size.</p>
+  <div class="grid">
+    <div class="card">
+      <a class="shot" href="option-a.html"><img src="option-a.png" alt="Option A — Operational clean" /></a>
+      <div><span class="tag">Option A</span><h2>Operational clean <span>— Shopify / Squarespace style</span></h2>
+      <p>Metric cards with sparklines and period deltas up top, then a dense recent-orders table with payment + fulfilment status pills. Inventory watch, quick actions and an activity feed on the right rail. The most "get work done" layout — data-dense but quiet.</p></div>
+    </div>
+    <div class="card">
+      <a class="shot" href="option-b.html"><img src="option-b.png" alt="Option B — Analytics-forward" /></a>
+      <div><span class="tag">Option B</span><h2>Analytics-forward <span>— Wix / Stripe style</span></h2>
+      <p>Big revenue chart hero with a period selector and previous-period comparison, fulfilment donut, icon stat tiles, top-products ranking and a compact latest-orders feed. Best if the overview's job is reporting performance, not daily ops.</p></div>
+    </div>
+    <div class="card">
+      <a class="shot" href="option-c.html"><img src="option-c.png" alt="Option C — Command center" /></a>
+      <div><span class="tag">Option C</span><h2>Command center <span>— Etsy / Teachable style</span></h2>
+      <p>Personal greeting, then three "needs your attention" task cards (unfulfilled orders, low stock, pending payments) that route the admin straight into work. Stats strip, avatar-based order list, stock-level bars and a setup checklist on the rail. The most guided, action-first option.</p></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

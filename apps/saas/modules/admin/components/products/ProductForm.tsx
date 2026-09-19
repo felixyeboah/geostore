@@ -382,6 +382,175 @@ export function ProductForm({
 								/>
 							</div>
 						</section>
+
+						<section className="rounded-2xl border bg-card p-5">
+							<div className="flex items-center justify-between gap-3">
+								<h2 className="font-semibold text-lg">
+									Variants
+								</h2>
+								<Button
+									type="button"
+									variant="secondary"
+									size="sm"
+									onClick={() =>
+										form.setValue("variants", [
+											...form.getValues("variants"),
+											{
+												name: "",
+												sku: "",
+												priceInPesewas:
+													form.getValues(
+														"priceInPesewas",
+													) || 100,
+												stockQuantity: 0,
+												attributes: {},
+												isActive: true,
+											},
+										])
+									}
+								>
+									Add option
+								</Button>
+							</div>
+							<p className="mt-2 text-muted-foreground text-sm">
+								Use variants for storage, colour, or size. Leave
+								empty to sell the product as a single SKU.
+							</p>
+							<div className="mt-5 space-y-4">
+								{form
+									.watch("variants")
+									.map((variant, index) => (
+										<div
+											key={variant.id ?? `new-${index}`}
+											className="grid gap-3 rounded-xl bg-muted/45 p-4 sm:grid-cols-2"
+										>
+											<FormField
+												control={form.control}
+												name={`variants.${index}.name`}
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>
+															Name
+														</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="256 GB"
+																{...field}
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name={`variants.${index}.sku`}
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>
+															SKU
+														</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name={`variants.${index}.priceInPesewas`}
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>
+															Price (GH₵)
+														</FormLabel>
+														<FormControl>
+															<Input
+																type="number"
+																min="0"
+																step="0.01"
+																value={
+																	field.value /
+																	100
+																}
+																onChange={(
+																	event,
+																) =>
+																	field.onChange(
+																		Math.round(
+																			Number(
+																				event
+																					.target
+																					.value,
+																			) *
+																				100,
+																		),
+																	)
+																}
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name={`variants.${index}.stockQuantity`}
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>
+															Stock
+														</FormLabel>
+														<FormControl>
+															<Input
+																type="number"
+																min="0"
+																{...field}
+																onChange={(
+																	event,
+																) =>
+																	field.onChange(
+																		Number(
+																			event
+																				.target
+																				.value,
+																		),
+																	)
+																}
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<button
+												type="button"
+												className="text-left text-destructive text-sm sm:col-span-2"
+												onClick={() =>
+													form.setValue(
+														"variants",
+														form
+															.getValues(
+																"variants",
+															)
+															.filter(
+																(
+																	_,
+																	itemIndex,
+																) =>
+																	itemIndex !==
+																	index,
+															),
+													)
+												}
+											>
+												Remove option
+											</button>
+										</div>
+									))}
+							</div>
+						</section>
 					</div>
 
 					<aside className="space-y-6 xl:sticky xl:top-6">

@@ -23,6 +23,7 @@ import {
 } from "@repo/ui/components/table";
 import { toastPromise } from "@repo/ui/components/toast";
 import { UserAvatar } from "@shared/components/UserAvatar";
+import { useTranslations } from "@shared/lib/translations";
 import { useQueryClient } from "@tanstack/react-query";
 import type {
 	ColumnDef,
@@ -38,7 +39,6 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { LogOutIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 import { useState } from "react";
 import { OrganizationRoleSelect } from "./OrganizationRoleSelect";
 

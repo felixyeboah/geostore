@@ -61,7 +61,7 @@ const SheetContent = ({
 	<SheetPortal>
 		<SheetOverlay />
 		<SheetPrimitive.Content
-			className={sheetVariants({ side, className })}
+			className={cn(sheetVariants({ side }), className)}
 			{...props}
 		>
 			{children}

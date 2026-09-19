@@ -28,11 +28,12 @@ catalog:
   '@types/node': 25.5.0
   '@types/nodemailer': ^7.0.11
   '@types/nprogress': ^0.2.3
+  '@types/pg': ^8.11.10
   '@types/react': 19.2.14
   '@types/react-dom': 19.2.3
   '@types/uuid': ^11.0.0
   autoprefixer: 10.4.27
-  better-auth: 1.5.5
+  better-auth: 1.6.33
   boring-avatars: ^2.0.4
   class-variance-authority: ^0.7.1
   clsx: ^2.1.1
@@ -52,7 +53,7 @@ catalog:
   mdx: ^0.3.1
   mdx-bundler: ^10.1.1
   nanoid: ^5.1.7
-  next: ^16.2.0
+  next: ^16.3.5
   next-themes: ^0.4.6
   nprogress: ^0.2.0
   nuqs: ^2.8.9
@@ -82,4 +83,18 @@ catalog:
   ufo: ^1.6.3
   usehooks-ts: ^3.1.1
   uuid: ^13.0.0
-  zod: ^4.3.6
+  zod: ^4.6.5
+
+# A second copy of zod makes `zodResolver` see two different `ZodType`
+# identities and stop matching its own overloads. Everything must share one.
+overrides:
+  zod: ^4.6.5
+  # @aws-sdk/client-s3 is pinned to an old release that drags in a
+  # fast-xml-parser with an entity-encoding bypass (GHSA-m7jm-9gc2-mpf2).
+  # Same major, so the parser API is unchanged; this patches it without a
+  # seven-hundred-version jump of the AWS SDK.
+  fast-xml-parser: ^4.5.4
+  # @react-email/preview-server pins a Next with two unauthenticated RCE
+  # advisories (GHSA-p293-qw3h-jr36, GHSA-2xp9-vwfh-vxw4). The preview tool is
+  # local-only, but this converges it on the version the real apps already run.
+  next: ^16.3.5

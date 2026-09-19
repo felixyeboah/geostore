@@ -12,6 +12,7 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui";
 import { UserAvatar } from "@shared/components/UserAvatar";
+import { useTranslations } from "@shared/lib/translations";
 import {
 	BookIcon,
 	HomeIcon,
@@ -20,7 +21,6 @@ import {
 	SettingsIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useTranslations } from "@shared/lib/translations";
 import { ColorModeToggle } from "./ColorModeToggle";
 
 export function UserMenu({ showUserName }: { showUserName?: boolean }) {

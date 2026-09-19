@@ -1,10 +1,16 @@
-type TranslationParams = Record<string, string | number | boolean | null | undefined>;
+type TranslationParams = Record<
+	string,
+	string | number | boolean | null | undefined
+>;
 type MarkupParams = Record<
 	string,
 	string | number | boolean | null | undefined | ((chunks: string) => string)
 >;
 
-function resolveMessage(messages: Record<string, unknown>, path: string): string {
+function resolveMessage(
+	messages: Record<string, unknown>,
+	path: string,
+): string {
 	const value = path.split(".").reduce<unknown>((current, key) => {
 		if (current && typeof current === "object" && key in current) {
 			return (current as Record<string, unknown>)[key];
@@ -16,7 +22,10 @@ function resolveMessage(messages: Record<string, unknown>, path: string): string
 	return typeof value === "string" ? value : path;
 }
 
-function interpolate(message: string, params?: TranslationParams | MarkupParams) {
+function interpolate(
+	message: string,
+	params?: TranslationParams | MarkupParams,
+) {
 	if (!params) {
 		return message;
 	}
@@ -36,10 +45,7 @@ export function createTranslator({
 	const t = ((path: string, params?: TranslationParams) =>
 		interpolate(resolveMessage(messages, path), params)) as {
 		(path: string, params?: TranslationParams): string;
-		markup: (
-			path: string,
-			params?: MarkupParams,
-		) => string;
+		markup: (path: string, params?: MarkupParams) => string;
 	};
 
 	t.markup = (path, params) => {

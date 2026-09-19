@@ -15,11 +15,17 @@ export function LoginModeSwitch({
 	const t = useTranslations();
 	return (
 		<Tabs value={activeMode} onValueChange={onChange} className={className}>
-			<TabsList className="w-full">
-				<TabsTrigger value="password" className="flex-1">
+			<TabsList className="grid h-11 w-full grid-cols-2 rounded-[2px] border border-border bg-transparent p-1">
+				<TabsTrigger
+					value="password"
+					className="h-9 rounded-[2px] border-0 px-4 font-medium text-[13px] data-[state=active]:border-0 data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none"
+				>
 					{t("auth.login.modes.password")}
 				</TabsTrigger>
-				<TabsTrigger value="magic-link" className="flex-1">
+				<TabsTrigger
+					value="magic-link"
+					className="h-9 rounded-[2px] border-0 px-4 font-medium text-[13px] data-[state=active]:border-0 data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none"
+				>
 					{t("auth.login.modes.magicLink")}
 				</TabsTrigger>
 			</TabsList>

@@ -5,10 +5,10 @@ import { useActiveOrganization } from "@organizations/hooks/use-active-organizat
 import { useOrganizationListQuery } from "@organizations/lib/api";
 import { config } from "@repo/auth/config";
 import { Card } from "@repo/ui/components/card";
+import { useTranslations } from "@shared/lib/translations";
 import { ChevronRightIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "@shared/lib/translations";
 
 export function OrganizationsGrid() {
 	const t = useTranslations();

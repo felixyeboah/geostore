@@ -1,5 +1,10 @@
 import { PostListItem } from "@blog/components/PostListItem";
 import { getAllPosts } from "@blog/lib/posts";
+import {
+	EditorialContainer,
+	EditorialHeader,
+	EditorialShell,
+} from "@shared/components/EditorialPage";
 import { getTranslations } from "@shared/lib/translations";
 
 export async function generateMetadata() {
@@ -14,17 +19,21 @@ export default async function BlogListPage() {
 	const posts = await getAllPosts();
 
 	return (
-		<div className="container max-w-6xl py-16">
-			<div className="mb-12 pt-8 text-center">
-				<h1 className="mb-2 font-bold text-5xl">{t("title")}</h1>
-				<p className="text-lg opacity-50">{t("description")}</p>
-			</div>
+		<EditorialShell>
+			<EditorialContainer className="py-16 lg:py-24">
+				<EditorialHeader
+					eyebrow="Journal"
+					title={t("title")}
+					subtitle={t("description")}
+					aside={`${String(posts.length).padStart(2, "0")} — ${posts.length === 1 ? "post" : "posts"}`}
+				/>
 
-			<div className="grid gap-8 md:grid-cols-2">
-				{posts.map((post) => (
-					<PostListItem post={post} key={post.path} />
-				))}
-			</div>
-		</div>
+				<div className="mt-14 grid gap-x-10 gap-y-14 border-foreground border-t pt-12 md:grid-cols-2 lg:grid-cols-3">
+					{posts.map((post) => (
+						<PostListItem post={post} key={post.path} />
+					))}
+				</div>
+			</EditorialContainer>
+		</EditorialShell>
 	);
 }

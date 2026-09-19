@@ -20,10 +20,10 @@ import {
 import { Input } from "@repo/ui/components/input";
 import { passwordSchema } from "@repo/utils";
 import { PasswordInput } from "@shared/components/PasswordInput";
+import { useTranslations } from "@shared/lib/translations";
 import { AlertTriangleIcon, ArrowRightIcon, MailboxIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "@shared/lib/translations";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
@@ -32,6 +32,13 @@ import {
 	type OAuthProvider,
 	oAuthProviders,
 } from "../constants/oauth-providers";
+import {
+	AUTH_BUTTON,
+	AUTH_BUTTON_QUIET,
+	AUTH_FIELD,
+	AUTH_LABEL,
+	AuthDivider,
+} from "./AuthShell";
 import { SocialSigninButton } from "./SocialSigninButton";
 
 const formSchema = z.object({
@@ -116,10 +123,13 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 	return (
 		<div>
-			<h1 className="font-bold text-xl md:text-2xl">
+			<p className="eyebrow mb-4 text-muted-foreground">
+				{t("auth.login.customerAccount")}
+			</p>
+			<h1 className="max-w-[16ch] font-semibold text-[clamp(28px,3vw,40px)] text-foreground leading-[1.05] tracking-[-0.042em]">
 				{t("auth.signup.title")}
 			</h1>
-			<p className="mt-1 mb-6 text-foreground/60">
+			<p className="mt-4 mb-9 max-w-[44ch] text-[14.5px] text-muted-foreground leading-[1.6]">
 				{t("auth.signup.message")}
 			</p>
 
@@ -138,7 +148,10 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 					<Form {...form}>
 						<form
-							className="flex flex-col items-stretch gap-4"
+							// Keeps a pre-hydration submit from putting the chosen
+							// password in the URL. See LoginForm.
+							method="post"
+							className="flex flex-col items-stretch gap-6"
 							onSubmit={onSubmit}
 						>
 							{form.formState.isSubmitted &&
@@ -156,11 +169,14 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>
+										<FormLabel className={AUTH_LABEL}>
 											{t("auth.signup.name")}
 										</FormLabel>
 										<FormControl>
-											<Input {...field} />
+											<Input
+												className={AUTH_FIELD}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -172,11 +188,12 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 								name="email"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>
+										<FormLabel className={AUTH_LABEL}>
 											{t("auth.signup.email")}
 										</FormLabel>
 										<FormControl>
 											<Input
+												className={AUTH_FIELD}
 												{...field}
 												autoComplete="email"
 												readOnly={!!prefillEmail}
@@ -193,11 +210,12 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 									name="password"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
+											<FormLabel className={AUTH_LABEL}>
 												{t("auth.signup.password")}
 											</FormLabel>
 											<FormControl>
 												<PasswordInput
+													inputClassName={AUTH_FIELD}
 													autoComplete="new-password"
 													showGenerateButton
 													showPasswordCriteria
@@ -211,6 +229,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 							)}
 
 							<Button
+								className={AUTH_BUTTON}
 								variant="primary"
 								loading={form.formState.isSubmitting}
 							>
@@ -222,18 +241,16 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 					{authConfig.enableSignup &&
 						authConfig.enableSocialLogin && (
 							<>
-								<div className="relative my-6 h-4">
-									<hr className="relative top-2" />
-									<p className="-translate-x-1/2 absolute top-0 left-1/2 mx-auto inline-block h-4 bg-card px-2 text-center font-medium text-foreground/60 text-sm leading-tight">
-										{t("auth.login.continueWith")}
-									</p>
-								</div>
+								<AuthDivider
+									label={t("auth.login.continueWith")}
+								/>
 
-								<div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
+								<div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2">
 									{Object.keys(oAuthProviders).map(
 										(providerId) => (
 											<SocialSigninButton
 												key={providerId}
+												className={AUTH_BUTTON_QUIET}
 												provider={
 													providerId as OAuthProvider
 												}
@@ -246,7 +263,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 				</>
 			)}
 
-			<div className="mt-6 text-center text-sm">
+			<div className="mt-9 border-border border-t pt-6 text-[13.5px] text-muted-foreground">
 				<span className="text-foreground/60">
 					{t("auth.signup.alreadyHaveAccount")}{" "}
 				</span>

@@ -23,6 +23,7 @@ import { toastPromise } from "@repo/ui/components/toast";
 import { useConfirmationAlert } from "@shared/components/ConfirmationAlertProvider";
 import { Pagination } from "@shared/components/Pagination";
 import { orpc } from "@shared/lib/orpc-query-utils";
+import { useTranslations } from "@shared/lib/translations";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -33,7 +34,6 @@ import {
 } from "@tanstack/react-table";
 import { EditIcon, MoreVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
-import { useTranslations } from "@shared/lib/translations";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo, useRef } from "react";
 import { withQuery } from "ufo";

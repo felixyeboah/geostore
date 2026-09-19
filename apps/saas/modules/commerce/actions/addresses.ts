@@ -1,7 +1,12 @@
 "use server";
 
 import { getSession } from "@auth/lib/server";
-import { deleteUserStoreAddress, saveUserStoreAddress } from "@repo/database";
+import { toStoreErrorMessage } from "@repo/commerce/action-errors";
+import {
+	deleteUserStoreAddress,
+	StoreOperationError,
+	saveUserStoreAddress,
+} from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -23,7 +28,7 @@ export type AddressActionInput = z.infer<typeof addressSchema>;
 async function getUserId() {
 	const session = await getSession();
 	if (!session) {
-		throw new Error("Sign in to manage delivery addresses.");
+		throw new StoreOperationError("Sign in to manage delivery addresses.");
 	}
 	return session.user.id;
 }
@@ -37,10 +42,7 @@ export async function saveAddressAction(input: AddressActionInput) {
 	} catch (error) {
 		return {
 			success: false,
-			message:
-				error instanceof Error
-					? error.message
-					: "Could not save address.",
+			message: toStoreErrorMessage(error, "Could not save address."),
 		};
 	}
 }
@@ -54,10 +56,7 @@ export async function deleteAddressAction(id: string) {
 	} catch (error) {
 		return {
 			success: false,
-			message:
-				error instanceof Error
-					? error.message
-					: "Could not remove address.",
+			message: toStoreErrorMessage(error, "Could not remove address."),
 		};
 	}
 }

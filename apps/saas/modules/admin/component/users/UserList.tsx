@@ -22,6 +22,7 @@ import { useConfirmationAlert } from "@shared/components/ConfirmationAlertProvid
 import { Pagination } from "@shared/components/Pagination";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import { orpc } from "@shared/lib/orpc-query-utils";
+import { useTranslations } from "@shared/lib/translations";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -38,7 +39,6 @@ import {
 	SquareUserRoundIcon,
 	TrashIcon,
 } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
 import { useDebounceValue } from "usehooks-ts";

@@ -234,6 +234,9 @@ enum StorePaymentStatus {
 
 enum StorePaymentMethod {
   MOCK
+  // The shopper chose "pay online"; the channel (mobile money or card) is
+  // picked on the provider's own page, so we do not pin one here.
+  ONLINE
   CARD
   MOBILE_MONEY
   CASH_ON_DELIVERY
@@ -266,6 +269,40 @@ model Category {
   @@map("store_category")
 }
 
+/// A cross-department merchandising grouping: "what do I want to do",
+/// as opposed to Category, which answers "what kind of thing is it".
+/// A product sits in exactly one Category but any number of Collections.
+model Collection {
+  id          String              @id @default(cuid())
+  name        String
+  slug        String              @unique
+  description String?
+  imageUrl    String?
+  isActive    Boolean             @default(true)
+  /// Surface this collection in the landing page "shop by need" rail.
+  onLanding   Boolean             @default(false)
+  sortOrder   Int                 @default(0)
+  products    ProductCollection[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("store_collection")
+}
+
+model ProductCollection {
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+
+  @@id([productId, collectionId])
+  @@index([collectionId, sortOrder])
+  @@map("store_product_collection")
+}
+
 model Product {
   id                   String           @id @default(cuid())
   name                 String
@@ -280,9 +317,11 @@ model Product {
   stockQuantity        Int              @default(0)
   lowStockThreshold    Int              @default(5)
   isFeatured           Boolean          @default(false)
+  unitsSold            Int              @default(0)
   specifications       Json?
   categoryId           String
   category             Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  collections          ProductCollection[]
   images               ProductImage[]
   variants             ProductVariant[]
   orderItems           OrderItem[]
@@ -295,6 +334,8 @@ model Product {
   @@index([categoryId, status])
   @@index([brand, status])
   @@index([isFeatured, status])
+  @@index([status, unitsSold])
+  @@index([status, publishedAt])
   @@map("store_product")
 }
 
@@ -355,6 +396,9 @@ model Address {
 model Order {
   id                         String                 @id @default(cuid())
   orderNumber                String                 @unique
+  // Set by the checkout form so a retried or double-submitted request returns
+  // the order it already created instead of charging and restocking twice.
+  idempotencyKey             String?                @unique
   userId                     String?
   user                       User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   status                     OrderStatus            @default(PENDING)
@@ -426,23 +470,34 @@ model Review {
 }
 
 model StoreTransaction {
-  id              String             @id @default(cuid())
-  orderId         String
-  order           Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  reference       String             @unique
-  provider        String
-  paymentMethod   StorePaymentMethod
-  status          StorePaymentStatus @default(PENDING)
-  amountInPesewas Int
-  currency        String             @default("GHS")
-  providerPayload Json?
-  processedAt     DateTime?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id                String             @id @default(cuid())
+  orderId           String
+  order             Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  reference         String             @unique
+  provider          String
+  paymentMethod     StorePaymentMethod
+  status            StorePaymentStatus @default(PENDING)
+  amountInPesewas   Int
+  currency          String             @default("GHS")
+  providerPaymentId String?
+  providerPayload   Json?
+  processedAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@index([orderId, createdAt])
   @@index([status, createdAt])
+  @@index([providerPaymentId])
   @@map("store_transaction")
+}
+
+model WebhookEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+  payload     Json?
+
+  @@map("store_webhook_event")
 }
 
 model OrderStatusEvent {
@@ -476,4 +531,23 @@ model InventoryEvent {
   @@index([variantId, createdAt])
   @@index([orderItemId])
   @@map("store_inventory_event")
+}
+
+/// Better Auth's rate-limit counters.
+///
+/// The default "memory" storage keeps a Map per process, which on Workers means
+/// a counter per isolate: the effective limit becomes the configured max times
+/// however many isolates happen to be warm, and it resets whenever one is
+/// evicted. Database storage is the only shared counter available to us without
+/// adding Redis.
+///
+/// `lastRequest` is epoch milliseconds, stored as BigInt because it exceeds the
+/// range of a 32-bit Int.
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
 }

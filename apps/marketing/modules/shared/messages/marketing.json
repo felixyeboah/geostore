@@ -1,7 +1,7 @@
 {
 	"blog": {
-		"description": "Read the latest news from our company",
-		"title": "My awesome blog",
+		"description": "New stock, buying guides and what’s landed in store.",
+		"title": "The GeoStores blog",
 		"back": "Back to blog"
 	},
 	"changelog": {
@@ -9,14 +9,14 @@
 		"title": "Changelog"
 	},
 	"contact": {
-		"description": "We are here to help you. Please use the form below to get in touch with us.",
+		"description": "Tell us what you’re after and we’ll come back with the model and the price.",
 		"form": {
 			"email": "Email",
 			"message": "Message",
 			"name": "Name",
 			"notifications": {
-				"error": "We are sorry, but we were unable to send your message. Please try again later.",
-				"success": "Your message has been sent successfully. We will get back to you as soon as possible."
+				"error": "We couldn’t send your message. Please try again.",
+				"success": "Message sent. We’ll get back to you shortly."
 			},
 			"submit": "Send message"
 		},
@@ -26,92 +26,277 @@
 		"title": "Documentation"
 	},
 	"faq": {
-		"description": "Do you have any questions? We have got you covered.",
+		"description": "The questions we get asked most.",
 		"title": "Frequently asked questions",
 		"items": {
-			"refundPolicy": {
-				"question": "What is the refund policy?",
-				"answer": "We offer a 30-day money-back guarantee if you're not happy with our product."
+			"howToPay": {
+				"question": "How do I pay?",
+				"answer": "Pay with mobile money or card through Reevit, or choose cash on delivery."
 			},
-			"cancelSubscription": {
-				"question": "How do I cancel my subscription?",
-				"answer": "You can cancel your subscription by visiting the billing page."
+			"delivery": {
+				"question": "Do you deliver outside Accra?",
+				"answer": "Yes. We deliver across Ghana. Timing depends on destination and stock."
 			},
-			"changePlan": {
-				"question": "Can I change my plan?",
-				"answer": "Yes, you can change your plan at any time by visiting the billing page."
+			"returns": {
+				"question": "Can I return a device?",
+				"answer": "Contact support within 48 hours if an item arrives damaged, faulty, or different from the listing. Warranty details are on each product page."
 			},
-			"freeTrial": {
-				"question": "Do you offer a free trial?",
-				"answer": "Yes, we offer a 14-day free trial."
+			"paymentsLive": {
+				"question": "When am I charged?",
+				"answer": "Card and mobile money payments are taken only after you approve the prompt. Cash on delivery is collected when the order arrives."
 			}
 		}
 	},
 	"home": {
 		"hero": {
-			"title": "Find your next <gradient>gadget</gradient> in seconds.",
-			"subtitle": "Search thousands of phones, audio devices, wearables, and home tech — all in stock, all in Ghana.",
-			"search": {
-				"placeholder": "Search phones, AirPods, TVs, watches…",
-				"label": "Search products",
-				"submit": "Search",
-				"popular": "Popular:"
-			},
-			"popularQueries": {
-				"iphone": "iPhone 15",
-				"airpodsPro": "AirPods Pro",
-				"galaxyWatch": "Galaxy Watch",
-				"smartTv": "Smart TV"
-			},
-			"categories": {
-				"phones": "Phones",
-				"airpods": "AirPods",
-				"tvs": "TVs",
-				"watches": "Watches"
-			},
-			"categoriesCount": {
-				"phones": "320+ models",
-				"airpods": "45+ models",
-				"tvs": "80+ models",
-				"watches": "120+ models"
+			"eyebrow": "Electronics, delivered across Ghana",
+			"titleLine1": "Tech for",
+			"titleLine2": "every part",
+			"titleLine3": "of",
+			"titleAccent": "your life.",
+			"subtitle1": "Phones, computers, gaming and home appliances.",
+			"subtitle2": "Delivered anywhere in Ghana.",
+			"primaryCta": "Shop all products",
+			"secondaryCta": "Ask about a product",
+			"tagline": ["Phones.", "Computers.", "Appliances."],
+			"card": {
+				"eyebrow": "Folds flat into a drawing board.",
+				"spotlight": "In the spotlight",
+				"product": "Surface Laptop Studio 2"
 			}
 		},
-		"features": {
-			"badge": "Why shop with us",
-			"title": "Tech shopping that feels simple",
-			"description": "Discover phones, accessories, and everyday electronics with a modern store experience designed for Ghana.",
-			"feature1": {
-				"title": "Curated gadgets",
-				"subtitle": "Find phones, accessories, and tech essentials faster.",
-				"description": "A focused catalog helps customers compare useful tech without digging through clutter.",
-				"benefit1": {
-					"title": "Benefit 1",
-					"description": "This is an awesome benefit. And below you can see some reasons why. This is basically just a dummy text."
-				},
-				"benefit2": {
-					"title": "Benefit 2",
-					"description": "This is an awesome benefit. And below you can see some reasons why. This is basically just a dummy text."
-				},
-				"benefit3": {
-					"title": "Benefit 3",
-					"description": "This is an awesome benefit. And below you can see some reasons why. This is basically just a dummy text."
-				}
+		"brands": {
+			"line1": "The brands",
+			"line2": "we stock."
+		},
+		"categories": {
+			"eyebrow": "Shop by category",
+			"title": "Every category we stock.",
+			"link": "Shop all categories",
+			"items": {
+				"phones": "Phones",
+				"laptops": "Laptops & Computers",
+				"gaming": "Gaming",
+				"appliances": "Home Appliances",
+				"monitors": "Monitors & Displays",
+				"accessories": "Accessories",
+				"office": "Office Equipment",
+				"tv": "TVs & Audio",
+				"fridges": "Fridges & Freezers",
+				"laundry": "Washing Machines",
+				"kitchen": "Kitchen Appliances",
+				"cooling": "Cooling & Air",
+				"tablets": "Tablets",
+				"wearables": "Wearables",
+				"audio": "Headphones & Audio"
+			}
+		},
+		"edit": {
+			"eyebrow": "The GeoStores edit",
+			"title": "What we’d buy ourselves.",
+			"link": "View all products",
+			"price": "Contact for price",
+			"note": "Prices, exact models and stock change. Ask us before you order.",
+			"giftCard": {
+				"brand": "PlayStation",
+				"title1": "More ways",
+				"title2": "to play.",
+				"eyebrow": "Gift cards"
+			}
+		},
+		"gaming": {
+			"eyebrow": "The gaming collection",
+			"title1": "Level up",
+			"title2": "your setup.",
+			"subtitle1": "Consoles, controllers, headsets and ultrawide monitors.",
+			"subtitle2": "Tell us what your setup is missing.",
+			"cta": "Shop gaming",
+			"link": "Discover the Samsung Odyssey G9",
+			"caption": "The Odyssey G9. 49 inches, curved."
+		},
+		"computing": {
+			"eyebrow": "Laptops, desktops and monitors",
+			"title": "The right machine for the job.",
+			"link": "Shop computing",
+			"card": {
+				"eyebrow": "Microsoft Surface",
+				"title1": "Laptop, tablet",
+				"title2": "and studio in one.",
+				"link": "Discover Surface Laptop Studio 2"
 			},
-			"feature2": {
-				"title": "Friendly local checkout",
-				"subtitle": "Built around how customers in Ghana actually pay.",
-				"description": "The store can support Ghana-first payments, clear contact details, and simple order follow-up.",
-				"benefit1": {
-					"title": "Benefit 1",
-					"description": "This is an awesome benefit. And below you can see some reasons why. This is basically just a dummy text."
+			"listEyebrow": "What people buy most",
+			"explore": "See the full range",
+			"workspace": {
+				"title": "Complete your workspace",
+				"subtitle": "Printers, UPS and networking"
+			}
+		},
+		"appliances": {
+			"eyebrow": "For the rest of the house",
+			"title1": "Fridges, washers,",
+			"title2": "cookers and fans.",
+			"description": "The same store that sells you a laptop will deliver your fridge. Big appliances, same delivery, same support.",
+			"cta": "Shop home appliances",
+			"note": "Illustrative imagery. Ask about available models.",
+			"badge": "Delivered to your door."
+		},
+		"about": {
+			"eyebrow": "Meet GeoStoresGH",
+			"title1": "One store.",
+			"title2": "Every department.",
+			"description": "GeoStoresGH sells phones, computing, gaming, home appliances and everyday accessories, across Ghana.",
+			"items": {
+				"wider": {
+					"title": "More than one department",
+					"description": "Phones, laptops, TVs, fridges and washers, across twelve departments."
 				},
-				"benefit2": {
-					"title": "Benefit 2",
-					"description": "This is an awesome benefit. And below you can see some reasons why. This is basically just a dummy text."
+				"fit": {
+					"title": "Find what fits",
+					"description": "Browse by category, compare the specs, then decide."
 				},
-				"benefit3": {
-					"title": "Benefit 3",
-					"description": "This is an awesome benefit. And below you can see some reasons why. This is basically just a dummy text."
+				"conversation": {
+					"title": "Ask before you buy",
+					"description": "Send us the model you’re after and we’ll confirm the spec and the price."
+				}
+			}
+		},
+		"enquiry": {
+			"eyebrow": "Not sure what to buy?",
+			"title1": "Tell us what you need.",
+			"title2": "We’ll find it.",
+			"subtitle": "Send the model, or just describe what it’s for.",
+			"cta": "Make an enquiry"
+		},
+		"trust": {
+			"delivery": {
+				"title": "Delivery across Ghana",
+				"description": "Accra and nationwide. Timing depends on destination and stock."
+			},
+			"payment": {
+				"title": "Pay your way",
+				"description": "Mobile money, card or cash on delivery."
+			},
+			"support": {
+				"title": "48-hour support",
+				"description": "Tell us within 48 hours if anything arrives damaged or faulty."
+			},
+			"advice": {
+				"title": "Advice before you buy",
+				"description": "Ask about the exact model, spec and current price."
+			}
+		},
+		"departments": {
+			"eyebrow": "Browse the store",
+			"title1": "Twelve departments.",
+			"title2": "One checkout.",
+			"description": "Fridges, washers, cookers and fans sit alongside phones, laptops and gaming. Browse every department, or tell us what you need and we’ll find it.",
+			"link": "Browse the whole store",
+			"items": {
+				"phones": {
+					"name": "Phones & tablets",
+					"note": "iPhone, Galaxy, Pixel and more"
+				},
+				"computers": {
+					"name": "Laptops & computers",
+					"note": "Everyday, creator and gaming"
+				},
+				"tv": {
+					"name": "TVs & audio",
+					"note": "Smart TVs, soundbars, speakers"
+				},
+				"gaming": {
+					"name": "Gaming",
+					"note": "Consoles, controllers, headsets"
+				},
+				"fridges": {
+					"name": "Fridges & freezers",
+					"note": "Side-by-side, bottom-freezer, compact"
+				},
+				"laundry": {
+					"name": "Washing machines & dryers",
+					"note": "Front-load, top-load, washer-dryers"
+				},
+				"kitchen": {
+					"name": "Kitchen appliances",
+					"note": "Microwaves, cookers, blenders, kettles"
+				},
+				"cooling": {
+					"name": "Cooling & air",
+					"note": "Air conditioners, fans, purifiers"
+				},
+				"monitors": {
+					"name": "Monitors & displays",
+					"note": "Office, creator and ultrawide"
+				},
+				"wearables": {
+					"name": "Wearables & audio",
+					"note": "Watches, earbuds, headphones"
+				},
+				"accessories": {
+					"name": "Accessories",
+					"note": "Chargers, cases, cables, storage"
+				},
+				"office": {
+					"name": "Office equipment",
+					"note": "Printers, UPS, networking"
+				}
+			}
+		},
+		"products": {
+			"eyebrow": "Popular right now",
+			"title": "What people are asking about.",
+			"link": "See all products",
+			"new": "New",
+			"reviews": "{count} reviews",
+			"was": "Was"
+		},
+		"kitchen": {
+			"eyebrow": "Kitting out a kitchen?",
+			"title1": "Fridge, washer, cooker.",
+			"title2": "One delivery.",
+			"description": "Tell us what the space needs and we’ll put the set together, quote it as one price and deliver it in one trip.",
+			"cta": "Ask for a bundle price",
+			"secondary": "Browse home appliances",
+			"items": [
+				"Fridges & freezers",
+				"Washing machines & dryers",
+				"Cookers & microwaves",
+				"Air conditioning & fans"
+			]
+		},
+		"needs": {
+			"eyebrow": "Shop by need",
+			"title": "Start with what you’re doing.",
+			"items": {
+				"wfh": {
+					"badge": "Popular",
+					"title": "Work from home",
+					"subtitle": "Laptop, monitor, keyboard and a UPS that keeps you online."
+				},
+				"school": {
+					"badge": "Student picks",
+					"title": "Back to school",
+					"subtitle": "Laptops and tablets built to last the term."
+				},
+				"newhome": {
+					"badge": "Bundle",
+					"title": "New home essentials",
+					"subtitle": "Fridge, washer, TV and cooker, quoted as one."
+				},
+				"gaming": {
+					"badge": "New in",
+					"title": "Game night",
+					"subtitle": "Consoles, ultrawide monitors and headsets."
+				},
+				"kitchen": {
+					"badge": "Bundle",
+					"title": "Kitchen refresh",
+					"subtitle": "Microwave, coffee machine, blender and kettle."
+				},
+				"phone": {
+					"badge": "Popular",
+					"title": "Phone upgrade",
+					"subtitle": "iPhone, Galaxy or Pixel with the accessories to match."
 				}
 			}
 		}
@@ -120,16 +305,17 @@
 		"email": "Email",
 		"hints": {
 			"error": {
-				"message": "Could not subscribe to newsletter. Please try again later."
+				"message": "We couldn’t add you to the list. Please try again."
 			},
 			"success": {
-				"message": "Thank you for subscribing to our newsletter. We will keep you posted.",
+				"message": "You’re on the list. We’ll email when new stock lands.",
 				"title": "Subscribed"
 			}
 		},
 		"submit": "Subscribe",
-		"subtitle": "Get drops, deals, and product updates from Geostoresgh.",
-		"title": "Stay in the loop"
+		"subtitle": "One short email when new devices and appliances land. No spam, unsubscribe any time.",
+		"title": "New stock, new prices, first.",
+		"eyebrow": "Newsletter"
 	},
 	"notFound": {
 		"code": "404",
@@ -144,7 +330,21 @@
 			"latestDrops": "Latest drops",
 			"privacyPolicy": "Privacy policy",
 			"termsAndConditions": "Terms and conditions",
-			"builtWith": "gadgets & more"
+			"builtWith": "gadgets & more",
+			"tagline1": "Phones, computers, gaming,",
+			"tagline2": "appliances and accessories.",
+			"meta": "Electronics & more · Ghana",
+			"explore": "Shop",
+			"discover": "Also in store",
+			"connect": "Get in touch",
+			"about": "About GeoStores",
+			"contact": "Contact & enquiries",
+			"allProducts": "All products",
+			"copyright": "© {year} GeoStoresGH.",
+			"tagline": "Ask us for a price on anything in the store.",
+			"backToTop": "Back to top",
+			"payments": "Pay with mobile money, card or cash on delivery.",
+			"paymentsTitle": "Ways to pay"
 		},
 		"menu": {
 			"blog": "Blog",
@@ -154,7 +354,21 @@
 			"docs": "Docs",
 			"faq": "FAQ",
 			"login": "Login",
-			"latestDrops": "Latest drops"
+			"latestDrops": "Latest drops",
+			"shop": "Shop",
+			"phones": "Phones",
+			"computers": "Computers",
+			"gaming": "Gaming",
+			"appliances": "Appliances",
+			"accessories": "Accessories",
+			"about": "About",
+			"getInTouch": "Get in touch",
+			"search": "Search the store",
+			"searchPlaceholder": "Search products or brands",
+			"help": "Help",
+			"utility": "Delivery across Ghana · Mobile money, card or cash on delivery",
+			"account": "Account",
+			"bag": "Bag"
 		},
 		"aria": {
 			"menu": "Menu",

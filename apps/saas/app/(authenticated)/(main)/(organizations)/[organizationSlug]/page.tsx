@@ -1,8 +1,8 @@
 import { getActiveOrganization } from "@auth/lib/server";
 import OrganizationStart from "@organizations/components/OrganizationStart";
 import { PageHeader } from "@shared/components/PageHeader";
-import { notFound } from "next/navigation";
 import { getTranslations } from "@shared/lib/translations";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
 	params,

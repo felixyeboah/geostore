@@ -14,11 +14,12 @@ import {
 	FormMessage,
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
+import { useTranslations } from "@shared/lib/translations";
 import { AlertTriangleIcon, ArrowLeftIcon, MailboxIcon } from "lucide-react";
 import Link from "next/link";
-import { useTranslations } from "@shared/lib/translations";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { AUTH_BUTTON, AUTH_FIELD, AUTH_LABEL } from "./AuthShell";
 
 const formSchema = z.object({
 	email: z.email(),
@@ -63,10 +64,13 @@ export function ForgotPasswordForm() {
 
 	return (
 		<>
-			<h1 className="font-bold text-xl md:text-2xl">
+			<p className="eyebrow mb-4 text-muted-foreground">
+				{t("auth.login.customerAccount")}
+			</p>
+			<h1 className="max-w-[16ch] font-semibold text-[clamp(28px,3vw,40px)] text-foreground leading-[1.05] tracking-[-0.042em]">
 				{t("auth.forgotPassword.title")}
 			</h1>
-			<p className="mt-1 mb-6 text-foreground/60">
+			<p className="mt-4 mb-9 max-w-[44ch] text-[14.5px] text-muted-foreground leading-[1.6]">
 				{t("auth.forgotPassword.message")}{" "}
 			</p>
 
@@ -83,7 +87,7 @@ export function ForgotPasswordForm() {
 			) : (
 				<Form {...form}>
 					<form
-						className="flex flex-col items-stretch gap-4"
+						className="flex flex-col items-stretch gap-6"
 						onSubmit={onSubmit}
 					>
 						{form.formState.errors.root && (
@@ -100,11 +104,12 @@ export function ForgotPasswordForm() {
 							name="email"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
+									<FormLabel className={AUTH_LABEL}>
 										{t("auth.forgotPassword.email")}
 									</FormLabel>
 									<FormControl>
 										<Input
+											className={AUTH_FIELD}
 											{...field}
 											autoComplete="email"
 										/>
@@ -114,14 +119,18 @@ export function ForgotPasswordForm() {
 							)}
 						/>
 
-						<Button loading={form.formState.isSubmitting}>
+						<Button
+							className={AUTH_BUTTON}
+							variant="primary"
+							loading={form.formState.isSubmitting}
+						>
 							{t("auth.forgotPassword.submit")}
 						</Button>
 					</form>
 				</Form>
 			)}
 
-			<div className="mt-6 text-center text-sm">
+			<div className="mt-9 border-border border-t pt-6 text-[13.5px] text-muted-foreground">
 				<Link href="/login">
 					<ArrowLeftIcon className="mr-1 inline size-4 align-middle" />
 					{t("auth.forgotPassword.backToSignin")}

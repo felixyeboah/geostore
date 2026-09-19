@@ -15,8 +15,8 @@ import {
 import { Input } from "@repo/ui/components/input";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { SettingsItem } from "@shared/components/SettingsItem";
-import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "@shared/lib/translations";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 

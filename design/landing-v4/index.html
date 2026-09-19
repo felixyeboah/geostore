@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geostoresgh landing — round 4 (interactive)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#15151a;--muted:#6e6e79;--faint:#9c9ca6;--line:#e8e8ec;--panel:#f7f7f8;--accent:#6b28d9}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);line-height:1.6;padding:56px 24px 80px;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto}
+h1{font-size:38px;letter-spacing:-0.04em;line-height:1.08;font-weight:600}
+.lede{color:var(--muted);margin-top:16px;max-width:68ch}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-top:26px;font-size:14px;color:var(--muted)}
+.note b{color:var(--ink)}
+.note code{font-family:ui-monospace,monospace;font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.card{border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;background:#fff}
+.tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.card h2{font-size:20px;letter-spacing:-0.03em;margin-top:9px;font-weight:600}
+.card .one{font-size:13px;color:var(--faint);margin-top:2px}
+.card p{color:var(--muted);font-size:14px;margin-top:12px}
+.card ul{margin:14px 0 0;padding-left:17px;font-size:13.5px;color:var(--muted)}
+.card li{margin-bottom:6px}
+.best{margin-top:15px;font-size:13px;background:var(--panel);border-radius:10px;padding:11px 13px}
+.best b{color:var(--ink)}
+.card a.btn{margin-top:auto;padding-top:0;display:flex;align-items:center;justify-content:center;height:44px;border-radius:11px;background:var(--ink);color:#fff;font-weight:600;font-size:14.5px;text-decoration:none;margin-top:20px}
+.card a.btn:hover{background:var(--accent)}
+.works{margin-top:40px}
+.works h3{font-size:16px;font-weight:600;letter-spacing:-0.02em}
+.works ul{margin-top:10px;padding-left:18px;color:var(--muted);font-size:14px;columns:2;column-gap:40px}
+.works li{margin-bottom:6px;break-inside:avoid}
+@media(max-width:880px){.grid{grid-template-columns:1fr}.works ul{columns:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Geostoresgh landing page, round four</h1>
+  <p class="lede">Three directions, each copied from a real store on Mobbin and re-skinned with the actual Geostoresgh catalogue (8 products, 4 categories, GH₵ prices, stock and ratings). Unlike the earlier rounds, every control on these pages works.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Option 1</span>
+      <h2>Store</h2>
+      <span class="one">Copied from the Apple Store homepage</span>
+      <p>Two-tone headline, a rail of category and brand thumbnails that filter the grid, "The latest" large-card rail, calm product grid, help accordion. White, grey, hairlines; purple only on links and CTAs.</p>
+      <ul>
+        <li>Most premium and calm</li>
+        <li>Best fit for a phones-first catalogue</li>
+        <li>Least promotional energy</li>
+      </ul>
+      <div class="best">Pick this if Geostoresgh should feel like an <b>authorised, premium reseller</b>.</div>
+      <a class="btn" href="01-store.html">Open Option 1</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option 2</span>
+      <h2>Department</h2>
+      <span class="one">Copied from Selfridges and adidas</span>
+      <p>Utility bar, centred wordmark, uppercase category nav, promo strip, split hero carousel with three real offers, "Recommended for you" rail, campaign tiles, New arrivals / Best sellers toggle, "Popular right now" list. Squared corners, black and white.</p>
+      <ul>
+        <li>Most "big retailer" and confident</li>
+        <li>Carries promotions and price drops well</li>
+        <li>Densest page; most to maintain</li>
+      </ul>
+      <div class="best">Pick this if Geostoresgh should feel like a <b>department store with deals</b>.</div>
+      <a class="btn" href="02-department.html">Open Option 2</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option 3</span>
+      <h2>Marketplace</h2>
+      <span class="one">Copied from Klarna and Faire</span>
+      <p>Search-first header, floating product thumbnails around a big search, dark category strip, then a real catalogue with a working filter sidebar (price, deals, brand, category), sort, chips and a mobile filter sheet. Soft pills, rounded tiles.</p>
+      <ul>
+        <li>Most useful as the catalogue grows</li>
+        <li>Search and payment options front and centre</li>
+        <li>Friendliest; least "luxury"</li>
+      </ul>
+      <div class="best">Pick this if shoppers should <b>find and filter fast</b> and pay their way.</div>
+      <a class="btn" href="03-marketplace.html">Open Option 3</a>
+    </div>
+  </div>
+
+  <div class="works">
+    <h3>What works on every option</h3>
+    <ul>
+      <li>Search with live suggestions (products and categories), keyboard navigation, and a real handoff to the store's search page</li>
+      <li>Add to bag from any card, quick view, or rail — with stock limits</li>
+      <li>Slide-out bag with quantity steppers, remove, subtotal, savings, and the GH₵ 1,000 free-delivery progress bar</li>
+      <li>Bag persists in localStorage across the three pages</li>
+      <li>Quick view modal with specs, rating, stock, quantity, and a link to the full product page</li>
+      <li>Saved items (heart) with a counter in the header</li>
+      <li>Category, brand, deals, and sort filters that re-render the grid</li>
+      <li>FAQ accordions, newsletter validation with success state, mobile menu</li>
+      <li>All links go to the real store routes on <code>localhost:3000</code></li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <b>How to view:</b> serve this folder over HTTP (the pages load <code>shared/</code> files), for example <code>python3 -m http.server 8787 --directory design</code> then open <code>http://localhost:8787/landing-v4/</code>. Resize the window to check mobile. Nothing under <code>apps/</code> has been touched; once you pick one, it gets built as real components in <code>apps/marketing</code>.
+  </div>
+</div>
+</body>
+</html>

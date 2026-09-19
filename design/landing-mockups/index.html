@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore storefront — 3 design directions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#17171a;--muted:#6b6b76;--line:#e6e6ec;--primary:#6b28d9;--surface:#f7f7f9}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--surface);color:var(--ink);line-height:1.6;padding:56px 24px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:40px;letter-spacing:-0.035em;line-height:1.1}
+  .lede{color:var(--muted);margin-top:14px;max-width:62ch}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;flex-direction:column}
+  .card .tag{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--primary)}
+  .card h2{font-size:21px;letter-spacing:-0.03em;margin-top:10px}
+  .card p{color:var(--muted);font-size:14px;margin-top:10px}
+  .card ul{margin:16px 0 0 0;padding-left:18px;font-size:13.5px;color:var(--muted)}
+  .card li{margin-bottom:6px}
+  .card .best{margin-top:16px;font-size:13px;background:var(--surface);border-radius:10px;padding:11px 13px}
+  .card .best b{color:var(--ink)}
+  .card a{margin-top:auto;padding-top:20px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;width:100%;border-radius:11px;background:var(--primary);color:#fff;font-weight:600;font-size:14.5px;text-decoration:none}
+  .btn:hover{background:#551eae}
+  .note{margin-top:40px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;font-size:14px;color:var(--muted)}
+  .note b{color:var(--ink)}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+  <h1>GeoStore storefront &mdash; three directions</h1>
+  <p class="lede">All three redesign the same page: <b>apps/saas/app/(store)/page.tsx</b>. Each uses the real catalogue &mdash; the 8 seeded products, 4 categories, actual GH&#8373; prices, ratings and stock counts &mdash; so you're comparing layout and tone, not placeholder text. Open each and scroll; they're all responsive, so resize to check mobile.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Option A</span>
+      <h2>Retail Clarity</h2>
+      <p>Light, calm and scannable. Split hero with a featured product, a four-up trust strip, category tiles, then a clean product grid.</p>
+      <ul>
+        <li>Closest to your current brand</li>
+        <li>Purple used as accent, not wallpaper</li>
+        <li>Products visible fast, low visual noise</li>
+        <li>Fastest to build &mdash; reuses ProductCard nearly as-is</li>
+      </ul>
+      <div class="best"><b>Pick this if</b> you want it to look obviously more professional without a big rebuild or a change in personality.</div>
+      <a href="./option-a-retail-clarity.html"><span class="btn">Open Option A</span></a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option B</span>
+      <h2>Editorial Premium</h2>
+      <p>Dark cinematic hero, serif display type, asymmetric category mosaic and a text-led product index. Reads like a considered boutique.</p>
+      <ul>
+        <li>Highest perceived quality of the three</li>
+        <li>Leans on photography &mdash; needs good product shots</li>
+        <li>Slower, more deliberate browsing</li>
+        <li>Biggest departure from the current look</li>
+      </ul>
+      <div class="best"><b>Pick this if</b> you want GeoStore to feel like a premium curator rather than a general electronics shop.</div>
+      <a href="./option-b-editorial-premium.html"><span class="btn">Open Option B</span></a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option C</span>
+      <h2>Conversion Storefront</h2>
+      <p>Bold and commercial. Promo ticker, split deal hero, countdown deals rail, filter chips and dense product cards with stock and savings.</p>
+      <ul>
+        <li>Most aggressive at driving purchases</li>
+        <li>Price, savings and stock are the heroes</li>
+        <li>Familiar to anyone who shops Jumia or Amazon</li>
+        <li>Needs real discount &amp; stock data to not feel fake</li>
+      </ul>
+      <div class="best"><b>Pick this if</b> conversion matters more than restraint and you'll actually run promotions.</div>
+      <a href="./option-c-conversion-storefront.html"><span class="btn">Open Option C</span></a>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>These are static HTML mockups, not React.</b> Nothing in <code>apps/</code> has been changed. Once you pick one (or parts of several &mdash; e.g. A's layout with C's product card), I'll build it properly as server components in <code>apps/saas</code>, wired to <code>getLiveCategories()</code> / <code>getLiveProducts()</code>, using the existing <code>@repo/ui</code> components, Tailwind tokens and translations.
+  </div>
+</div></body></html>

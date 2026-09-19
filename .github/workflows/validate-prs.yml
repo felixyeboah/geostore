@@ -7,6 +7,22 @@ on:
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   BETTER_AUTH_SECRET: "better-auth-e2e-secret-1234567890"
+  # The e2e suite builds and runs the app with NODE_ENV=production, so the
+  # mock payment provider needs its explicit opt-in. Never set this on a real
+  # deployment: it is what stops a misconfigured deploy giving stock away.
+  STORE_PAYMENT_PROVIDER: "mock"
+  ALLOW_MOCK_PAYMENTS: "true"
+  # getBaseUrl() now throws in production rather than silently falling back to
+  # localhost, and the e2e job runs a production build.
+  NEXT_PUBLIC_SAAS_URL: "http://localhost:3000"
+  NEXT_PUBLIC_MARKETING_URL: "http://localhost:3001"
+  # Order access tokens are signed with their own key now, and instrumentation
+  # refuses to boot if it matches BETTER_AUTH_SECRET.
+  ORDER_TOKEN_SECRET: "order-token-e2e-secret-0987654321"
+  # The e2e suite signs in nine times against a 3-per-10s default, so the
+  # limiter has to be off for it. Switched off explicitly rather than relying on
+  # it no-opping because nothing sets a trusted IP header locally.
+  RATE_LIMIT_ENABLED: "false"
 
 jobs:
   lint:
@@ -20,6 +36,22 @@ jobs:
           version: 2.3.13
       - name: Run Biome
         run: biome ci .
+  unit:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - uses: pnpm/action-setup@v4
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run commerce and payments unit tests
+        run: pnpm test:commerce
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
   e2e:
     name: Run e2e tests
     timeout-minutes: 60
