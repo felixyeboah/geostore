@@ -145,9 +145,15 @@ export function StorefrontPreview({
 							src={src}
 							title="Storefront landing page preview"
 							width={DESKTOP_WIDTH}
-							// The frame fills the pane and scrolls inside
-							// itself, like the page does for a customer.
-							style={{ height: `${100 / zoom}%` }}
+							// Plain 100%, not `100 / zoom`. The wrapper is
+							// already zoomed *and* `h-full`, so its painted
+							// height is the pane's height and a percentage of
+							// it needs no further correction. Compensating a
+							// second time made the frame 1/zoom too tall —
+							// measured at 1284px inside a 611px pane, leaving
+							// 690px of the page permanently below the fold
+							// with no way to scroll to it.
+							style={{ height: "100%" }}
 							className="block border-0"
 							// The preview is our own storefront, but it is a
 							// separate origin and nothing here needs it to reach
