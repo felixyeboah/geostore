@@ -1,5 +1,9 @@
+import { STOREFRONT_CHROME_DEFAULTS } from "@repo/commerce";
+
 export const SUPPORT_EMAIL = "support@geostoresgh.com";
-export const PHONE_NUMBER = "+233 20 913 3372";
+// The shipped value; the storefront's admin can override it per request via
+// the storefront settings — anything editable should read `chrome.phone`.
+export const PHONE_NUMBER = STOREFRONT_CHROME_DEFAULTS.phone;
 
 /**
  * Every customer-facing route now lives in this app, so these are all local

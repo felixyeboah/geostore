@@ -3,7 +3,11 @@
 import { CartLink } from "@commerce/components/CartLink";
 import { SearchDialog } from "@commerce/components/SearchDialog";
 import { ShopMegaMenu } from "@commerce/components/ShopMegaMenu";
-import { links, PHONE_NUMBER } from "@home/data/landing";
+import { links } from "@home/data/landing";
+import {
+	STOREFRONT_CHROME_DEFAULTS,
+	type StorefrontChrome,
+} from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
 	Sheet,
@@ -23,7 +27,12 @@ interface NavItem {
 	href: string;
 }
 
-export function NavBar() {
+export function NavBar({
+	chrome = STOREFRONT_CHROME_DEFAULTS,
+}: {
+	/** Resolved in the layout — an override where an editor saved one. */
+	chrome?: StorefrontChrome;
+}) {
 	const t = useTranslations();
 	const pathname = usePathname();
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -58,7 +67,7 @@ export function NavBar() {
 		>
 			<div className="hidden border-border border-b lg:block">
 				<div className="mx-auto flex h-9 w-full max-w-[1360px] items-center justify-between px-12 text-[11px] text-muted-foreground">
-					<p>{t("common.menu.utility")}</p>
+					<p>{chrome.utilityStrip}</p>
 					<div className="flex items-center gap-6">
 						<Link
 							href={links.contact}
@@ -67,11 +76,11 @@ export function NavBar() {
 							{t("common.menu.help")}
 						</Link>
 						<a
-							href={`tel:${PHONE_NUMBER.replace(/\s+/g, "")}`}
+							href={`tel:${chrome.phone.replace(/\s+/g, "")}`}
 							className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
 						>
 							<PhoneIcon className="size-3" />
-							{PHONE_NUMBER}
+							{chrome.phone}
 						</a>
 					</div>
 				</div>

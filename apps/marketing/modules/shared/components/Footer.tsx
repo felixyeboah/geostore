@@ -1,11 +1,20 @@
 import { PaymentMarksRow } from "@commerce/components/PaymentMarks";
 import { links } from "@home/data/landing";
+import {
+	STOREFRONT_CHROME_DEFAULTS,
+	type StorefrontChrome,
+} from "@repo/commerce";
 import { BrandLogo } from "@shared/components/BrandLogo";
 import { useTranslations } from "@shared/lib/translations";
 import { ArrowUpIcon, MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 
-export function Footer() {
+export function Footer({
+	chrome = STOREFRONT_CHROME_DEFAULTS,
+}: {
+	/** Resolved in the layout — an override where an editor saved one. */
+	chrome?: StorefrontChrome;
+}) {
 	const t = useTranslations();
 
 	const columns = [
@@ -57,15 +66,15 @@ export function Footer() {
 					<div>
 						<BrandLogo className="h-12" />
 						<p className="mt-6 text-[11.5px] text-foreground/80 leading-[1.7]">
-							{t("common.footer.tagline1")}
+							{chrome.footerTagline1}
 							<br />
-							{t("common.footer.tagline2")}
+							{chrome.footerTagline2}
 						</p>
 						<p className="mt-7 font-medium text-[9.5px] text-foreground/70">
-							{t("common.footer.meta")}
+							{chrome.footerMeta}
 						</p>
 						<p className="mt-2 text-[9.5px] text-foreground/60">
-							{t("common.footer.tagline")}
+							{chrome.footerTagline}
 						</p>
 					</div>
 
@@ -131,7 +140,7 @@ export function Footer() {
 							year: new Date().getFullYear(),
 						})}
 					</p>
-					<p>{t("common.footer.payments")}</p>
+					<p>{chrome.footerPayments}</p>
 					<a href="#top" className="inline-flex items-center gap-1">
 						{t("common.footer.backToTop")}
 						<ArrowUpIcon className="size-2.5" />

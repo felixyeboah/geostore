@@ -25,7 +25,7 @@ export function StructuredData({ data }: { data: object | object[] }) {
 }
 
 /** The shop itself: used once, on the landing page. */
-export function organisationSchema() {
+export function organisationSchema(overrides?: { telephone?: string }) {
 	return {
 		"@context": "https://schema.org",
 		"@type": "OnlineStore",
@@ -34,7 +34,7 @@ export function organisationSchema() {
 		logo: siteUrl(OG_IMAGE),
 		image: siteUrl(OG_IMAGE),
 		description: SITE_DESCRIPTION,
-		telephone: PHONE_NUMBER,
+		telephone: overrides?.telephone ?? PHONE_NUMBER,
 		areaServed: { "@type": "Country", name: "Ghana" },
 		address: {
 			"@type": "PostalAddress",

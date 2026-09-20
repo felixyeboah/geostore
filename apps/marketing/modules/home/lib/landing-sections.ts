@@ -50,7 +50,12 @@ export interface RenderableSection {
  * "never configured" have to be told apart: the first must not render, the
  * second must.
  */
-export async function getRenderableSections(): Promise<RenderableSection[]> {
+export async function getRenderableSections(options?: {
+	/** Read the staged draft columns instead of the published ones — the back
+	 * office's preview renders exactly what Publish would produce. */
+	draft?: boolean;
+}): Promise<RenderableSection[]> {
+	const draft = options?.draft === true;
 	let rows: Awaited<ReturnType<typeof getLandingSections>> = [];
 
 	try {
@@ -67,19 +72,34 @@ export async function getRenderableSections(): Promise<RenderableSection[]> {
 
 	const byKey = new Map(rows.map((row) => [row.key, row]));
 
+	// In draft mode the staged columns win wherever they are set; a null draft
+	// column means "same as published".
 	const visible = LANDING_SECTIONS.map((section) => ({
 		section,
 		row: byKey.get(section.key),
 	}))
-		.filter(({ row }) => row?.isVisible ?? true)
+		.filter(
+			({ row }) =>
+				(draft
+					? (row?.draftIsVisible ?? row?.isVisible)
+					: row?.isVisible) ?? true,
+		)
 		.sort(
 			(left, right) =>
-				(left.row?.sortOrder ?? left.section.defaultSortOrder) -
-				(right.row?.sortOrder ?? right.section.defaultSortOrder),
+				((draft
+					? (left.row?.draftSortOrder ?? left.row?.sortOrder)
+					: left.row?.sortOrder) ?? left.section.defaultSortOrder) -
+				((draft
+					? (right.row?.draftSortOrder ?? right.row?.sortOrder)
+					: right.row?.sortOrder) ?? right.section.defaultSortOrder),
 		)
 		.map(({ section, row }) => ({
 			section,
-			copy: parseLandingSettings(row?.settings),
+			copy: parseLandingSettings(
+				draft && row?.draftSettings !== null
+					? row?.draftSettings
+					: row?.settings,
+			),
 		}));
 
 	// Every product referenced anywhere on the page, fetched once. An id that

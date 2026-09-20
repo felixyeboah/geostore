@@ -24,6 +24,10 @@ import {
 	websiteSchema,
 } from "@shared/components/StructuredData";
 import { pageMetadata, SITE_DESCRIPTION } from "@shared/lib/seo";
+import {
+	getStorefrontChrome,
+	isDraftPreview,
+} from "@shared/lib/storefront-chrome";
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 
@@ -64,14 +68,23 @@ const SECTION_COMPONENTS: Record<string, ComponentType<SectionCopyProps>> = {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-	const [sections, catalogue] = await Promise.all([
-		getRenderableSections(),
+	// The admin's preview loads this page with a draft flag; everything else
+	// gets the published sections.
+	const draft = await isDraftPreview();
+	const [sections, catalogue, chrome] = await Promise.all([
+		getRenderableSections({ draft }),
 		getSectionCatalogue(),
+		getStorefrontChrome(),
 	]);
 
 	return (
 		<>
-			<StructuredData data={[organisationSchema(), websiteSchema()]} />
+			<StructuredData
+				data={[
+					organisationSchema({ telephone: chrome.phone }),
+					websiteSchema(),
+				]}
+			/>
 			{sections.map(({ key, copy, products, productLists }) => {
 				const Section = SECTION_COMPONENTS[key];
 				return Section ? (

@@ -11,6 +11,11 @@ import { Footer } from "@shared/components/Footer";
 import { NavBar } from "@shared/components/NavBar";
 import { getBaseUrl } from "@shared/lib/base-url";
 import { OG_IMAGE, SITE_DESCRIPTION, SITE_TAGLINE } from "@shared/lib/seo";
+import { getStorefrontDeliveryRule } from "@shared/lib/store-settings";
+import {
+	getStorefrontChrome,
+	isDraftPreview,
+} from "@shared/lib/storefront-chrome";
 import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import { cookies } from "next/headers";
@@ -68,6 +73,11 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: PropsWithChildren) {
 	const cookieStore = await cookies();
 	const consentCookie = cookieStore.get("consent");
+	const [chrome, draftPreview, deliveryRule] = await Promise.all([
+		getStorefrontChrome(),
+		isDraftPreview(),
+		getStorefrontDeliveryRule(),
+	]);
 
 	return (
 		<html lang="en" suppressHydrationWarning className={sansFont.variable}>
@@ -80,10 +90,15 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 					initialConsent={consentCookie?.value === "true"}
 				>
 					<ClientProviders>
-						<CartProvider>
-							<NavBar />
+						<CartProvider deliveryRule={deliveryRule}>
+							<NavBar chrome={chrome} />
 							<main className="min-h-screen">{children}</main>
-							<Footer />
+							<Footer chrome={chrome} />
+							{draftPreview && (
+								<p className="fixed bottom-3 left-3 z-[60] rounded-[2px] bg-foreground px-2.5 py-1 font-medium text-[11px] text-background">
+									Draft preview — unpublished changes
+								</p>
+							)}
 							<ConsentBanner />
 							<CartDrawer />
 							<Toaster
