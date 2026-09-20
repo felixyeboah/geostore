@@ -9,6 +9,7 @@ export function OrderConfirmation({
 	orderNumber,
 	totalLabel,
 	isPayOnDelivery,
+	isWhatsAppOrder,
 	orderUrl,
 }: {
 	name: string;
@@ -16,6 +17,8 @@ export function OrderConfirmation({
 	totalLabel: string;
 	/** Cash on delivery is confirmed but not yet paid — don't call it "paid". */
 	isPayOnDelivery?: boolean;
+	/** WhatsApp orders settle in chat or at the door, not "in cash". */
+	isWhatsAppOrder?: boolean;
 	/** Tokenised link so a guest can reach an order they have no account for. */
 	orderUrl?: string;
 } & BaseMailProps) {
@@ -24,9 +27,11 @@ export function OrderConfirmation({
 			<Text>Hi {name},</Text>
 			<Text>
 				We’ve confirmed your Geostoresgh order {orderNumber}.{" "}
-				{isPayOnDelivery
-					? `Pay ${totalLabel} in cash when it arrives.`
-					: `Total paid: ${totalLabel}.`}
+				{isWhatsAppOrder
+					? `We’ll confirm the details on WhatsApp — you pay ${totalLabel} on delivery.`
+					: isPayOnDelivery
+						? `Pay ${totalLabel} in cash when it arrives.`
+						: `Total paid: ${totalLabel}.`}
 			</Text>
 			{orderUrl ? (
 				<Text>

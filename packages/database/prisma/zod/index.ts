@@ -240,7 +240,7 @@ export type StorePaymentStatus = z.infer<typeof StorePaymentStatusSchema>;
 
 // File: StorePaymentMethod.schema.ts
 
-export const StorePaymentMethodSchema = z.enum(['MOCK', 'ONLINE', 'CARD', 'MOBILE_MONEY', 'CASH_ON_DELIVERY'])
+export const StorePaymentMethodSchema = z.enum(['MOCK', 'ONLINE', 'CARD', 'MOBILE_MONEY', 'CASH_ON_DELIVERY', 'WHATSAPP'])
 
 export type StorePaymentMethod = z.infer<typeof StorePaymentMethodSchema>;
 

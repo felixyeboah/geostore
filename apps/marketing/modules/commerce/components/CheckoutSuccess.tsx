@@ -5,7 +5,7 @@ import {
 	EditorialContainer,
 	EditorialShell,
 } from "@shared/components/EditorialPage";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 
 interface CheckoutSuccessOrder {
@@ -80,10 +80,21 @@ export function toCheckoutSuccessOrder(order: {
 	};
 }
 
+const PAYMENT_LABELS: Record<string, string> = {
+	ONLINE: "Online",
+	CARD: "Card",
+	MOBILE_MONEY: "Mobile money",
+	CASH_ON_DELIVERY: "Cash on delivery",
+	WHATSAPP: "WhatsApp",
+	MOCK: "Test payment",
+};
+
 export function CheckoutSuccess({
 	order,
+	whatsappHref,
 }: {
 	order: CheckoutSuccessOrder | null;
+	whatsappHref?: string | null;
 }) {
 	if (!order) {
 		return (
@@ -114,6 +125,7 @@ export function CheckoutSuccess({
 	}
 
 	const firstName = order.customerName.split(" ")[0] || "there";
+	const isWhatsAppOrder = order.paymentMethod === "WHATSAPP";
 
 	return (
 		<EditorialShell>
@@ -127,9 +139,32 @@ export function CheckoutSuccess({
 					Thanks, {firstName}.
 				</h1>
 				<p className="mt-5 max-w-[52ch] text-[15.5px] text-muted-foreground leading-[1.62]">
-					A receipt goes to {order.customerEmail} once payment is
-					confirmed. Order {order.orderNumber}.
+					{isWhatsAppOrder
+						? `Order ${order.orderNumber} is placed. Confirm it with us on WhatsApp to arrange payment and delivery.`
+						: `A receipt goes to ${order.customerEmail} once payment is confirmed. Order ${order.orderNumber}.`}
 				</p>
+
+				{isWhatsAppOrder && whatsappHref ? (
+					<div className="mt-10 border-border border-t pt-8">
+						<a
+							href={whatsappHref}
+							target="_blank"
+							rel="noreferrer"
+							className={EDITORIAL_BUTTON}
+						>
+							<MessageCircleIcon
+								className="size-4"
+								strokeWidth={1.75}
+							/>
+							Confirm order on WhatsApp
+							<ArrowRightIcon className="size-4" />
+						</a>
+						<p className="mt-4 max-w-[52ch] text-[12.5px] text-muted-foreground leading-[1.6]">
+							The chat opens with your order number and total
+							filled in — we take it from there.
+						</p>
+					</div>
+				) : null}
 
 				<div className="mt-12 grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-20">
 					<section>
@@ -225,10 +260,11 @@ export function CheckoutSuccess({
 								<dt className="text-muted-foreground">
 									Payment
 								</dt>
-								<dd className="text-foreground capitalize">
-									{order.paymentMethod
-										.toLocaleLowerCase()
-										.replaceAll("_", " ")}
+								<dd className="text-foreground">
+									{PAYMENT_LABELS[order.paymentMethod] ??
+										order.paymentMethod
+											.toLocaleLowerCase()
+											.replaceAll("_", " ")}
 								</dd>
 							</div>
 						</dl>

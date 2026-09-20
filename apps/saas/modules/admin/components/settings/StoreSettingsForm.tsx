@@ -2,12 +2,13 @@
 
 import { saveStoreSettingsAction } from "@admin/actions/settings";
 import { AdminSection } from "@admin/components/AdminPage";
-import { AdminButton, AdminInput } from "@admin/components/ui";
+import { AdminButton, AdminCheckbox, AdminInput } from "@admin/components/ui";
 import { formatMoney } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import {
 	formatCedisInput,
+	type NumericStoreSettingKey,
 	parseCedis,
 	STORE_SETTING_FIELDS,
 	type StoreSettingField,
@@ -24,15 +25,36 @@ const FIELDS_BY_KEY = new Map(
 );
 
 function toFormValues(settings: StoreSettings): FormValues {
-	return Object.fromEntries(
-		STORE_SETTING_FIELDS.map((field) => [
-			field.key,
-			field.unit === "cedis"
-				? formatCedisInput(settings[field.key])
-				: String(settings[field.key]),
-		]),
-	) as FormValues;
+	return {
+		...(Object.fromEntries(
+			STORE_SETTING_FIELDS.map((field) => [
+				field.key,
+				field.unit === "cedis"
+					? formatCedisInput(settings[field.key])
+					: String(settings[field.key]),
+			]),
+		) as Record<StoreSettingKey, string>),
+		onlinePaymentsEnabled: String(settings.onlinePaymentsEnabled),
+		checkoutWhatsappNumber: settings.checkoutWhatsappNumber,
+	};
 }
+
+/** Labels for the fields that are not numbers, for the unsaved bar. */
+const CHECKOUT_LABELS: Partial<Record<StoreSettingKey, string>> = {
+	onlinePaymentsEnabled: "online payment",
+	checkoutWhatsappNumber: "checkout WhatsApp number",
+};
+
+function fieldLabel(key: StoreSettingKey): string {
+	return (
+		CHECKOUT_LABELS[key] ??
+		FIELDS_BY_KEY.get(key as NumericStoreSettingKey)?.label.toLowerCase() ??
+		key
+	);
+}
+
+/** Same phone check the server runs — the server's answer still counts. */
+const PHONE_PATTERN = /^[+0-9][0-9 ()-]{4,}$/;
 
 /** The typed value in its stored unit, or null while it is unreadable. */
 function toStored(field: StoreSettingField, input: string): number | null {
@@ -54,7 +76,14 @@ function toStored(field: StoreSettingField, input: string): number | null {
  * you say so, and the bar at the foot only appears once something is actually
  * different from what is stored.
  */
-export function StoreSettingsForm({ settings }: { settings: StoreSettings }) {
+export function StoreSettingsForm({
+	settings,
+	fallbackWhatsappNumber,
+}: {
+	settings: StoreSettings;
+	/** The storefront's own WhatsApp number, used when no override is set. */
+	fallbackWhatsappNumber: string;
+}) {
 	const router = useRouter();
 	const [isSaving, startSaving] = useTransition();
 	const [saved, setSaved] = useState(settings);
@@ -66,17 +95,28 @@ export function StoreSettingsForm({ settings }: { settings: StoreSettings }) {
 
 	// Compared as numbers, so "35" and "35.00" are the same fee rather than an
 	// unsaved change that never goes away.
-	const changed = STORE_SETTING_FIELDS.filter((field) => {
+	const changed: StoreSettingKey[] = STORE_SETTING_FIELDS.filter((field) => {
 		const next = toStored(field, values[field.key]);
 		return next === null || next !== saved[field.key];
-	});
+	}).map((field) => field.key);
+	if (values.onlinePaymentsEnabled !== String(saved.onlinePaymentsEnabled)) {
+		changed.push("onlinePaymentsEnabled");
+	}
+	if (values.checkoutWhatsappNumber.trim() !== saved.checkoutWhatsappNumber) {
+		changed.push("checkoutWhatsappNumber");
+	}
 	const isDirty = changed.length > 0;
 	// The server checks all of this again; disabling here just avoids a
 	// round trip that can only come back as an error.
-	const hasInvalid = STORE_SETTING_FIELDS.some((field) => {
-		const next = toStored(field, values[field.key]);
-		return next === null || next < field.min || next > field.max;
-	});
+	const whatsappInvalid =
+		values.checkoutWhatsappNumber.trim() !== "" &&
+		!PHONE_PATTERN.test(values.checkoutWhatsappNumber.trim());
+	const hasInvalid =
+		whatsappInvalid ||
+		STORE_SETTING_FIELDS.some((field) => {
+			const next = toStored(field, values[field.key]);
+			return next === null || next < field.min || next > field.max;
+		});
 
 	function set(key: StoreSettingKey, value: string) {
 		setValues((current) => ({ ...current, [key]: value }));
@@ -129,6 +169,99 @@ export function StoreSettingsForm({ settings }: { settings: StoreSettings }) {
 			</AdminSection>
 
 			<AdminSection
+				title="Checkout"
+				description="How an order is paid for. Turning online payment off swaps the card and mobile-money step for WhatsApp ordering and cash on delivery — existing orders are untouched."
+				className="mt-12"
+			>
+				<div className="divide-y divide-border border-border border-t">
+					<div className="grid gap-x-8 gap-y-3 py-5 md:grid-cols-[minmax(0,1fr)_14rem] md:items-start">
+						<div className="min-w-0">
+							<label
+								htmlFor="setting-onlinePaymentsEnabled"
+								className="block font-medium text-[14px] text-foreground"
+							>
+								Online payment
+							</label>
+							<p className="mt-1.5 max-w-[52ch] text-[13px] text-muted-foreground leading-[1.6]">
+								On, checkout charges mobile money or card. Off,
+								it offers “Contact on WhatsApp” and payment on
+								delivery instead.
+							</p>
+						</div>
+						<label
+							htmlFor="setting-onlinePaymentsEnabled"
+							className="flex cursor-pointer items-center gap-3 md:justify-end md:pt-1"
+						>
+							<AdminCheckbox
+								id="setting-onlinePaymentsEnabled"
+								checked={
+									values.onlinePaymentsEnabled === "true"
+								}
+								onChange={(event) =>
+									set(
+										"onlinePaymentsEnabled",
+										event.target.checked ? "true" : "false",
+									)
+								}
+							/>
+							<span className="text-[13px] text-foreground">
+								{values.onlinePaymentsEnabled === "true"
+									? "On"
+									: "Off"}
+							</span>
+						</label>
+					</div>
+
+					<div className="grid gap-x-8 gap-y-3 py-5 md:grid-cols-[minmax(0,1fr)_14rem] md:items-start">
+						<div className="min-w-0">
+							<label
+								htmlFor="setting-checkoutWhatsappNumber"
+								className="block font-medium text-[14px] text-foreground"
+							>
+								Checkout WhatsApp number
+							</label>
+							<p className="mt-1.5 max-w-[52ch] text-[13px] text-muted-foreground leading-[1.6]">
+								Where “Contact on WhatsApp” opens a chat with
+								the order filled in. Leave blank to use the
+								storefront number, currently{" "}
+								{fallbackWhatsappNumber}.
+							</p>
+						</div>
+						<div>
+							<AdminInput
+								id="setting-checkoutWhatsappNumber"
+								inputMode="tel"
+								autoComplete="off"
+								placeholder="+233 20 000 0000"
+								value={values.checkoutWhatsappNumber}
+								aria-invalid={whatsappInvalid}
+								aria-describedby={
+									whatsappInvalid
+										? "setting-checkoutWhatsappNumber-error"
+										: undefined
+								}
+								onChange={(event) =>
+									set(
+										"checkoutWhatsappNumber",
+										event.target.value,
+									)
+								}
+							/>
+							{whatsappInvalid && (
+								<p
+									id="setting-checkoutWhatsappNumber-error"
+									className="mt-2 text-[12px] text-destructive"
+								>
+									That does not look like a phone number.
+									Include the country code.
+								</p>
+							)}
+						</div>
+					</div>
+				</div>
+			</AdminSection>
+
+			<AdminSection
 				title="Fulfilment"
 				description="How long an order may sit before the back office starts asking about it."
 				className="mt-12"
@@ -154,7 +287,7 @@ export function StoreSettingsForm({ settings }: { settings: StoreSettings }) {
 							{hasInvalid
 								? "Fix the highlighted field to save."
 								: changed.length === 1
-									? `Unsaved change to ${FIELDS_BY_KEY.get(changed[0].key)?.label.toLowerCase()}.`
+									? `Unsaved change to ${fieldLabel(changed[0])}.`
 									: `${changed.length} unsaved changes.`}
 						</p>
 						<div className="flex items-center gap-2.5">

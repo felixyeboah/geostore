@@ -62,7 +62,10 @@ export async function setStoreSettings(
 	values: Partial<StoreSettings>,
 	updatedBy: string,
 ) {
-	const entries = Object.entries(values) as [keyof StoreSettings, number][];
+	const entries = Object.entries(values) as [
+		keyof StoreSettings,
+		StoreSettings[keyof StoreSettings],
+	][];
 	if (entries.length === 0) {
 		return;
 	}

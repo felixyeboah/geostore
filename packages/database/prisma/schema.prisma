@@ -257,6 +257,10 @@ enum StorePaymentMethod {
   CARD
   MOBILE_MONEY
   CASH_ON_DELIVERY
+  // The shop is taking orders over WhatsApp instead of charging online: the
+  // order is confirmed in chat and the money is arranged there or collected
+  // on delivery. Settles like cash on delivery everywhere downstream.
+  WHATSAPP
 }
 
 enum InventoryEventType {

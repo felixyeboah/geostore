@@ -4,7 +4,9 @@ import {
 	toCheckoutSuccessOrder,
 } from "@commerce/components/CheckoutSuccess";
 import { canReadStoreOrder } from "@commerce/lib/order-access";
+import { formatMoney, whatsAppLink } from "@repo/commerce";
 import { getStoreOrderByNumber } from "@repo/database";
+import { getStorefrontCheckout } from "@shared/lib/store-settings";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -32,9 +34,29 @@ export default async function CheckoutSuccessPage({
 			token: accessToken,
 		});
 
+	// WhatsApp orders end by handing the customer to the shop's chat, with the
+	// order spelled out so nobody has to retype a number or a total.
+	let whatsappHref: string | null = null;
+	if (isAllowed && order && order.paymentMethod === "WHATSAPP") {
+		const checkout = await getStorefrontCheckout();
+		const lines = order.items.map(
+			(item) =>
+				`${item.quantity}× ${item.productName}${item.variantName ? ` (${item.variantName})` : ""}`,
+		);
+		whatsappHref = whatsAppLink(
+			checkout.whatsappNumber,
+			[
+				`Hi GeoStoresGH — I've just placed order ${order.orderNumber}:`,
+				...lines,
+				`Total: ${formatMoney(order.totalInPesewas)}`,
+			].join("\n"),
+		);
+	}
+
 	return (
 		<CheckoutSuccess
 			order={isAllowed && order ? toCheckoutSuccessOrder(order) : null}
+			whatsappHref={whatsappHref}
 		/>
 	);
 }

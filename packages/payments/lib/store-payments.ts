@@ -5,7 +5,8 @@ export type StorePaymentMethod =
 	| "ONLINE"
 	| "CARD"
 	| "MOBILE_MONEY"
-	| "CASH_ON_DELIVERY";
+	| "CASH_ON_DELIVERY"
+	| "WHATSAPP";
 
 export type StorePaymentProvider = "reevit" | "mock";
 
@@ -72,7 +73,7 @@ export function mapStorePaymentMethod(
 
 /** True when the order is settled online rather than in cash on the doorstep. */
 export function isOnlinePaymentMethod(method: StorePaymentMethod): boolean {
-	return method !== "CASH_ON_DELIVERY";
+	return method !== "CASH_ON_DELIVERY" && method !== "WHATSAPP";
 }
 
 export function verifyReevitSignature(

@@ -1124,7 +1124,11 @@ export async function createPendingStoreOrder(
 		return existing;
 	}
 
-	const isCash = input.paymentMethod === "CASH_ON_DELIVERY";
+	// WhatsApp orders settle like cash on delivery: confirmed at placement,
+	// money arranged in chat or collected at the door — no payment intent.
+	const settlesOnDelivery =
+		input.paymentMethod === "CASH_ON_DELIVERY" ||
+		input.paymentMethod === "WHATSAPP";
 
 	// Read before the transaction opens: the rule is a separate row, and
 	// holding the write lock open while fetching it buys nothing.
@@ -1141,7 +1145,7 @@ export async function createPendingStoreOrder(
 			deliveryRule,
 		);
 		const orderNumber = createOrderNumber();
-		const status = isCash ? "CONFIRMED" : "PENDING";
+		const status = settlesOnDelivery ? "CONFIRMED" : "PENDING";
 
 		const order = await transaction.order.create({
 			data: {
@@ -1165,7 +1169,12 @@ export async function createPendingStoreOrder(
 				transactions: {
 					create: {
 						reference: `PEND-${randomUUID().toUpperCase()}`,
-						provider: isCash ? "cash" : "reevit",
+						provider:
+							input.paymentMethod === "WHATSAPP"
+								? "whatsapp"
+								: settlesOnDelivery
+									? "cash"
+									: "reevit",
 						paymentMethod: input.paymentMethod,
 						status: "PENDING",
 						amountInPesewas: subtotalInPesewas + deliveryInPesewas,
@@ -1384,8 +1393,22 @@ export async function getStoreOrderByNumber(orderNumber: string) {
 	});
 }
 
+const ADMIN_ORDER_INCLUDE = {
+	items: true,
+	transactions: { orderBy: { createdAt: "desc" as const } },
+	statusEvents: { orderBy: { createdAt: "asc" as const } },
+	user: { select: { name: true, email: true, image: true } },
+};
+
 export async function getAdminStoreOrder(id: string) {
-	return getStoreOrderById(id);
+	return db.order.findUnique({ where: { id }, include: ADMIN_ORDER_INCLUDE });
+}
+
+export async function getAdminStoreOrderByNumber(orderNumber: string) {
+	return db.order.findUnique({
+		where: { orderNumber },
+		include: ADMIN_ORDER_INCLUDE,
+	});
 }
 
 export async function markCashOnDeliveryPaid(orderId: string, actorId: string) {
@@ -1393,9 +1416,12 @@ export async function markCashOnDeliveryPaid(orderId: string, actorId: string) {
 		const order = await transaction.order.findUniqueOrThrow({
 			where: { id: orderId },
 		});
-		if (order.paymentMethod !== "CASH_ON_DELIVERY") {
+		if (
+			order.paymentMethod !== "CASH_ON_DELIVERY" &&
+			order.paymentMethod !== "WHATSAPP"
+		) {
 			throw new StoreOperationError(
-				"Only cash on delivery orders can be marked paid this way.",
+				"Only orders settled on delivery can be marked paid this way.",
 			);
 		}
 		if (order.paymentStatus === "PAID") {
@@ -2285,6 +2311,7 @@ export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
 	const settledPaymentOrders = orders.filter(
 		(order) =>
 			order.paymentMethod !== "CASH_ON_DELIVERY" &&
+			order.paymentMethod !== "WHATSAPP" &&
 			(order.paymentStatus === "PAID" ||
 				order.paymentStatus === "FAILED" ||
 				order.paymentStatus === "REFUNDED"),
@@ -2319,10 +2346,15 @@ export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
 }
 
 // An order is waiting on the store once the customer has done their part:
-// paid online, or chosen cash on delivery (which is only ever paid at the door).
+// paid online, or chosen cash on delivery / WhatsApp checkout, both of which
+// are only ever paid at the door.
 const AWAITING_DISPATCH_WHERE: Prisma.OrderWhereInput = {
 	status: { in: ["PENDING", "CONFIRMED", "PROCESSING"] },
-	OR: [{ paymentStatus: "PAID" }, { paymentMethod: "CASH_ON_DELIVERY" }],
+	OR: [
+		{ paymentStatus: "PAID" },
+		{ paymentMethod: "CASH_ON_DELIVERY" },
+		{ paymentMethod: "WHATSAPP" },
+	],
 };
 
 export async function countOrdersAwaitingDispatch() {

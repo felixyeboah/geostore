@@ -59,6 +59,7 @@ const METHOD_LABELS: Record<PaymentMethod, string> = {
 	CARD: "Card",
 	MOBILE_MONEY: "Mobile money",
 	CASH_ON_DELIVERY: "Cash on delivery",
+	WHATSAPP: "WhatsApp",
 };
 
 const MONO = "font-mono tabular-nums";

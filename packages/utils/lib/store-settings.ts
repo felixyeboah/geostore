@@ -19,6 +19,17 @@ export interface StoreSettings {
 	freeDeliveryOverInPesewas: number;
 	/** How long a paid order may sit unshipped before the back office flags it. */
 	dispatchWindowHours: number;
+	/**
+	 * Whether checkout offers online payment. Off means the shop is taking
+	 * orders over WhatsApp and collecting payment on delivery instead.
+	 */
+	onlinePaymentsEnabled: boolean;
+	/**
+	 * The WhatsApp line checkout orders point at. Blank falls back to the
+	 * storefront's WhatsApp chrome value, so the shop only keeps two numbers
+	 * when the checkout line genuinely differs from the public one.
+	 */
+	checkoutWhatsappNumber: string;
 }
 
 export type StoreSettingKey = keyof StoreSettings;
@@ -29,6 +40,8 @@ export const STORE_SETTINGS_DEFAULTS: StoreSettings = {
 	deliveryFeeInPesewas: DEFAULT_DELIVERY_RULE.feeInPesewas,
 	freeDeliveryOverInPesewas: DEFAULT_DELIVERY_RULE.freeOverInPesewas,
 	dispatchWindowHours: DEFAULT_DISPATCH_WINDOW_HOURS,
+	onlinePaymentsEnabled: true,
+	checkoutWhatsappNumber: "",
 };
 
 /**
@@ -39,13 +52,20 @@ export const STORE_SETTING_KEYS: Record<StoreSettingKey, string> = {
 	deliveryFeeInPesewas: "store.deliveryFeeInPesewas",
 	freeDeliveryOverInPesewas: "store.freeDeliveryOverInPesewas",
 	dispatchWindowHours: "store.dispatchWindowHours",
+	onlinePaymentsEnabled: "store.onlinePaymentsEnabled",
+	checkoutWhatsappNumber: "store.checkoutWhatsappNumber",
 };
 
 export const STORE_SETTING_STORAGE_KEYS: string[] =
 	Object.values(STORE_SETTING_KEYS);
 
+/** The settings that are numbers — the ones STORE_SETTING_FIELDS can hold. */
+export type NumericStoreSettingKey = {
+	[K in StoreSettingKey]: StoreSettings[K] extends number ? K : never;
+}[StoreSettingKey];
+
 export interface StoreSettingField {
-	key: StoreSettingKey;
+	key: NumericStoreSettingKey;
 	label: string;
 	help: string;
 	/**
@@ -114,6 +134,18 @@ export function resolveStoreSettings(
 		) {
 			resolved[field.key] = value;
 		}
+	}
+
+	// The toggle is stored as the string "false"; anything else — including a
+	// missing row — is the shipped behaviour, which is payments on.
+	if (overrides[STORE_SETTING_KEYS.onlinePaymentsEnabled] === "false") {
+		resolved.onlinePaymentsEnabled = false;
+	}
+
+	const whatsapp =
+		overrides[STORE_SETTING_KEYS.checkoutWhatsappNumber]?.trim();
+	if (whatsapp) {
+		resolved.checkoutWhatsappNumber = whatsapp;
 	}
 
 	return resolved;
@@ -206,6 +238,44 @@ export function sanitiseStoreSettings(raw: Record<string, string>): {
 		}
 
 		values[field.key] = value;
+	}
+
+	// The checkout toggle is not a number, so it does not ride the field loop
+	// above. Anything that is not plainly "true" or "false" is reported rather
+	// than guessed at — this switch decides whether money can be taken online.
+	const paymentsInput = raw.onlinePaymentsEnabled;
+	if (paymentsInput !== undefined) {
+		if (paymentsInput === "true" || paymentsInput === "false") {
+			values.onlinePaymentsEnabled = paymentsInput === "true";
+		} else {
+			issues.push({
+				key: "onlinePaymentsEnabled",
+				message: "Choose whether online payment is on or off.",
+			});
+		}
+	}
+
+	const whatsappInput = raw.checkoutWhatsappNumber;
+	if (whatsappInput !== undefined) {
+		const number = whatsappInput.trim();
+		// Blank is meaningful: it clears the override and the storefront's own
+		// WhatsApp number takes over at checkout.
+		if (number === "") {
+			values.checkoutWhatsappNumber = "";
+		} else if (number.length > 32) {
+			issues.push({
+				key: "checkoutWhatsappNumber",
+				message: "Keep it under 32 characters.",
+			});
+		} else if (!/^[+0-9][0-9 ()-]{4,}$/.test(number)) {
+			issues.push({
+				key: "checkoutWhatsappNumber",
+				message:
+					"That does not look like a phone number. Include the country code.",
+			});
+		} else {
+			values.checkoutWhatsappNumber = number;
+		}
 	}
 
 	return { values, issues };

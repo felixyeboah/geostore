@@ -1,6 +1,7 @@
 import { AdminHeader, AdminSection } from "@admin/components/AdminPage";
 import { StoreSettingsForm } from "@admin/components/settings/StoreSettingsForm";
-import { getStoreSettings } from "@repo/database";
+import { resolveStorefrontChrome } from "@repo/commerce";
+import { getStorefrontSettings, getStoreSettings } from "@repo/database";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -15,7 +16,11 @@ export const metadata: Metadata = { title: "Settings" };
  * at all and were sitting in source code, the delivery fee among them.
  */
 export default async function AdminSettingsPage() {
-	const settings = await getStoreSettings();
+	const [settings, chromeOverrides] = await Promise.all([
+		getStoreSettings(),
+		getStorefrontSettings(),
+	]);
+	const chrome = resolveStorefrontChrome(chromeOverrides);
 
 	return (
 		<div className="pt-10 pb-16">
@@ -26,7 +31,10 @@ export default async function AdminSettingsPage() {
 			/>
 
 			<div className="mt-10">
-				<StoreSettingsForm settings={settings} />
+				<StoreSettingsForm
+					settings={settings}
+					fallbackWhatsappNumber={chrome.whatsapp}
+				/>
 			</div>
 
 			<AdminSection

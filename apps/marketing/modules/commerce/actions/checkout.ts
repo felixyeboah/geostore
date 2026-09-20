@@ -13,6 +13,7 @@ import {
 	createPendingStoreOrder,
 	getRecipientName,
 	getStoreOrderById,
+	getStoreSettings,
 	markStoreOrderPaymentFailed,
 } from "@repo/database";
 import { logger } from "@repo/logs";
@@ -53,6 +54,7 @@ const placeStoreOrderSchema = z.object({
 		"CARD",
 		"MOBILE_MONEY",
 		"CASH_ON_DELIVERY",
+		"WHATSAPP",
 	]),
 	// One per checkout attempt. Without it a retried submit — a flaky
 	// connection, a second tab, an impatient double-click that beats the
@@ -87,7 +89,38 @@ export async function placeStoreOrderAction(
 
 	try {
 		const session = await getSession();
-		const provider = getStorePaymentProvider();
+		const settings = await getStoreSettings();
+		const method = parsedInput.data.paymentMethod;
+
+		// The form offers what the store settings allow, but the setting is
+		// checked again here: a stale checkout tab — or a hand-rolled request —
+		// cannot put an online payment through after the shop has switched to
+		// WhatsApp ordering, nor a WhatsApp order while payments are on. Cash on
+		// delivery is offered in both modes.
+		const wantsOnline =
+			method === "ONLINE" ||
+			method === "CARD" ||
+			method === "MOBILE_MONEY";
+		if (wantsOnline && !settings.onlinePaymentsEnabled) {
+			return {
+				success: false,
+				message:
+					"Online payment is off right now. Order over WhatsApp or pay on delivery instead.",
+			};
+		}
+		if (method === "WHATSAPP" && settings.onlinePaymentsEnabled) {
+			return {
+				success: false,
+				message:
+					"That payment method is not available. Choose pay online or cash on delivery.",
+			};
+		}
+
+		// The provider is only resolved for methods that actually charge online:
+		// a shop running on WhatsApp and cash on delivery may have no payment
+		// provider configured at all, and that must not block an order that
+		// takes no money.
+		const provider = wantsOnline ? getStorePaymentProvider() : null;
 
 		if (provider === "mock") {
 			// Defence in depth. `getStorePaymentProvider` already refuses to
@@ -127,7 +160,7 @@ export async function placeStoreOrderAction(
 			paymentMethod: parsedInput.data.paymentMethod,
 		});
 
-		if (parsedInput.data.paymentMethod === "CASH_ON_DELIVERY") {
+		if (method === "CASH_ON_DELIVERY" || method === "WHATSAPP") {
 			await sendOrderConfirmationEmail(order);
 			revalidateAdminAndOrders();
 			return {
@@ -269,7 +302,10 @@ async function sendOrderConfirmationEmail(order: {
 				name: getRecipientName(order.shippingAddress),
 				orderNumber: order.orderNumber,
 				totalLabel: formatMoney(order.totalInPesewas),
-				isPayOnDelivery: order.paymentMethod === "CASH_ON_DELIVERY",
+				isPayOnDelivery:
+					order.paymentMethod === "CASH_ON_DELIVERY" ||
+					order.paymentMethod === "WHATSAPP",
+				isWhatsAppOrder: order.paymentMethod === "WHATSAPP",
 				orderUrl: orderUrl.toString(),
 			},
 		});

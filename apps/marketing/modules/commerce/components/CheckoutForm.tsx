@@ -4,7 +4,7 @@ import { placeStoreOrderAction } from "@commerce/actions/checkout";
 import { useCart } from "@commerce/components/CartProvider";
 import { OrderSummary } from "@commerce/components/OrderSummary";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatMoney } from "@repo/commerce";
+import { formatMoney, whatsAppLink } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
 	Form,
@@ -22,6 +22,7 @@ import {
 	EditorialHeader,
 	EditorialShell,
 } from "@shared/components/EditorialPage";
+import type { StorefrontCheckout } from "@shared/lib/store-settings";
 import { ArrowLeftIcon, LockKeyholeIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -54,7 +55,7 @@ const checkoutSchema = z.object({
 		.trim()
 		.max(300, "Keep delivery notes under 300 characters.")
 		.optional(),
-	paymentMethod: z.enum(["ONLINE", "CASH_ON_DELIVERY"]),
+	paymentMethod: z.enum(["ONLINE", "CASH_ON_DELIVERY", "WHATSAPP"]),
 });
 
 type CheckoutValues = z.infer<typeof checkoutSchema>;
@@ -72,13 +73,21 @@ export interface CheckoutPrefill {
 export function CheckoutForm({
 	prefill = {},
 	paymentProvider,
+	checkout,
 }: {
 	prefill?: CheckoutPrefill;
 	paymentProvider: "reevit" | "mock";
+	checkout: StorefrontCheckout;
 }) {
 	const { items, summary, isHydrated, clearCart } = useCart();
 	const router = useRouter();
 	const isCompletingCheckout = useRef(false);
+	// With online payment off, WhatsApp ordering is offered only when the
+	// number can actually be dialled — otherwise cash on delivery stands
+	// alone rather than showing a link that goes nowhere.
+	const whatsappHref = checkout.onlinePaymentsEnabled
+		? null
+		: whatsAppLink(checkout.whatsappNumber);
 	const form = useForm<CheckoutValues>({
 		resolver: zodResolver(checkoutSchema),
 		defaultValues: {
@@ -90,7 +99,11 @@ export function CheckoutForm({
 			city: prefill.city ?? "Accra",
 			region: prefill.region ?? "Greater Accra",
 			note: "",
-			paymentMethod: "ONLINE",
+			paymentMethod: checkout.onlinePaymentsEnabled
+				? "ONLINE"
+				: whatsappHref
+					? "WHATSAPP"
+					: "CASH_ON_DELIVERY",
 		},
 	});
 
@@ -179,9 +192,8 @@ export function CheckoutForm({
 		);
 	}
 
-	const isTwoStep =
-		paymentProvider === "reevit" &&
-		form.watch("paymentMethod") !== "CASH_ON_DELIVERY";
+	const method = form.watch("paymentMethod");
+	const isTwoStep = paymentProvider === "reevit" && method === "ONLINE";
 	const submitLabel = isTwoStep
 		? `Continue to payment · ${formatMoney(summary.totalInPesewas)}`
 		: `Place order · ${formatMoney(summary.totalInPesewas)}`;
@@ -202,7 +214,11 @@ export function CheckoutForm({
 						<EditorialHeader
 							eyebrow={`Secure checkout · Step 1 of ${isTwoStep ? "2" : "1"}`}
 							title="Where should we deliver?"
-							subtitle="You are only charged once mobile money or card payment succeeds. Cash on delivery is settled with the rider."
+							subtitle={
+								checkout.onlinePaymentsEnabled
+									? "You are only charged once mobile money or card payment succeeds. Cash on delivery is settled with the rider."
+									: "Confirm the order on WhatsApp or pay the rider on delivery — nothing is charged online."
+							}
 						/>
 
 						<Form {...form}>
@@ -431,16 +447,35 @@ export function CheckoutForm({
 										name="paymentMethod"
 										render={({ field }) => (
 											<div className="mt-7 border-border border-t">
-												<PaymentChoice
-													selected={
-														field.value === "ONLINE"
-													}
-													title="Pay online"
-													description="Mobile money or card. You pick the method on the secure payment page."
-													onSelect={() =>
-														field.onChange("ONLINE")
-													}
-												/>
+												{checkout.onlinePaymentsEnabled ? (
+													<PaymentChoice
+														selected={
+															field.value ===
+															"ONLINE"
+														}
+														title="Pay online"
+														description="Mobile money or card. You pick the method on the secure payment page."
+														onSelect={() =>
+															field.onChange(
+																"ONLINE",
+															)
+														}
+													/>
+												) : whatsappHref ? (
+													<PaymentChoice
+														selected={
+															field.value ===
+															"WHATSAPP"
+														}
+														title="Contact on WhatsApp"
+														description="We confirm the order with you in chat, then you pay by mobile money or on delivery."
+														onSelect={() =>
+															field.onChange(
+																"WHATSAPP",
+															)
+														}
+													/>
+												) : null}
 												<PaymentChoice
 													selected={
 														field.value ===

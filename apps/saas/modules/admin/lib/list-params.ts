@@ -76,6 +76,7 @@ export const PAYMENT_METHODS = [
 	"CARD",
 	"MOBILE_MONEY",
 	"CASH_ON_DELIVERY",
+	"WHATSAPP",
 ] as const;
 
 export const TRANSACTION_SORTS = ["created", "amount"] as const;

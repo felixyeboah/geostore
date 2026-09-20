@@ -5,6 +5,7 @@ import {
 	STORE_SETTINGS_DEFAULTS,
 } from "@repo/utils";
 import { cache } from "react";
+import { getStorefrontChrome } from "./storefront-chrome";
 
 /**
  * The delivery rule this render should quote.
@@ -28,6 +29,51 @@ export const getStorefrontDeliveryRule = cache(
 				error,
 			);
 			return deliveryRuleFromSettings(STORE_SETTINGS_DEFAULTS);
+		}
+	},
+);
+
+export interface StorefrontCheckout {
+	/** Whether the checkout offers pay-online. Off means WhatsApp ordering. */
+	onlinePaymentsEnabled: boolean;
+	/**
+	 * The WhatsApp line checkout points at: the checkout override where one is
+	 * set, the storefront's public WhatsApp number otherwise. Never blank in
+	 * practice — chrome resolves to a shipped default — but a number that
+	 * cannot be dialled is handled by `whatsAppLink`, not here.
+	 */
+	whatsappNumber: string;
+}
+
+/**
+ * How checkout behaves for this render: online payment on or off, and which
+ * WhatsApp line orders route to when it is off.
+ *
+ * Same fallback contract as the delivery rule — a database wobble leaves the
+ * shop on its shipped behaviour (payments on, public WhatsApp number) rather
+ * than breaking checkout.
+ */
+export const getStorefrontCheckout = cache(
+	async (): Promise<StorefrontCheckout> => {
+		try {
+			const settings = await getStoreSettings();
+			const chrome = await getStorefrontChrome();
+			return {
+				onlinePaymentsEnabled: settings.onlinePaymentsEnabled,
+				whatsappNumber:
+					settings.checkoutWhatsappNumber || chrome.whatsapp,
+			};
+		} catch (error) {
+			console.error(
+				"[store-settings] falling back to shipped checkout behaviour",
+				error,
+			);
+			const chrome = await getStorefrontChrome();
+			return {
+				onlinePaymentsEnabled:
+					STORE_SETTINGS_DEFAULTS.onlinePaymentsEnabled,
+				whatsappNumber: chrome.whatsapp,
+			};
 		}
 	},
 );
