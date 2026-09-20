@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { createClient } from "@libsql/client";
 import { expect, type Page, test } from "@playwright/test";
 import { chooseAdminOption } from "./helpers";
 
@@ -16,9 +16,9 @@ const STOREFRONT =
  * admin stock and category edits, cancellation restock, and image-host
  * validation on the product form.
  *
- * Fixtures are seeded straight into Postgres so the assertions can be about
- * exact money amounts and exact stock numbers rather than whatever the seed
- * catalogue happens to hold.
+ * Fixtures are seeded straight into the database so the assertions can be
+ * about exact money amounts and exact stock numbers rather than whatever the
+ * seed catalogue happens to hold.
  */
 
 const ADMIN = { email: "qa-admin@geostore.test", password: "QaAdmin!2345" };
@@ -43,38 +43,35 @@ const DISALLOWED_IMAGE_URL = "https://images.evil-example.com/x.png";
 const BASE_PRICE_IN_PESEWAS = 50_000; // GH₵ 500
 const SEED_STOCK = 2;
 
-function sql(query: string): string {
-	return execFileSync(
-		"docker",
-		[
-			"exec",
-			"geostore-postgres",
-			"psql",
-			"-U",
-			"postgres",
-			"-d",
-			"geostore",
-			"-v",
-			"ON_ERROR_STOP=1",
-			"-t",
-			"-A",
-			"-c",
-			query,
-		],
-		{ encoding: "utf8" },
-	).trim();
+// The store runs on Turso (libSQL over HTTP) — there is no Postgres
+// container to exec into, so fixtures talk to the same DATABASE_URL the app
+// does. The result is shaped the way `psql -t -A` printed it: one row per
+// line, columns joined by "|".
+const db = createClient({
+	url: process.env.DATABASE_URL ?? "",
+	authToken: process.env.DATABASE_AUTH_TOKEN,
+});
+
+async function sql(query: string): Promise<string> {
+	const { rows } = await db.execute(query);
+	return rows.map((row) => Object.values(row).join("|")).join("\n");
 }
 
-function readProductStock(): number {
+/** The timestamp format Prisma writes through the libSQL driver. */
+function now(): string {
+	return new Date().toISOString().replace("Z", "+00:00");
+}
+
+async function readProductStock(): Promise<number> {
 	return Number(
-		sql(
+		await sql(
 			`SELECT "stockQuantity" FROM store_product WHERE id = '${PRODUCT_ID}'`,
 		),
 	);
 }
 
-function setProduct(fields: string) {
-	sql(`UPDATE store_product SET ${fields} WHERE id = '${PRODUCT_ID}'`);
+async function setProduct(fields: string) {
+	await sql(`UPDATE store_product SET ${fields} WHERE id = '${PRODUCT_ID}'`);
 }
 
 async function signIn(page: Page, user: { email: string; password: string }) {
@@ -148,8 +145,9 @@ async function readLineTotal(page: Page): Promise<number | undefined> {
 
 test.describe.configure({ mode: "serial" });
 
-test.beforeAll(() => {
-	sql(
+test.beforeAll(async () => {
+	const stamp = now();
+	await sql(
 		`INSERT INTO store_product (
 			id, name, slug, "shortDescription", description, brand, sku, status,
 			"priceInPesewas", "stockQuantity", "lowStockThreshold", "isFeatured",
@@ -160,24 +158,26 @@ test.beforeAll(() => {
 			'This product exists only so the automated QA coverage suite can exercise cart mutation, the delivery threshold, order history, and restock-on-cancel end to end.',
 			'QA Labs', '${PRODUCT_SKU}', 'ACTIVE',
 			${BASE_PRICE_IN_PESEWAS}, ${SEED_STOCK}, 1, false,
-			'{}'::jsonb,
+			'{}',
 			(SELECT id FROM store_category WHERE slug = 'phones'),
-			NOW(), NOW(), NOW()
+			'${stamp}', '${stamp}', '${stamp}'
 		)`,
 	);
-	sql(
+	await sql(
 		`INSERT INTO store_product_image (id, "productId", url, alt, "sortOrder", "createdAt")
 		VALUES ('${PRODUCT_ID}img', '${PRODUCT_ID}',
 			'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
-			'${PRODUCT_NAME}', 0, NOW())`,
+			'${PRODUCT_NAME}', 0, '${stamp}')`,
 	);
 });
 
-test.afterAll(() => {
+test.afterAll(async () => {
 	// Orders reference products with ON DELETE RESTRICT, so the fixture's
 	// orders have to go first.
-	const orderIds = sql(
-		`SELECT DISTINCT "orderId" FROM store_order_item WHERE "productId" = '${PRODUCT_ID}'`,
+	const orderIds = (
+		await sql(
+			`SELECT DISTINCT "orderId" FROM store_order_item WHERE "productId" = '${PRODUCT_ID}'`,
+		)
 	)
 		.split("\n")
 		.map((id) => id.trim())
@@ -185,24 +185,25 @@ test.afterAll(() => {
 
 	if (orderIds.length > 0) {
 		const list = orderIds.map((id) => `'${id}'`).join(",");
-		sql(
+		await sql(
 			`DELETE FROM store_inventory_event WHERE "productId" = '${PRODUCT_ID}'`,
 		);
-		sql(`DELETE FROM store_review WHERE "productId" = '${PRODUCT_ID}'`);
-		sql(`DELETE FROM store_order_item WHERE "orderId" IN (${list})`);
-		sql(
+		await sql(`DELETE FROM store_review WHERE "productId" = '${PRODUCT_ID}'`);
+		await sql(`DELETE FROM store_order_item WHERE "orderId" IN (${list})`);
+		await sql(
 			`DELETE FROM store_order_status_event WHERE "orderId" IN (${list})`,
 		);
-		sql(`DELETE FROM store_transaction WHERE "orderId" IN (${list})`);
-		sql(`DELETE FROM store_order WHERE id IN (${list})`);
+		await sql(`DELETE FROM store_transaction WHERE "orderId" IN (${list})`);
+		await sql(`DELETE FROM store_order WHERE id IN (${list})`);
 	}
 
-	sql(
+	await sql(
 		`DELETE FROM store_inventory_event WHERE "productId" = '${PRODUCT_ID}'`,
 	);
-	sql(`DELETE FROM store_product WHERE id = '${PRODUCT_ID}'`);
-	sql(`DELETE FROM store_product WHERE slug = '${REJECTED_SLUG}'`);
-	sql(`DELETE FROM store_category WHERE slug = '${CATEGORY_SLUG}'`);
+	await sql(`DELETE FROM store_product WHERE id = '${PRODUCT_ID}'`);
+	await sql(`DELETE FROM store_product WHERE slug = '${REJECTED_SLUG}'`);
+	await sql(`DELETE FROM store_category WHERE slug = '${CATEGORY_SLUG}'`);
+	db.close();
 });
 
 test.describe("buyer cart and delivery", () => {
@@ -265,7 +266,7 @@ test.describe("buyer cart and delivery", () => {
 	test("cart quantity is capped at the product stock quantity", async ({
 		page,
 	}) => {
-		setProduct('"stockQuantity" = 1');
+		await setProduct('"stockQuantity" = 1');
 
 		try {
 			await addSeededProductToBag(page);
@@ -307,13 +308,13 @@ test.describe("buyer cart and delivery", () => {
 				.poll(async () => (await readOrderSummary(page)).subtotal)
 				.toBeLessThanOrEqual(500);
 		} finally {
-			setProduct(`"stockQuantity" = ${SEED_STOCK}`);
+			await setProduct(`"stockQuantity" = ${SEED_STOCK}`);
 		}
 	});
 
 	test("free delivery starts exactly at GH₵1,000", async ({ page }) => {
 		// GH₵ 999 — one pesewa under the threshold.
-		setProduct('"priceInPesewas" = 99900');
+		await setProduct('"priceInPesewas" = 99900');
 		await addSeededProductToBag(page);
 		await page.goto(`${STOREFRONT}/cart`);
 		await expect
@@ -324,7 +325,7 @@ test.describe("buyer cart and delivery", () => {
 		).toBeVisible();
 
 		// GH₵ 1,000 — exactly at the threshold.
-		setProduct('"priceInPesewas" = 100000');
+		await setProduct('"priceInPesewas" = 100000');
 		await page.evaluate(() =>
 			window.localStorage.removeItem("geostoresgh-cart-v1"),
 		);
@@ -341,7 +342,7 @@ test.describe("buyer cart and delivery", () => {
 			page.getByText("Your order qualifies for free delivery in Accra."),
 		).toBeVisible();
 
-		setProduct(`"priceInPesewas" = ${BASE_PRICE_IN_PESEWAS}`);
+		await setProduct(`"priceInPesewas" = ${BASE_PRICE_IN_PESEWAS}`);
 	});
 
 	/**
@@ -353,7 +354,7 @@ test.describe("buyer cart and delivery", () => {
 	test("a guest order is recorded and shows in the admin orders list", async ({
 		page,
 	}) => {
-		const stockBefore = readProductStock();
+		const stockBefore = await readProductStock();
 		const guestEmail = `qa-guest+${Date.now()}@geostore.test`;
 
 		await addSeededProductToBag(page);
@@ -386,12 +387,12 @@ test.describe("buyer cart and delivery", () => {
 		expect(orderNumber, "order number on the confirmation").toBeTruthy();
 
 		expect(
-			sql(
+			await sql(
 				`SELECT "customerEmail" FROM store_order WHERE "orderNumber" = '${orderNumber}'`,
 			),
 			"the order records the email given at checkout",
 		).toBe(guestEmail);
-		expect(readProductStock()).toBe(stockBefore - 1);
+		expect(await readProductStock()).toBe(stockBefore - 1);
 
 		await signIn(page, ADMIN);
 		await page.goto("/admin/orders");
@@ -489,7 +490,7 @@ test.describe("admin catalogue and fulfilment", () => {
 	test("cancelling an order restocks the product and records a RETURN event", async ({
 		page,
 	}) => {
-		const orderNumber = sql(
+		const orderNumber = await sql(
 			`SELECT o."orderNumber" FROM store_order o
 			 JOIN store_order_item i ON i."orderId" = o.id
 			 WHERE i."productId" = '${PRODUCT_ID}'
@@ -499,9 +500,9 @@ test.describe("admin catalogue and fulfilment", () => {
 			/^GST-/,
 		);
 
-		const stockBefore = readProductStock();
+		const stockBefore = await readProductStock();
 		const returnEventsBefore = Number(
-			sql(
+			await sql(
 				`SELECT COUNT(*) FROM store_inventory_event WHERE "productId" = '${PRODUCT_ID}' AND type = 'RETURN'`,
 			),
 		);
@@ -544,7 +545,7 @@ test.describe("admin catalogue and fulfilment", () => {
 			)
 			.toBe(returnEventsBefore + 1);
 		expect(
-			sql(
+			await sql(
 				`SELECT quantity || '|' || reason FROM store_inventory_event
 				 WHERE "productId" = '${PRODUCT_ID}' AND type = 'RETURN'
 				 ORDER BY "createdAt" DESC LIMIT 1`,
@@ -602,7 +603,7 @@ test.describe("admin catalogue and fulfilment", () => {
 		await expect(inlineMessages.first()).toBeVisible({ timeout: 20_000 });
 		await expect(page).toHaveURL(/\/admin\/products\?new=true/);
 		expect(
-			sql(
+			await sql(
 				`SELECT COUNT(*) FROM store_product WHERE slug = '${REJECTED_SLUG}' OR sku = '${REJECTED_SKU}'`,
 			),
 			"no product row was created",

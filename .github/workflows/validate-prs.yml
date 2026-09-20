@@ -59,6 +59,13 @@ jobs:
     name: Run e2e tests
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      # The Playwright probes and the browser drive 127.0.0.1, so the
+      # canonical URLs have to match it: better-auth rejects a sign-in whose
+      # Origin is not in trustedOrigins, and a localhost cookie jar is a
+      # different host from the one the tests actually visit.
+      NEXT_PUBLIC_SAAS_URL: "http://127.0.0.1:3000"
+      NEXT_PUBLIC_MARKETING_URL: "http://127.0.0.1:3001"
     services:
       libsql:
         image: ghcr.io/tursodatabase/libsql-server:latest
