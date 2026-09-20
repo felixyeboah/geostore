@@ -7,9 +7,9 @@ import { loadOrderListParams } from "@admin/lib/list-params";
 import type { OrderStatusKey } from "@admin/lib/overview";
 import { formatMoney } from "@repo/commerce";
 import {
-	DISPATCH_WINDOW_HOURS,
 	getAdminOrderList,
 	getAdminOrderSummary,
+	getStoreSettings,
 } from "@repo/database";
 import { ArrowRightIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -31,11 +31,14 @@ function getAddressLabel(value: unknown): string {
 }
 
 /** Paid, not yet on its way, and past the window we promise customers. */
-function isLate(order: {
-	paymentStatus: string;
-	status: string;
-	placedAt: Date;
-}): boolean {
+function isLate(
+	order: {
+		paymentStatus: string;
+		status: string;
+		placedAt: Date;
+	},
+	dispatchWindowHours: number,
+): boolean {
 	if (order.paymentStatus !== "PAID") {
 		return false;
 	}
@@ -48,7 +51,7 @@ function isLate(order: {
 	}
 	const hoursWaiting =
 		(Date.now() - order.placedAt.getTime()) / (1000 * 60 * 60);
-	return hoursWaiting > DISPATCH_WINDOW_HOURS;
+	return hoursWaiting > dispatchWindowHours;
 }
 
 export default async function AdminOrdersPage({
@@ -57,6 +60,7 @@ export default async function AdminOrdersPage({
 	searchParams: Promise<SearchParams>;
 }) {
 	const params = await loadOrderListParams(searchParams);
+	const { dispatchWindowHours } = await getStoreSettings();
 
 	const [list, summary] = await Promise.all([
 		getAdminOrderList({
@@ -73,7 +77,7 @@ export default async function AdminOrdersPage({
 			dir: params.dir,
 			page: params.page,
 		}),
-		getAdminOrderSummary(DISPATCH_WINDOW_HOURS),
+		getAdminOrderSummary(dispatchWindowHours),
 	]);
 
 	const rows: OrderRow[] = list.orders.map((order) => ({
@@ -89,7 +93,7 @@ export default async function AdminOrdersPage({
 		paymentMethod: order.paymentMethod,
 		paymentStatus: order.paymentStatus,
 		status: order.status as OrderStatusKey,
-		isLate: isLate(order),
+		isLate: isLate(order, dispatchWindowHours),
 	}));
 
 	// The headline reads as a sentence, so the state of the shop is legible
@@ -97,7 +101,7 @@ export default async function AdminOrdersPage({
 	// the page below it, so narrowing the table never hides what is waiting.
 	const headline = [
 		summary.late
-			? `${summary.late} past the ${DISPATCH_WINDOW_HOURS}-hour window`
+			? `${summary.late} past the ${dispatchWindowHours}-hour window`
 			: null,
 		summary.awaitingDispatch
 			? `${summary.awaitingDispatch} awaiting dispatch`
@@ -111,7 +115,7 @@ export default async function AdminOrdersPage({
 		{
 			key: "late",
 			count: summary.late,
-			title: `Past the ${DISPATCH_WINDOW_HOURS}-hour dispatch window`,
+			title: `Past the ${dispatchWindowHours}-hour dispatch window`,
 			detail: "Paid, and the customer is still waiting",
 			urgent: true,
 		},

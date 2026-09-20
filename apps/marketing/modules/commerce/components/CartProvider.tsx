@@ -4,6 +4,8 @@ import {
 	type CartLine,
 	type CartSummary,
 	calculateCart,
+	DEFAULT_DELIVERY_RULE,
+	type DeliveryRule,
 	type StoreProduct,
 } from "@repo/commerce";
 import {
@@ -23,6 +25,8 @@ export type { CartLine };
 interface CartContextValue {
 	items: CartLine[];
 	summary: CartSummary;
+	/** What the shop currently charges for delivery, as saved in Settings. */
+	deliveryRule: DeliveryRule;
 	isHydrated: boolean;
 	addItem: (
 		product: StoreProduct,
@@ -83,7 +87,25 @@ function isSameLine(left: CartLine, right: CartLine) {
 	);
 }
 
-export function CartProvider({ children }: PropsWithChildren) {
+/**
+ * `deliveryRule` comes from the server on every render, so a fee changed in
+ * the back office reaches the bag on the next page load rather than living on
+ * in a build. It has a default only so the provider stays mountable in tests
+ * and previews; the layout always passes the saved one.
+ */
+export function CartProvider({
+	children,
+	deliveryRule = DEFAULT_DELIVERY_RULE,
+}: PropsWithChildren<{ deliveryRule?: DeliveryRule }>) {
+	// The prop arrives as a fresh object on every server render, so hold it by
+	// its numbers — otherwise the context value changes identity constantly
+	// and every consumer re-renders with it.
+	const { feeInPesewas, freeOverInPesewas } = deliveryRule;
+	const rule = useMemo(
+		() => ({ feeInPesewas, freeOverInPesewas }),
+		[feeInPesewas, freeOverInPesewas],
+	);
+
 	const [items, setItems] = useState<CartLine[]>([]);
 	const [isHydrated, setIsHydrated] = useState(false);
 	const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -147,7 +169,7 @@ export function CartProvider({ children }: PropsWithChildren) {
 		}
 	}, [isHydrated, items]);
 
-	const summary = useMemo(() => calculateCart(items), [items]);
+	const summary = useMemo(() => calculateCart(items, rule), [items, rule]);
 
 	function addItem(product: StoreProduct, quantity = 1, variantId?: string) {
 		setItems((currentItems) => {
@@ -243,6 +265,7 @@ export function CartProvider({ children }: PropsWithChildren) {
 		() => ({
 			items,
 			summary,
+			deliveryRule: rule,
 			isHydrated,
 			addItem,
 			updateQuantity,
@@ -253,7 +276,7 @@ export function CartProvider({ children }: PropsWithChildren) {
 			closeDrawer: () => setDrawerOpen(false),
 			setDrawerOpen,
 		}),
-		[items, summary, isHydrated, isDrawerOpen],
+		[items, summary, rule, isHydrated, isDrawerOpen],
 	);
 
 	return (

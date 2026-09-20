@@ -10,6 +10,7 @@ import {
 	LayoutTemplateIcon,
 	PackageIcon,
 	ReceiptTextIcon,
+	Settings2Icon,
 	ShoppingBagIcon,
 	TagsIcon,
 	UsersIcon,
@@ -72,6 +73,11 @@ export async function getAdminNavItems(): Promise<AdminNavItem[]> {
 			title: t("menu.users"),
 			href: "/admin/users",
 			icon: <UsersIcon />,
+		},
+		{
+			title: t("menu.settings"),
+			href: "/admin/settings",
+			icon: <Settings2Icon />,
 		},
 		...(config.organizations.enable
 			? [

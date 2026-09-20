@@ -3,10 +3,7 @@
 import { useCart } from "@commerce/components/CartProvider";
 import { PaymentMarksRow } from "@commerce/components/PaymentMarks";
 import { QuantityStepper } from "@commerce/components/QuantityStepper";
-import {
-	FREE_DELIVERY_THRESHOLD_IN_PESEWAS,
-	formatMoney,
-} from "@repo/commerce";
+import { formatMoney } from "@repo/commerce";
 import { Sheet, SheetContent, SheetTitle } from "@repo/ui/components/sheet";
 import { ArrowRightIcon, ShoppingBagIcon } from "lucide-react";
 import Image from "next/image";
@@ -21,6 +18,7 @@ export function CartDrawer() {
 	const {
 		items,
 		summary,
+		deliveryRule,
 		isDrawerOpen,
 		setDrawerOpen,
 		closeDrawer,
@@ -29,10 +27,17 @@ export function CartDrawer() {
 	} = useCart();
 
 	const remaining = summary.amountUntilFreeDeliveryInPesewas;
-	const progress = Math.min(
-		100,
-		(summary.subtotalInPesewas / FREE_DELIVERY_THRESHOLD_IN_PESEWAS) * 100,
-	);
+	// A threshold of zero means delivery is free on everything, and dividing
+	// by it would leave the meter at NaN% — full is the honest reading.
+	const progress =
+		deliveryRule.freeOverInPesewas <= 0
+			? 100
+			: Math.min(
+					100,
+					(summary.subtotalInPesewas /
+						deliveryRule.freeOverInPesewas) *
+						100,
+				);
 	const isEmpty = items.length === 0;
 
 	return (

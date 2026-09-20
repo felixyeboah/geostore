@@ -1,9 +1,12 @@
 import {
 	calculateDeliveryFeeInPesewas,
-	FREE_DELIVERY_THRESHOLD_IN_PESEWAS,
+	DEFAULT_DELIVERY_RULE,
+	type DeliveryRule,
 } from "@repo/utils";
 
 export {
+	DEFAULT_DELIVERY_RULE,
+	type DeliveryRule,
 	FREE_DELIVERY_THRESHOLD_IN_PESEWAS,
 	STANDARD_DELIVERY_FEE_IN_PESEWAS,
 } from "@repo/utils";
@@ -38,7 +41,17 @@ export interface CartSummary {
 	canCheckout: boolean;
 }
 
-export function calculateCart(items: CartItemInput[]): CartSummary {
+/**
+ * Prices a bag. The rule is passed in rather than read from a constant,
+ * because an admin can change the fee and the threshold under Settings — and
+ * a quote drawn from stale numbers is how the cart ends up disagreeing with
+ * the checkout. Order creation prices against the saved rule too; this is only
+ * what the shopper is shown.
+ */
+export function calculateCart(
+	items: CartItemInput[],
+	rule: DeliveryRule = DEFAULT_DELIVERY_RULE,
+): CartSummary {
 	const calculatedItems = items.map((item) => ({
 		...item,
 		lineTotalInPesewas: item.priceInPesewas * item.quantity,
@@ -51,7 +64,10 @@ export function calculateCart(items: CartItemInput[]): CartSummary {
 		(total, item) => total + item.lineTotalInPesewas,
 		0,
 	);
-	const deliveryInPesewas = calculateDeliveryFeeInPesewas(subtotalInPesewas);
+	const deliveryInPesewas = calculateDeliveryFeeInPesewas(
+		subtotalInPesewas,
+		rule,
+	);
 
 	return {
 		items: calculatedItems,
@@ -60,7 +76,7 @@ export function calculateCart(items: CartItemInput[]): CartSummary {
 		deliveryInPesewas,
 		totalInPesewas: subtotalInPesewas + deliveryInPesewas,
 		amountUntilFreeDeliveryInPesewas: Math.max(
-			FREE_DELIVERY_THRESHOLD_IN_PESEWAS - subtotalInPesewas,
+			rule.freeOverInPesewas - subtotalInPesewas,
 			0,
 		),
 		canCheckout: calculatedItems.length > 0,

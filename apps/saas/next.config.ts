@@ -1,6 +1,7 @@
 import path from "node:path";
 // @ts-expect-error - PrismaPlugin is not typed
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
+import { config as authConfig } from "@repo/auth/config";
 import { ALLOWED_IMAGE_HOSTS, getUploadImageHosts } from "@repo/utils";
 import type { NextConfig } from "next";
 
@@ -94,11 +95,20 @@ const nextConfig: NextConfig = {
 				destination: "/settings/general",
 				permanent: true,
 			},
-			{
-				source: "/:organizationSlug/settings",
-				destination: "/:organizationSlug/settings/general",
-				permanent: true,
-			},
+			// An unconstrained slug param matches `admin`, so this rule used to
+			// swallow the back office's own /admin/settings into an
+			// organization's account settings — and as a 308, browsers cached
+			// it. Organizations are switched off here, so the rule only exists
+			// for the day they are switched back on.
+			...(authConfig.organizations.enable
+				? [
+						{
+							source: "/:organizationSlug/settings",
+							destination: "/:organizationSlug/settings/general",
+							permanent: true as const,
+						},
+					]
+				: []),
 			{
 				source: "/admin",
 				destination: "/admin/overview",

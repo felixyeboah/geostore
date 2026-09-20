@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { calculateDeliveryFeeInPesewas } from "@repo/utils";
+import {
+	calculateDeliveryFeeInPesewas,
+	DEFAULT_DISPATCH_WINDOW_HOURS,
+} from "@repo/utils";
 import { db } from "../client";
 import {
 	type OrderStatus,
@@ -9,6 +12,7 @@ import {
 	type StorePaymentStatus,
 } from "../generated/client";
 import { StoreOperationError } from "./errors";
+import { getDeliveryRule } from "./store-settings";
 
 /** How a smart collection ranks the catalogue to find its own members. */
 export type StoreSmartCollectionRule = "best-selling" | "newest";
@@ -1036,14 +1040,20 @@ export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
 		return existing;
 	}
 
+	// Read before the transaction opens: the rule is a separate row, and
+	// holding the write lock open while fetching it buys nothing.
+	const deliveryRule = await getDeliveryRule();
+
 	return db.$transaction(async (transaction) => {
 		const orderItems = await reserveOrderItems(transaction, input.items);
 		const subtotalInPesewas = orderItems.reduce(
 			(total, item) => total + item.lineTotalInPesewas,
 			0,
 		);
-		const deliveryInPesewas =
-			calculateDeliveryFeeInPesewas(subtotalInPesewas);
+		const deliveryInPesewas = calculateDeliveryFeeInPesewas(
+			subtotalInPesewas,
+			deliveryRule,
+		);
 		const orderNumber = createOrderNumber();
 
 		const order = await transaction.order.create({
@@ -1116,14 +1126,20 @@ export async function createPendingStoreOrder(
 
 	const isCash = input.paymentMethod === "CASH_ON_DELIVERY";
 
+	// Read before the transaction opens: the rule is a separate row, and
+	// holding the write lock open while fetching it buys nothing.
+	const deliveryRule = await getDeliveryRule();
+
 	return db.$transaction(async (transaction) => {
 		const orderItems = await reserveOrderItems(transaction, input.items);
 		const subtotalInPesewas = orderItems.reduce(
 			(total, item) => total + item.lineTotalInPesewas,
 			0,
 		);
-		const deliveryInPesewas =
-			calculateDeliveryFeeInPesewas(subtotalInPesewas);
+		const deliveryInPesewas = calculateDeliveryFeeInPesewas(
+			subtotalInPesewas,
+			deliveryRule,
+		);
 		const orderNumber = createOrderNumber();
 		const status = isCash ? "CONFIRMED" : "PENDING";
 
@@ -2241,8 +2257,6 @@ const AWAITING_DISPATCH_WHERE: Prisma.OrderWhereInput = {
 	OR: [{ paymentStatus: "PAID" }, { paymentMethod: "CASH_ON_DELIVERY" }],
 };
 
-export const DISPATCH_WINDOW_HOURS = 48;
-
 export async function countOrdersAwaitingDispatch() {
 	return db.order.count({ where: AWAITING_DISPATCH_WHERE });
 }
@@ -2252,15 +2266,21 @@ export interface StoreOverviewOptions {
 	days?: number;
 	/** How many of the newest orders to return. */
 	recentOrders?: number;
+	/**
+	 * How long a paid order may sit unshipped before it counts as late.
+	 * Defaults to the shipped window; the overview passes the saved one.
+	 */
+	dispatchWindowHours?: number;
 }
 
 export async function getStoreOverview({
 	days = 30,
 	recentOrders = 6,
+	dispatchWindowHours = DEFAULT_DISPATCH_WINDOW_HOURS,
 }: StoreOverviewOptions = {}) {
 	const now = new Date();
 	const dispatchDeadline = new Date(
-		now.getTime() - DISPATCH_WINDOW_HOURS * 60 * 60 * 1000,
+		now.getTime() - dispatchWindowHours * 60 * 60 * 1000,
 	);
 	const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 	const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);

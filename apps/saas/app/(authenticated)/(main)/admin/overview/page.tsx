@@ -21,7 +21,7 @@ import {
 	percentChange,
 } from "@admin/lib/overview";
 import { formatMoney } from "@repo/commerce";
-import { DISPATCH_WINDOW_HOURS, getStoreOverview } from "@repo/database";
+import { getStoreOverview, getStoreSettings } from "@repo/database";
 import {
 	ClockIcon,
 	CreditCardIcon,
@@ -48,7 +48,11 @@ export default async function AdminOverviewPage({
 }) {
 	const params = await searchParams;
 	const range = parseOverviewRange(params.range);
-	const overview = await getStoreOverview({ days: range });
+	const { dispatchWindowHours } = await getStoreSettings();
+	const overview = await getStoreOverview({
+		days: range,
+		dispatchWindowHours,
+	});
 	const { analytics, previous, metrics, queues, generatedAt } = overview;
 
 	const revenueChange = percentChange(
@@ -93,7 +97,7 @@ export default async function AdminOverviewPage({
 		{
 			key: "past-window",
 			title: "Past dispatch window",
-			description: `Waiting more than ${DISPATCH_WINDOW_HOURS} hours`,
+			description: `Waiting more than ${dispatchWindowHours} hours`,
 			count: queues.pastDispatchWindow,
 			href: "/admin/orders",
 			tone: "danger",
