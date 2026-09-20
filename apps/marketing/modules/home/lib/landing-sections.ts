@@ -1,3 +1,9 @@
+import {
+	getLiveCategories,
+	getLiveCollections,
+} from "@commerce/lib/live-catalog";
+import { links } from "@home/data/landing";
+import type { SectionCatalogue } from "@home/lib/section-copy";
 import { LANDING_SECTIONS, parseLandingSettings } from "@repo/commerce";
 import {
 	getLandingSections,
@@ -130,5 +136,42 @@ async function resolveProducts(
 		// with its shipped content even when the database is unreachable.
 		console.error("[landing-sections] could not resolve products", error);
 		return new Map();
+	}
+}
+
+/**
+ * The shop's own taxonomy, for the bands that are lists of it.
+ *
+ * Departments are the ones carrying stock, and collections the ones an editor
+ * put on the landing page — the same two sets the back office manages. A
+ * failure here is not fatal: the bands fall back to the set they ship with,
+ * so the shop window still opens.
+ */
+export async function getSectionCatalogue(): Promise<SectionCatalogue> {
+	try {
+		const [departments, collections] = await Promise.all([
+			getLiveCategories({ stockedOnly: true }),
+			getLiveCollections({ onLandingOnly: true }),
+		]);
+
+		return {
+			departments: departments.map((department) => ({
+				name: department.name,
+				slug: department.slug,
+				description: department.description,
+				imageUrl: department.imageUrl,
+				href: links.department(department.slug),
+			})),
+			collections: collections.map((collection) => ({
+				name: collection.name,
+				slug: collection.slug,
+				description: collection.description,
+				imageUrl: collection.imageUrl,
+				href: links.collection(collection.slug),
+			})),
+		};
+	} catch (error) {
+		console.error("[landing-sections] could not read the catalogue", error);
+		return { departments: [], collections: [] };
 	}
 }

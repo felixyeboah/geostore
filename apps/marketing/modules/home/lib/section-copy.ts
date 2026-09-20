@@ -7,11 +7,44 @@ export interface ReferencedProduct {
 	imageUrl: string | null;
 }
 
+/** A department, as the landing page needs it. */
+export interface CatalogueDepartment {
+	name: string;
+	slug: string;
+	description: string;
+	imageUrl: string;
+	href: string;
+}
+
+/** A collection an editor put on the landing page. */
+export interface CatalogueCollection {
+	name: string;
+	slug: string;
+	description: string;
+	imageUrl?: string;
+	href: string;
+}
+
+/**
+ * The shop's own taxonomy, read once per request.
+ *
+ * Bands that are lists of departments or collections render from this rather
+ * than from a hardcoded set, so adding a department in the back office adds it
+ * to the front page. Empty means the database had nothing to offer, and the
+ * band falls back to what it ships with.
+ */
+export interface SectionCatalogue {
+	departments: CatalogueDepartment[];
+	collections: CatalogueCollection[];
+}
+
 /** Copy overrides an editor saved for this band, empty when untouched. */
 export interface SectionCopyProps {
 	copy?: Record<string, string>;
 	/** Resolved products, keyed by the field that references them. */
 	products?: Record<string, ReferencedProduct>;
+	/** The shop's departments and landing collections. */
+	catalogue?: SectionCatalogue;
 }
 
 type Translator = (path: string) => string;

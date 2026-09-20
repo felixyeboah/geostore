@@ -6,9 +6,28 @@ import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function CategoriesSection({ copy }: SectionCopyProps) {
+export function CategoriesSection({ copy, catalogue }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.categories");
+
+	/*
+	 * The departments you stock, in the order you arranged them in the back
+	 * office. Falls back to the shipped rail when the catalogue has nothing,
+	 * so this band cannot be emptied by an empty table.
+	 */
+	const tiles = catalogue?.departments.length
+		? catalogue.departments.map((department) => ({
+				key: department.slug,
+				href: department.href,
+				image: department.imageUrl,
+				label: department.name,
+			}))
+		: CATEGORY_RAIL.map((tile) => ({
+				key: tile.key,
+				href: tile.href,
+				image: tile.image,
+				label: t(`home.categories.items.${tile.key}`),
+			}));
 
 	return (
 		<section className="py-16 lg:py-[88px]">
@@ -25,8 +44,7 @@ export function CategoriesSection({ copy }: SectionCopyProps) {
 
 			<div className="no-scrollbar mt-10 overflow-x-auto lg:mt-12">
 				<ul className="mx-auto flex w-max min-w-full max-w-[1360px] snap-x gap-4 px-6 lg:px-12">
-					{CATEGORY_RAIL.map((tile, index) => {
-						const label = t(`home.categories.items.${tile.key}`);
+					{tiles.map((tile, index) => {
 						return (
 							<li
 								key={tile.key}
@@ -36,7 +54,7 @@ export function CategoriesSection({ copy }: SectionCopyProps) {
 									<div className="relative aspect-[194/168] overflow-hidden rounded-[4px] bg-[#f2f0ee]">
 										<Image
 											src={tile.image}
-											alt={label}
+											alt={tile.label}
 											fill
 											sizes="200px"
 											className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
@@ -50,7 +68,7 @@ export function CategoriesSection({ copy }: SectionCopyProps) {
 													"0",
 												)}
 											</span>
-											{label}
+											{tile.label}
 										</span>
 										<ArrowRightIcon className="size-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
 									</div>

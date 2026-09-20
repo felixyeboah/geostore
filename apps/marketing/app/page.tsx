@@ -13,7 +13,10 @@ import { NeedsSection } from "@home/components/NeedsSection";
 import { NewsletterSection } from "@home/components/NewsletterSection";
 import { ProductRail } from "@home/components/ProductRail";
 import { TrustStrip } from "@home/components/TrustStrip";
-import { getRenderableSections } from "@home/lib/landing-sections";
+import {
+	getRenderableSections,
+	getSectionCatalogue,
+} from "@home/lib/landing-sections";
 import type { SectionCopyProps } from "@home/lib/section-copy";
 import {
 	organisationSchema,
@@ -61,7 +64,10 @@ const SECTION_COMPONENTS: Record<string, ComponentType<SectionCopyProps>> = {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-	const sections = await getRenderableSections();
+	const [sections, catalogue] = await Promise.all([
+		getRenderableSections(),
+		getSectionCatalogue(),
+	]);
 
 	return (
 		<>
@@ -69,7 +75,12 @@ export default async function Home() {
 			{sections.map(({ key, copy, products }) => {
 				const Section = SECTION_COMPONENTS[key];
 				return Section ? (
-					<Section key={key} copy={copy} products={products} />
+					<Section
+						key={key}
+						copy={copy}
+						products={products}
+						catalogue={catalogue}
+					/>
 				) : null;
 			})}
 		</>
