@@ -1,11 +1,12 @@
 "use client";
 
-import { saveLandingSectionCopyAction } from "@admin/actions/landing";
+import { stageLandingCopyAction } from "@admin/actions/landing";
 import { LandingFieldControl } from "@admin/components/landing/LandingFieldControl";
 import { AdminButton } from "@admin/components/ui";
 import {
 	type LandingSectionDefinition,
 	landingFieldDefault,
+	sanitizeLandingCopy,
 } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
@@ -104,6 +105,7 @@ function SectionEditor({
 	);
 
 	const [values, setValues] = useState<Record<string, string>>(current);
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 	const [isSaving, setIsSaving] = useState(false);
 
 	const isDirty = definition.fields.some(
@@ -130,25 +132,56 @@ function SectionEditor({
 
 	async function save() {
 		const overrides = toOverrides(values);
-		setIsSaving(true);
-		const result = await saveLandingSectionCopyAction(
-			definition.key,
-			// Every field is sent, so one cleared back to the shipped words
-			// clears its stored override too.
+
+		// Checked here for the instant answer; the action runs the same
+		// rules again before anything is stored.
+		const { issues } = sanitizeLandingCopy(
+			definition,
 			Object.fromEntries(
 				definition.fields.map((field) => [
 					field.key,
 					overrides[field.key] ?? "",
 				]),
 			),
+			{ brands },
 		);
-		setIsSaving(false);
+		if (issues.length > 0) {
+			setFieldErrors(
+				Object.fromEntries(
+					issues.map((issue) => [issue.field, issue.message]),
+				),
+			);
+			return;
+		}
+		setFieldErrors({});
+		setIsSaving(true);
 
-		if (result.success) {
-			toastSuccess(result.message);
-			onSaved(overrides);
-		} else {
-			toastError(result.message);
+		try {
+			const result = await stageLandingCopyAction(
+				definition.key,
+				// Every field is sent, so one cleared back to the shipped words
+				// clears its stored override too.
+				Object.fromEntries(
+					definition.fields.map((field) => [
+						field.key,
+						overrides[field.key] ?? "",
+					]),
+				),
+			);
+
+			if (result.success) {
+				toastSuccess(result.message);
+				onSaved(overrides);
+			} else {
+				setFieldErrors(result.fieldErrors ?? {});
+				toastError(result.message);
+			}
+		} catch {
+			toastError(
+				"The change never reached the server — check your connection and try again.",
+			);
+		} finally {
+			setIsSaving(false);
 		}
 	}
 
@@ -198,10 +231,16 @@ function SectionEditor({
 										}
 									/>
 								</div>
-								{field.help && (
-									<p className="mt-2 text-[12px] text-muted-foreground">
-										{field.help}
+								{fieldErrors[field.key] ? (
+									<p className="mt-2 text-[12px] text-destructive">
+										{fieldErrors[field.key]}
 									</p>
+								) : (
+									field.help && (
+										<p className="mt-2 text-[12px] text-muted-foreground">
+											{field.help}
+										</p>
+									)
 								)}
 							</div>
 						))}

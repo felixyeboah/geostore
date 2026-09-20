@@ -3,7 +3,7 @@
 import { cn } from "@repo/ui";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 export interface AdminNavItem {
 	title: string;
@@ -21,6 +21,51 @@ export function AdminNav({
 	className?: string;
 }) {
 	const pathname = usePathname();
+	const listRef = useRef<HTMLUListElement>(null);
+	const [overflow, setOverflow] = useState({ left: false, right: false });
+
+	// The tabs scroll sideways under ~1280px, but a scrollbar would be out of
+	// place in this chrome — a fading edge is the tell that more sits off
+	// screen, shown only on the side that actually has more.
+	useEffect(() => {
+		const list = listRef.current;
+		if (!list) {
+			return;
+		}
+
+		const measure = () =>
+			setOverflow({
+				left: list.scrollLeft > 1,
+				right:
+					list.scrollLeft + list.clientWidth < list.scrollWidth - 1,
+			});
+		measure();
+
+		list.addEventListener("scroll", measure, { passive: true });
+		const observer = new ResizeObserver(measure);
+		observer.observe(list);
+		return () => {
+			list.removeEventListener("scroll", measure);
+			observer.disconnect();
+		};
+	}, []);
+
+	// On a narrow screen the current tab can land off the edge; bring it back
+	// into view whenever the section changes.
+	useEffect(() => {
+		listRef.current
+			?.querySelector('[aria-current="page"]')
+			?.scrollIntoView({ inline: "nearest", block: "nearest" });
+	}, [pathname]);
+
+	const mask =
+		overflow.left && overflow.right
+			? "linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent)"
+			: overflow.right
+				? "linear-gradient(to right, black calc(100% - 28px), transparent)"
+				: overflow.left
+					? "linear-gradient(to right, transparent, black 28px)"
+					: undefined;
 
 	return (
 		<nav
@@ -29,7 +74,18 @@ export function AdminNav({
 			// is only the row of tabs.
 			className={cn("w-full", className)}
 		>
-			<ul className="no-scrollbar flex list-none items-stretch gap-6 overflow-x-auto">
+			<ul
+				ref={listRef}
+				className="no-scrollbar flex list-none items-stretch gap-6 overflow-x-auto"
+				style={
+					mask
+						? {
+								maskImage: mask,
+								WebkitMaskImage: mask,
+							}
+						: undefined
+				}
+			>
 				{items.map((item) => {
 					const isActive = pathname.startsWith(item.href);
 					return (

@@ -3,6 +3,7 @@
 import { AdminImageDropzone } from "@admin/components/AdminImageDropzone";
 import { AdminInput, AdminTextarea } from "@admin/components/ui";
 import {
+	LANDING_FIELD_LIMITS,
 	type LandingFieldDefinition,
 	parseBrandList,
 	parseIdList,
@@ -18,9 +19,27 @@ import {
 	LoaderCircleIcon,
 	PlusIcon,
 	SearchIcon,
+	TriangleAlertIcon,
 	XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+/**
+ * The search fields debounce to this — the query takes a moment against the
+ * catalogue, and a request per keystroke only ever queues stale results.
+ */
+const SEARCH_DEBOUNCE_MS = 300;
+
+function useDebouncedValue(value: string): string {
+	const [debounced, setDebounced] = useState(value);
+
+	useEffect(() => {
+		const timer = setTimeout(() => setDebounced(value), SEARCH_DEBOUNCE_MS);
+		return () => clearTimeout(timer);
+	}, [value]);
+
+	return debounced;
+}
 
 /**
  * One field of a landing band.
@@ -68,6 +87,7 @@ export function LandingFieldControl({
 				id={id}
 				rows={3}
 				value={value}
+				maxLength={LANDING_FIELD_LIMITS.textarea}
 				placeholder="Blank restores the built-in text"
 				onChange={(event) => onChange(event.target.value)}
 			/>
@@ -79,6 +99,7 @@ export function LandingFieldControl({
 			id={id}
 			type="text"
 			value={value}
+			maxLength={LANDING_FIELD_LIMITS.text}
 			placeholder="Blank restores the built-in text"
 			onChange={(event) => onChange(event.target.value)}
 		/>
@@ -156,11 +177,12 @@ function ProductField({
 	onChange: (value: string) => void;
 }) {
 	const [search, setSearch] = useState("");
+	const debouncedSearch = useDebouncedValue(search);
 
 	const { data, isFetching } = useQuery(
 		orpc.admin.products.search.queryOptions({
 			input: {
-				query: search.trim() || undefined,
+				query: debouncedSearch.trim() || undefined,
 				ids: value ? [value] : undefined,
 				limit: 8,
 			},
@@ -169,9 +191,13 @@ function ProductField({
 	);
 
 	const chosen = data?.chosen?.[0];
+	// A stored id that no longer resolves is a withdrawn or deleted product —
+	// say so rather than quietly pretending nothing was ever chosen.
+	const missing = Boolean(value) && Boolean(data) && !chosen;
 	const results = (data?.products ?? []).filter(
 		(product) => product.id !== value,
 	);
+	const searchPending = search.trim() !== debouncedSearch.trim();
 
 	return (
 		<div className="grid gap-3">
@@ -205,6 +231,21 @@ function ProductField({
 						<XIcon className="size-4" />
 					</button>
 				</div>
+			) : missing ? (
+				<div className="flex items-center gap-3 border border-destructive/40 bg-destructive/5 p-2.5">
+					<TriangleAlertIcon className="size-4 shrink-0 text-destructive" />
+					<span className="min-w-0 flex-1 text-[12.5px] text-foreground">
+						The chosen product is no longer in the catalogue — the
+						band is falling back to its shipped content.
+					</span>
+					<button
+						type="button"
+						onClick={() => onChange("")}
+						className="shrink-0 text-[12.5px] text-muted-foreground transition-colors hover:text-destructive"
+					>
+						Remove
+					</button>
+				</div>
 			) : (
 				<p className="text-[12.5px] text-muted-foreground">
 					No product chosen — the band uses its shipped content.
@@ -212,7 +253,7 @@ function ProductField({
 			)}
 
 			<label className="relative block">
-				{isFetching ? (
+				{isFetching || searchPending ? (
 					<LoaderCircleIcon
 						aria-hidden="true"
 						className="-translate-y-1/2 absolute top-1/2 left-3 size-3.5 animate-spin text-muted-foreground"
@@ -357,12 +398,13 @@ function ProductListField({
 	onChange: (value: string) => void;
 }) {
 	const [search, setSearch] = useState("");
+	const debouncedSearch = useDebouncedValue(search);
 	const chosenIds = parseIdList(value);
 
 	const { data, isFetching } = useQuery(
 		orpc.admin.products.search.queryOptions({
 			input: {
-				query: search.trim() || undefined,
+				query: debouncedSearch.trim() || undefined,
 				ids: chosenIds.length ? chosenIds : undefined,
 				limit: 8,
 			},
@@ -375,9 +417,13 @@ function ProductListField({
 		const product = byId.get(id);
 		return product ? [product] : [];
 	});
+	// Chosen ids that no longer resolve — withdrawn or deleted products. They
+	// stay listed until removed, rather than silently dropping off the band.
+	const missing = data ? chosenIds.filter((id) => !byId.has(id)) : [];
 	const results = (data?.products ?? []).filter(
 		(product) => !chosenIds.includes(product.id),
 	);
+	const searchPending = search.trim() !== debouncedSearch.trim();
 
 	function move(index: number, direction: -1 | 1) {
 		const target = index + direction;
@@ -391,12 +437,38 @@ function ProductListField({
 
 	return (
 		<div className="grid gap-3">
-			{chosen.length === 0 ? (
+			{chosen.length === 0 && missing.length === 0 ? (
 				<p className="text-[12.5px] text-muted-foreground">
 					Nothing chosen — the band shows the set it ships with.
 				</p>
 			) : (
 				<ul className="border-border border-t">
+					{missing.map((id) => (
+						<li
+							key={id}
+							className="flex items-center gap-3 border-destructive/30 border-b bg-destructive/5 px-1 py-2"
+						>
+							<TriangleAlertIcon className="size-3.5 shrink-0 text-destructive" />
+							<span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">
+								No longer in the catalogue — the page skips it
+							</span>
+							<button
+								type="button"
+								onClick={() =>
+									onChange(
+										serialiseIdList(
+											chosenIds.filter(
+												(entry) => entry !== id,
+											),
+										),
+									)
+								}
+								className="shrink-0 text-[12.5px] text-muted-foreground transition-colors hover:text-destructive"
+							>
+								Remove
+							</button>
+						</li>
+					))}
 					{chosen.map((product, index) => (
 						<li
 							key={product.id}
@@ -457,7 +529,7 @@ function ProductListField({
 			)}
 
 			<label className="relative block">
-				{isFetching ? (
+				{isFetching || searchPending ? (
 					<LoaderCircleIcon
 						aria-hidden="true"
 						className="-translate-y-1/2 absolute top-1/2 left-3 size-3.5 animate-spin text-muted-foreground"
