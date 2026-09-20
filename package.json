@@ -7,14 +7,15 @@
 		"db:push": "pnpm --filter @repo/database push",
 		"db:seed": "pnpm --filter @repo/scripts seed:store",
 		"db:up": "docker compose up -d postgres minio minio-setup",
-		"dev": "dotenv -c -- turbo dev --concurrency 15",
+		"dev": "dotenv -c -- turbo dev --concurrency 15 --filter=!mail-preview",
 		"type-check": "dotenv -c -- turbo type-check",
 		"start": "dotenv -c -- turbo start",
 		"lint": "biome lint",
 		"check": "biome check --write",
 		"clean": "turbo clean",
 		"format": "biome format --write",
-		"test:commerce": "tsx --test packages/commerce/cart.test.ts packages/commerce/order.test.ts packages/payments/lib/store-payments.test.ts packages/payments/lib/reevit-webhook.test.ts apps/marketing/modules/commerce/lib/order-token.test.ts packages/utils/lib/image-hosts.test.ts apps/saas/modules/admin/lib/overview.test.ts"
+		"test:commerce": "tsx --test packages/commerce/cart.test.ts packages/commerce/order.test.ts packages/payments/lib/store-payments.test.ts packages/payments/lib/reevit-webhook.test.ts apps/marketing/modules/commerce/lib/order-token.test.ts packages/utils/lib/image-hosts.test.ts apps/saas/modules/admin/lib/overview.test.ts",
+		"dev:mail": "dotenv -c -- turbo dev --filter=mail-preview"
 	},
 	"engines": {
 		"node": ">=20"

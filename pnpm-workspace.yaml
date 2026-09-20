@@ -94,7 +94,20 @@ overrides:
   # Same major, so the parser API is unchanged; this patches it without a
   # seven-hundred-version jump of the AWS SDK.
   fast-xml-parser: ^4.5.4
-  # @react-email/preview-server pins a Next with two unauthenticated RCE
-  # advisories (GHSA-p293-qw3h-jr36, GHSA-2xp9-vwfh-vxw4). The preview tool is
-  # local-only, but this converges it on the version the real apps already run.
+  # The real apps run a Next past the two unauthenticated RCE advisories
+  # GHSA-p293-qw3h-jr36 and GHSA-2xp9-vwfh-vxw4, both fixed in 16.3.3.
   next: ^16.3.5
+  # The preview server is the exception, and has to be. It ships a *prebuilt*
+  # Next app pinned to an exact version, so forcing it onto 16.3.5 made
+  # `app.prepare()` die with "Cannot read properties of undefined (reading
+  # 'map')" and took `pnpm dev` down with it. No published release pins a Next
+  # the blanket override would satisfy, so upgrading is not a way out.
+  #
+  # Neither advisory reaches this tool: the first is Windows-only and we build
+  # on macOS and deploy to Workers, and the second needs the image optimiser,
+  # which the preview server disables in its own Next config
+  # (`images.unoptimized: true`). It also only ever listens on localhost.
+  #
+  # Keep this in step with @react-email/preview-server's own `next` pin when
+  # react-email is upgraded, or the same crash comes back.
+  "@react-email/preview-server>next": 16.1.7
