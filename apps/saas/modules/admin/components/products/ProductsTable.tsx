@@ -9,37 +9,36 @@ import { ADMIN_TD, ADMIN_TH } from "@admin/components/AdminPage";
 import { ProductRowActions } from "@admin/components/products/ProductRowActions";
 import { AddProductButton } from "@admin/components/products/ProductSheet";
 import {
+	FacetField,
+	ResultCount,
+	SearchField,
+	SortButton,
+	TablePagination,
+	TableToolbar,
+} from "@admin/components/TableControls";
+import {
 	AdminButton,
 	AdminCheckbox,
 	AdminInput,
 	AdminSelect,
 } from "@admin/components/ui";
+import { type PRODUCT_SORTS, productListParsers } from "@admin/lib/list-params";
 import { formatRelativeTime } from "@admin/lib/overview";
 import { formatMoney } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
-import {
-	type ColumnDef,
-	type ColumnFiltersState,
-	flexRender,
-	getCoreRowModel,
-	getFacetedRowModel,
-	getFacetedUniqueValues,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	type SortingState,
-	useReactTable,
-} from "@tanstack/react-table";
-import { ArrowDownIcon, ArrowUpIcon, SearchIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { debounce, useQueryStates } from "nuqs";
+import { useState, useTransition } from "react";
 
 export type ProductStatus = "DRAFT" | "ACTIVE" | "ARCHIVED";
 
 export type StockState = "OUT" | "LOW" | "OK";
+
+type ProductSort = (typeof PRODUCT_SORTS)[number];
 
 export interface ProductRow {
 	id: string;
@@ -59,6 +58,12 @@ export interface ProductRow {
 	stockState: StockState;
 }
 
+export interface ProductsTableFacets {
+	status: Partial<Record<ProductStatus, number>>;
+	stock: Record<StockState, number>;
+	categories: Array<{ id: string; name: string; count: number }>;
+}
+
 const STATUS_LABELS: Record<ProductStatus, string> = {
 	ACTIVE: "Active",
 	DRAFT: "Draft",
@@ -73,226 +78,76 @@ const STOCK_LABELS: Record<StockState, string> = {
 
 const BULK_STATUSES: ProductStatus[] = ["ACTIVE", "DRAFT", "ARCHIVED"];
 
-const RIGHT_ALIGNED = [
-	"priceInPesewas",
-	"stockQuantity",
-	"updatedAt",
-	"status",
-	"actions",
-];
-
 const MONO = "font-mono tabular-nums";
 
-export function ProductsTable({ products }: { products: ProductRow[] }) {
+/** Typing should not put a request on the wire per keystroke. */
+const SEARCH_DEBOUNCE = debounce(400);
+
+export function ProductsTable({
+	products,
+	facets,
+	total,
+	page,
+	pageCount,
+}: {
+	products: ProductRow[];
+	facets: ProductsTableFacets;
+	total: number;
+	page: number;
+	pageCount: number;
+}) {
 	const router = useRouter();
-	const [sorting, setSorting] = useState<SortingState>([
-		{ id: "updatedAt", desc: true },
-	]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-	const [globalFilter, setGlobalFilter] = useState("");
-	const [rowSelection, setRowSelection] = useState({});
-	const [isPending, startTransition] = useTransition();
+	const [isNavigating, startNavigation] = useTransition();
+	const [isBulkPending, startBulk] = useTransition();
+	const [selected, setSelected] = useState<string[]>([]);
 
-	const columns = useMemo<ColumnDef<ProductRow>[]>(
-		() => [
-			{
-				id: "select",
-				header: ({ table }) => (
-					<AdminCheckbox
-						aria-label="Select every product on this page"
-						checked={table.getIsAllPageRowsSelected()}
-						ref={(node: HTMLInputElement | null) => {
-							if (node) {
-								node.indeterminate =
-									table.getIsSomePageRowsSelected() &&
-									!table.getIsAllPageRowsSelected();
-							}
-						}}
-						onChange={table.getToggleAllPageRowsSelectedHandler()}
-					/>
-				),
-				cell: ({ row }) => (
-					<AdminCheckbox
-						aria-label={`Select ${row.original.name}`}
-						checked={row.getIsSelected()}
-						onChange={row.getToggleSelectedHandler()}
-					/>
-				),
-				enableSorting: false,
-				size: 32,
-			},
-			{
-				accessorKey: "name",
-				header: "Product",
-				cell: ({ row }) => (
-					<div className="flex min-w-[260px] items-center gap-3.5">
-						<span className="relative size-10 shrink-0 overflow-hidden rounded-[2px] bg-muted">
-							{row.original.imageUrl && (
-								<Image
-									src={row.original.imageUrl}
-									alt=""
-									fill
-									sizes="40px"
-									className="object-cover"
-								/>
-							)}
-						</span>
-						<span className="min-w-0">
-							<Link
-								href={`/admin/products/${row.original.id}`}
-								className="block truncate font-medium text-[13px] text-foreground transition-colors hover:text-[var(--ed-accent)]"
-							>
-								{row.original.name}
-							</Link>
-							<span className="mt-1 block truncate text-[12px] text-muted-foreground">
-								{row.original.brand} ·{" "}
-								<span className={MONO}>{row.original.sku}</span>
-								{row.original.isFeatured && (
-									<span className="ml-2 font-medium text-[var(--ed-accent)]">
-										Featured
-									</span>
-								)}
-							</span>
-						</span>
-					</div>
-				),
-			},
-			{
-				accessorKey: "categoryName",
-				header: "Department",
-				filterFn: "equalsString",
-				cell: ({ row }) => (
-					<span className="block min-w-[120px] text-[13px] text-muted-foreground">
-						{row.original.categoryName}
-					</span>
-				),
-			},
-			{
-				accessorKey: "priceInPesewas",
-				header: "Price",
-				cell: ({ row }) => (
-					<div className="min-w-[96px] text-right">
-						<span
-							className={cn(
-								"block font-medium text-[13px] text-foreground",
-								MONO,
-							)}
-						>
-							{formatMoney(row.original.priceInPesewas)}
-						</span>
-						{row.original.compareAtInPesewas ? (
-							<span
-								className={cn(
-									"mt-1 block text-[12px] text-muted-foreground line-through",
-									MONO,
-								)}
-							>
-								{formatMoney(row.original.compareAtInPesewas)}
-							</span>
-						) : null}
-					</div>
-				),
-			},
-			{
-				accessorKey: "stockQuantity",
-				header: "Stock",
-				cell: ({ row }) => (
-					<StockCell
-						key={row.original.stockQuantity}
-						product={row.original}
-					/>
-				),
-			},
-			{
-				// Hidden: it exists so the stock facet can filter and count
-				// like any other column rather than through a second code path.
-				id: "stockState",
-				accessorFn: (row) => row.stockState,
-				filterFn: "equalsString",
-				enableSorting: false,
-			},
-			{
-				accessorKey: "updatedAt",
-				header: "Updated",
-				cell: ({ row }) => (
-					<span className="block min-w-[90px] text-right text-[12.5px] text-muted-foreground">
-						{formatRelativeTime(
-							new Date(row.original.updatedAt),
-							new Date(),
-						)}
-					</span>
-				),
-			},
-			{
-				accessorKey: "status",
-				header: "Status",
-				filterFn: "equalsString",
-				cell: ({ row }) => (
-					<div className="flex justify-end">
-						<StatusCell product={row.original} />
-					</div>
-				),
-				enableSorting: false,
-			},
-			{
-				id: "actions",
-				header: () => <span className="sr-only">Actions</span>,
-				cell: ({ row }) => (
-					<div className="flex justify-end">
-						<ProductRowActions product={row.original} />
-					</div>
-				),
-				enableSorting: false,
-				size: 40,
-			},
-		],
-		[],
-	);
-
-	const table = useReactTable({
-		data: products,
-		columns,
-		state: { sorting, columnFilters, globalFilter, rowSelection },
-		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
-		onGlobalFilterChange: setGlobalFilter,
-		onRowSelectionChange: setRowSelection,
-		getRowId: (row) => row.id,
-		globalFilterFn: (row, _columnId, value) => {
-			const needle = String(value).toLowerCase();
-			const product = row.original;
-			return [
-				product.name,
-				product.brand,
-				product.sku,
-				product.categoryName,
-			].some((field) => field.toLowerCase().includes(needle));
-		},
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		getFacetedRowModel: getFacetedRowModel(),
-		getFacetedUniqueValues: getFacetedUniqueValues(),
-		initialState: {
-			pagination: { pageSize: 25 },
-			columnVisibility: { stockState: false },
-		},
+	const [params, setParams] = useQueryStates(productListParsers, {
+		// The database does the filtering, so every change has to reach the
+		// server component rather than stopping at the client router.
+		shallow: false,
+		startTransition: startNavigation,
 	});
 
-	const selectedIds = table
-		.getSelectedRowModel()
-		.rows.map((row) => row.original.id);
+	const selectedOnPage = selected.filter((id) =>
+		products.some((product) => product.id === id),
+	);
+	const allOnPageSelected =
+		products.length > 0 && selectedOnPage.length === products.length;
+
+	function toggleAllOnPage(checked: boolean) {
+		const idsOnPage = products.map((product) => product.id);
+		setSelected(
+			checked
+				? [...new Set([...selected, ...idsOnPage])]
+				: selected.filter((id) => !idsOnPage.includes(id)),
+		);
+	}
+
+	function toggleOne(id: string, checked: boolean) {
+		setSelected(
+			checked
+				? [...selected, id]
+				: selected.filter((item) => item !== id),
+		);
+	}
+
+	function sortBy(sort: ProductSort) {
+		// Clicking the column already sorted flips it; a new column starts
+		// descending, which is what "most recent" and "most expensive" mean.
+		const dir =
+			params.sort === sort && params.dir === "desc" ? "asc" : "desc";
+		void setParams({ sort, dir, page: 1 });
+	}
 
 	function applyBulkStatus(status: ProductStatus) {
-		startTransition(async () => {
+		startBulk(async () => {
 			const result = await bulkUpdateStoreProductStatusAction(
-				selectedIds,
+				selectedOnPage,
 				status,
 			);
 			if (result.success) {
 				toastSuccess(result.message);
-				setRowSelection({});
+				setSelected([]);
 				router.refresh();
 			} else {
 				toastError(result.message);
@@ -300,134 +155,120 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
 		});
 	}
 
-	const statusFacets = table.getColumn("status")?.getFacetedUniqueValues() as
-		| Map<string, number>
-		| undefined;
-	const departmentFacets = table
-		.getColumn("categoryName")
-		?.getFacetedUniqueValues() as Map<string, number> | undefined;
-	const stockFacets = table
-		.getColumn("stockState")
-		?.getFacetedUniqueValues() as Map<string, number> | undefined;
+	const hasFilters = Boolean(
+		params.q.trim() || params.status || params.stock || params.dept,
+	);
 
-	const hasFilters =
-		columnFilters.length > 0 || globalFilter.trim().length > 0;
+	function clearFilters() {
+		void setParams({
+			q: "",
+			status: null,
+			stock: null,
+			dept: null,
+			page: 1,
+		});
+	}
+
+	const columns: Array<{
+		key: string;
+		label: string;
+		sort?: ProductSort;
+		alignRight?: boolean;
+	}> = [
+		{ key: "name", label: "Product", sort: "name" },
+		{ key: "department", label: "Department" },
+		{ key: "price", label: "Price", sort: "price", alignRight: true },
+		{ key: "stock", label: "Stock", sort: "stock", alignRight: true },
+		{ key: "updated", label: "Updated", sort: "updated", alignRight: true },
+		{ key: "status", label: "Status", alignRight: true },
+	];
 
 	return (
 		<div>
-			<div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-border border-b py-3.5">
-				<label className="relative min-w-[220px] flex-1">
-					<SearchIcon
-						aria-hidden="true"
-						className="-translate-y-1/2 absolute top-1/2 left-3 size-3.5 text-muted-foreground"
-					/>
-					<span className="sr-only">Search products</span>
-					<AdminInput
-						type="search"
-						value={globalFilter}
-						onChange={(event) =>
-							setGlobalFilter(event.target.value)
-						}
-						placeholder="Search by name, brand, SKU or department"
-						className="h-10 pl-9"
-					/>
-				</label>
-
-				<FacetSelect
-					label="Status"
-					value={
-						(table.getColumn("status")?.getFilterValue() as
-							| string
-							| undefined) ?? ""
-					}
+			<TableToolbar isPending={isNavigating}>
+				<SearchField
+					label="Search products"
+					placeholder="Search by name, brand, SKU or department"
+					value={params.q}
+					isPending={isNavigating}
 					onChange={(value) =>
-						table
-							.getColumn("status")
-							?.setFilterValue(value || undefined)
+						void setParams(
+							{ q: value, page: 1 },
+							{ limitUrlUpdates: SEARCH_DEBOUNCE },
+						)
+					}
+				/>
+
+				<FacetField
+					label="Status"
+					value={params.status ?? ""}
+					onChange={(value) =>
+						void setParams({
+							status: (value || null) as ProductStatus | null,
+							page: 1,
+						})
 					}
 					options={BULK_STATUSES.map((value) => ({
 						value,
 						label: STATUS_LABELS[value],
-						count: statusFacets?.get(value) ?? 0,
+						count: facets.status[value] ?? 0,
 					}))}
 				/>
 
-				<FacetSelect
+				<FacetField
 					label="Stock"
-					value={
-						(table.getColumn("stockState")?.getFilterValue() as
-							| string
-							| undefined) ?? ""
-					}
+					value={params.stock ?? ""}
 					onChange={(value) =>
-						table
-							.getColumn("stockState")
-							?.setFilterValue(value || undefined)
+						void setParams({
+							stock: (value || null) as StockState | null,
+							page: 1,
+						})
 					}
 					options={(["OUT", "LOW", "OK"] as StockState[]).map(
 						(value) => ({
 							value,
 							label: STOCK_LABELS[value],
-							count: stockFacets?.get(value) ?? 0,
+							count: facets.stock[value],
 						}),
 					)}
 				/>
 
-				<FacetSelect
+				<FacetField
 					label="Department"
-					value={
-						(table.getColumn("categoryName")?.getFilterValue() as
-							| string
-							| undefined) ?? ""
-					}
+					value={params.dept ?? ""}
 					onChange={(value) =>
-						table
-							.getColumn("categoryName")
-							?.setFilterValue(value || undefined)
+						void setParams({ dept: value || null, page: 1 })
 					}
-					options={[...(departmentFacets?.entries() ?? [])]
-						.sort(([left], [right]) => left.localeCompare(right))
-						.map(([value, count]) => ({
-							value,
-							label: value,
-							count,
-						}))}
+					options={facets.categories.map((category) => ({
+						value: category.id,
+						label: category.name,
+						count: category.count,
+					}))}
 				/>
 
-				<p className="ml-auto shrink-0 text-[12.5px] text-muted-foreground tabular-nums">
-					{table.getFilteredRowModel().rows.length} of{" "}
-					{products.length}
-				</p>
-
-				{hasFilters && (
-					<button
-						type="button"
-						onClick={() => {
-							setColumnFilters([]);
-							setGlobalFilter("");
-						}}
-						className="shrink-0 border-border border-b pb-px text-[12.5px] text-foreground transition-colors hover:border-foreground"
-					>
-						Clear
-					</button>
-				)}
-			</div>
+				<ResultCount
+					shown={products.length}
+					total={total}
+					noun="products"
+					onClear={hasFilters ? clearFilters : undefined}
+				/>
+			</TableToolbar>
 
 			{/*
 			 * The bulk bar takes the place of the column heads rather than
 			 * floating over the rows, so nothing is ever hidden behind it.
 			 */}
-			{selectedIds.length > 0 && (
+			{selectedOnPage.length > 0 && (
 				<div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-border border-b bg-muted px-3 py-2.5">
 					<p className="font-medium text-[13px] text-foreground tabular-nums">
-						{selectedIds.length} selected
+						{selectedOnPage.length} selected
 					</p>
 					<div className="flex flex-wrap items-center gap-2">
 						{BULK_STATUSES.map((status) => (
 							<AdminButton
 								key={status}
 								size="sm"
-								disabled={isPending}
+								disabled={isBulkPending}
 								onClick={() => applyBulkStatus(status)}
 								className="bg-background"
 							>
@@ -437,7 +278,7 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
 					</div>
 					<button
 						type="button"
-						onClick={() => setRowSelection({})}
+						onClick={() => setSelected([])}
 						className="ml-auto inline-flex items-center gap-1.5 text-[12.5px] text-muted-foreground hover:text-foreground"
 					>
 						<XIcon className="size-3.5" />
@@ -446,132 +287,216 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
 				</div>
 			)}
 
-			<div className="overflow-x-auto">
+			<div
+				className={cn(
+					"overflow-x-auto transition-opacity",
+					isNavigating && "opacity-60",
+				)}
+			>
 				<table className="w-full border-collapse text-left">
 					<thead>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<tr key={headerGroup.id}>
-								{headerGroup.headers.map((header) => {
-									const canSort = header.column.getCanSort();
-									const sorted = header.column.getIsSorted();
-									const alignRight = RIGHT_ALIGNED.includes(
-										header.column.id,
-									);
-									return (
-										<th
-											key={header.id}
-											className={cn(
-												ADMIN_TH,
-												alignRight && "text-right",
-											)}
+						<tr>
+							<th className={ADMIN_TH}>
+								<AdminCheckbox
+									aria-label="Select every product on this page"
+									checked={allOnPageSelected}
+									ref={(node: HTMLInputElement | null) => {
+										if (node) {
+											node.indeterminate =
+												selectedOnPage.length > 0 &&
+												!allOnPageSelected;
+										}
+									}}
+									onChange={(event) =>
+										toggleAllOnPage(event.target.checked)
+									}
+								/>
+							</th>
+							{columns.map((column) => (
+								<th
+									key={column.key}
+									className={cn(
+										ADMIN_TH,
+										column.alignRight && "text-right",
+									)}
+								>
+									{column.sort ? (
+										<SortButton
+											active={params.sort === column.sort}
+											dir={params.dir}
+											alignRight={column.alignRight}
+											onToggle={() =>
+												column.sort &&
+												sortBy(column.sort)
+											}
 										>
-											{header.isPlaceholder ? null : canSort ? (
-												<button
-													type="button"
-													onClick={header.column.getToggleSortingHandler()}
-													className={cn(
-														"inline-flex items-center gap-1 uppercase tracking-[inherit] transition-colors hover:text-foreground",
-														alignRight &&
-															"flex-row-reverse",
-													)}
-												>
-													{flexRender(
-														header.column.columnDef
-															.header,
-														header.getContext(),
-													)}
-													{sorted === "asc" && (
-														<ArrowUpIcon className="size-3" />
-													)}
-													{sorted === "desc" && (
-														<ArrowDownIcon className="size-3" />
-													)}
-												</button>
-											) : (
-												flexRender(
-													header.column.columnDef
-														.header,
-													header.getContext(),
-												)
-											)}
-										</th>
-									);
-								})}
-							</tr>
-						))}
+											{column.label}
+										</SortButton>
+									) : (
+										column.label
+									)}
+								</th>
+							))}
+							<th className={cn(ADMIN_TH, "text-right")}>
+								<span className="sr-only">Actions</span>
+							</th>
+						</tr>
 					</thead>
 					<tbody>
-						{table.getRowModel().rows.map((row) => (
-							<tr
-								key={row.id}
-								className={cn(
-									"transition-colors",
-									row.getIsSelected() && "bg-muted",
-								)}
-							>
-								{row.getVisibleCells().map((cell) => (
+						{products.map((product) => {
+							const isSelected = selected.includes(product.id);
+							return (
+								<tr
+									key={product.id}
+									className={cn(
+										"transition-colors",
+										isSelected && "bg-muted",
+									)}
+								>
 									<td
-										key={cell.id}
 										className={cn(
 											ADMIN_TD,
 											// Sold out carries an ink edge
 											// rather than a coloured row, so a
 											// screen of them stays readable.
-											cell.column.id === "select" &&
-												row.original.stockState ===
-													"OUT" &&
+											product.stockState === "OUT" &&
 												"border-l-2 border-l-foreground",
 										)}
 									>
-										{flexRender(
-											cell.column.columnDef.cell,
-											cell.getContext(),
-										)}
+										<AdminCheckbox
+											aria-label={`Select ${product.name}`}
+											checked={isSelected}
+											onChange={(event) =>
+												toggleOne(
+													product.id,
+													event.target.checked,
+												)
+											}
+										/>
 									</td>
-								))}
-							</tr>
-						))}
+									<td className={ADMIN_TD}>
+										<div className="flex min-w-[260px] items-center gap-3.5">
+											<span className="relative size-10 shrink-0 overflow-hidden rounded-[2px] bg-muted">
+												{product.imageUrl && (
+													<Image
+														src={product.imageUrl}
+														alt=""
+														fill
+														sizes="40px"
+														className="object-cover"
+													/>
+												)}
+											</span>
+											<span className="min-w-0">
+												<Link
+													href={`/admin/products/${product.id}`}
+													className="block truncate font-medium text-[13px] text-foreground transition-colors hover:text-[var(--ed-accent)]"
+												>
+													{product.name}
+												</Link>
+												<span className="mt-1 block truncate text-[12px] text-muted-foreground">
+													{product.brand} ·{" "}
+													<span className={MONO}>
+														{product.sku}
+													</span>
+													{product.isFeatured && (
+														<span className="ml-2 font-medium text-[var(--ed-accent)]">
+															Featured
+														</span>
+													)}
+												</span>
+											</span>
+										</div>
+									</td>
+									<td className={ADMIN_TD}>
+										<span className="block min-w-[120px] text-[13px] text-muted-foreground">
+											{product.categoryName}
+										</span>
+									</td>
+									<td className={ADMIN_TD}>
+										<div className="min-w-[96px] text-right">
+											<span
+												className={cn(
+													"block font-medium text-[13px] text-foreground",
+													MONO,
+												)}
+											>
+												{formatMoney(
+													product.priceInPesewas,
+												)}
+											</span>
+											{product.compareAtInPesewas ? (
+												<span
+													className={cn(
+														"mt-1 block text-[12px] text-muted-foreground line-through",
+														MONO,
+													)}
+												>
+													{formatMoney(
+														product.compareAtInPesewas,
+													)}
+												</span>
+											) : null}
+										</div>
+									</td>
+									<td className={ADMIN_TD}>
+										<StockCell
+											key={product.stockQuantity}
+											product={product}
+										/>
+									</td>
+									<td className={ADMIN_TD}>
+										<span className="block min-w-[90px] text-right text-[12.5px] text-muted-foreground">
+											{formatRelativeTime(
+												new Date(product.updatedAt),
+												new Date(),
+											)}
+										</span>
+									</td>
+									<td className={ADMIN_TD}>
+										<div className="flex justify-end">
+											<StatusCell product={product} />
+										</div>
+									</td>
+									<td className={ADMIN_TD}>
+										<div className="flex justify-end">
+											<ProductRowActions
+												product={product}
+											/>
+										</div>
+									</td>
+								</tr>
+							);
+						})}
 					</tbody>
 				</table>
 			</div>
 
-			{table.getFilteredRowModel().rows.length === 0 && (
+			{products.length === 0 && (
 				<div className="py-14 text-center">
 					<p className="text-[13.5px] text-muted-foreground">
-						{products.length === 0
-							? "No products yet."
-							: "No products match those filters."}
+						{hasFilters
+							? "No products match those filters."
+							: "No products yet."}
 					</p>
-					{products.length === 0 && (
-						<div className="mt-5 flex justify-center">
+					<div className="mt-5 flex justify-center">
+						{hasFilters ? (
+							<AdminButton size="sm" onClick={clearFilters}>
+								Clear filters
+							</AdminButton>
+						) : (
 							<AddProductButton />
-						</div>
-					)}
+						)}
+					</div>
 				</div>
 			)}
 
-			<div className="flex flex-wrap items-center justify-between gap-4 border-border border-t py-4">
-				<p className="text-[12.5px] text-muted-foreground tabular-nums">
-					Page {table.getState().pagination.pageIndex + 1} of{" "}
-					{Math.max(table.getPageCount(), 1)}
-				</p>
-				<div className="flex items-center gap-2">
-					<AdminButton
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</AdminButton>
-					<AdminButton
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</AdminButton>
-				</div>
-			</div>
+			<TablePagination
+				page={page}
+				pageCount={pageCount}
+				isPending={isNavigating}
+				onPage={(next) => void setParams({ page: next })}
+			/>
 		</div>
 	);
 }
@@ -679,37 +604,5 @@ function StatusCell({ product }: { product: ProductRow }) {
 				label: STATUS_LABELS[value],
 			}))}
 		/>
-	);
-}
-
-function FacetSelect({
-	label,
-	value,
-	onChange,
-	options,
-}: {
-	label: string;
-	value: string;
-	onChange: (value: string) => void;
-	options: { value: string; label: string; count: number }[];
-}) {
-	const available = options.filter((option) => option.count > 0);
-
-	return (
-		<label className="flex shrink-0 items-center gap-2">
-			<span className="eyebrow text-muted-foreground">{label}</span>
-			<AdminSelect
-				size="sm"
-				value={value}
-				onValueChange={onChange}
-				aria-label={label}
-				emptyLabel="All"
-				className="w-auto min-w-[136px]"
-				options={available.map((option) => ({
-					value: option.value,
-					label: `${option.label} (${option.count})`,
-				}))}
-			/>
-		</label>
 	);
 }

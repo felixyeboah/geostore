@@ -241,39 +241,233 @@ export async function getPublishedStoreProductBySlug(slug: string) {
 	});
 }
 
-export async function getAdminStoreProducts(filters: StoreProductFilters = {}) {
-	return db.product.findMany({
-		where: {
-			status: filters.status,
-			category: filters.categorySlug
-				? { slug: filters.categorySlug }
-				: undefined,
-			OR: filters.query
-				? [
-						{
-							name: {
-								contains: filters.query,
-							},
-						},
-						{
-							sku: {
-								contains: filters.query,
-							},
-						},
-						{
-							brand: {
-								contains: filters.query,
-							},
-						},
-					]
-				: undefined,
-		},
-		include: {
-			category: true,
-			images: { orderBy: { sortOrder: "asc" }, take: 1 },
-		},
-		orderBy: { updatedAt: "desc" },
+export type AdminProductSort = "updated" | "name" | "price" | "stock";
+
+export type AdminStockState = "OUT" | "LOW" | "OK";
+
+export interface AdminProductListQuery {
+	q?: string;
+	status?: ProductStatus;
+	stock?: AdminStockState;
+	categoryId?: string;
+	sort?: AdminProductSort;
+	dir?: "asc" | "desc";
+	/** 1-based. */
+	page?: number;
+	perPage?: number;
+}
+
+const ADMIN_PRODUCTS_PER_PAGE = 25;
+
+function adminProductSearchWhere(q?: string): Prisma.ProductWhereInput {
+	const query = q?.trim();
+
+	if (!query) {
+		return {};
+	}
+
+	// SQLite has no case-insensitive `contains` mode, so this matches the
+	// stored casing. It is the same limitation the storefront filters carry.
+	return {
+		OR: [
+			{ name: { contains: query } },
+			{ sku: { contains: query } },
+			{ brand: { contains: query } },
+			{ category: { name: { contains: query } } },
+		],
+	};
+}
+
+/**
+ * "Low" is a comparison between two columns, which is why this uses a Prisma
+ * field reference rather than a literal — the threshold is per product.
+ */
+function adminProductStockWhere(
+	stock?: AdminStockState,
+): Prisma.ProductWhereInput {
+	switch (stock) {
+		case "OUT":
+			return { stockQuantity: { lte: 0 } };
+		case "LOW":
+			return {
+				stockQuantity: {
+					gt: 0,
+					lte: db.product.fields.lowStockThreshold,
+				},
+			};
+		case "OK":
+			return {
+				stockQuantity: { gt: db.product.fields.lowStockThreshold },
+			};
+		default:
+			return {};
+	}
+}
+
+function adminProductOrderBy(
+	sort: AdminProductSort = "updated",
+	dir: "asc" | "desc" = "desc",
+): Prisma.ProductOrderByWithRelationInput[] {
+	switch (sort) {
+		case "name":
+			return [{ name: dir }];
+		case "price":
+			return [{ priceInPesewas: dir }];
+		case "stock":
+			return [{ stockQuantity: dir }];
+		default:
+			return [{ updatedAt: dir }];
+	}
+}
+
+/**
+ * One page of the admin catalogue, with the counts its filter bar shows.
+ *
+ * Filtering, sorting and paging all happen in the database. Each facet is
+ * counted with the *other* filters applied but not its own, which is what
+ * makes "Draft (3)" mean "3 more rows if you switch to Draft" rather than
+ * "3 rows in the whole table".
+ */
+export async function getAdminProductList(query: AdminProductListQuery = {}) {
+	const perPage = query.perPage ?? ADMIN_PRODUCTS_PER_PAGE;
+	const search = adminProductSearchWhere(query.q);
+	const byStatus: Prisma.ProductWhereInput = query.status
+		? { status: query.status }
+		: {};
+	const byCategory: Prisma.ProductWhereInput = query.categoryId
+		? { categoryId: query.categoryId }
+		: {};
+	const byStock = adminProductStockWhere(query.stock);
+
+	const where: Prisma.ProductWhereInput = {
+		AND: [search, byStatus, byCategory, byStock],
+	};
+
+	const total = await db.product.count({ where });
+	const pageCount = Math.max(1, Math.ceil(total / perPage));
+	// A filter change can leave the requested page past the end of the result.
+	const page = Math.min(Math.max(1, query.page ?? 1), pageCount);
+
+	const [
+		products,
+		statusGroups,
+		categoryGroups,
+		outCount,
+		lowCount,
+		okCount,
+	] = await Promise.all([
+		db.product.findMany({
+			where,
+			include: {
+				category: true,
+				images: { orderBy: { sortOrder: "asc" }, take: 1 },
+			},
+			orderBy: adminProductOrderBy(query.sort, query.dir),
+			skip: (page - 1) * perPage,
+			take: perPage,
+		}),
+		db.product.groupBy({
+			by: ["status"],
+			where: { AND: [search, byCategory, byStock] },
+			_count: { _all: true },
+		}),
+		db.product.groupBy({
+			by: ["categoryId"],
+			where: { AND: [search, byStatus, byStock] },
+			_count: { _all: true },
+		}),
+		db.product.count({
+			where: {
+				AND: [
+					search,
+					byStatus,
+					byCategory,
+					adminProductStockWhere("OUT"),
+				],
+			},
+		}),
+		db.product.count({
+			where: {
+				AND: [
+					search,
+					byStatus,
+					byCategory,
+					adminProductStockWhere("LOW"),
+				],
+			},
+		}),
+		db.product.count({
+			where: {
+				AND: [
+					search,
+					byStatus,
+					byCategory,
+					adminProductStockWhere("OK"),
+				],
+			},
+		}),
+	]);
+
+	const categoryNames = await db.category.findMany({
+		where: { id: { in: categoryGroups.map((group) => group.categoryId) } },
+		select: { id: true, name: true },
 	});
+	const nameById = new Map(
+		categoryNames.map((category) => [category.id, category.name]),
+	);
+
+	return {
+		products,
+		total,
+		page,
+		pageCount,
+		perPage,
+		facets: {
+			status: Object.fromEntries(
+				statusGroups.map((group) => [group.status, group._count._all]),
+			) as Partial<Record<ProductStatus, number>>,
+			stock: { OUT: outCount, LOW: lowCount, OK: okCount },
+			categories: categoryGroups
+				.map((group) => ({
+					id: group.categoryId,
+					name: nameById.get(group.categoryId) ?? "Unknown",
+					count: group._count._all,
+				}))
+				.sort((left, right) => left.name.localeCompare(right.name)),
+		},
+	};
+}
+
+export type AdminProductList = Awaited<ReturnType<typeof getAdminProductList>>;
+
+/**
+ * Catalogue-wide totals for the triage band.
+ *
+ * Deliberately unfiltered: the band reports the state of the shop, so it must
+ * not change when someone narrows the table to one department.
+ */
+export async function getAdminProductSummary() {
+	const [total, drafts, outOfStock, lowStock, liveValue] = await Promise.all([
+		db.product.count(),
+		db.product.count({ where: { status: "DRAFT" } }),
+		db.product.count({ where: adminProductStockWhere("OUT") }),
+		db.product.count({ where: adminProductStockWhere("LOW") }),
+		// Prisma cannot multiply two columns in an aggregate, so the value of
+		// published stock is summed in SQL.
+		db.$queryRaw<Array<{ value: number | bigint | null }>>`
+			SELECT COALESCE(SUM("priceInPesewas" * "stockQuantity"), 0) AS value
+			FROM "store_product"
+			WHERE "status" = 'ACTIVE'
+		`,
+	]);
+
+	return {
+		total,
+		drafts,
+		outOfStock,
+		lowStock,
+		liveStockValueInPesewas: Number(liveValue[0]?.value ?? 0),
+	};
 }
 
 export async function getAdminStoreProductById(id: string) {
@@ -1035,6 +1229,171 @@ export async function getAdminStoreOrders(filters?: {
 		orderBy: { placedAt: "desc" },
 		take,
 	});
+}
+
+export type AdminOrderSort = "placed" | "total" | "customer";
+
+export interface AdminOrderListQuery {
+	q?: string;
+	status?: OrderStatus;
+	paymentStatus?: StorePaymentStatus;
+	sort?: AdminOrderSort;
+	dir?: "asc" | "desc";
+	/** 1-based. */
+	page?: number;
+	perPage?: number;
+}
+
+const ADMIN_ORDERS_PER_PAGE = 25;
+
+function adminOrderSearchWhere(q?: string): Prisma.OrderWhereInput {
+	const query = q?.trim();
+
+	if (!query) {
+		return {};
+	}
+
+	// The delivery town is inside the `shippingAddress` JSON column, which
+	// SQLite cannot index or match through Prisma, so it is not searchable
+	// here — order number, email, phone and customer name are.
+	return {
+		OR: [
+			{ orderNumber: { contains: query } },
+			{ customerEmail: { contains: query } },
+			{ customerPhone: { contains: query } },
+			{ user: { name: { contains: query } } },
+		],
+	};
+}
+
+function adminOrderOrderBy(
+	sort: AdminOrderSort = "placed",
+	dir: "asc" | "desc" = "desc",
+): Prisma.OrderOrderByWithRelationInput[] {
+	switch (sort) {
+		case "total":
+			return [{ totalInPesewas: dir }];
+		case "customer":
+			return [{ customerEmail: dir }];
+		default:
+			return [{ placedAt: dir }];
+	}
+}
+
+/**
+ * One page of the order book, with the counts its filter bar shows.
+ *
+ * Same shape as the catalogue list: the database filters, sorts and pages, and
+ * each facet is counted with the other filters applied but not its own.
+ */
+export async function getAdminOrderList(query: AdminOrderListQuery = {}) {
+	const perPage = query.perPage ?? ADMIN_ORDERS_PER_PAGE;
+	const search = adminOrderSearchWhere(query.q);
+	const byStatus: Prisma.OrderWhereInput = query.status
+		? { status: query.status }
+		: {};
+	const byPayment: Prisma.OrderWhereInput = query.paymentStatus
+		? { paymentStatus: query.paymentStatus }
+		: {};
+
+	const where: Prisma.OrderWhereInput = {
+		AND: [search, byStatus, byPayment],
+	};
+
+	const total = await db.order.count({ where });
+	const pageCount = Math.max(1, Math.ceil(total / perPage));
+	const page = Math.min(Math.max(1, query.page ?? 1), pageCount);
+
+	const [orders, statusGroups, paymentGroups] = await Promise.all([
+		db.order.findMany({
+			where,
+			include: {
+				user: { select: { name: true, email: true, image: true } },
+				items: { select: { id: true } },
+				transactions: { orderBy: { createdAt: "desc" } },
+			},
+			orderBy: adminOrderOrderBy(query.sort, query.dir),
+			skip: (page - 1) * perPage,
+			take: perPage,
+		}),
+		db.order.groupBy({
+			by: ["status"],
+			where: { AND: [search, byPayment] },
+			_count: { _all: true },
+		}),
+		db.order.groupBy({
+			by: ["paymentStatus"],
+			where: { AND: [search, byStatus] },
+			_count: { _all: true },
+		}),
+	]);
+
+	return {
+		orders,
+		total,
+		page,
+		pageCount,
+		perPage,
+		facets: {
+			status: Object.fromEntries(
+				statusGroups.map((group) => [group.status, group._count._all]),
+			) as Partial<Record<OrderStatus, number>>,
+			payment: Object.fromEntries(
+				paymentGroups.map((group) => [
+					group.paymentStatus,
+					group._count._all,
+				]),
+			) as Partial<Record<StorePaymentStatus, number>>,
+		},
+	};
+}
+
+export type AdminOrderList = Awaited<ReturnType<typeof getAdminOrderList>>;
+
+/**
+ * Whole-book counts for the triage band above the orders table.
+ *
+ * Unfiltered on purpose: the band says what is waiting on the shop, which must
+ * not change when someone narrows the table to one status.
+ */
+export async function getAdminOrderSummary(dispatchWindowHours: number) {
+	const cutoff = new Date(Date.now() - dispatchWindowHours * 60 * 60 * 1000);
+	const undispatched: OrderStatus[] = [
+		"PENDING",
+		"CONFIRMED",
+		"PROCESSING",
+		"READY_FOR_DELIVERY",
+	];
+
+	const [total, late, awaitingDispatch, unpaid] = await Promise.all([
+		db.order.count(),
+		db.order.count({
+			where: {
+				paymentStatus: "PAID",
+				status: { in: undispatched },
+				placedAt: { lt: cutoff },
+			},
+		}),
+		db.order.count({
+			where: { paymentStatus: "PAID", status: { in: undispatched } },
+		}),
+		db.order.aggregate({
+			where: {
+				paymentStatus: { not: "PAID" },
+				status: { notIn: ["CANCELLED", "REFUNDED"] },
+			},
+			_count: { _all: true },
+			_sum: { totalInPesewas: true },
+		}),
+	]);
+
+	return {
+		total,
+		late,
+		awaitingDispatch,
+		unpaid: unpaid._count._all,
+		unpaidValueInPesewas: unpaid._sum.totalInPesewas ?? 0,
+	};
 }
 
 export async function getStoreOrdersByUserId(userId: string) {

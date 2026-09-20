@@ -9,9 +9,15 @@ import {
 	ProductsTable,
 	type StockState,
 } from "@admin/components/products/ProductsTable";
+import { loadProductListParams } from "@admin/lib/list-params";
 import { formatMoney } from "@repo/commerce";
-import { getAdminStoreProducts, getStoreCategories } from "@repo/database";
+import {
+	getAdminProductList,
+	getAdminProductSummary,
+	getStoreCategories,
+} from "@repo/database";
 import type { Metadata } from "next";
+import type { SearchParams } from "nuqs/server";
 
 export const metadata: Metadata = { title: "Products" };
 
@@ -25,13 +31,28 @@ function getStockState(
 	return stockQuantity <= lowStockThreshold ? "LOW" : "OK";
 }
 
-export default async function AdminProductsPage() {
-	const [products, categories] = await Promise.all([
-		getAdminStoreProducts(),
+export default async function AdminProductsPage({
+	searchParams,
+}: {
+	searchParams: Promise<SearchParams>;
+}) {
+	const params = await loadProductListParams(searchParams);
+
+	const [list, summary, categories] = await Promise.all([
+		getAdminProductList({
+			q: params.q,
+			status: params.status ?? undefined,
+			stock: params.stock ?? undefined,
+			categoryId: params.dept ?? undefined,
+			sort: params.sort,
+			dir: params.dir,
+			page: params.page,
+		}),
+		getAdminProductSummary(),
 		getStoreCategories({ includeInactive: true }),
 	]);
 
-	const rows: ProductRow[] = products.map((product) => ({
+	const rows: ProductRow[] = list.products.map((product) => ({
 		id: product.id,
 		name: product.name,
 		slug: product.slug,
@@ -52,39 +73,32 @@ export default async function AdminProductsPage() {
 		),
 	}));
 
-	const outOfStock = rows.filter((row) => row.stockState === "OUT");
-	const lowStock = rows.filter((row) => row.stockState === "LOW");
-	const drafts = rows.filter((row) => row.status === "DRAFT");
-	const liveValue = rows
-		.filter((row) => row.status === "ACTIVE")
-		.reduce((sum, row) => sum + row.priceInPesewas * row.stockQuantity, 0);
-
-	// The headline reads as a sentence, so the state of the catalogue is
-	// legible before anyone parses a table.
-	const summary = [
-		outOfStock.length ? `${outOfStock.length} out of stock` : null,
-		lowStock.length ? `${lowStock.length} running low` : null,
-		drafts.length ? `${drafts.length} still in draft` : null,
+	// The band reports the shop, not the current filter, so it reads from the
+	// catalogue-wide summary rather than from the page of rows below it.
+	const headline = [
+		summary.outOfStock ? `${summary.outOfStock} out of stock` : null,
+		summary.lowStock ? `${summary.lowStock} running low` : null,
+		summary.drafts ? `${summary.drafts} still in draft` : null,
 	].filter(Boolean);
 
 	const triage = [
 		{
 			key: "out",
-			count: outOfStock.length,
+			count: summary.outOfStock,
 			title: "Out of stock",
 			detail: "Live on the storefront with nothing to sell",
 			urgent: true,
 		},
 		{
 			key: "low",
-			count: lowStock.length,
+			count: summary.lowStock,
 			title: "Running low",
 			detail: "At or under their low-stock warning",
 			urgent: false,
 		},
 		{
 			key: "draft",
-			count: drafts.length,
+			count: summary.drafts,
 			title: "Still in draft",
 			detail: "Not yet visible to customers",
 			urgent: false,
@@ -97,9 +111,9 @@ export default async function AdminProductsPage() {
 				eyebrow="Catalogue"
 				title="Products and stock"
 				description={
-					summary.length > 0
-						? `${rows.length} products · ${summary.join(" · ")}.`
-						: `${rows.length} products, all in stock and published.`
+					headline.length > 0
+						? `${summary.total} products · ${headline.join(" · ")}.`
+						: `${summary.total} products, all in stock and published.`
 				}
 				actions={<AddProductButton />}
 			/>
@@ -134,12 +148,19 @@ export default async function AdminProductsPage() {
 			)}
 
 			<div className={triage.length > 0 ? "mt-2" : "mt-9"}>
-				<ProductsTable products={rows} />
+				<ProductsTable
+					products={rows}
+					facets={list.facets}
+					total={list.total}
+					page={list.page}
+					pageCount={list.pageCount}
+				/>
 			</div>
 
-			{liveValue > 0 && (
+			{summary.liveStockValueInPesewas > 0 && (
 				<p className="text-[12px] text-muted-foreground">
-					{formatMoney(liveValue)} of published stock on hand.
+					{formatMoney(summary.liveStockValueInPesewas)} of published
+					stock on hand.
 				</p>
 			)}
 
