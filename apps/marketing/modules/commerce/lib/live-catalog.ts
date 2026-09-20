@@ -39,14 +39,20 @@ function mapReview(review: {
 	title: string | null;
 	body: string;
 	createdAt: Date;
-	user: { name: string };
+	/** Taken from the order the review is anchored to. */
+	authorName?: string | null;
+	/** Only set when the buyer happened to have an account. */
+	user?: { name: string } | null;
 }): StoreReview {
 	return {
 		rating: review.rating,
 		title: review.title ?? "Verified purchase",
 		body: review.body,
 		createdAt: review.createdAt.toISOString(),
-		customerName: review.user.name,
+		// The account name first when there is one, because it is the name
+		// they chose; otherwise the name from the order.
+		customerName:
+			review.user?.name ?? review.authorName ?? "Verified customer",
 	};
 }
 
@@ -73,7 +79,10 @@ function mapProduct(product: {
 		title?: string | null;
 		body?: string;
 		createdAt?: Date;
-		user?: { name: string };
+		/** From the order — every review has one. */
+		authorName?: string | null;
+		/** Only when the buyer had an account, which most will not. */
+		user?: { name: string } | null;
 	}>;
 	variants?: Array<{
 		id: string;
@@ -87,13 +96,17 @@ function mapProduct(product: {
 }): StoreProduct {
 	const images = product.images.map((image) => image.url);
 	const detailedReviews = product.reviews.flatMap((review) =>
-		review.body && review.createdAt && review.user
+		// A review no longer needs an account behind it — this shop has no
+		// customer sign-up, so requiring `user` here dropped every guest
+		// review on the floor without a trace.
+		review.body && review.createdAt
 			? [
 					mapReview({
 						rating: review.rating,
 						title: review.title ?? null,
 						body: review.body,
 						createdAt: review.createdAt,
+						authorName: review.authorName,
 						user: review.user,
 					}),
 				]

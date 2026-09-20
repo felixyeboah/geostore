@@ -466,12 +466,22 @@ model OrderItem {
   @@map("store_order_item")
 }
 
+/// A review is anchored to the order item it is about, never to an account:
+/// this shop has no customer sign-up, so the buyer entitled to review an item
+/// exists only as an order. `orderItemId` being unique is what stops one
+/// purchase being reviewed twice, and proving ownership of the order is what
+/// stands in for being signed in.
 model Review {
   id          String    @id @default(cuid())
   productId   String
   product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Set only when the buyer happened to have an account. Guests are the norm.
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Shown beside the review. Taken from the order, not typed by the reviewer.
+  authorName  String
+  /// Never shown. Kept so a review can be traced back to the order behind it.
+  authorEmail String
   orderItemId String    @unique
   orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   rating      Int

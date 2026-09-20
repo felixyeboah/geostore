@@ -1,5 +1,6 @@
 import { ProductGallery } from "@commerce/components/ProductGallery";
 import { ProductGrid } from "@commerce/components/ProductGrid";
+import { ReviewForm } from "@commerce/components/ReviewForm";
 import { VariantPicker } from "@commerce/components/VariantPicker";
 import {
 	getLiveCategories,
@@ -262,15 +263,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
 					</div>
 
 					{product.reviewCount === 0 || !product.reviews?.length ? (
-						<div className="mt-11 border-foreground border-t py-14">
-							<p className="font-semibold text-[20px] text-foreground tracking-[-0.03em]">
-								No reviews yet.
-							</p>
-							<p className="mt-2.5 max-w-[46ch] text-[14px] text-muted-foreground">
-								Customers can review this item after a delivered
-								purchase, so everything here is from someone who
-								actually received it.
-							</p>
+						<div className="mt-11 border-foreground border-t">
+							<div className="py-14">
+								<p className="font-semibold text-[20px] text-foreground tracking-[-0.03em]">
+									No reviews yet.
+								</p>
+								<p className="mt-2.5 max-w-[46ch] text-[14px] text-muted-foreground">
+									Customers can review this item after a
+									delivered purchase, so everything here is
+									from someone who actually received it.
+								</p>
+							</div>
+							<ReviewForm
+								productId={product.id}
+								productSlug={product.slug}
+								productName={product.name}
+							/>
 						</div>
 					) : (
 						<div className="mt-11 border-foreground border-t">
@@ -306,6 +314,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 									</div>
 								</article>
 							))}
+							<ReviewForm
+								productId={product.id}
+								productSlug={product.slug}
+								productName={product.name}
+							/>
 						</div>
 					)}
 				</section>

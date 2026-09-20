@@ -1772,33 +1772,101 @@ export async function getStoreOrdersByUserId(userId: string) {
 	});
 }
 
-export async function createStoreReview(input: {
-	userId: string;
-	orderItemId: string;
+/** The name to show beside a guest's review, from the order they placed. */
+function reviewerNameFrom(shippingAddress: unknown, email: string): string {
+	if (shippingAddress && typeof shippingAddress === "object") {
+		const recipient = (shippingAddress as Record<string, unknown>)
+			.recipientName;
+		if (typeof recipient === "string" && recipient.trim().length > 1) {
+			return recipient.trim();
+		}
+	}
+
+	// Falls back to the part before the @, which is at least recognisably
+	// theirs, rather than showing a stranger the whole address.
+	return email.split("@")[0] ?? "Customer";
+}
+
+export interface GuestReviewInput {
+	productId: string;
+	/** Printed on the confirmation email; the reviewer copies it in. */
+	orderNumber: string;
+	email: string;
 	rating: number;
 	title?: string;
 	body: string;
-}) {
-	const orderItem = await db.orderItem.findFirst({
-		where: {
-			id: input.orderItemId,
-			order: { userId: input.userId, status: "DELIVERED" },
+}
+
+/**
+ * A review from someone who bought the thing, without an account.
+ *
+ * This shop has no customer sign-up, so "are you allowed to review this?"
+ * cannot be answered by a session. It is answered by the order instead: the
+ * order number and the email it was placed with have to match, the order has
+ * to be DELIVERED, and it has to actually contain this product. That is the
+ * same promise the product page already makes to shoppers — every review here
+ * is from someone who received the item.
+ *
+ * The unique `orderItemId` is what stops one purchase being reviewed twice;
+ * a second submission edits the first rather than adding another.
+ */
+export async function createGuestStoreReview(input: GuestReviewInput) {
+	const orderNumber = input.orderNumber.trim();
+	const email = input.email.trim().toLowerCase();
+
+	const order = await db.order.findUnique({
+		where: { orderNumber },
+		select: {
+			id: true,
+			status: true,
+			userId: true,
+			customerEmail: true,
+			shippingAddress: true,
+			items: {
+				where: { productId: input.productId },
+				select: { id: true },
+				take: 1,
+			},
 		},
-		select: { id: true, productId: true },
 	});
 
-	if (!orderItem) {
+	// One message for "no such order", "wrong email" and "not your order".
+	// Distinguishing them would turn this form into a way to test whether an
+	// order number and an address go together.
+	const matches =
+		order !== null && order.customerEmail.trim().toLowerCase() === email;
+
+	if (!matches) {
 		throw new StoreOperationError(
-			"Only delivered products from your own orders can be reviewed.",
+			"We could not match that order number and email address.",
 		);
 	}
 
+	if (order.status !== "DELIVERED") {
+		throw new StoreOperationError(
+			"That order has not been delivered yet, so it cannot be reviewed.",
+		);
+	}
+
+	const orderItem = order.items[0];
+	if (!orderItem) {
+		throw new StoreOperationError(
+			"That order does not include this product.",
+		);
+	}
+
+	const authorName = reviewerNameFrom(order.shippingAddress, email);
+
 	return db.review.upsert({
-		where: { orderItemId: input.orderItemId },
+		where: { orderItemId: orderItem.id },
 		create: {
-			productId: orderItem.productId,
-			userId: input.userId,
+			productId: input.productId,
 			orderItemId: orderItem.id,
+			// Kept when the buyer happened to have an account, so their
+			// reviews still hang together.
+			userId: order.userId,
+			authorName,
+			authorEmail: email,
 			rating: input.rating,
 			title: input.title,
 			body: input.body,
