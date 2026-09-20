@@ -85,7 +85,8 @@ test("the landing editor controls the storefront", async ({
 	// 1. Copy override reaches the page. The editor is a sheet over the
 	// preview, so the band has to be opened before its fields exist.
 	await page.getByRole("button", { name: /^Hero/ }).click();
-	await page.getByLabel("Headline, first line").fill(HERO_MARKER);
+	const sheet = page.getByRole("dialog");
+	await sheet.getByLabel("Headline, first line").fill(HERO_MARKER);
 	await page.getByRole("button", { name: "Save band" }).click();
 	await expect(
 		page.getByText("Hero staged. Publish to make it live."),
@@ -97,7 +98,7 @@ test("the landing editor controls the storefront", async ({
 
 	// 2. A second section, so the hide check has something unique to look for.
 	await page.getByRole("button", { name: /^Brand line/ }).click();
-	await page.getByLabel("First line").fill(BRAND_MARKER);
+	await sheet.getByLabel("First line").fill(BRAND_MARKER);
 	await page.getByRole("button", { name: "Save band" }).click();
 	await expect(
 		page.getByText("Brand line staged. Publish to make it live."),

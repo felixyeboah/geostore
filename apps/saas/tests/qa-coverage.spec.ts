@@ -555,9 +555,9 @@ test.describe("admin catalogue and fulfilment", () => {
 			.toBe(stockBefore + 1);
 		await expect
 			.poll(
-				() =>
+				async () =>
 					Number(
-						sql(
+						await sql(
 							`SELECT COUNT(*) FROM store_inventory_event WHERE "productId" = '${PRODUCT_ID}' AND type = 'RETURN'`,
 						),
 					),
