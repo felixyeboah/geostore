@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateStorefrontMenu } from "@admin/lib/revalidate-storefront";
 import { getSession } from "@auth/lib/server";
 import {
 	type ProductFormValues,
@@ -90,7 +91,7 @@ function toAdminErrorMessage(error: unknown, fallback: string): string {
  * product withdrawn or repriced while they browse would otherwise stay on
  * screen — and still be addable to the bag — until a hard reload.
  */
-function revalidateStorefrontForProduct(product: {
+async function revalidateStorefrontForProduct(product: {
 	slug: string;
 	category?: { slug: string } | null;
 	categorySlug?: string | null;
@@ -105,6 +106,10 @@ function revalidateStorefrontForProduct(product: {
 
 	revalidatePath("/admin/products");
 	revalidatePath("/admin/overview");
+
+	// Counts, brand pills and the featured tile in the shop menu all come from
+	// live products, and that endpoint is cached in the other app.
+	await revalidateStorefrontMenu();
 }
 
 export async function saveStoreProductAction(
@@ -125,9 +130,9 @@ export async function saveStoreProductAction(
 			: await createStoreProduct(input);
 
 		if (previous) {
-			revalidateStorefrontForProduct(previous);
+			await revalidateStorefrontForProduct(previous);
 		}
-		revalidateStorefrontForProduct(product);
+		await revalidateStorefrontForProduct(product);
 
 		return {
 			success: true,
@@ -155,7 +160,7 @@ export async function updateStoreProductStatusAction(
 			.enum(["DRAFT", "ACTIVE", "ARCHIVED"])
 			.parse(status);
 		const product = await updateStoreProductStatus(productId, parsedStatus);
-		revalidateStorefrontForProduct(product);
+		await revalidateStorefrontForProduct(product);
 		return { success: true, message: "Product status updated." };
 	} catch (error) {
 		return {
@@ -181,7 +186,7 @@ export async function updateStoreProductStockAction(
 			session.user.id,
 		);
 
-		revalidateStorefrontForProduct(product);
+		await revalidateStorefrontForProduct(product);
 		return { success: true, message: "Stock updated." };
 	} catch (error) {
 		return {
@@ -217,7 +222,7 @@ export async function deleteStoreProductAction(
 			};
 		}
 
-		revalidateStorefrontForProduct({
+		await revalidateStorefrontForProduct({
 			slug: result.product.slug,
 			categorySlug: result.product.categorySlug,
 		});
@@ -464,9 +469,10 @@ export async function saveStoreCategoryAction(
 		revalidatePath("/admin/categories");
 		revalidatePath("/admin/products");
 		revalidatePath("/admin/overview");
+		await revalidateStorefrontMenu();
 		return {
 			success: true,
-			message: categoryId ? "Category updated." : "Category created.",
+			message: categoryId ? "Department updated." : "Department created.",
 			id: saved.id,
 		};
 	} catch (error) {
@@ -493,12 +499,13 @@ export async function saveStoreCategoryAction(
  * says how many moved and names the first thing that went wrong.
  */
 /** The storefront surfaces a department in the nav, on `/shop` and on its own page. */
-function revalidateStorefrontForCategory(slug: string) {
+async function revalidateStorefrontForCategory(slug: string) {
 	revalidatePath("/");
 	revalidatePath("/shop");
 	revalidatePath(`/categories/${slug}`);
 	revalidatePath("/admin/categories");
 	revalidatePath("/admin/products");
+	await revalidateStorefrontMenu();
 }
 
 export async function deleteStoreCategoryAction(
@@ -526,7 +533,7 @@ export async function deleteStoreCategoryAction(
 			};
 		}
 
-		revalidateStorefrontForCategory(result.category.slug);
+		await revalidateStorefrontForCategory(result.category.slug);
 
 		return {
 			success: true,
@@ -553,7 +560,7 @@ export async function setStoreCategoryActiveAction(
 			categoryId,
 			z.boolean().parse(isActive),
 		);
-		revalidateStorefrontForCategory(saved.slug);
+		await revalidateStorefrontForCategory(saved.slug);
 		return {
 			success: true,
 			message: isActive
@@ -581,6 +588,7 @@ export async function reorderStoreCategoriesAction(
 		revalidatePath("/");
 		revalidatePath("/shop");
 		revalidatePath("/admin/categories");
+		await revalidateStorefrontMenu();
 		return { success: true, message: "Order saved." };
 	} catch (error) {
 		return {

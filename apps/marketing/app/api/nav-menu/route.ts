@@ -16,7 +16,12 @@ const BRAND_LIMIT = 8;
  * including the blog and the legal pages. The menu fetches once, the first
  * time someone opens it.
  */
-export const revalidate = 300;
+/*
+ * The back office flushes this on demand through /api/revalidate, so this
+ * window is only the fallback for when that call cannot get through — a
+ * deploy, a network blip, or an environment with no shared secret set.
+ */
+export const revalidate = 60;
 
 export async function GET() {
 	const [categories, collections, products] = await Promise.all([
