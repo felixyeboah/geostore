@@ -188,7 +188,9 @@ test.afterAll(async () => {
 		await sql(
 			`DELETE FROM store_inventory_event WHERE "productId" = '${PRODUCT_ID}'`,
 		);
-		await sql(`DELETE FROM store_review WHERE "productId" = '${PRODUCT_ID}'`);
+		await sql(
+			`DELETE FROM store_review WHERE "productId" = '${PRODUCT_ID}'`,
+		);
 		await sql(`DELETE FROM store_order_item WHERE "orderId" IN (${list})`);
 		await sql(
 			`DELETE FROM store_order_status_event WHERE "orderId" IN (${list})`,
@@ -213,11 +215,13 @@ test.describe("buyer cart and delivery", () => {
 		await addSeededProductToBag(page);
 		await page.goto(`${STOREFRONT}/cart`);
 		await expect(
-			page.getByRole("heading", { name: "Your shopping bag" }),
+			page.getByRole("heading", { name: "Your bag" }),
 		).toBeVisible();
 
 		expect(await readLineTotal(page)).toBe(500);
-		await expect(page.getByText("1 item", { exact: true })).toBeVisible();
+		await expect(
+			page.getByText("01 — item", { exact: true }),
+		).toBeVisible();
 		expect(await readOrderSummary(page)).toMatchObject({
 			subtotal: 500,
 			delivery: 35,
@@ -229,7 +233,9 @@ test.describe("buyer cart and delivery", () => {
 			.click();
 
 		await expect.poll(() => readLineTotal(page)).toBe(1000);
-		await expect(page.getByText("2 items", { exact: true })).toBeVisible();
+		await expect(
+			page.getByText("02 — items", { exact: true }),
+		).toBeVisible();
 		await expect
 			.poll(async () => await readOrderSummary(page))
 			.toMatchObject({ subtotal: 1000, delivery: 0, total: 1000 });
@@ -244,22 +250,18 @@ test.describe("buyer cart and delivery", () => {
 			.toMatchObject({ subtotal: 500, delivery: 35, total: 535 });
 
 		await cartLine(page)
-			.getByRole("button", { name: `Remove ${PRODUCT_NAME} from bag` })
+			.getByRole("button", { name: "Remove", exact: true })
 			.click();
 
 		await expect(
-			page.getByRole("heading", {
-				name: "Your bag is ready when you are.",
-			}),
+			page.getByRole("heading", { name: "Nothing in the bag yet." }),
 		).toBeVisible();
 		await expect(page.getByText(PRODUCT_NAME)).toHaveCount(0);
 
 		// A reload proves the removal was persisted, not just re-rendered.
 		await page.reload();
 		await expect(
-			page.getByRole("heading", {
-				name: "Your bag is ready when you are.",
-			}),
+			page.getByRole("heading", { name: "Nothing in the bag yet." }),
 		).toBeVisible();
 	});
 
@@ -276,9 +278,7 @@ test.describe("buyer cart and delivery", () => {
 				name: `Increase ${PRODUCT_NAME} quantity`,
 			});
 			await expect(increase).toBeDisabled();
-			await expect(
-				page.getByText("Maximum available quantity selected."),
-			).toBeVisible();
+			await expect(page.getByText("All we hold right now")).toBeVisible();
 			expect(await readLineTotal(page)).toBe(500);
 
 			// The clamp has to hold even when the increase is dispatched
@@ -339,7 +339,7 @@ test.describe("buyer cart and delivery", () => {
 				total: 1000,
 			});
 		await expect(
-			page.getByText("Your order qualifies for free delivery in Accra."),
+			page.getByText("This order qualifies for free delivery in Accra."),
 		).toBeVisible();
 
 		await setProduct(`"priceInPesewas" = ${BASE_PRICE_IN_PESEWAS}`);
@@ -415,8 +415,10 @@ test.describe("admin catalogue and fulfilment", () => {
 			.first();
 		await expect(row).toBeVisible({ timeout: 30_000 });
 
-		await row.getByLabel("Stock quantity").fill("9");
-		await row.getByRole("button", { name: "Save stock" }).click();
+		// The stock input saves on blur — Enter is the keyboard path to it.
+		const stockInput = row.getByLabel(`Stock for ${PRODUCT_NAME}`);
+		await stockInput.fill("9");
+		await stockInput.press("Enter");
 		await expect(page.getByText("Stock updated").first()).toBeVisible({
 			timeout: 20_000,
 		});
@@ -430,28 +432,37 @@ test.describe("admin catalogue and fulfilment", () => {
 			.locator("tr")
 			.filter({ hasText: PRODUCT_NAME })
 			.first();
-		await expect(reloadedRow.getByLabel("Stock quantity")).toHaveValue("9");
+		await expect(
+			reloadedRow.getByLabel(`Stock for ${PRODUCT_NAME}`),
+		).toHaveValue("9");
 	});
 
 	test("an admin can create and then edit a category", async ({ page }) => {
 		await signIn(page, ADMIN);
-		await page.goto("/admin/categories");
+		// Departments are edited in a sheet over the list; `?new=true` opens
+		// it, the same way the products sheet does.
+		await page.goto("/admin/categories?new=true");
+		const createSheet = page.getByRole("dialog");
 		await expect(
-			page.getByRole("heading", { name: "Categories" }),
-		).toBeVisible();
+			createSheet.getByRole("heading", { name: "Add department" }),
+		).toBeVisible({ timeout: 30_000 });
 
-		const createForm = page.locator("form").first();
-		await createForm.locator('input[name="name"]').fill(CATEGORY_NAME);
-		await createForm.locator('input[name="slug"]').fill(CATEGORY_SLUG);
-		await createForm
-			.locator('textarea[name="description"]')
+		// Typing a name derives the slug until the slug field is touched, so
+		// the slug goes in second and stays the fixture's own.
+		await createSheet
+			.getByLabel("Name", { exact: true })
+			.fill(CATEGORY_NAME);
+		await createSheet.getByLabel("URL slug").fill(CATEGORY_SLUG);
+		await createSheet
+			.getByLabel("Description")
 			.fill("Created by the automated QA coverage suite.");
-		await createForm.locator('input[name="sortOrder"]').fill("99");
-		await createForm.getByRole("button", { name: "Add category" }).click();
+		await createSheet
+			.getByRole("button", { name: "Add department" })
+			.click();
 
-		await expect(page.getByText("Category created.").first()).toBeVisible({
-			timeout: 20_000,
-		});
+		await expect(
+			page.getByText(`${CATEGORY_NAME} created`).first(),
+		).toBeVisible({ timeout: 20_000 });
 		await expect
 			.poll(
 				() =>
@@ -462,17 +473,24 @@ test.describe("admin catalogue and fulfilment", () => {
 			)
 			.toBe(CATEGORY_NAME);
 
-		await page.goto("/admin/categories");
-		const editForm = page.locator(
-			`form:has(input[name="slug"][value="${CATEGORY_SLUG}"])`,
-		);
-		await expect(editForm).toBeVisible({ timeout: 30_000 });
-		await editForm.locator('input[name="name"]').fill(CATEGORY_RENAMED);
-		await editForm.getByRole("button", { name: "Update category" }).click();
+		// The row's name reopens the same sheet in edit mode.
+		await page
+			.getByRole("button", { name: CATEGORY_NAME, exact: true })
+			.click();
+		const editSheet = page.getByRole("dialog");
+		await expect(
+			editSheet.getByRole("heading", { name: "Edit department" }),
+		).toBeVisible({ timeout: 30_000 });
+		await editSheet
+			.getByLabel("Name", { exact: true })
+			.fill(CATEGORY_RENAMED);
+		await editSheet
+			.getByRole("button", { name: "Save department" })
+			.click();
 
-		await expect(page.getByText("Category updated.").first()).toBeVisible({
-			timeout: 20_000,
-		});
+		await expect(
+			page.getByText(`${CATEGORY_RENAMED} updated`).first(),
+		).toBeVisible({ timeout: 20_000 });
 		await expect
 			.poll(
 				() =>
@@ -484,7 +502,9 @@ test.describe("admin catalogue and fulfilment", () => {
 			.toBe(CATEGORY_RENAMED);
 
 		await page.goto("/admin/categories");
-		await expect(page.getByText(CATEGORY_RENAMED).first()).toBeVisible();
+		await expect(
+			page.getByRole("button", { name: CATEGORY_RENAMED, exact: true }),
+		).toBeVisible();
 	});
 
 	test("cancelling an order restocks the product and records a RETURN event", async ({
@@ -560,11 +580,12 @@ test.describe("admin catalogue and fulfilment", () => {
 		// Adding a product is a sheet over the list now; the query parameter is
 		// what the retired /admin/products/new route redirects to.
 		await page.goto("/admin/products?new=true");
+		const sheet = page.getByRole("dialog");
 		await expect(
-			page.getByRole("heading", { name: "Add product" }),
+			sheet.getByRole("heading", { name: "Add product" }),
 		).toBeVisible({ timeout: 30_000 });
 
-		const form = page.locator("form");
+		const form = sheet.locator("form");
 		await form
 			.getByLabel("Name", { exact: true })
 			.first()
@@ -596,10 +617,10 @@ test.describe("admin catalogue and fulfilment", () => {
 			.fill("250");
 		await form.getByLabel("On-hand quantity").fill("4");
 
-		await page.getByRole("button", { name: "Save product" }).click();
+		await form.getByRole("button", { name: "Save product" }).click();
 
 		// The submission is refused: the form stays put and nothing is written.
-		const inlineMessages = page.locator("form p.text-destructive");
+		const inlineMessages = form.locator("p.text-destructive");
 		await expect(inlineMessages.first()).toBeVisible({ timeout: 20_000 });
 		await expect(page).toHaveURL(/\/admin\/products\?new=true/);
 		expect(

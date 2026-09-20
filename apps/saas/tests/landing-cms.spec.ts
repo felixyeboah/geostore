@@ -30,10 +30,11 @@ async function storefront(request: {
 /**
  * Poll the storefront rather than asserting on it once.
  *
- * A toast is not a reliable signal that a save has landed: this suite runs in
- * seconds, so a toast from an earlier step can still be on screen and satisfy
- * a visibility check before the later save has finished. The rendered page is
- * the only thing worth asserting on, so wait for it to agree.
+ * A toast is not a reliable signal that a publish has landed: this suite runs
+ * in seconds, so a toast from an earlier step can still be on screen and
+ * satisfy a visibility check before the later publish has finished. The
+ * rendered page is the only thing worth asserting on, so wait for it to
+ * agree.
  */
 function expectStorefront(
 	request: Parameters<typeof storefront>[0],
@@ -51,16 +52,15 @@ test("the landing editor controls the storefront", async ({
 }) => {
 	test.setTimeout(300_000);
 
-	// Put every section back to its shipped state first. Visibility and copy
-	// are not enough: step 5 moves a band up, so without restoring the order
-	// each run would start one place further along and eventually select a
-	// different section than the one these assertions name.
+	// Put every section back to its shipped state first — published columns
+	// AND the draft columns the editor stages into, so a run that stopped
+	// mid-way does not leave a staged change the editor would open on.
 	const reset = createClient({
 		url: process.env.DATABASE_URL ?? "",
 		authToken: process.env.DATABASE_AUTH_TOKEN,
 	});
 	await reset.execute(
-		'UPDATE landing_section SET "isVisible" = 1, settings = NULL',
+		'UPDATE landing_section SET "isVisible" = 1, settings = NULL, "draftIsVisible" = NULL, "draftSortOrder" = NULL, "draftSettings" = NULL',
 	);
 	for (const section of LANDING_SECTIONS) {
 		await reset.execute({
@@ -73,14 +73,24 @@ test("the landing editor controls the storefront", async ({
 	await signIn(page);
 	await page.goto("/admin/landing", { waitUntil: "networkidle" });
 
+	// Every control stages a draft — nothing reaches shoppers until the
+	// banner's Publish button commits it.
+	async function publish() {
+		await page.getByRole("button", { name: "Publish changes" }).click();
+		await expect(page.getByText(/Published \d+ changes?\./)).toBeVisible({
+			timeout: 20_000,
+		});
+	}
+
 	// 1. Copy override reaches the page. The editor is a sheet over the
-	// preview now, so the band has to be opened before its fields exist.
+	// preview, so the band has to be opened before its fields exist.
 	await page.getByRole("button", { name: /^Hero/ }).click();
 	await page.getByLabel("Headline, first line").fill(HERO_MARKER);
 	await page.getByRole("button", { name: "Save band" }).click();
-	await expect(page.getByText("Hero saved.")).toBeVisible({
-		timeout: 20_000,
-	});
+	await expect(
+		page.getByText("Hero staged. Publish to make it live."),
+	).toBeVisible({ timeout: 20_000 });
+	await publish();
 	await expectStorefront(request, "hero override reaches the page").toContain(
 		HERO_MARKER,
 	);
@@ -89,9 +99,10 @@ test("the landing editor controls the storefront", async ({
 	await page.getByRole("button", { name: /^Brand line/ }).click();
 	await page.getByLabel("First line").fill(BRAND_MARKER);
 	await page.getByRole("button", { name: "Save band" }).click();
-	await expect(page.getByText("Brand line saved.")).toBeVisible({
-		timeout: 20_000,
-	});
+	await expect(
+		page.getByText("Brand line staged. Publish to make it live."),
+	).toBeVisible({ timeout: 20_000 });
+	await publish();
 	await expectStorefront(
 		request,
 		"brand override reaches the page",
@@ -99,9 +110,10 @@ test("the landing editor controls the storefront", async ({
 
 	// 3. Hiding removes it from the page entirely.
 	await page.getByRole("button", { name: "Hide Brand line" }).click();
-	await expect(page.getByText("Brand line is hidden.")).toBeVisible({
-		timeout: 20_000,
-	});
+	await expect(
+		page.getByText("Brand line will be hidden. Publish to make it live."),
+	).toBeVisible({ timeout: 20_000 });
+	await publish();
 	await expectStorefront(
 		request,
 		"hidden band leaves the page",
@@ -113,16 +125,21 @@ test("the landing editor controls the storefront", async ({
 
 	// 4. Showing brings it back.
 	await page.getByRole("button", { name: "Show Brand line" }).click();
-	await expect(page.getByText("Brand line is now showing.")).toBeVisible({
-		timeout: 20_000,
-	});
+	await expect(
+		page.getByText("Brand line will show. Publish to make it live."),
+	).toBeVisible({ timeout: 20_000 });
+	await publish();
 	await expectStorefront(request, "showing brings the band back").toContain(
 		BRAND_MARKER,
 	);
 
-	// 5. Reordering is persisted.
+	// 5. Reordering is persisted. A staged order shows no toast — the
+	// banner's Publish button is the signal the draft took it.
 	await page.getByRole("button", { name: "Move Brand line up" }).click();
-	await page.waitForTimeout(2500);
+	await expect(
+		page.getByRole("button", { name: "Publish changes" }),
+	).toBeVisible({ timeout: 20_000 });
+	await publish();
 
 	const db = createClient({
 		url: process.env.DATABASE_URL ?? "",
@@ -140,8 +157,8 @@ test("the landing editor controls the storefront", async ({
 
 	// 6. Clearing the overrides restores the shipped copy.
 	for (const [section, toast] of [
-		["Brand line", "Brand line saved."],
-		["Hero", "Hero saved."],
+		["Brand line", "Brand line staged. Publish to make it live."],
+		["Hero", "Hero staged. Publish to make it live."],
 	] as const) {
 		await page
 			.getByRole("button", { name: new RegExp(`^${section}`) })
@@ -151,6 +168,7 @@ test("the landing editor controls the storefront", async ({
 			.click();
 		await page.getByRole("button", { name: "Save band" }).click();
 		await expect(page.getByText(toast)).toBeVisible({ timeout: 20_000 });
+		await publish();
 	}
 
 	await expectStorefront(request, "hero override cleared").not.toContain(

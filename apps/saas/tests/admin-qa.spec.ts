@@ -191,7 +191,15 @@ test.describe("admin product management", () => {
 test.describe("admin authorization", () => {
 	test("a non-admin buyer cannot reach the admin area", async ({ page }) => {
 		await signIn(page, BUYER);
-		const response = await page.goto("/admin/products");
+		// The admin layout refuses a non-admin with a redirect thrown after
+		// streaming has started, so the refusal reaches the browser as a
+		// client-side navigation — which aborts the document load.
+		const response = await page.goto("/admin/products").catch(() => null);
+		await page
+			.waitForURL((url) => !url.pathname.startsWith("/admin"), {
+				timeout: 15_000,
+			})
+			.catch(() => null);
 		const url = page.url();
 		// The marker is the table's own control rather than a row's, so an
 		// empty catalogue cannot be mistaken for a refusal.
