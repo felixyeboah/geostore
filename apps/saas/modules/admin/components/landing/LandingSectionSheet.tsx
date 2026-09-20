@@ -2,7 +2,10 @@
 
 import { saveLandingSectionCopyAction } from "@admin/actions/landing";
 import { AdminButton, AdminInput, AdminTextarea } from "@admin/components/ui";
-import type { LandingSectionDefinition } from "@repo/commerce";
+import {
+	type LandingSectionDefinition,
+	landingFieldDefault,
+} from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
 	Sheet,
@@ -77,37 +80,67 @@ function SectionEditor({
 	onClose: () => void;
 	onSaved: (copy: Record<string, string>) => void;
 }) {
-	const [values, setValues] = useState<Record<string, string>>(() =>
-		Object.fromEntries(
-			definition.fields.map((field) => [
-				field.key,
-				copy[field.key] ?? "",
-			]),
-		),
+	// What the band says right now: the editor's override where there is one,
+	// otherwise the words the page ships with. The fields used to start empty
+	// behind a "Using the built-in text" placeholder, which meant editing the
+	// front page began by guessing what was on it.
+	const shipped = Object.fromEntries(
+		definition.fields.map((field) => [
+			field.key,
+			landingFieldDefault(definition.key, field.key),
+		]),
 	);
+	const current = Object.fromEntries(
+		definition.fields.map((field) => [
+			field.key,
+			copy[field.key] ?? shipped[field.key] ?? "",
+		]),
+	);
+
+	const [values, setValues] = useState<Record<string, string>>(current);
 	const [isSaving, setIsSaving] = useState(false);
 
 	const isDirty = definition.fields.some(
-		(field) => (values[field.key] ?? "") !== (copy[field.key] ?? ""),
+		(field) => (values[field.key] ?? "") !== current[field.key],
 	);
 
+	/**
+	 * Only genuine differences are stored.
+	 *
+	 * Prefilling means an untouched field now holds the shipped words rather
+	 * than "", so saving as-is would turn every field into an override and
+	 * freeze the band against future copy changes. Anything still equal to the
+	 * shipped text is dropped, which keeps the blank-means-fallback contract
+	 * the storefront relies on.
+	 */
+	function toOverrides(next: Record<string, string>): Record<string, string> {
+		return Object.fromEntries(
+			Object.entries(next).filter(([key, value]) => {
+				const trimmed = value.trim();
+				return trimmed.length > 0 && trimmed !== shipped[key]?.trim();
+			}),
+		);
+	}
+
 	async function save() {
+		const overrides = toOverrides(values);
 		setIsSaving(true);
 		const result = await saveLandingSectionCopyAction(
 			definition.key,
-			values,
+			// Every field is sent, so one cleared back to the shipped words
+			// clears its stored override too.
+			Object.fromEntries(
+				definition.fields.map((field) => [
+					field.key,
+					overrides[field.key] ?? "",
+				]),
+			),
 		);
 		setIsSaving(false);
 
 		if (result.success) {
 			toastSuccess(result.message);
-			onSaved(
-				Object.fromEntries(
-					Object.entries(values).filter(
-						([, value]) => value.trim().length > 0,
-					),
-				),
-			);
+			onSaved(overrides);
 		} else {
 			toastError(result.message);
 		}
@@ -152,7 +185,7 @@ function SectionEditor({
 											id={`${definition.key}-${field.key}`}
 											rows={3}
 											value={values[field.key] ?? ""}
-											placeholder="Using the built-in text"
+											placeholder="Blank restores the built-in text"
 											onChange={(event) =>
 												setValues((previous) => ({
 													...previous,
@@ -166,7 +199,7 @@ function SectionEditor({
 											id={`${definition.key}-${field.key}`}
 											type="text"
 											value={values[field.key] ?? ""}
-											placeholder="Using the built-in text"
+											placeholder="Blank restores the built-in text"
 											onChange={(event) =>
 												setValues((previous) => ({
 													...previous,
@@ -191,21 +224,13 @@ function SectionEditor({
 			{definition.fields.length > 0 && (
 				<div className="shrink-0 border-border border-t px-6 py-4">
 					<p className="mb-3 text-[12px] text-muted-foreground">
-						Leave a field blank to keep the text the site ships
-						with.
+						Fields start on the words the page ships with. Anything
+						you leave as it came is not stored, so the band keeps
+						following the built-in text.
 					</p>
 					<div className="flex flex-wrap items-center justify-end gap-2">
 						<AdminButton
-							onClick={() =>
-								setValues(
-									Object.fromEntries(
-										definition.fields.map((field) => [
-											field.key,
-											"",
-										]),
-									),
-								)
-							}
+							onClick={() => setValues(shipped)}
 							disabled={isSaving}
 						>
 							Reset to built-in text
