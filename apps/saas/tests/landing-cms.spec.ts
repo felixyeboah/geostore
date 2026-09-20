@@ -77,7 +77,12 @@ test("the landing editor controls the storefront", async ({
 	// banner's Publish button commits it.
 	async function publish() {
 		await page.getByRole("button", { name: "Publish changes" }).click();
-		await expect(page.getByText(/Published \d+ changes?\./)).toBeVisible({
+		// Publishes land seconds apart, so the previous toast can still be on
+		// screen beside the new one — first() keeps strict mode happy while
+		// the storefront poll below proves the publish actually landed.
+		await expect(
+			page.getByText(/Published \d+ changes?\./).first(),
+		).toBeVisible({
 			timeout: 20_000,
 		});
 	}
