@@ -5,12 +5,21 @@ import { AdminInput, AdminTextarea } from "@admin/components/ui";
 import {
 	type LandingFieldDefinition,
 	parseBrandList,
+	parseIdList,
 	serialiseBrandList,
+	serialiseIdList,
 } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { useQuery } from "@tanstack/react-query";
-import { LoaderCircleIcon, SearchIcon, XIcon } from "lucide-react";
+import {
+	ArrowDownIcon,
+	ArrowUpIcon,
+	LoaderCircleIcon,
+	PlusIcon,
+	SearchIcon,
+	XIcon,
+} from "lucide-react";
 import { useState } from "react";
 
 /**
@@ -43,6 +52,10 @@ export function LandingFieldControl({
 
 	if (field.type === "product") {
 		return <ProductField value={value} onChange={onChange} />;
+	}
+
+	if (field.type === "products") {
+		return <ProductListField value={value} onChange={onChange} />;
 	}
 
 	if (field.type === "brands") {
@@ -323,6 +336,176 @@ function BrandField({
 					? "None chosen — the band shows the set it ships with."
 					: `${chosen.length} chosen, shown in the order you picked them.`}
 			</p>
+		</div>
+	);
+}
+
+/**
+ * An ordered list of products for a band.
+ *
+ * Order is the point — it is the order they appear on the page — so the chosen
+ * set is a list you arrange rather than a set of ticks. Same shape as the
+ * collection picker, and the same reason: the search runs in the database, and
+ * what is already chosen is fetched by id so it stays visible while you look
+ * for the next one.
+ */
+function ProductListField({
+	value,
+	onChange,
+}: {
+	value: string;
+	onChange: (value: string) => void;
+}) {
+	const [search, setSearch] = useState("");
+	const chosenIds = parseIdList(value);
+
+	const { data, isFetching } = useQuery(
+		orpc.admin.products.search.queryOptions({
+			input: {
+				query: search.trim() || undefined,
+				ids: chosenIds.length ? chosenIds : undefined,
+				limit: 8,
+			},
+			placeholderData: (previous) => previous,
+		}),
+	);
+
+	const byId = new Map((data?.chosen ?? []).map((item) => [item.id, item]));
+	const chosen = chosenIds.flatMap((id) => {
+		const product = byId.get(id);
+		return product ? [product] : [];
+	});
+	const results = (data?.products ?? []).filter(
+		(product) => !chosenIds.includes(product.id),
+	);
+
+	function move(index: number, direction: -1 | 1) {
+		const target = index + direction;
+		if (target < 0 || target >= chosenIds.length) {
+			return;
+		}
+		const next = [...chosenIds];
+		[next[index], next[target]] = [next[target], next[index]];
+		onChange(serialiseIdList(next));
+	}
+
+	return (
+		<div className="grid gap-3">
+			{chosen.length === 0 ? (
+				<p className="text-[12.5px] text-muted-foreground">
+					Nothing chosen — the band shows the set it ships with.
+				</p>
+			) : (
+				<ul className="border-border border-t">
+					{chosen.map((product, index) => (
+						<li
+							key={product.id}
+							className="flex items-center gap-3 border-border border-b py-2"
+						>
+							<div className="flex shrink-0 flex-col">
+								<button
+									type="button"
+									onClick={() => move(index, -1)}
+									disabled={index === 0}
+									aria-label={`Move ${product.name} up`}
+									className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-25"
+								>
+									<ArrowUpIcon className="size-3.5" />
+								</button>
+								<button
+									type="button"
+									onClick={() => move(index, 1)}
+									disabled={index === chosen.length - 1}
+									aria-label={`Move ${product.name} down`}
+									className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-25"
+								>
+									<ArrowDownIcon className="size-3.5" />
+								</button>
+							</div>
+							<span className="relative size-8 shrink-0 overflow-hidden rounded-[2px] bg-muted">
+								{product.imageUrl && (
+									// Unvalidated host, so not next/image.
+									<img
+										src={product.imageUrl}
+										alt=""
+										className="size-full object-cover"
+									/>
+								)}
+							</span>
+							<span className="min-w-0 flex-1 truncate text-[13px] text-foreground">
+								{product.name}
+							</span>
+							<button
+								type="button"
+								onClick={() =>
+									onChange(
+										serialiseIdList(
+											chosenIds.filter(
+												(id) => id !== product.id,
+											),
+										),
+									)
+								}
+								aria-label={`Remove ${product.name}`}
+								className="shrink-0 text-muted-foreground transition-colors hover:text-destructive"
+							>
+								<XIcon className="size-4" />
+							</button>
+						</li>
+					))}
+				</ul>
+			)}
+
+			<label className="relative block">
+				{isFetching ? (
+					<LoaderCircleIcon
+						aria-hidden="true"
+						className="-translate-y-1/2 absolute top-1/2 left-3 size-3.5 animate-spin text-muted-foreground"
+					/>
+				) : (
+					<SearchIcon
+						aria-hidden="true"
+						className="-translate-y-1/2 absolute top-1/2 left-3 size-3.5 text-muted-foreground"
+					/>
+				)}
+				<span className="sr-only">Search for a product to add</span>
+				<AdminInput
+					type="search"
+					value={search}
+					onChange={(event) => setSearch(event.target.value)}
+					placeholder="Search the catalogue"
+					className="pl-9"
+				/>
+			</label>
+
+			{results.length > 0 && (
+				<ul className="max-h-48 overflow-y-auto border-border border-t">
+					{results.map((product) => (
+						<li key={product.id} className="border-border border-b">
+							<button
+								type="button"
+								onClick={() =>
+									onChange(
+										serialiseIdList([
+											...chosenIds,
+											product.id,
+										]),
+									)
+								}
+								className="flex w-full items-center gap-2 py-2 text-left text-[13px] transition-colors hover:text-[var(--ed-accent)]"
+							>
+								<PlusIcon className="size-3.5 shrink-0" />
+								<span className="min-w-0 flex-1 truncate">
+									{product.name}
+								</span>
+								<span className="shrink-0 text-[12px] text-muted-foreground">
+									{product.brand}
+								</span>
+							</button>
+						</li>
+					))}
+				</ul>
+			)}
 		</div>
 	);
 }

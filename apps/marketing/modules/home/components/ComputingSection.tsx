@@ -1,4 +1,9 @@
-import { COMPUTING_DEVICES, IMAGES, links } from "@home/data/landing";
+import {
+	COMPUTING_DEVICES,
+	IMAGES,
+	links,
+	productHref,
+} from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	ArrowLink,
@@ -11,9 +16,26 @@ import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function ComputingSection({ copy }: SectionCopyProps) {
+export function ComputingSection({ copy, productLists }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.computing");
+
+	const bandImage = copy?.image?.trim() || IMAGES.surfaceLaptop;
+
+	const chosen = productLists?.productIds;
+	const devices = chosen?.length
+		? chosen.map((product) => ({
+				key: product.id,
+				brand: product.brand,
+				name: product.name,
+				href: productHref(product.slug),
+			}))
+		: COMPUTING_DEVICES.map((device) => ({
+				key: device.name,
+				brand: device.brand,
+				name: device.name,
+				href: links.category("laptops"),
+			}));
 
 	return (
 		<section className="pt-16 lg:pt-[88px]">
@@ -46,7 +68,7 @@ export function ComputingSection({ copy }: SectionCopyProps) {
 							</ArrowLink>
 						</div>
 						<Image
-							src={IMAGES.surfaceLaptop}
+							src={bandImage}
 							alt=""
 							width={425}
 							height={309}
@@ -60,13 +82,13 @@ export function ComputingSection({ copy }: SectionCopyProps) {
 							{c("listEyebrow")}
 						</Eyebrow>
 						<ul className="mt-4">
-							{COMPUTING_DEVICES.map((device, index) => (
+							{devices.map((device, index) => (
 								<li
-									key={device.name}
+									key={device.key}
 									className="border-border border-b"
 								>
 									<Link
-										href={links.category("laptops")}
+										href={device.href}
 										className="group flex items-start gap-5 py-7"
 									>
 										<span className="mt-[26px] w-4 shrink-0 text-[10px] text-primary">

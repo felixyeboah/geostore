@@ -4,7 +4,11 @@ import {
 } from "@commerce/lib/live-catalog";
 import { links } from "@home/data/landing";
 import type { SectionCatalogue } from "@home/lib/section-copy";
-import { LANDING_SECTIONS, parseLandingSettings } from "@repo/commerce";
+import {
+	LANDING_SECTIONS,
+	parseIdList,
+	parseLandingSettings,
+} from "@repo/commerce";
 import {
 	getLandingSections,
 	getPublishedStoreProductsByIds,
@@ -16,7 +20,12 @@ export interface ReferencedProduct {
 	name: string;
 	slug: string;
 	brand: string;
+	priceInPesewas: number;
+	compareAtInPesewas: number | null;
 	imageUrl: string | null;
+	/** Null when nobody has reviewed it; the band then shows no stars. */
+	rating: number | null;
+	reviewCount: number;
 }
 
 export interface RenderableSection {
@@ -25,6 +34,8 @@ export interface RenderableSection {
 	copy: Record<string, string>;
 	/** Products the band references, by the field key that points at them. */
 	products?: Record<string, ReferencedProduct>;
+	/** Product lists the band references, in the order an editor arranged them. */
+	productLists?: Record<string, ReferencedProduct[]>;
 }
 
 /**
@@ -85,7 +96,21 @@ export async function getRenderableSections(): Promise<RenderableSection[]> {
 			}),
 	);
 
-	const resolved = await resolveProducts(references.map((entry) => entry.id));
+	const listReferences = visible.flatMap(({ section, copy }) =>
+		section.fields
+			.filter((field) => field.type === "products")
+			.flatMap((field) => {
+				const ids = parseIdList(copy[field.key]);
+				return ids.length
+					? [{ sectionKey: section.key, fieldKey: field.key, ids }]
+					: [];
+			}),
+	);
+
+	const resolved = await resolveProducts([
+		...references.map((entry) => entry.id),
+		...listReferences.flatMap((entry) => entry.ids),
+	]);
 
 	return visible.map(({ section, copy }) => {
 		const products: Record<string, ReferencedProduct> = {};
@@ -100,10 +125,28 @@ export async function getRenderableSections(): Promise<RenderableSection[]> {
 			}
 		}
 
+		const productLists: Record<string, ReferencedProduct[]> = {};
+
+		for (const reference of listReferences) {
+			if (reference.sectionKey !== section.key) {
+				continue;
+			}
+			// Ids that no longer resolve drop out; the rest keep their order.
+			const list = reference.ids.flatMap((id) => {
+				const product = resolved.get(id);
+				return product ? [product] : [];
+			});
+			if (list.length > 0) {
+				productLists[reference.fieldKey] = list;
+			}
+		}
+
 		return {
 			key: section.key,
 			copy,
 			products: Object.keys(products).length > 0 ? products : undefined,
+			productLists:
+				Object.keys(productLists).length > 0 ? productLists : undefined,
 		};
 	});
 }
@@ -127,7 +170,22 @@ async function resolveProducts(
 					name: product.name,
 					slug: product.slug,
 					brand: product.brand,
+					priceInPesewas: product.priceInPesewas,
+					compareAtInPesewas: product.compareAtInPesewas,
 					imageUrl: product.images[0]?.url ?? null,
+					rating:
+						product.reviews.length > 0
+							? Math.round(
+									(product.reviews.reduce(
+										(total, review) =>
+											total + review.rating,
+										0,
+									) /
+										product.reviews.length) *
+										10,
+								) / 10
+							: null,
+					reviewCount: product.reviews.length,
 				},
 			]),
 		);

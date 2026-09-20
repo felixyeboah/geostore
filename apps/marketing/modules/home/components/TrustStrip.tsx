@@ -1,3 +1,4 @@
+import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { Container } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
 import {
@@ -14,8 +15,9 @@ const TRUST_ITEMS = [
 	{ key: "advice", icon: MessageCircleIcon },
 ] as const;
 
-export function TrustStrip() {
+export function TrustStrip({ copy }: SectionCopyProps) {
 	const t = useTranslations();
+	const c = sectionCopy(copy, t, "home.trust");
 
 	return (
 		<Container>
@@ -32,10 +34,10 @@ export function TrustStrip() {
 						/>
 						<div>
 							<p className="font-medium text-[13.5px] text-foreground">
-								{t(`home.trust.${item.key}.title`)}
+								{c(`${item.key}.title`)}
 							</p>
 							<p className="mt-1.5 max-w-[230px] text-[11.5px] text-muted-foreground leading-[1.6]">
-								{t(`home.trust.${item.key}.description`)}
+								{c(`${item.key}.description`)}
 							</p>
 						</div>
 					</li>

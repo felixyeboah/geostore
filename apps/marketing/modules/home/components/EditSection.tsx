@@ -1,4 +1,10 @@
-import { FEATURED_PRODUCTS, links } from "@home/data/landing";
+import {
+	FEATURED_PRODUCTS,
+	formatCedis,
+	IMAGES,
+	links,
+	productHref,
+} from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	Container,
@@ -10,9 +16,28 @@ import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function EditSection({ copy }: SectionCopyProps) {
+export function EditSection({ copy, productLists }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.edit");
+
+	const chosen = productLists?.productIds;
+	const cards = chosen?.length
+		? chosen.map((product) => ({
+				key: product.id,
+				href: productHref(product.slug),
+				image: product.imageUrl ?? IMAGES.surfaceLaptop,
+				category: product.brand,
+				name: product.name,
+				price: formatCedis(product.priceInPesewas),
+			}))
+		: FEATURED_PRODUCTS.map((product) => ({
+				key: product.name,
+				href: links.category(product.category),
+				image: product.image,
+				category: t(`home.categories.items.${product.category}`),
+				name: product.name,
+				price: c("price"),
+			}));
 
 	return (
 		<section className="pb-20 lg:pb-[88px]">
@@ -24,16 +49,14 @@ export function EditSection({ copy }: SectionCopyProps) {
 				/>
 
 				<ul className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
-					{FEATURED_PRODUCTS.map((product) => (
-						<li key={product.name}>
+					{cards.map((card) => (
+						<li key={card.key}>
 							<ProductCard
-								href={links.category(product.category)}
-								image={product.image}
-								category={t(
-									`home.categories.items.${product.category}`,
-								)}
-								name={product.name}
-								price={c("price")}
+								href={card.href}
+								image={card.image}
+								category={card.category}
+								name={card.name}
+								price={card.price}
 							/>
 						</li>
 					))}

@@ -10,13 +10,16 @@ export function AppliancesSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.appliances");
 
+	// An uploaded picture replaces the shipped one; empty keeps it.
+	const bandImage = copy?.image?.trim() || IMAGES.appliances;
+
 	return (
 		<section className="pt-16 lg:pt-20">
 			<Container>
 				<div className="grid overflow-hidden rounded-[4px] lg:grid-cols-2">
 					<div className="relative aspect-[625/556] bg-[#1a1a1a]">
 						<Image
-							src={IMAGES.appliances}
+							src={bandImage}
 							alt="A french-door refrigerator in a modern kitchen"
 							fill
 							sizes="(min-width: 1024px) 625px, 100vw"

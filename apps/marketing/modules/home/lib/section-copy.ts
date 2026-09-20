@@ -4,7 +4,11 @@ export interface ReferencedProduct {
 	name: string;
 	slug: string;
 	brand: string;
+	priceInPesewas: number;
+	compareAtInPesewas: number | null;
 	imageUrl: string | null;
+	rating: number | null;
+	reviewCount: number;
 }
 
 /** A department, as the landing page needs it. */
@@ -43,6 +47,8 @@ export interface SectionCopyProps {
 	copy?: Record<string, string>;
 	/** Resolved products, keyed by the field that references them. */
 	products?: Record<string, ReferencedProduct>;
+	/** Resolved product lists, keyed by the field that references them. */
+	productLists?: Record<string, ReferencedProduct[]>;
 	/** The shop's departments and landing collections. */
 	catalogue?: SectionCatalogue;
 }

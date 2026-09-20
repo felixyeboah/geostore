@@ -10,6 +10,9 @@ export function GamingSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.gaming");
 
+	// An uploaded picture replaces the shipped one; empty keeps it.
+	const bandImage = copy?.image?.trim() || IMAGES.gaming;
+
 	return (
 		<section className="bg-[#212121] text-white">
 			<Container className="grid gap-12 pt-16 pb-10 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)] lg:gap-20 lg:pt-[70px]">
@@ -47,7 +50,7 @@ export function GamingSection({ copy }: SectionCopyProps) {
 				<div>
 					<div className="relative aspect-[706/342] overflow-hidden rounded-[4px] bg-[#2a2a2a]">
 						<Image
-							src={IMAGES.gaming}
+							src={bandImage}
 							alt="Samsung Odyssey G9 on a desk"
 							fill
 							sizes="(min-width: 1024px) 706px, 100vw"

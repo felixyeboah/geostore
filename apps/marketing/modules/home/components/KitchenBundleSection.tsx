@@ -9,6 +9,10 @@ import Link from "next/link";
 export function KitchenBundleSection({ copy }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.kitchen");
+
+	// An uploaded picture replaces the shipped one; empty keeps it.
+	const bandImage =
+		copy?.image?.trim() || "/images/landing/kitchen-fridge.jpg";
 	const items = t.raw("home.kitchen.items") as string[];
 
 	return (
@@ -59,7 +63,7 @@ export function KitchenBundleSection({ copy }: SectionCopyProps) {
 					</div>
 					<div className="relative min-h-[320px] lg:min-h-[460px]">
 						<Image
-							src="/images/landing/kitchen-fridge.jpg"
+							src={bandImage}
 							alt="A tall two-door refrigerator in a bright kitchen"
 							fill
 							sizes="(min-width: 1024px) 460px, 100vw"

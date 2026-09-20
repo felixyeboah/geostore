@@ -364,6 +364,7 @@ export async function getPublishedStoreProductsByIds(ids: string[]) {
 		include: {
 			category: { select: { slug: true, name: true } },
 			images: { orderBy: { sortOrder: "asc" }, take: 1 },
+			reviews: { where: { isApproved: true }, select: { rating: true } },
 		},
 	});
 	const byId = new Map(products.map((product) => [product.id, product]));

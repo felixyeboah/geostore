@@ -24,6 +24,7 @@ export type LandingFieldType =
 	| "textarea"
 	| "image"
 	| "product"
+	| "products"
 	| "brands";
 
 export interface LandingFieldDefinition {
@@ -77,6 +78,12 @@ const product = (
 	help?: string,
 ): LandingFieldDefinition => ({ key, label, type: "product", help });
 
+const products = (
+	key: string,
+	label: string,
+	help?: string,
+): LandingFieldDefinition => ({ key, label, type: "products", help });
+
 const brands = (
 	key: string,
 	label: string,
@@ -107,6 +114,15 @@ export function parseBrandList(value: string | undefined): string[] {
 	} catch {
 		return [];
 	}
+}
+
+/** A `products` field: an ordered list of product ids, stored as JSON. */
+export function parseIdList(value: string | undefined): string[] {
+	return parseBrandList(value);
+}
+
+export function serialiseIdList(ids: string[]): string {
+	return serialiseBrandList(ids);
 }
 
 export function serialiseBrandList(brands: string[]): string {
@@ -154,9 +170,18 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		key: "trust",
 		name: "Delivery & payment strip",
 		description:
-			"The thin band of reassurances under the hero: delivery, payment, support and advice.",
+			"The four promises under the hero. These are commitments to a customer, so they are worth keeping true.",
 		defaultSortOrder: 1,
-		fields: [],
+		fields: [
+			text("delivery.title", "Delivery title"),
+			paragraph("delivery.description", "Delivery detail"),
+			text("payment.title", "Payment title"),
+			paragraph("payment.description", "Payment detail"),
+			text("support.title", "Support title"),
+			paragraph("support.description", "Support detail"),
+			text("advice.title", "Advice title"),
+			paragraph("advice.description", "Advice detail"),
+		],
 	},
 	{
 		key: "brands",
@@ -177,7 +202,7 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		key: "categories",
 		name: "Category rail",
 		description:
-			"The scrolling row of picture tiles linking to departments.",
+			"The scrolling row of picture tiles. It follows the Departments screen \u2014 image, name and order.",
 		defaultSortOrder: 3,
 		fields: [
 			text("eyebrow", "Eyebrow"),
@@ -191,6 +216,16 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		description: "The large feature block with the gift card panel.",
 		defaultSortOrder: 4,
 		fields: [
+			products(
+				"productIds",
+				"Products shown",
+				"Each takes its name, photograph, price and link from the catalogue. Leave it empty for the set the band ships with.",
+			),
+			image(
+				"image",
+				"Band image",
+				"The large picture beside the products.",
+			),
 			text("eyebrow", "Eyebrow"),
 			text("title", "Headline"),
 			text("link", "Link text"),
@@ -202,9 +237,14 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		key: "products",
 		name: "Product rail",
 		description:
-			"A row of products. Still the shipped set, not your catalogue \u2014 its prices do not follow yours.",
+			"A row of products, priced from your catalogue. Choose them below, or leave it to show the set the band ships with.",
 		defaultSortOrder: 5,
 		fields: [
+			products(
+				"productIds",
+				"Products shown",
+				"Each takes its name, photograph, price and link from the catalogue. Leave it empty for the set the band ships with.",
+			),
 			text("eyebrow", "Eyebrow"),
 			text("title", "Headline"),
 			text("link", "Link text"),
@@ -216,6 +256,7 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		description: "The full-width gaming band with its own image.",
 		defaultSortOrder: 6,
 		fields: [
+			image("image", "Band image"),
 			text("eyebrow", "Eyebrow"),
 			text("title1", "Headline, first line"),
 			text("title2", "Headline, second line"),
@@ -232,6 +273,12 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		description: "Laptops and desk kit, with the spec list beside it.",
 		defaultSortOrder: 7,
 		fields: [
+			products(
+				"productIds",
+				"Products shown",
+				"Each takes its name, photograph, price and link from the catalogue. Leave it empty for the set the band ships with.",
+			),
+			image("image", "Band image"),
 			text("eyebrow", "Eyebrow"),
 			text("title", "Headline"),
 			text("link", "Link text"),
@@ -245,6 +292,7 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		description: "The bundle offer band.",
 		defaultSortOrder: 8,
 		fields: [
+			image("image", "Band image"),
 			text("eyebrow", "Eyebrow"),
 			text("title1", "Headline, first line"),
 			text("title2", "Headline, second line"),
@@ -259,6 +307,7 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		description: "The home appliances band.",
 		defaultSortOrder: 9,
 		fields: [
+			image("image", "Band image"),
 			text("eyebrow", "Eyebrow"),
 			text("title1", "Headline, first line"),
 			text("title2", "Headline, second line"),
@@ -272,7 +321,7 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		key: "departments",
 		name: "Department index",
 		description:
-			"A plain text list of departments. Still the shipped set, not the ones you manage.",
+			"A plain text list of the departments you stock. It follows the Departments screen.",
 		defaultSortOrder: 10,
 		fields: [
 			text("eyebrow", "Eyebrow"),
@@ -286,7 +335,7 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		key: "needs",
 		name: "Shop by need",
 		description:
-			"Picture tiles. Still the shipped set, not the collections you manage.",
+			"Picture tiles for the collections you flagged for the landing page. It follows the Collections screen.",
 		defaultSortOrder: 11,
 		fields: [text("eyebrow", "Eyebrow"), text("title", "Headline")],
 	},
