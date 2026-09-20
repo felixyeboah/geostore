@@ -6,6 +6,7 @@ import {
 	updateStoreProductStockAction,
 } from "@admin/actions/commerce";
 import { ADMIN_TD, ADMIN_TH } from "@admin/components/AdminPage";
+import { ProductRowActions } from "@admin/components/products/ProductRowActions";
 import { AddProductButton } from "@admin/components/products/ProductSheet";
 import {
 	AdminButton,
@@ -43,6 +44,7 @@ export type StockState = "OUT" | "LOW" | "OK";
 export interface ProductRow {
 	id: string;
 	name: string;
+	slug: string;
 	brand: string;
 	sku: string;
 	imageUrl: string | null;
@@ -76,6 +78,7 @@ const RIGHT_ALIGNED = [
 	"stockQuantity",
 	"updatedAt",
 	"status",
+	"actions",
 ];
 
 const MONO = "font-mono tabular-nums";
@@ -230,6 +233,17 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
 					</div>
 				),
 				enableSorting: false,
+			},
+			{
+				id: "actions",
+				header: () => <span className="sr-only">Actions</span>,
+				cell: ({ row }) => (
+					<div className="flex justify-end">
+						<ProductRowActions product={row.original} />
+					</div>
+				),
+				enableSorting: false,
+				size: 40,
 			},
 		],
 		[],

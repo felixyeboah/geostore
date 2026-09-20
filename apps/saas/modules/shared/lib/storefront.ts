@@ -10,9 +10,15 @@ const storefrontUrl = config.marketingUrl
 	: "";
 
 export const storefront = {
+	/** False when NEXT_PUBLIC_MARKETING_URL is unset, so callers can hide links that would go nowhere. */
+	isConfigured: Boolean(storefrontUrl),
 	home: storefrontUrl || "/",
 	shop: storefrontUrl ? `${storefrontUrl}/shop` : "/",
 	cart: storefrontUrl ? `${storefrontUrl}/cart` : "/",
+	product: (slug: string) =>
+		storefrontUrl
+			? `${storefrontUrl}/products/${encodeURIComponent(slug)}`
+			: "/",
 	search: (query: string) =>
 		storefrontUrl
 			? `${storefrontUrl}/shop?q=${encodeURIComponent(query)}`

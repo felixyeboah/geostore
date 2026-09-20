@@ -392,6 +392,62 @@ export async function updateStoreProductStatus(
 	});
 }
 
+/**
+ * The outcome of asking to delete a product.
+ *
+ * A product that has ever been ordered cannot be removed: `OrderItem` holds it
+ * with `onDelete: Restrict` on purpose, because deleting it would rewrite order
+ * history. Everything else about a product — images, variants, collection
+ * memberships, reviews, inventory events — cascades away with it.
+ */
+export type DeleteStoreProductResult =
+	| {
+			status: "deleted";
+			product: {
+				id: string;
+				name: string;
+				slug: string;
+				categorySlug: string;
+			};
+	  }
+	| { status: "has-orders"; orderCount: number }
+	| { status: "not-found" };
+
+export async function deleteStoreProduct(
+	id: string,
+): Promise<DeleteStoreProductResult> {
+	const product = await db.product.findUnique({
+		where: { id },
+		select: {
+			id: true,
+			name: true,
+			slug: true,
+			category: { select: { slug: true } },
+			_count: { select: { orderItems: true } },
+		},
+	});
+
+	if (!product) {
+		return { status: "not-found" };
+	}
+
+	if (product._count.orderItems > 0) {
+		return { status: "has-orders", orderCount: product._count.orderItems };
+	}
+
+	await db.product.delete({ where: { id } });
+
+	return {
+		status: "deleted",
+		product: {
+			id: product.id,
+			name: product.name,
+			slug: product.slug,
+			categorySlug: product.category.slug,
+		},
+	};
+}
+
 export async function updateStoreProductStock(
 	id: string,
 	stockQuantity: number,

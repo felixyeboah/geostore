@@ -34,6 +34,7 @@ export default async function AdminProductsPage() {
 	const rows: ProductRow[] = products.map((product) => ({
 		id: product.id,
 		name: product.name,
+		slug: product.slug,
 		brand: product.brand,
 		sku: product.sku,
 		imageUrl: product.images[0]?.url ?? null,

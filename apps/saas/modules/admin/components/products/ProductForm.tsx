@@ -1,6 +1,7 @@
 "use client";
 
 import { saveStoreProductAction } from "@admin/actions/commerce";
+import { ProductImagesField } from "@admin/components/products/ProductImagesField";
 import {
 	AdminButton,
 	AdminCheckbox,
@@ -23,14 +24,7 @@ import {
 	FormMessage,
 } from "@repo/ui/components/form";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
-import { orpc } from "@shared/lib/orpc-query-utils";
-import { useMutation } from "@tanstack/react-query";
-import {
-	ArrowLeftIcon,
-	ImagePlusIcon,
-	LoaderCircleIcon,
-	SaveIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -132,9 +126,6 @@ export function ProductForm({
 }: ProductFormProps) {
 	const router = useRouter();
 	const isSheet = variant === "sheet";
-	const imageUploadMutation = useMutation(
-		orpc.admin.products.imageUploadUrl.mutationOptions(),
-	);
 	const form = useForm<ProductFormValues>({
 		resolver: zodResolver(productFormSchema),
 		defaultValues,
@@ -142,59 +133,6 @@ export function ProductForm({
 	const specificationsText = specificationsToText(
 		form.watch("specifications"),
 	);
-
-	async function uploadImages(files: FileList | null) {
-		if (!files?.length) {
-			return;
-		}
-
-		try {
-			const uploadedUrls: string[] = [];
-			for (const file of Array.from(files)) {
-				if (
-					!["image/jpeg", "image/png", "image/webp"].includes(
-						file.type,
-					)
-				) {
-					throw new Error("Use JPG, PNG, or WebP images.");
-				}
-				if (file.size > 5 * 1024 * 1024) {
-					throw new Error("Each image must be 5 MB or smaller.");
-				}
-				const upload = await imageUploadMutation.mutateAsync({
-					contentType: file.type as
-						| "image/jpeg"
-						| "image/png"
-						| "image/webp",
-				});
-				const response = await fetch(upload.signedUploadUrl, {
-					method: "PUT",
-					body: file,
-					headers: { "Content-Type": file.type },
-				});
-				if (!response.ok) {
-					throw new Error("The image upload failed.");
-				}
-				uploadedUrls.push(upload.fileUrl);
-			}
-			form.setValue(
-				"imageUrls",
-				[...form.getValues("imageUrls"), ...uploadedUrls],
-				{
-					shouldDirty: true,
-					shouldValidate: true,
-				},
-			);
-			toastSuccess(
-				`${uploadedUrls.length} image${uploadedUrls.length === 1 ? "" : "s"} uploaded`,
-			);
-		} catch (error) {
-			toastError(
-				"Image upload failed",
-				error instanceof Error ? error.message : undefined,
-			);
-		}
-	}
 
 	const onSubmit = form.handleSubmit(async (values) => {
 		const result = await saveStoreProductAction(values, productId);
@@ -331,48 +269,17 @@ export function ProductForm({
 				name="imageUrls"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel className={LABEL}>
-							Product image URLs
-						</FormLabel>
-						<label className="mb-4 flex cursor-pointer items-center justify-center gap-2 rounded-[2px] border border-border border-dashed px-4 py-7 font-medium text-[13.5px] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground">
-							<input
-								type="file"
-								accept="image/jpeg,image/png,image/webp"
-								multiple
-								className="sr-only"
-								disabled={imageUploadMutation.isPending}
-								onChange={(event) =>
-									uploadImages(event.target.files)
-								}
-							/>
-							{imageUploadMutation.isPending ? (
-								<LoaderCircleIcon className="size-4 animate-spin" />
-							) : (
-								<ImagePlusIcon className="size-4" />
-							)}
-							{imageUploadMutation.isPending
-								? "Uploading…"
-								: "Upload product images"}
-						</label>
-						<FormControl>
-							<AdminTextarea
-								rows={4}
-								value={field.value.join("\n")}
-								onChange={(event) =>
-									field.onChange(
-										event.target.value
-											.split("\n")
-											.map((value) => value.trim())
-											.filter(Boolean),
-									)
-								}
-								placeholder="https://...&#10;https://..."
-							/>
-						</FormControl>
-						<p className="text-muted-foreground text-xs">
-							Upload JPG, PNG, or WebP files up to 5 MB, or add
-							one complete image URL per line.
-						</p>
+						{/*
+						 * A plain label rather than FormLabel: this field is a
+						 * drop area and a list, not one control, so an htmlFor
+						 * would point at nothing. The dropzone's own input
+						 * carries the accessible name.
+						 */}
+						<span className={LABEL}>Images</span>
+						<ProductImagesField
+							value={field.value}
+							onChange={field.onChange}
+						/>
 						<FormMessage />
 					</FormItem>
 				)}

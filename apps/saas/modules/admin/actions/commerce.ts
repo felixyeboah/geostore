@@ -8,6 +8,7 @@ import {
 import {
 	createStoreCategory,
 	createStoreProduct,
+	deleteStoreProduct,
 	getAdminStoreOrder,
 	getAdminStoreProductById,
 	getPrismaErrorCode,
@@ -183,6 +184,52 @@ export async function updateStoreProductStockAction(
 		return {
 			success: false,
 			message: toAdminErrorMessage(error, "We couldn’t update stock."),
+		};
+	}
+}
+
+export async function deleteStoreProductAction(
+	productId: string,
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const result = await deleteStoreProduct(productId);
+
+		if (result.status === "not-found") {
+			return {
+				success: false,
+				message: "That product no longer exists.",
+			};
+		}
+
+		if (result.status === "has-orders") {
+			// Order history has to stay intact, so this is a refusal rather
+			// than a cascade. Archiving takes it off the storefront and is
+			// what the admin almost always means.
+			return {
+				success: false,
+				message: `It appears on ${result.orderCount} ${
+					result.orderCount === 1 ? "order" : "orders"
+				}, so deleting it would rewrite order history. Archive it instead to take it off the storefront.`,
+			};
+		}
+
+		revalidateStorefrontForProduct({
+			slug: result.product.slug,
+			categorySlug: result.product.categorySlug,
+		});
+
+		return {
+			success: true,
+			message: `${result.product.name} deleted.`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn’t delete the product.",
+			),
 		};
 	}
 }
