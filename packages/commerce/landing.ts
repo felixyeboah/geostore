@@ -109,7 +109,8 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 	{
 		key: "products",
 		name: "Product rail",
-		description: "A row of products pulled live from the catalogue.",
+		description:
+			"A row of products. Still the shipped set, not your catalogue \u2014 its prices do not follow yours.",
 		defaultSortOrder: 5,
 		fields: [
 			text("eyebrow", "Eyebrow"),
@@ -178,7 +179,8 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 	{
 		key: "departments",
 		name: "Department index",
-		description: "The plain text list of every department you stock.",
+		description:
+			"A plain text list of departments. Still the shipped set, not the ones you manage.",
 		defaultSortOrder: 10,
 		fields: [
 			text("eyebrow", "Eyebrow"),
@@ -191,7 +193,8 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 	{
 		key: "needs",
 		name: "Shop by need",
-		description: "Picture tiles for the collections, such as Fitness.",
+		description:
+			"Picture tiles. Still the shipped set, not the collections you manage.",
 		defaultSortOrder: 11,
 		fields: [text("eyebrow", "Eyebrow"), text("title", "Headline")],
 	},
