@@ -121,7 +121,7 @@ export function CollectionsList({
 
 	if (collections.length === 0) {
 		return (
-			<div className="mt-9 border-border border-t py-16 text-center">
+			<div className="mt-9 py-16 text-center">
 				<p className="font-medium text-[15px] text-foreground">
 					No collections yet
 				</p>
@@ -141,7 +141,7 @@ export function CollectionsList({
 		<>
 			<ul
 				className={cn(
-					"mt-9 border-border border-t transition-opacity",
+					"mt-9 transition-opacity",
 					isPending && "opacity-60",
 				)}
 			>

@@ -47,7 +47,7 @@ export function RevenueChart({ days }: { days: RevenueDay[] }) {
 		}).format(new Date(value));
 
 	return (
-		<section className="border-border border-t pt-7">
+		<section>
 			<div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
 				<div>
 					<h2 className="eyebrow text-muted-foreground">

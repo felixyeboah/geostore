@@ -266,7 +266,7 @@ export default async function AdminAnalyticsPage({
 					</div>
 				</>
 			) : (
-				<div className="mt-9 border-border border-t py-16 text-center">
+				<div className="mt-9 py-16 text-center">
 					<p className="font-medium text-[15px] text-foreground">
 						Nothing to measure yet
 					</p>
