@@ -160,7 +160,7 @@ export default async function AdminOverviewPage({
 							Analytics
 						</Link>
 						<Link
-							href="/admin/products/new"
+							href="/admin/products?new=true"
 							className={adminButtonClass("primary")}
 						>
 							<PlusIcon className="size-4" />

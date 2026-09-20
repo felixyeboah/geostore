@@ -104,6 +104,14 @@ const nextConfig: NextConfig = {
 				destination: "/admin/overview",
 				permanent: true,
 			},
+			{
+				// Adding a product is a sheet over the list now. The old
+				// route keeps working because the sheet's open state lives
+				// in the query string rather than in component state.
+				source: "/admin/products/new",
+				destination: "/admin/products?new=true",
+				permanent: false,
+			},
 		];
 	},
 	webpack: (config, { webpack, isServer }) => {

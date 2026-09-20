@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { expect, type Page, test } from "@playwright/test";
+import { chooseAdminOption } from "./helpers";
 
 /**
  * The customer-facing storefront moved to the marketing app, so these journeys
@@ -509,7 +510,11 @@ test.describe("admin catalogue and fulfilment", () => {
 		await page.goto("/admin/orders");
 		const row = page.locator("tr").filter({ hasText: orderNumber }).first();
 		await expect(row).toBeVisible({ timeout: 30_000 });
-		await row.getByLabel("Order status").selectOption("CANCELLED");
+		await chooseAdminOption(
+			page,
+			row.getByLabel("Order status"),
+			"Cancelled",
+		);
 
 		await expect(
 			page.getByText("Order status updated").first(),
@@ -551,7 +556,9 @@ test.describe("admin catalogue and fulfilment", () => {
 		page,
 	}) => {
 		await signIn(page, ADMIN);
-		await page.goto("/admin/products/new");
+		// Adding a product is a sheet over the list now; the query parameter is
+		// what the retired /admin/products/new route redirects to.
+		await page.goto("/admin/products?new=true");
 		await expect(
 			page.getByRole("heading", { name: "Add product" }),
 		).toBeVisible({ timeout: 30_000 });
@@ -576,10 +583,12 @@ test.describe("admin catalogue and fulfilment", () => {
 				"This submission must be rejected before it reaches the database because next/image would throw on an unconfigured remote host at render time.",
 			);
 		await form.getByLabel("Product image URLs").fill(DISALLOWED_IMAGE_URL);
-		await form.getByLabel("Status").selectOption("ACTIVE");
-		await form
-			.getByLabel("Category")
-			.selectOption({ label: "Phones & tablets" });
+		await chooseAdminOption(page, form.getByLabel("Status"), "Active");
+		await chooseAdminOption(
+			page,
+			form.getByLabel("Category"),
+			"Phones & tablets",
+		);
 		await form
 			.getByLabel("Price (GH₵)", { exact: true })
 			.first()
@@ -591,7 +600,7 @@ test.describe("admin catalogue and fulfilment", () => {
 		// The submission is refused: the form stays put and nothing is written.
 		const inlineMessages = page.locator("form p.text-destructive");
 		await expect(inlineMessages.first()).toBeVisible({ timeout: 20_000 });
-		await expect(page).toHaveURL(/\/admin\/products\/new/);
+		await expect(page).toHaveURL(/\/admin\/products\?new=true/);
 		expect(
 			sql(
 				`SELECT COUNT(*) FROM store_product WHERE slug = '${REJECTED_SLUG}' OR sku = '${REJECTED_SKU}'`,

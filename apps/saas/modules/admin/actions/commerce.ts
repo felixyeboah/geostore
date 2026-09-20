@@ -187,6 +187,46 @@ export async function updateStoreProductStockAction(
 	}
 }
 
+export async function bulkUpdateStoreProductStatusAction(
+	productIds: string[],
+	status: "DRAFT" | "ACTIVE" | "ARCHIVED",
+): Promise<AdminActionResult & { updated: number; failed: number }> {
+	try {
+		await requireAdmin();
+	} catch {
+		return {
+			success: false,
+			message: "You do not have permission to perform this action.",
+			updated: 0,
+			failed: productIds.length,
+		};
+	}
+
+	let updated = 0;
+	let firstError: string | undefined;
+
+	for (const productId of productIds) {
+		const result = await updateStoreProductStatusAction(productId, status);
+
+		if (result.success) {
+			updated += 1;
+		} else {
+			firstError ??= result.message;
+		}
+	}
+
+	const failed = productIds.length - updated;
+
+	return {
+		success: updated > 0,
+		updated,
+		failed,
+		message: failed
+			? `${updated} of ${productIds.length} updated. ${firstError ?? "Some products could not be changed."}`
+			: `${updated} ${updated === 1 ? "product" : "products"} updated.`,
+	};
+}
+
 export async function updateStoreOrderStatusAction(
 	orderId: string,
 	status:

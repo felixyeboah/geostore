@@ -1,5 +1,6 @@
 import { createClient } from "@libsql/client";
 import { expect, type Page, test } from "@playwright/test";
+import { chooseAdminOption } from "./helpers";
 
 const ADMIN = { email: "qa-admin@geostore.test", password: "QaAdmin!2345" };
 const BUYER = { email: "qa-buyer@geostore.test", password: "QaBuyer!2345" };
@@ -68,10 +69,12 @@ test.describe("admin product management", () => {
 	test("admin can create a product with a variant", async ({ page }) => {
 		await signIn(page, ADMIN);
 
-		await page.goto("/admin/products/new");
+		// Adding a product is a sheet over the list now; the query parameter is
+		// what the retired /admin/products/new route redirects to.
+		await page.goto("/admin/products?new=true");
 		await expect(
 			page.getByRole("heading", { name: "Add product" }),
-		).toBeVisible();
+		).toBeVisible({ timeout: 30_000 });
 
 		const main = page.locator("form");
 		await main
@@ -98,10 +101,12 @@ test.describe("admin product management", () => {
 				"https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
 			);
 
-		await main.getByLabel("Status").selectOption("ACTIVE");
-		await main
-			.getByLabel("Category")
-			.selectOption({ label: "Phones & tablets" });
+		await chooseAdminOption(page, main.getByLabel("Status"), "Active");
+		await chooseAdminOption(
+			page,
+			main.getByLabel("Category"),
+			"Phones & tablets",
+		);
 
 		// Price / stock
 		await main
@@ -111,14 +116,17 @@ test.describe("admin product management", () => {
 		await main.getByLabel("On-hand quantity").fill("7");
 
 		// Add a variant — closes the "zero variants ever created" coverage gap.
+		// Located by field name rather than by the row's styling, which has
+		// changed twice and silently took this assertion with it.
 		await page.getByRole("button", { name: "Add option" }).click();
-		const variantCard = page.locator("div.bg-muted\\/45").first();
-		await variantCard.getByLabel("Name", { exact: true }).fill("256 GB");
-		await variantCard
-			.getByLabel("SKU", { exact: true })
+		await main.locator('input[name="variants.0.name"]').fill("256 GB");
+		await main
+			.locator('input[name="variants.0.sku"]')
 			.fill(`QA-VAR-${SUFFIX}`);
-		await variantCard.getByLabel("Price (GH₵)").fill("300");
-		await variantCard.getByLabel("Stock", { exact: true }).fill("4");
+		await main
+			.locator('input[name="variants.0.priceInPesewas"]')
+			.fill("300");
+		await main.locator('input[name="variants.0.stockQuantity"]').fill("4");
 
 		await page.getByRole("button", { name: "Save product" }).click();
 
@@ -163,9 +171,11 @@ test.describe("admin authorization", () => {
 		await signIn(page, BUYER);
 		const response = await page.goto("/admin/products");
 		const url = page.url();
+		// The marker is the table's own control rather than a row's, so an
+		// empty catalogue cannot be mistaken for a refusal.
 		const reachedAdmin =
 			url.includes("/admin/products") &&
-			(await page.getByLabel("Product status").count()) > 0;
+			(await page.getByLabel("Search products").count()) > 0;
 		expect(
 			reachedAdmin,
 			`buyer reached admin products (status ${response?.status()})`,
