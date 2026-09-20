@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { createClient } from "@libsql/client";
 import { expect, test } from "@playwright/test";
 
 const PURCHASED_SLUG = "jbl-charge-5";
@@ -11,26 +11,20 @@ const PURCHASED_SLUG = "jbl-charge-5";
  * (That is exactly how it failed — the seed had been ground down to 0.)
  *
  * Restoring the one unit the test consumes keeps the suite repeatable. The
- * store is only reachable through Docker on a dev machine, so a missing
- * container downgrades to a warning rather than failing an otherwise good run.
+ * store runs on Turso (libSQL over HTTP) and shares the app's DATABASE_URL, so
+ * a missing or unreachable database downgrades to a warning rather than
+ * failing an otherwise good run.
  */
-function restorePurchasedStock() {
+async function restorePurchasedStock() {
 	try {
-		execFileSync(
-			"docker",
-			[
-				"exec",
-				"geostore-postgres",
-				"psql",
-				"-U",
-				"postgres",
-				"-d",
-				"geostore",
-				"-c",
-				`UPDATE store_product SET "stockQuantity" = "stockQuantity" + 1 WHERE slug = '${PURCHASED_SLUG}';`,
-			],
-			{ stdio: "pipe" },
+		const db = createClient({
+			url: process.env.DATABASE_URL ?? "",
+			authToken: process.env.DATABASE_AUTH_TOKEN,
+		});
+		await db.execute(
+			`UPDATE store_product SET "stockQuantity" = "stockQuantity" + 1 WHERE slug = '${PURCHASED_SLUG}'`,
 		);
+		db.close();
 	} catch (error) {
 		console.warn(
 			`Could not restore ${PURCHASED_SLUG} stock; reruns may exhaust it.`,
@@ -72,7 +66,7 @@ test.describe("storefront purchase journey", () => {
 			.click();
 		await page.goto("/cart");
 		await expect(
-			page.getByRole("heading", { name: "Your shopping bag" }),
+			page.getByRole("heading", { name: "Your bag" }),
 		).toBeVisible();
 		await expect(page.getByText("GH₵ 1,450").first()).toBeVisible();
 
@@ -103,7 +97,7 @@ test.describe("storefront purchase journey", () => {
 			page.getByText("No card, mobile money", { exact: false }),
 		).toHaveCount(0);
 
-		restorePurchasedStock();
+		await restorePurchasedStock();
 	});
 
 	test("keeps search and category navigation available on mobile", async ({
@@ -114,8 +108,9 @@ test.describe("storefront purchase journey", () => {
 		await expect(
 			page.getByRole("navigation", { name: "Departments" }),
 		).toBeVisible();
+		// The bag opens the drawer rather than linking to /cart.
 		await expect(
-			page.getByRole("link", { name: "Shopping bag with 0 items" }),
+			page.getByRole("button", { name: "Shopping bag with 0 items" }),
 		).toBeVisible();
 	});
 });
