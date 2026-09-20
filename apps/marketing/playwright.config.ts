@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3001";
+const port = new URL(baseURL).port || "3001";
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -19,7 +22,7 @@ export default defineConfig({
 	workers: process.env.CI ? 1 : undefined,
 	reporter: [["html"]],
 	use: {
-		baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3001",
+		baseURL,
 		trace: "on-first-retry",
 		video: {
 			mode: "retain-on-failure",
@@ -36,9 +39,11 @@ export default defineConfig({
 		},
 	],
 	webServer: {
-		command:
-			"pnpm --filter marketing run build && PORT=3001 pnpm --filter marketing run start",
-		url: "http://localhost:3001",
+		command: `pnpm --filter marketing run build && PORT=${port} pnpm --filter marketing run start`,
+		// Probe the same host the tests use: on a CI runner localhost resolves
+		// to ::1 first while `next start` binds IPv4, so a localhost probe never
+		// reaches the server and the run dies on the webServer timeout.
+		url: baseURL,
 		reuseExistingServer: !process.env.CI,
 		stdout: "pipe",
 		timeout: 180 * 1000,

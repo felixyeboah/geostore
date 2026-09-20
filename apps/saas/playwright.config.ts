@@ -10,6 +10,11 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 const port = new URL(baseURL).port || "3000";
+// The specs exercise the storefront too (cart, checkout, landing CMS), so the
+// marketing app has to come up alongside the back office.
+const storefrontURL =
+	process.env.PLAYWRIGHT_STOREFRONT_URL ?? "http://localhost:3001";
+const storefrontPort = new URL(storefrontURL).port || "3001";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -45,11 +50,25 @@ export default defineConfig({
 	],
 	webServer: process.env.PLAYWRIGHT_EXTERNAL_SERVER
 		? undefined
-		: {
-				command: `pnpm --filter saas run build && pnpm --filter saas exec next start -p ${port}`,
-				url: baseURL,
-				reuseExistingServer: !process.env.CI,
-				stdout: "pipe",
-				timeout: 180 * 1000,
-			},
+		: [
+				{
+					command: `pnpm --filter saas run build && pnpm --filter saas exec next start -p ${port}`,
+					// / is a notFound() catch-all on this host — a 404 never reads as
+					// "ready" to Playwright. /login answers 200 as soon as the app
+					// actually serves.
+					url: `${baseURL}/login`,
+					reuseExistingServer: !process.env.CI,
+					stdout: "pipe",
+					// Two production builds run side by side here; saas alone takes
+					// about half of the old 180s budget on a CI runner.
+					timeout: 300 * 1000,
+				},
+				{
+					command: `pnpm --filter marketing run build && pnpm --filter marketing exec next start -p ${storefrontPort}`,
+					url: storefrontURL,
+					reuseExistingServer: !process.env.CI,
+					stdout: "pipe",
+					timeout: 300 * 1000,
+				},
+			],
 });

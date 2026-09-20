@@ -91,6 +91,10 @@ jobs:
         # webServer timeout with nothing in the log.
         env:
           PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3000"
+          # The saas specs also drive the storefront (cart, checkout, landing
+          # CMS); its webServer entry in the playwright config builds and
+          # starts the marketing app on this address.
+          PLAYWRIGHT_STOREFRONT_URL: "http://127.0.0.1:3001"
         run: pnpm --filter saas e2e:ci
       - name: Run Playwright tests for Marketing app
         env:

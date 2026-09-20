@@ -3,7 +3,8 @@ import { expect, type Page, test } from "@playwright/test";
 import { LANDING_SECTIONS } from "@repo/commerce";
 
 const ADMIN = { email: "qa-admin@geostore.test", password: "QaAdmin!2345" };
-const STOREFRONT = process.env.STOREFRONT_URL ?? "http://localhost:3001";
+const STOREFRONT =
+	process.env.PLAYWRIGHT_STOREFRONT_URL ?? "http://localhost:3001";
 const STAMP = Date.now();
 const HERO_MARKER = `Hero marker ${STAMP}`;
 const BRAND_MARKER = `Brand marker ${STAMP}`;
