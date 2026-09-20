@@ -77,14 +77,12 @@ test("the landing editor controls the storefront", async ({
 	// banner's Publish button commits it.
 	async function publish() {
 		await page.getByRole("button", { name: "Publish changes" }).click();
-		// Publishes land seconds apart, so the previous toast can still be on
-		// screen beside the new one — first() keeps strict mode happy while
-		// the storefront poll below proves the publish actually landed.
+		// A lingering toast from the previous publish can satisfy a text
+		// check before this one resolves — the banner only unmounts once the
+		// action has committed the draft, so it is the reliable signal.
 		await expect(
-			page.getByText(/Published \d+ changes?\./).first(),
-		).toBeVisible({
-			timeout: 20_000,
-		});
+			page.getByRole("button", { name: "Publish changes" }),
+		).toHaveCount(0, { timeout: 20_000 });
 	}
 
 	// 1. Copy override reaches the page. The editor is a sheet over the
@@ -151,15 +149,22 @@ test("the landing editor controls the storefront", async ({
 		url: process.env.DATABASE_URL ?? "",
 		authToken: process.env.DATABASE_AUTH_TOKEN,
 	});
-	const { rows } = await db.execute(
-		'SELECT key, "sortOrder" FROM landing_section ORDER BY "sortOrder" ASC',
-	);
+	await expect
+		.poll(
+			async () => {
+				const { rows } = await db.execute(
+					'SELECT key FROM landing_section ORDER BY "sortOrder" ASC',
+				);
+				const order = rows.map((row) => String(row.key));
+				return order.indexOf("brands") - order.indexOf("trust");
+			},
+			{
+				timeout: 20_000,
+				message: "Brand line should now sit above the delivery strip",
+			},
+		)
+		.toBeLessThan(0);
 	db.close();
-	const order = rows.map((row) => String(row.key));
-	expect(
-		order.indexOf("brands"),
-		"Brand line should now sit above the delivery strip",
-	).toBeLessThan(order.indexOf("trust"));
 
 	// 6. Clearing the overrides restores the shipped copy.
 	for (const [section, toast] of [
