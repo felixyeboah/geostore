@@ -586,9 +586,60 @@ model LandingSection {
   isVisible Boolean  @default(true)
   sortOrder Int      @default(0)
   settings  Json?
+  /// Staged edits sit beside the published values: null means "same as live",
+  /// a set value is what Publish writes. The storefront only ever reads the
+  /// published columns, so a draft can never leak onto the page.
+  draftIsVisible Boolean?
+  draftSortOrder  Int?
+  draftSettings   Json?
+  /// Name of the admin who last changed the row, stamped on publish.
+  updatedBy String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([isVisible, sortOrder])
   @@map("landing_section")
+}
+
+/// One row per section change an editor publishes.
+///
+/// The running log of who changed the front page and what it became. The
+/// section row only ever holds the latest state; this is where "who moved the
+/// hero last Tuesday" is answerable from. A row is written only for sections
+/// that actually changed in a publish, so the log stays readable.
+model LandingSectionRevision {
+  id         String   @id @default(cuid())
+  /// Matches a key in the section registry — deliberately not a foreign key,
+  /// so a retired section keeps its history.
+  sectionKey String
+  isVisible  Boolean
+  sortOrder  Int
+  settings   Json?
+  userId     String
+  userName   String?
+  createdAt  DateTime @default(now())
+
+  @@index([sectionKey, createdAt])
+  @@map("landing_section_revision")
+}
+
+/// Editable storefront chrome — the top strip, phone number, footer lines.
+///
+/// A key/value map rather than columns, so adding a field is a code change in
+/// `@repo/commerce`, not a migration. An absent key falls back to the copy the
+/// storefront ships with — the same blank-means-default contract the landing
+/// sections have.
+model StorefrontSetting {
+  key       String   @id
+  /// The published value; "" marks a row that only carries a staged change.
+  value     String
+  /// Staged value; "" stages a revert to the shipped default, null means the
+  /// published value stands.
+  draftValue String?
+  /// Name of the admin who last set the value.
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("storefront_setting")
 }

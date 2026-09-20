@@ -162,9 +162,21 @@ export type RateLimitScalarFieldEnum = z.infer<typeof RateLimitScalarFieldEnumSc
 
 // File: LandingSectionScalarFieldEnum.schema.ts
 
-export const LandingSectionScalarFieldEnumSchema = z.enum(['id', 'key', 'isVisible', 'sortOrder', 'settings', 'createdAt', 'updatedAt'])
+export const LandingSectionScalarFieldEnumSchema = z.enum(['id', 'key', 'isVisible', 'sortOrder', 'settings', 'draftIsVisible', 'draftSortOrder', 'draftSettings', 'updatedBy', 'createdAt', 'updatedAt'])
 
 export type LandingSectionScalarFieldEnum = z.infer<typeof LandingSectionScalarFieldEnumSchema>;
+
+// File: LandingSectionRevisionScalarFieldEnum.schema.ts
+
+export const LandingSectionRevisionScalarFieldEnumSchema = z.enum(['id', 'sectionKey', 'isVisible', 'sortOrder', 'settings', 'userId', 'userName', 'createdAt'])
+
+export type LandingSectionRevisionScalarFieldEnum = z.infer<typeof LandingSectionRevisionScalarFieldEnumSchema>;
+
+// File: StorefrontSettingScalarFieldEnum.schema.ts
+
+export const StorefrontSettingScalarFieldEnumSchema = z.enum(['key', 'value', 'draftValue', 'updatedBy', 'createdAt', 'updatedAt'])
+
+export type StorefrontSettingScalarFieldEnum = z.infer<typeof StorefrontSettingScalarFieldEnumSchema>;
 
 // File: SortOrder.schema.ts
 
@@ -686,9 +698,43 @@ export const LandingSectionSchema = z.object({
   isVisible: z.boolean().default(true),
   sortOrder: z.number().int(),
   settings: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
+  draftIsVisible: z.boolean().nullish(),
+  draftSortOrder: z.number().int().nullish(),
+  draftSettings: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
+  updatedBy: z.string().nullish(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
 export type LandingSectionType = z.infer<typeof LandingSectionSchema>;
+
+
+// File: LandingSectionRevision.schema.ts
+
+export const LandingSectionRevisionSchema = z.object({
+  id: z.string(),
+  sectionKey: z.string(),
+  isVisible: z.boolean(),
+  sortOrder: z.number().int(),
+  settings: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
+  userId: z.string(),
+  userName: z.string().nullish(),
+  createdAt: z.date(),
+});
+
+export type LandingSectionRevisionType = z.infer<typeof LandingSectionRevisionSchema>;
+
+
+// File: StorefrontSetting.schema.ts
+
+export const StorefrontSettingSchema = z.object({
+  key: z.string(),
+  value: z.string(),
+  draftValue: z.string().nullish(),
+  updatedBy: z.string().nullish(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type StorefrontSettingType = z.infer<typeof StorefrontSettingSchema>;
 

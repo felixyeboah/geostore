@@ -412,3 +412,125 @@ export function landingText(
 	const override = settings[field];
 	return override && override.trim().length > 0 ? override : fallback;
 }
+
+/**
+ * Field limits, enforced in the editor and again in the server action.
+ *
+ * The caps are generous against the shipped copy — nothing legitimate is
+ * anywhere near them — but they stop a paste of a page of text or a data URL
+ * from degrading the front page.
+ */
+export const LANDING_FIELD_LIMITS: Record<LandingFieldType, number> = {
+	text: 160,
+	textarea: 600,
+	image: 2048,
+	product: 64,
+	products: 4000,
+	brands: 4000,
+};
+
+/** The most products one band can feature, and brands one line can name. */
+export const LANDING_PRODUCT_LIST_MAX = 12;
+export const LANDING_BRAND_LIST_MAX = 16;
+
+export interface LandingFieldIssue {
+	/** The field's key inside the section's settings object. */
+	field: string;
+	message: string;
+}
+
+/**
+ * Validates one field value. Returns the message to show the editor, or null
+ * when the value is acceptable. An empty value is always acceptable — blank
+ * means "use the shipped copy".
+ */
+export function validateLandingField(
+	field: LandingFieldDefinition,
+	value: string,
+	options?: { brands?: string[] },
+): string | null {
+	const trimmed = value.trim();
+
+	if (trimmed.length === 0) {
+		return null;
+	}
+
+	if (trimmed.length > LANDING_FIELD_LIMITS[field.type]) {
+		return `Keep it under ${LANDING_FIELD_LIMITS[field.type]} characters.`;
+	}
+
+	if (field.type === "image") {
+		try {
+			const url = new URL(trimmed);
+			if (url.protocol !== "https:" && url.protocol !== "http:") {
+				return "Use a full https:// image URL.";
+			}
+		} catch {
+			return "Use a full https:// image URL.";
+		}
+	}
+
+	if (field.type === "products" || field.type === "brands") {
+		const entries =
+			field.type === "products"
+				? parseIdList(trimmed)
+				: parseBrandList(trimmed);
+		const max =
+			field.type === "products"
+				? LANDING_PRODUCT_LIST_MAX
+				: LANDING_BRAND_LIST_MAX;
+
+		if (entries.length === 0) {
+			return "That list could not be read — pick the entries again.";
+		}
+		if (entries.length > max) {
+			return `Choose at most ${max}.`;
+		}
+		if (entries.some((entry) => entry.length > LANDING_FIELD_LIMITS.text)) {
+			return "One of the entries is not a valid reference.";
+		}
+		if (field.type === "brands" && options?.brands) {
+			const known = new Set(options.brands);
+			const unknown = entries.find((entry) => !known.has(entry));
+			if (unknown) {
+				return `${unknown} is no longer in the catalogue.`;
+			}
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Cleans and validates a whole section's copy.
+ *
+ * Only fields the section declares are kept, blanks are dropped (blank means
+ * "use the shipped copy"), and every kept value passes `validateLandingField`.
+ * Shared by the editor — which paints the issues under their fields — and the
+ * server action, which refuses the write when any issue remains.
+ */
+export function sanitizeLandingCopy(
+	definition: LandingSectionDefinition,
+	values: Record<string, string>,
+	options?: { brands?: string[] },
+): { settings: Record<string, string>; issues: LandingFieldIssue[] } {
+	const settings: Record<string, string> = {};
+	const issues: LandingFieldIssue[] = [];
+
+	for (const field of definition.fields) {
+		const raw = values[field.key];
+		if (typeof raw !== "string" || raw.trim().length === 0) {
+			continue;
+		}
+
+		const issue = validateLandingField(field, raw, options);
+		if (issue) {
+			issues.push({ field: field.key, message: issue });
+			continue;
+		}
+
+		settings[field.key] = raw.trim();
+	}
+
+	return { settings, issues };
+}
