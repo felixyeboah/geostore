@@ -1,5 +1,6 @@
 import { createProductImageUploadUrl } from "./procedures/create-product-image-upload-url";
 import { findOrganization } from "./procedures/find-organization";
+import { listAdminUsers } from "./procedures/list-admin-users";
 import { listOrganizations } from "./procedures/list-organizations";
 import { listUsers } from "./procedures/list-users";
 import { searchProducts } from "./procedures/search-products";
@@ -11,6 +12,7 @@ export const adminRouter = {
 	},
 	users: {
 		list: listUsers,
+		adminList: listAdminUsers,
 	},
 	organizations: {
 		list: listOrganizations,

@@ -119,20 +119,26 @@ export function ResultCount({
 	shown,
 	total,
 	noun,
+	singular,
 	onClear,
 }: {
 	shown: number;
 	total: number;
+	/** Plural, as it reads most of the time. */
 	noun: string;
+	/** Only needed when dropping a trailing "s" is not the singular. */
+	singular?: string;
 	onClear?: () => void;
 }) {
+	const word = total === 1 ? (singular ?? noun.replace(/s$/, "")) : noun;
+
 	return (
 		// Its own group so a long row of facets wraps as a unit instead of
 		// pushing the clear action off the edge.
 		<div className="ml-auto flex shrink-0 items-center gap-3">
 			<p className="text-[12.5px] text-muted-foreground tabular-nums">
 				{shown === total
-					? `${total} ${noun}`
+					? `${total} ${word}`
 					: `${shown} of ${total} ${noun}`}
 			</p>
 			{onClear && (

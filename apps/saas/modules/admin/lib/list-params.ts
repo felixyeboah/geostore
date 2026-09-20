@@ -90,3 +90,18 @@ export const transactionListParsers = {
 };
 
 export const loadTransactionListParams = createLoader(transactionListParsers);
+
+export const USER_ROLES = ["admin", "user"] as const;
+export const USER_STATUSES = ["active", "banned", "unverified"] as const;
+export const USER_SORTS = ["created", "name"] as const;
+
+export const userListParsers = {
+	q: parseAsString.withDefault(""),
+	role: parseAsStringLiteral(USER_ROLES),
+	status: parseAsStringLiteral(USER_STATUSES),
+	sort: parseAsStringLiteral(USER_SORTS).withDefault("created"),
+	dir: parseAsStringLiteral(SORT_DIRECTIONS).withDefault("desc"),
+	page: parseAsInteger.withDefault(1),
+};
+
+export const loadUserListParams = createLoader(userListParsers);
