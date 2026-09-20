@@ -1606,6 +1606,83 @@ export async function getStoreCategoryById(id: string) {
 	return db.category.findUnique({ where: { id } });
 }
 
+/**
+ * Flips one department's visibility.
+ *
+ * Its own function because `updateStoreCategory` takes the whole record — it
+ * backs the form — and a row-level toggle has only the one field to hand.
+ */
+export async function setStoreCategoryActive(id: string, isActive: boolean) {
+	return db.category.update({ where: { id }, data: { isActive } });
+}
+
+/**
+ * The outcome of asking to delete a department.
+ *
+ * `Product.category` is `onDelete: Restrict`, so a department that still holds
+ * products cannot be removed — every product must belong to one. Emptying it
+ * first is the only route, and hiding it is usually what was meant anyway.
+ */
+export type DeleteStoreCategoryResult =
+	| {
+			status: "deleted";
+			category: { id: string; name: string; slug: string };
+	  }
+	| { status: "has-products"; productCount: number }
+	| { status: "not-found" };
+
+export async function deleteStoreCategory(
+	id: string,
+): Promise<DeleteStoreCategoryResult> {
+	const category = await db.category.findUnique({
+		where: { id },
+		select: {
+			id: true,
+			name: true,
+			slug: true,
+			_count: { select: { products: true } },
+		},
+	});
+
+	if (!category) {
+		return { status: "not-found" };
+	}
+
+	if (category._count.products > 0) {
+		return {
+			status: "has-products",
+			productCount: category._count.products,
+		};
+	}
+
+	await db.category.delete({ where: { id } });
+
+	return {
+		status: "deleted",
+		category: {
+			id: category.id,
+			name: category.name,
+			slug: category.slug,
+		},
+	};
+}
+
+/**
+ * Writes the running order of the departments.
+ *
+ * Takes the full list rather than swapping a pair, because stored `sortOrder`
+ * values are not guaranteed to be distinct — everything seeded lands on 0, and
+ * swapping two zeroes changes nothing. Rewriting every row from its index
+ * leaves the sequence well-formed whatever it was before.
+ */
+export async function reorderStoreCategories(ids: string[]) {
+	return db.$transaction(
+		ids.map((id, index) =>
+			db.category.update({ where: { id }, data: { sortOrder: index } }),
+		),
+	);
+}
+
 /** Slugs of the storefront pages an order's inventory movement affects. */
 export async function getStorePagesForOrder(orderId: string) {
 	const items = await db.orderItem.findMany({

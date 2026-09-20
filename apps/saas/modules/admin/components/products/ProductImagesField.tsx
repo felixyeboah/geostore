@@ -1,23 +1,10 @@
 "use client";
 
+import { AdminImageDropzone } from "@admin/components/AdminImageDropzone";
 import { AdminTextarea } from "@admin/components/ui";
 import { cn } from "@repo/ui";
-import { toastError, toastSuccess } from "@repo/ui/components/toast";
-import { orpc } from "@shared/lib/orpc-query-utils";
-import { useMutation } from "@tanstack/react-query";
-import { ImagePlusIcon, LoaderCircleIcon, StarIcon, XIcon } from "lucide-react";
-import { type HTMLAttributes, useId, useState } from "react";
-import { useDropzone } from "react-dropzone";
-
-const ACCEPTED = {
-	"image/jpeg": [".jpg", ".jpeg"],
-	"image/png": [".png"],
-	"image/webp": [".webp"],
-} as const;
-
-const MAX_BYTES = 5 * 1024 * 1024;
-
-type UploadableType = "image/jpeg" | "image/png" | "image/webp";
+import { StarIcon, XIcon } from "lucide-react";
+import { useId } from "react";
 
 interface ProductImagesFieldProps {
 	value: string[];
@@ -37,72 +24,6 @@ export function ProductImagesField({
 	onChange,
 }: ProductImagesFieldProps) {
 	const urlFieldId = useId();
-	const [isUploading, setIsUploading] = useState(false);
-	const uploadUrlMutation = useMutation(
-		orpc.admin.products.imageUploadUrl.mutationOptions(),
-	);
-
-	async function upload(files: File[]) {
-		if (!files.length) {
-			return;
-		}
-
-		setIsUploading(true);
-		try {
-			const uploaded: string[] = [];
-			for (const file of files) {
-				const target = await uploadUrlMutation.mutateAsync({
-					contentType: file.type as UploadableType,
-				});
-				const response = await fetch(target.signedUploadUrl, {
-					method: "PUT",
-					body: file,
-					headers: { "Content-Type": file.type },
-				});
-				if (!response.ok) {
-					throw new Error("The image upload failed.");
-				}
-				uploaded.push(target.fileUrl);
-			}
-
-			onChange([...value, ...uploaded]);
-			toastSuccess(
-				`${uploaded.length} image${uploaded.length === 1 ? "" : "s"} uploaded`,
-			);
-		} catch (error) {
-			toastError(
-				"Image upload failed",
-				error instanceof Error ? error.message : undefined,
-			);
-		} finally {
-			setIsUploading(false);
-		}
-	}
-
-	const { getRootProps, getInputProps, isDragActive } = useDropzone({
-		accept: ACCEPTED,
-		maxSize: MAX_BYTES,
-		multiple: true,
-		disabled: isUploading,
-		onDrop: (accepted, rejected) => {
-			if (rejected.length) {
-				// One message covers the batch: listing every file turns a
-				// mis-drop of twenty photos into twenty toasts.
-				const tooLarge = rejected.some((item) =>
-					item.errors.some(
-						(error) => error.code === "file-too-large",
-					),
-				);
-				toastError(
-					`${rejected.length} file${rejected.length === 1 ? "" : "s"} skipped`,
-					tooLarge
-						? "Each image must be 5 MB or smaller."
-						: "Use JPG, PNG, or WebP images.",
-				);
-			}
-			void upload(accepted);
-		},
-	});
 
 	function removeAt(index: number) {
 		onChange(value.filter((_, itemIndex) => itemIndex !== index));
@@ -116,37 +37,11 @@ export function ProductImagesField({
 
 	return (
 		<div className="grid gap-4">
-			<div
-				{...(getRootProps() as HTMLAttributes<HTMLDivElement>)}
-				className={cn(
-					"flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[2px] border border-border border-dashed px-4 py-9 text-center transition-colors",
-					isDragActive
-						? "border-[var(--ed-accent)] bg-muted"
-						: "hover:border-foreground",
-					isUploading && "cursor-wait opacity-70",
-				)}
-			>
-				<input
-					{...getInputProps()}
-					aria-label="Upload product images"
-				/>
-				{isUploading ? (
-					<LoaderCircleIcon className="size-5 animate-spin text-muted-foreground" />
-				) : (
-					<ImagePlusIcon className="size-5 text-muted-foreground" />
-				)}
-				<span className="font-medium text-[13.5px] text-foreground">
-					{isUploading
-						? "Uploading…"
-						: isDragActive
-							? "Drop to upload"
-							: "Drag images here, or click to choose"}
-				</span>
-				<span className="text-[12px] text-muted-foreground">
-					JPG, PNG or WebP, up to 5 MB each. The first image is the
-					one customers see first.
-				</span>
-			</div>
+			<AdminImageDropzone
+				multiple
+				onUploaded={(urls) => onChange([...value, ...urls])}
+				hint="JPG, PNG or WebP, up to 5 MB each. The first image is the one customers see first."
+			/>
 
 			{value.length > 0 && (
 				<ul className="grid grid-cols-3 gap-3 sm:grid-cols-4">
@@ -170,7 +65,12 @@ export function ProductImagesField({
 									Cover
 								</span>
 							)}
-							<div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/55 to-transparent p-1.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+							<div
+								className={cn(
+									"absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/55 to-transparent p-1.5",
+									"opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100",
+								)}
+							>
 								{index > 0 && (
 									<button
 										type="button"

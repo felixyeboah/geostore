@@ -131,12 +131,11 @@ export function ProductRowActions({ product }: { product: ProductRow }) {
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						disabled={isPending}
-						onSelect={(event) => {
-							// Radix closes the menu on select, which would
-							// unmount the dialog with it if it lived inside.
-							event.preventDefault();
-							setConfirmingDelete(true);
-						}}
+						// Letting the menu close first matters: two Radix modal
+						// layers open at once leave aria-hidden on the page after
+						// the dialog goes, hiding the whole screen from assistive
+						// tech.
+						onSelect={() => setConfirmingDelete(true)}
 						className="cursor-pointer gap-2 text-destructive focus:text-destructive"
 					>
 						<Trash2Icon className="size-4" />

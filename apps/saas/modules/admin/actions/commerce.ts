@@ -8,6 +8,7 @@ import {
 import {
 	createStoreCategory,
 	createStoreProduct,
+	deleteStoreCategory,
 	deleteStoreProduct,
 	getAdminStoreOrder,
 	getAdminStoreProductById,
@@ -18,7 +19,9 @@ import {
 	isStoreOperationError,
 	markCashOnDeliveryPaid,
 	recordStoreOrderStatusNote,
+	reorderStoreCategories,
 	StoreOperationError,
+	setStoreCategoryActive,
 	updateStoreCategory,
 	updateStoreOrderStatus,
 	updateStoreProduct,
@@ -489,6 +492,107 @@ export async function saveStoreCategoryAction(
  * third is already cancelled should still move the other nineteen. The result
  * says how many moved and names the first thing that went wrong.
  */
+/** The storefront surfaces a department in the nav, on `/shop` and on its own page. */
+function revalidateStorefrontForCategory(slug: string) {
+	revalidatePath("/");
+	revalidatePath("/shop");
+	revalidatePath(`/categories/${slug}`);
+	revalidatePath("/admin/categories");
+	revalidatePath("/admin/products");
+}
+
+export async function deleteStoreCategoryAction(
+	categoryId: string,
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const result = await deleteStoreCategory(categoryId);
+
+		if (result.status === "not-found") {
+			return {
+				success: false,
+				message: "That department no longer exists.",
+			};
+		}
+
+		if (result.status === "has-products") {
+			// Every product must belong to a department, so this is a refusal
+			// rather than a cascade that would orphan the catalogue.
+			return {
+				success: false,
+				message: `It still holds ${result.productCount} ${
+					result.productCount === 1 ? "product" : "products"
+				}. Move them to another department first, or hide this one instead.`,
+			};
+		}
+
+		revalidateStorefrontForCategory(result.category.slug);
+
+		return {
+			success: true,
+			message: `${result.category.name} deleted.`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn’t delete the department.",
+			),
+		};
+	}
+}
+
+export async function setStoreCategoryActiveAction(
+	categoryId: string,
+	isActive: boolean,
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const saved = await setStoreCategoryActive(
+			categoryId,
+			z.boolean().parse(isActive),
+		);
+		revalidateStorefrontForCategory(saved.slug);
+		return {
+			success: true,
+			message: isActive
+				? `${saved.name} is visible to customers.`
+				: `${saved.name} is hidden from customers.`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn’t change that department’s visibility.",
+			),
+		};
+	}
+}
+
+export async function reorderStoreCategoriesAction(
+	categoryIds: string[],
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const ids = z.array(z.string().min(1)).min(1).parse(categoryIds);
+		await reorderStoreCategories(ids);
+		revalidatePath("/");
+		revalidatePath("/shop");
+		revalidatePath("/admin/categories");
+		return { success: true, message: "Order saved." };
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn’t save the new order.",
+			),
+		};
+	}
+}
+
 export async function bulkUpdateStoreOrderStatusAction(
 	orderIds: string[],
 	status: Parameters<typeof updateStoreOrderStatusAction>[1],
