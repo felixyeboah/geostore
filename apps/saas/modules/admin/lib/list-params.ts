@@ -1,6 +1,7 @@
 import {
 	createLoader,
 	parseAsInteger,
+	parseAsNumberLiteral,
 	parseAsString,
 	parseAsStringLiteral,
 } from "nuqs/server";
@@ -51,3 +52,13 @@ export const orderListParsers = {
 export const loadOrderListParams = createLoader(orderListParsers);
 
 export type OrderListParams = Awaited<ReturnType<typeof loadOrderListParams>>;
+
+export const ANALYTICS_RANGES = [7, 30, 90] as const;
+
+export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
+
+export const analyticsParsers = {
+	days: parseAsNumberLiteral(ANALYTICS_RANGES).withDefault(30),
+};
+
+export const loadAnalyticsParams = createLoader(analyticsParsers);

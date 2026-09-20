@@ -151,15 +151,37 @@ test.describe("admin product management", () => {
 		await page.goto("/admin/analytics");
 		await expect(
 			page.getByRole("heading", { name: "Store analytics" }),
+		).toBeVisible({ timeout: 30_000 });
+		// The window is chosen now, so the metric is "Revenue" rather than
+		// "30-day revenue".
+		await expect(page.getByText("Revenue", { exact: true })).toBeVisible();
+		await expect(
+			page.getByText("Payment success", { exact: true }),
 		).toBeVisible();
-		await expect(page.getByText("30-day revenue")).toBeVisible();
-		await expect(page.getByText("Payment success")).toBeVisible();
+
+		// Changing the range re-queries on the server.
+		await page.getByRole("button", { name: "7 days", exact: true }).click();
+		await expect(page).toHaveURL(/days=7/, { timeout: 30_000 });
+		await expect(
+			page.getByRole("heading", { name: "Store analytics" }),
+		).toBeVisible();
 
 		await page.goto("/admin/overview");
 		await expect(page.locator("h1")).toBeVisible();
 
+		// The seed creates no orders, so a row-level control cannot be the
+		// marker that this screen rendered — it was not there to find, and
+		// this assertion failed on any freshly seeded database. Assert the
+		// screen's own furniture, and the row control only when there is a
+		// row to carry it.
 		await page.goto("/admin/orders");
-		await expect(page.getByLabel("Order status").first()).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: "Orders", exact: true }),
+		).toBeVisible({ timeout: 30_000 });
+		await expect(page.getByLabel("Search orders")).toBeVisible();
+		if ((await page.locator("tbody tr").count()) > 0) {
+			await expect(page.getByLabel("Order status").first()).toBeVisible();
+		}
 
 		await page.goto("/admin/transactions");
 		await expect(page.locator("h1")).toBeVisible();

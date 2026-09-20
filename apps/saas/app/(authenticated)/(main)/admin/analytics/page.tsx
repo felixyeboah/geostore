@@ -1,212 +1,282 @@
+import { AdminHeader } from "@admin/components/AdminPage";
+import { AnalyticsRange } from "@admin/components/analytics/AnalyticsRange";
+import { RevenueChart } from "@admin/components/analytics/RevenueChart";
+import { loadAnalyticsParams } from "@admin/lib/list-params";
 import { formatMoney } from "@repo/commerce";
 import { getStoreSalesAnalytics } from "@repo/database";
-import { Card } from "@repo/ui";
-import { BarChart3Icon, CircleDollarSignIcon, ReceiptIcon } from "lucide-react";
+import { cn } from "@repo/ui";
+import type { Metadata } from "next";
+import type { SearchParams } from "nuqs/server";
 
-export default async function AdminAnalyticsPage() {
-	const analytics = await getStoreSalesAnalytics(30);
-	const maxRevenue = Math.max(
-		...analytics.daily.map((day) => day.revenueInPesewas),
+export const metadata: Metadata = { title: "Analytics" };
+
+/**
+ * Payment success is a property of payment *attempts*, not of every order:
+ * counting cash-on-delivery and still-pending checkouts in the denominator
+ * made a perfectly healthy store look like it was declining half its cards.
+ */
+function successRate(succeeded: number, attempted: number): number | null {
+	return attempted > 0 ? Math.round((succeeded / attempted) * 100) : null;
+}
+
+/**
+ * Change against the previous period.
+ *
+ * A percentage measured against a near-empty period is noise — the first real
+ * week of trading reads as "+9500%", which says nothing useful. So a period
+ * that had nothing to compare against reports "new" instead, and two empty
+ * periods report nothing at all.
+ */
+function change(current: number, previous: number): number | "new" | null {
+	if (previous === 0) {
+		return current === 0 ? null : "new";
+	}
+	return Math.round(((current - previous) / previous) * 100);
+}
+
+export default async function AdminAnalyticsPage({
+	searchParams,
+}: {
+	searchParams: Promise<SearchParams>;
+}) {
+	const { days } = await loadAnalyticsParams(searchParams);
+
+	// The period before this one, on the same length, is what makes every
+	// figure here answer "compared with what?".
+	const [current, previous] = await Promise.all([
+		getStoreSalesAnalytics(days),
+		getStoreSalesAnalytics(days, 1),
+	]);
+
+	const rate = successRate(
+		current.succeededPaymentCount,
+		current.attemptedPaymentCount,
+	);
+	const previousRate = successRate(
+		previous.succeededPaymentCount,
+		previous.attemptedPaymentCount,
+	);
+
+	const headline = [
+		{
+			key: "revenue",
+			label: "Revenue",
+			value: formatMoney(current.revenueInPesewas),
+			change: change(current.revenueInPesewas, previous.revenueInPesewas),
+			detail: `${current.paidOrderCount} paid ${current.paidOrderCount === 1 ? "order" : "orders"}`,
+		},
+		{
+			key: "orders",
+			label: "Orders placed",
+			value: String(current.orderCount),
+			change: change(current.orderCount, previous.orderCount),
+			detail: `${current.orderCount - current.paidOrderCount} not paid`,
+		},
+		{
+			key: "aov",
+			label: "Average order",
+			value: formatMoney(current.averageOrderValueInPesewas),
+			change: change(
+				current.averageOrderValueInPesewas,
+				previous.averageOrderValueInPesewas,
+			),
+			detail: "Across paid orders",
+		},
+		{
+			key: "payments",
+			label: "Payment success",
+			value: rate === null ? "—" : `${rate}%`,
+			change:
+				rate === null || previousRate === null
+					? null
+					: rate - previousRate,
+			detail:
+				current.attemptedPaymentCount > 0
+					? `${current.succeededPaymentCount} of ${current.attemptedPaymentCount} online payments`
+					: "No online payments yet",
+		},
+	];
+
+	const hasSales = current.orderCount > 0 || previous.orderCount > 0;
+	const productPeak = Math.max(
+		...current.topProducts.map((product) => product.revenueInPesewas),
 		1,
 	);
-	const maxProductRevenue = Math.max(
-		...analytics.topProducts.map((product) => product.revenueInPesewas),
-		1,
+	const statusTotal = current.statusBreakdown.reduce(
+		(total, item) => total + item.count,
+		0,
 	);
-	// Payment success is a property of payment *attempts*, not of every order:
-	// counting cash-on-delivery and still-pending checkouts in the denominator
-	// made a perfectly healthy store look like it was declining half its cards.
-	const paymentSuccessRate = analytics.attemptedPaymentCount
-		? Math.round(
-				(analytics.succeededPaymentCount /
-					analytics.attemptedPaymentCount) *
-					100,
-			)
-		: 0;
 
 	return (
-		<div className="space-y-8">
-			<section>
-				<p className="font-semibold text-primary text-sm">
-					Performance
-				</p>
-				<h1 className="mt-1 font-semibold text-2xl">Store analytics</h1>
-				<p className="mt-1 text-muted-foreground text-sm">
-					A 30-day view of paid sales, order value, fulfilment, and
-					product demand.
-				</p>
-				<div className="mt-6 grid gap-4 sm:grid-cols-3">
-					{[
-						{
-							label: "30-day revenue",
-							value: formatMoney(analytics.revenueInPesewas),
-							detail: `${analytics.paidOrderCount} paid orders`,
-							icon: CircleDollarSignIcon,
-						},
-						{
-							label: "Average order value",
-							value: formatMoney(
-								analytics.averageOrderValueInPesewas,
-							),
-							detail: "Across paid orders",
-							icon: ReceiptIcon,
-						},
-						{
-							label: "Payment success",
-							value: analytics.attemptedPaymentCount
-								? `${paymentSuccessRate}%`
-								: "—",
-							detail: analytics.attemptedPaymentCount
-								? `${analytics.succeededPaymentCount} of ${analytics.attemptedPaymentCount} online payments`
-								: "No online payments yet",
-							icon: BarChart3Icon,
-						},
-					].map((metric) => (
-						<Card key={metric.label} className="p-5">
-							<div className="flex items-center justify-between">
-								<p className="text-muted-foreground text-sm">
-									{metric.label}
-								</p>
-								<metric.icon className="size-4 text-primary" />
-							</div>
-							<p className="mt-5 font-semibold text-3xl tracking-tight tabular-nums">
-								{metric.value}
-							</p>
-							<p className="mt-1 text-muted-foreground text-xs">
-								{metric.detail}
-							</p>
-						</Card>
-					))}
-				</div>
-			</section>
+		<div>
+			<AdminHeader
+				eyebrow="Performance"
+				title="Store analytics"
+				description={
+					hasSales
+						? `Paid sales, order value and product demand over the last ${days} days, against the ${days} before them.`
+						: "Sales, order value and product demand appear here once the first order is placed."
+				}
+				actions={<AnalyticsRange />}
+			/>
 
-			<section className="border-border border-t pt-7 sm:p-6">
-				<div className="flex items-end justify-between gap-4">
-					<div>
-						<h2 className="font-semibold">Daily paid revenue</h2>
-						<p className="mt-1 text-muted-foreground text-xs">
-							Last 30 calendar days
+			<section className="mt-9 grid gap-x-10 gap-y-7 border-border border-b pb-7 sm:grid-cols-2 lg:grid-cols-4">
+				{headline.map((metric) => (
+					<div key={metric.key}>
+						<p className="eyebrow text-muted-foreground">
+							{metric.label}
+						</p>
+						<p className="mt-3 font-semibold text-[26px] text-foreground tabular-nums tracking-[-0.03em]">
+							{metric.value}
+						</p>
+						<p className="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-[12px]">
+							{metric.change === "new" ? (
+								<span className="text-foreground">new</span>
+							) : metric.change !== null ? (
+								<span
+									className={cn(
+										"tabular-nums",
+										metric.change > 0
+											? "text-foreground"
+											: metric.change < 0
+												? "text-[var(--ed-accent)]"
+												: "text-muted-foreground",
+									)}
+								>
+									{metric.change > 0 ? "+" : ""}
+									{metric.change}
+									{metric.key === "payments" ? " pts" : "%"}
+								</span>
+							) : null}
+							<span className="text-muted-foreground">
+								{metric.detail}
+							</span>
 						</p>
 					</div>
-					<p className="font-semibold tabular-nums">
-						{formatMoney(analytics.revenueInPesewas)}
-					</p>
-				</div>
-				<div
-					className="mt-8 flex h-56 items-end gap-1"
-					role="img"
-					aria-label="Daily revenue chart"
-				>
-					{analytics.daily.map((day, index) => {
-						const height = Math.max(
-							(day.revenueInPesewas / maxRevenue) * 100,
-							day.orders > 0 ? 3 : 1,
-						);
-						return (
-							<div
-								key={day.date}
-								className="group relative flex h-full min-w-0 flex-1 items-end"
-							>
-								<div
-									className="w-full rounded-t-sm bg-primary/75 transition group-hover:bg-primary"
-									style={{ height: `${height}%` }}
-								/>
-								<span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-background text-xs group-hover:block">
-									{day.date}:{" "}
-									{formatMoney(day.revenueInPesewas)} ·{" "}
-									{day.orders} orders
-								</span>
-								{(index === 0 ||
-									index === analytics.daily.length - 1) && (
-									<span className="absolute top-full mt-2 text-muted-foreground text-[10px]">
-										{new Intl.DateTimeFormat("en-GH", {
-											month: "short",
-											day: "numeric",
-										}).format(new Date(day.date))}
-									</span>
-								)}
-							</div>
-						);
-					})}
-				</div>
+				))}
 			</section>
 
-			<div className="grid items-start gap-6 lg:grid-cols-2">
-				<section className="rounded-2xl border bg-card">
-					<header className="border-b p-5">
-						<h2 className="font-semibold">Top products</h2>
-						<p className="mt-1 text-muted-foreground text-xs">
-							Ranked by 30-day paid revenue
-						</p>
-					</header>
-					{analytics.topProducts.length === 0 ? (
-						<p className="p-5 text-muted-foreground text-sm">
-							Product performance appears after the first paid
-							order.
-						</p>
-					) : (
-						<div className="divide-y">
-							{analytics.topProducts.map((product) => (
-								<div key={product.productId} className="p-5">
-									<div className="flex justify-between gap-4 text-sm">
-										<span className="font-medium">
-											{product.name}
-										</span>
-										<span className="font-semibold tabular-nums">
-											{formatMoney(
-												product.revenueInPesewas,
-											)}
-										</span>
-									</div>
-									<div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-										<div
-											className="h-full rounded-full bg-primary"
-											style={{
-												width: `${(product.revenueInPesewas / maxProductRevenue) * 100}%`,
-											}}
-										/>
-									</div>
-									<p className="mt-2 text-muted-foreground text-xs">
-										{product.quantity} units sold
-									</p>
-								</div>
-							))}
-						</div>
-					)}
-				</section>
+			{hasSales ? (
+				<>
+					<div className="mt-9">
+						<RevenueChart days={current.daily} />
+					</div>
 
-				<section className="rounded-2xl border bg-card">
-					<header className="border-b p-5">
-						<h2 className="font-semibold">Fulfilment mix</h2>
-						<p className="mt-1 text-muted-foreground text-xs">
-							Current status across all orders
-						</p>
-					</header>
-					{analytics.statusBreakdown.length === 0 ? (
-						<p className="p-5 text-muted-foreground text-sm">
-							No fulfilment data yet.
-						</p>
-					) : (
-						<div className="divide-y">
-							{analytics.statusBreakdown.map((item) => (
-								<div
-									key={item.status}
-									className="flex items-center justify-between gap-4 p-5"
-								>
-									<span className="text-sm capitalize">
-										{item.status
-											.toLocaleLowerCase()
-											.replaceAll("_", " ")}
-									</span>
-									<span className="font-semibold tabular-nums">
-										{item.count}
-									</span>
-								</div>
-							))}
-						</div>
-					)}
-				</section>
-			</div>
+					<div className="mt-10 grid items-start gap-x-12 gap-y-10 lg:grid-cols-2">
+						<section className="border-border border-t pt-7">
+							<div className="flex items-baseline justify-between gap-4">
+								<h2 className="eyebrow text-muted-foreground">
+									Top products
+								</h2>
+								<p className="text-[12px] text-muted-foreground">
+									By revenue
+								</p>
+							</div>
+							{current.topProducts.length === 0 ? (
+								<p className="mt-6 text-[13.5px] text-muted-foreground">
+									Product demand appears after the first paid
+									order.
+								</p>
+							) : (
+								<ol className="mt-5 border-border border-t">
+									{current.topProducts.map(
+										(product, index) => (
+											<li
+												key={product.productId}
+												className="border-border border-b py-3.5"
+											>
+												<div className="flex items-baseline gap-3">
+													<span className="w-5 shrink-0 font-mono text-[11px] text-muted-foreground tabular-nums">
+														{index + 1}
+													</span>
+													<span className="min-w-0 flex-1 truncate font-medium text-[13.5px] text-foreground">
+														{product.name}
+													</span>
+													<span className="shrink-0 font-medium text-[13.5px] text-foreground tabular-nums">
+														{formatMoney(
+															product.revenueInPesewas,
+														)}
+													</span>
+												</div>
+												<div className="mt-2 flex items-center gap-3 pl-8">
+													<span
+														aria-hidden="true"
+														className="h-px bg-foreground"
+														style={{
+															width: `${Math.max((product.revenueInPesewas / productPeak) * 100, 2)}%`,
+														}}
+													/>
+													<span className="shrink-0 text-[11.5px] text-muted-foreground tabular-nums">
+														{product.quantity} sold
+													</span>
+												</div>
+											</li>
+										),
+									)}
+								</ol>
+							)}
+						</section>
+
+						<section className="border-border border-t pt-7">
+							<div className="flex items-baseline justify-between gap-4">
+								<h2 className="eyebrow text-muted-foreground">
+									Fulfilment mix
+								</h2>
+								<p className="text-[12px] text-muted-foreground">
+									All orders, all time
+								</p>
+							</div>
+							{current.statusBreakdown.length === 0 ? (
+								<p className="mt-6 text-[13.5px] text-muted-foreground">
+									No fulfilment data yet.
+								</p>
+							) : (
+								<ul className="mt-5 border-border border-t">
+									{current.statusBreakdown.map((item) => (
+										<li
+											key={item.status}
+											className="flex items-center gap-4 border-border border-b py-3.5"
+										>
+											<span className="min-w-0 flex-1 text-[13.5px] text-foreground capitalize">
+												{item.status
+													.toLocaleLowerCase()
+													.replaceAll("_", " ")}
+											</span>
+											{/* A track, so short bars are still
+											    comparable rather than specks. */}
+											<span
+												aria-hidden="true"
+												className="h-1 w-24 shrink-0 bg-muted"
+											>
+												<span
+													className="block h-full bg-foreground"
+													style={{
+														width: `${Math.max((item.count / Math.max(statusTotal, 1)) * 100, 4)}%`,
+													}}
+												/>
+											</span>
+											<span className="w-10 shrink-0 text-right font-medium text-[13.5px] text-foreground tabular-nums">
+												{item.count}
+											</span>
+										</li>
+									))}
+								</ul>
+							)}
+						</section>
+					</div>
+				</>
+			) : (
+				<div className="mt-9 border-border border-t py-16 text-center">
+					<p className="font-medium text-[15px] text-foreground">
+						Nothing to measure yet
+					</p>
+					<p className="mx-auto mt-2 max-w-sm text-[13.5px] text-muted-foreground">
+						Revenue, order value and product demand are all drawn
+						from paid orders. The first one through checkout fills
+						this page.
+					</p>
+				</div>
+			)}
 		</div>
 	);
 }
