@@ -1,13 +1,30 @@
 import { links } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
+import { STOREFRONT_CHROME_DEFAULTS, whatsAppLink } from "@repo/commerce";
 import { Container, Eyebrow } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
 import { ArrowRightIcon, MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 
-export function EnquirySection({ copy }: SectionCopyProps) {
+/**
+ * The closing "ask us to source it" band.
+ *
+ * The button opens WhatsApp rather than the contact form: this shop already
+ * sells over WhatsApp, and a customer who cannot find what they want will
+ * message far sooner than they will fill in a form. The number is editable in
+ * the back office under Storefront, so it is read from chrome rather than
+ * hardcoded. A number that cannot be dialled falls back to /contact instead of
+ * rendering a link that goes nowhere.
+ */
+export function EnquirySection({ copy, chrome }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.enquiry");
+
+	const number = chrome?.whatsapp ?? STOREFRONT_CHROME_DEFAULTS.whatsapp;
+	const href =
+		whatsAppLink(number, "Hi GeoStoresGH — I'm looking for ") ??
+		links.contact;
+	const isWhatsApp = href !== links.contact;
 
 	return (
 		<section>
@@ -25,7 +42,16 @@ export function EnquirySection({ copy }: SectionCopyProps) {
 						</p>
 					</div>
 					<Link
-						href={links.contact}
+						href={href}
+						// A wa.me link leaves the site, so it opens away from
+						// the shop rather than navigating the customer out of
+						// a session they may be mid-way through.
+						{...(isWhatsApp
+							? {
+									target: "_blank",
+									rel: "noreferrer",
+								}
+							: {})}
 						className="inline-flex h-[52px] w-fit items-center gap-6 rounded-[4px] bg-primary px-6 font-medium text-[13.5px] text-white transition-colors hover:bg-primary/90 md:mt-14"
 					>
 						<MessageCircleIcon

@@ -94,6 +94,7 @@ export default async function Home() {
 						products={products}
 						productLists={productLists}
 						catalogue={catalogue}
+						chrome={chrome}
 					/>
 				) : null;
 			})}

@@ -1,3 +1,5 @@
+import type { StorefrontChrome } from "@repo/commerce";
+
 /** A product a band points at, resolved from the catalogue at render time. */
 export interface ReferencedProduct {
 	id: string;
@@ -51,6 +53,8 @@ export interface SectionCopyProps {
 	productLists?: Record<string, ReferencedProduct[]>;
 	/** The shop's departments and landing collections. */
 	catalogue?: SectionCatalogue;
+	/** Editable chrome — the phone and WhatsApp numbers a band links to. */
+	chrome?: StorefrontChrome;
 }
 
 type Translator = (path: string) => string;

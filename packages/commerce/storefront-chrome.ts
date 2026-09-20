@@ -11,6 +11,7 @@
 export type StorefrontChromeKey =
 	| "utilityStrip"
 	| "phone"
+	| "whatsapp"
 	| "footerTagline1"
 	| "footerTagline2"
 	| "footerMeta"
@@ -29,6 +30,7 @@ export const STOREFRONT_CHROME_DEFAULTS: Record<StorefrontChromeKey, string> = {
 	utilityStrip:
 		"Delivery across Ghana · Mobile money, card or cash on delivery",
 	phone: "+233 20 913 3372",
+	whatsapp: "+233 20 913 3372",
 	footerTagline1: "Phones, computers, gaming,",
 	footerTagline2: "appliances and accessories.",
 	footerMeta: "Electronics & more · Ghana",
@@ -47,6 +49,12 @@ export const STOREFRONT_CHROME_FIELDS: StorefrontChromeField[] = [
 		key: "phone",
 		label: "Phone number",
 		help: "Shown in the strip and used for its call link.",
+		maxLength: 32,
+	},
+	{
+		key: "whatsapp",
+		label: "WhatsApp number",
+		help: "Where “Tell us what you need” and every “Contact for price” opens a chat. Include the country code.",
 		maxLength: 32,
 	},
 	{
@@ -139,7 +147,10 @@ export function sanitizeStorefrontChrome(values: Record<string, string>): {
 			continue;
 		}
 
-		if (field.key === "phone" && !/^[+0-9][0-9 ()-]{4,}$/.test(value)) {
+		if (
+			(field.key === "phone" || field.key === "whatsapp") &&
+			!/^[+0-9][0-9 ()-]{4,}$/.test(value)
+		) {
 			issues.push({
 				key: field.key,
 				message: "That does not look like a phone number.",
@@ -151,4 +162,22 @@ export function sanitizeStorefrontChrome(values: Record<string, string>): {
 	}
 
 	return { overrides, issues };
+}
+
+/**
+ * A wa.me link for the shop's WhatsApp number.
+ *
+ * wa.me wants digits only — no `+`, spaces or brackets — and silently fails on
+ * anything else, so the number is stripped here rather than trusted as typed.
+ * A number with no digits left returns null, and callers fall back to the
+ * contact page instead of rendering a link that goes nowhere.
+ */
+export function whatsAppLink(number: string, message?: string): string | null {
+	const digits = number.replace(/\D/g, "");
+	if (digits.length < 8) {
+		return null;
+	}
+
+	const query = message ? `?text=${encodeURIComponent(message)}` : "";
+	return `https://wa.me/${digits}${query}`;
 }

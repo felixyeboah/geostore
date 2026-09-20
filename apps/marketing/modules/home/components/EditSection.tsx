@@ -6,6 +6,7 @@ import {
 	productHref,
 } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
+import { STOREFRONT_CHROME_DEFAULTS, whatsAppLink } from "@repo/commerce";
 import {
 	Container,
 	Eyebrow,
@@ -16,9 +17,21 @@ import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function EditSection({ copy, productLists }: SectionCopyProps) {
+export function EditSection({ copy, productLists, chrome }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.edit");
+
+	// A card with no catalogue product behind it has no price to show, so it
+	// says "Contact for price" — and that has to actually do something. It
+	// opens WhatsApp with the model already named, which is how this shop
+	// sells anyway. The number is editable under Storefront.
+	const whatsappNumber =
+		chrome?.whatsapp ?? STOREFRONT_CHROME_DEFAULTS.whatsapp;
+	const askAbout = (name: string) =>
+		whatsAppLink(
+			whatsappNumber,
+			`Hi GeoStoresGH — what's the price on the ${name}?`,
+		);
 
 	const chosen = productLists?.productIds;
 	const cards = chosen?.length
@@ -29,6 +42,8 @@ export function EditSection({ copy, productLists }: SectionCopyProps) {
 				category: product.brand,
 				name: product.name,
 				price: formatCedis(product.priceInPesewas),
+				// A real product has a real price; nothing to ask about.
+				priceHref: null,
 			}))
 		: FEATURED_PRODUCTS.map((product) => ({
 				key: product.name,
@@ -37,6 +52,7 @@ export function EditSection({ copy, productLists }: SectionCopyProps) {
 				category: t(`home.categories.items.${product.category}`),
 				name: product.name,
 				price: c("price"),
+				priceHref: askAbout(product.name),
 			}));
 
 	return (
@@ -57,6 +73,7 @@ export function EditSection({ copy, productLists }: SectionCopyProps) {
 								category={card.category}
 								name={card.name}
 								price={card.price}
+								priceHref={card.priceHref}
 							/>
 						</li>
 					))}
@@ -79,34 +96,74 @@ interface ProductCardProps {
 	category: string;
 	name: string;
 	price: string;
+	/** When set, the price row becomes its own link — a WhatsApp enquiry. */
+	priceHref?: string | null;
 }
 
-function ProductCard({ href, image, category, name, price }: ProductCardProps) {
+/**
+ * The card is no longer one large anchor. The picture and the name go to the
+ * department, and the price row is a second, separate destination when there
+ * is a price to ask about — an anchor cannot be nested inside another anchor,
+ * so the two have to sit side by side rather than one inside the other.
+ */
+function ProductCard({
+	href,
+	image,
+	category,
+	name,
+	price,
+	priceHref,
+}: ProductCardProps) {
 	return (
-		<Link href={href} className="group block">
-			<div className="relative aspect-[294/270] overflow-hidden rounded-[4px] bg-[#f2f0ee]">
-				<Image
-					src={image}
-					alt={name}
-					fill
-					sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
-					className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-				/>
-			</div>
-			<Eyebrow className="mt-6 text-[9.5px] text-muted-foreground">
-				{category}
-			</Eyebrow>
-			<p className="mt-2.5 font-medium text-[17px] text-foreground">
-				{name}
-			</p>
-			<div className="mt-7 flex items-center justify-between border-border border-t pt-4 text-[12px] text-muted-foreground">
-				{price}
-				<PlusIcon
-					className="size-4 text-foreground/70"
-					strokeWidth={1.5}
-				/>
-			</div>
-		</Link>
+		<div className="group">
+			<Link href={href} className="block">
+				<div className="relative aspect-[294/270] overflow-hidden rounded-[4px] bg-[#f2f0ee]">
+					<Image
+						src={image}
+						alt={name}
+						fill
+						sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+						className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+					/>
+				</div>
+				<Eyebrow className="mt-6 text-[9.5px] text-muted-foreground">
+					{category}
+				</Eyebrow>
+				<p className="mt-2.5 font-medium text-[17px] text-foreground">
+					{name}
+				</p>
+			</Link>
+			{priceHref ? (
+				<Link
+					href={priceHref}
+					target="_blank"
+					rel="noreferrer"
+					// Named for a screen reader, which would otherwise hear
+					// four identical "Contact for price" links in a row.
+					aria-label={`Ask about the price of the ${name} on WhatsApp`}
+					className="mt-7 flex items-center justify-between border-border border-t pt-4 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+				>
+					{price}
+					<PlusIcon
+						className="size-4 text-foreground/70"
+						strokeWidth={1.5}
+					/>
+				</Link>
+			) : (
+				<Link
+					href={href}
+					tabIndex={-1}
+					aria-hidden="true"
+					className="mt-7 flex items-center justify-between border-border border-t pt-4 text-[12px] text-muted-foreground"
+				>
+					{price}
+					<PlusIcon
+						className="size-4 text-foreground/70"
+						strokeWidth={1.5}
+					/>
+				</Link>
+			)}
+		</div>
 	);
 }
 
