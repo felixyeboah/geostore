@@ -1,26 +1,46 @@
 "use client";
 
-import { Button } from "@repo/ui/components/button";
-import { CircleAlertIcon } from "lucide-react";
+import { AdminButton, adminButtonClass } from "@admin/components/ui";
+import { ErrorScreen } from "@shared/components/ErrorScreen";
+import { storefront } from "@shared/lib/storefront";
 
-export default function AppError({ reset }: { reset: () => void }) {
+/**
+ * The app's last boundary. Anything that reaches it failed outside the admin
+ * chrome — or before it could even render — so this screen has to stand on
+ * its own: no layout, no nav, nothing else that might be part of the crash.
+ */
+export default function AppError({
+	error,
+	reset,
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
 	return (
-		<main className="container flex min-h-[70vh] items-center justify-center py-16">
-			<div className="max-w-lg text-center">
-				<span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-destructive/10">
-					<CircleAlertIcon className="size-6 text-destructive" />
-				</span>
-				<h1 className="mt-5 font-brand font-semibold text-4xl tracking-tight">
-					Something didn’t load.
-				</h1>
-				<p className="mt-3 text-muted-foreground leading-7">
-					Your cart is kept on this device. Try the page again, or
-					return to the store if the problem continues.
-				</p>
-				<Button className="mt-7" onClick={reset}>
-					Try again
-				</Button>
-			</div>
-		</main>
+		<ErrorScreen
+			homeHref={storefront.shop}
+			eyebrow="Error · Something went wrong"
+			title="Something didn't load."
+			description="Nothing was saved or sent twice. Try the page again; if it keeps happening, pass the detail below to whoever runs the deploy."
+			actions={
+				<>
+					<AdminButton variant="primary" onClick={() => reset()}>
+						Try again
+					</AdminButton>
+					<a
+						href={storefront.shop}
+						className={adminButtonClass("ghost")}
+					>
+						Back to the store
+					</a>
+				</>
+			}
+			detail={
+				<>
+					{error.digest && <div>digest — {error.digest}</div>}
+					<div>{error.message}</div>
+				</>
+			}
+		/>
 	);
 }

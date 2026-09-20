@@ -224,8 +224,11 @@
 	"notFound": {
 		"code": "404",
 		"title": "Page not found",
+		"description": "The link is old, or the page was moved — nothing in the back office answers to that address.",
 		"goToDashboard": "Go to dashboard",
-		"goToHomepage": "Go to homepage"
+		"goToHomepage": "Go to homepage",
+		"backToOverview": "Back to overview",
+		"viewStorefront": "View storefront"
 	},
 	"onboarding": {
 		"account": {
