@@ -246,12 +246,18 @@ async function sendOrderConfirmationEmail(order: {
 	paymentMethod: string;
 }) {
 	try {
+		// `/checkout/success` is a route in *this* app, so it is built from
+		// the storefront's own URL. It used to read NEXT_PUBLIC_SAAS_URL,
+		// which is not set on the storefront Worker — so `getBaseUrl` threw,
+		// this try swallowed it, and every order confirmation in production
+		// was silently never sent.
+		//
 		// The env value has to be passed literally — `getBaseUrl()` with no
 		// argument falls back to localhost, which would email guests a link
 		// only reachable from the server itself.
 		const orderUrl = new URL(
 			"/checkout/success",
-			getBaseUrl(process.env.NEXT_PUBLIC_SAAS_URL, 3000),
+			getBaseUrl(process.env.NEXT_PUBLIC_MARKETING_URL, 3001),
 		);
 		orderUrl.searchParams.set("order", order.orderNumber);
 		orderUrl.searchParams.set("t", createOrderAccessToken(order.id));
