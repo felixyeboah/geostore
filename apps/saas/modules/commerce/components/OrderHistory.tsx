@@ -90,12 +90,9 @@ export function OrderHistory({ initialOrders = [], limit }: OrderHistoryProps) {
 
 	if (!orders) {
 		return (
-			<div
-				className="h-64 animate-pulse rounded-2xl bg-muted"
-				role="status"
-			>
+			<output className="block h-64 animate-pulse rounded-2xl bg-muted">
 				<span className="sr-only">Loading orders</span>
-			</div>
+			</output>
 		);
 	}
 

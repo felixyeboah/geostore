@@ -1,3 +1,4 @@
+import path from "node:path";
 // @ts-expect-error - PrismaPlugin is not typed
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 import { ALLOWED_IMAGE_HOSTS, getUploadImageHosts } from "@repo/utils";
@@ -111,6 +112,23 @@ const nextConfig: NextConfig = {
 				resourceRegExp: /^pg-native$|^cloudflare:sockets$/,
 			}),
 		);
+
+		/*
+		 * The admin runs on Node, never on Cloudflare Workers, so it has no
+		 * use for the workerd Prisma client. That client imports its query
+		 * compiler as `...wasm?module`, which webpack cannot parse — the build
+		 * fails with "Unexpected character" on the raw wasm. The import in
+		 * client.ts is relative, so the alias is the resolved path rather than
+		 * a package specifier.
+		 */
+		const generated = path.resolve(
+			process.cwd(),
+			"../../packages/database/prisma/generated",
+		);
+		config.resolve.alias = {
+			...config.resolve.alias,
+			[`${generated}-workerd/client`]: `${generated}/client`,
+		};
 
 		if (isServer) {
 			config.plugins.push(new PrismaPlugin());

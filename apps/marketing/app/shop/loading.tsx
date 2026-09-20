@@ -1,9 +1,6 @@
 export default function StoreLoading() {
 	return (
-		<div
-			className="mx-auto w-full max-w-[1360px] px-6 pt-12 lg:px-12 lg:pt-20"
-			role="status"
-		>
+		<output className="mx-auto block w-full max-w-[1360px] px-6 pt-12 lg:px-12 lg:pt-20">
 			<div className="h-3 w-40 animate-pulse rounded-[2px] bg-muted" />
 			<div className="mt-6 h-12 w-72 animate-pulse rounded-[4px] bg-muted" />
 			<div className="mt-8 h-[52px] animate-pulse rounded-[4px] bg-muted" />
@@ -17,6 +14,6 @@ export default function StoreLoading() {
 				))}
 			</div>
 			<span className="sr-only">Loading store</span>
-		</div>
+		</output>
 	);
 }
