@@ -126,7 +126,7 @@ export type OrderItemScalarFieldEnum = z.infer<typeof OrderItemScalarFieldEnumSc
 
 // File: ReviewScalarFieldEnum.schema.ts
 
-export const ReviewScalarFieldEnumSchema = z.enum(['id', 'productId', 'userId', 'orderItemId', 'rating', 'title', 'body', 'isApproved', 'createdAt', 'updatedAt'])
+export const ReviewScalarFieldEnumSchema = z.enum(['id', 'productId', 'userId', 'authorName', 'authorEmail', 'orderItemId', 'rating', 'title', 'body', 'isApproved', 'createdAt', 'updatedAt'])
 
 export type ReviewScalarFieldEnum = z.infer<typeof ReviewScalarFieldEnumSchema>;
 
@@ -602,7 +602,9 @@ export type OrderItemType = z.infer<typeof OrderItemSchema>;
 export const ReviewSchema = z.object({
   id: z.string(),
   productId: z.string(),
-  userId: z.string(),
+  userId: z.string().nullish(),
+  authorName: z.string(),
+  authorEmail: z.string(),
   orderItemId: z.string(),
   rating: z.number().int(),
   title: z.string().nullish(),
