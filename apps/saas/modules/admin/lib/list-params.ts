@@ -62,3 +62,31 @@ export const analyticsParsers = {
 };
 
 export const loadAnalyticsParams = createLoader(analyticsParsers);
+
+export const PAYMENT_STATUSES = [
+	"PAID",
+	"PENDING",
+	"FAILED",
+	"REFUNDED",
+] as const;
+
+export const PAYMENT_METHODS = [
+	"MOCK",
+	"ONLINE",
+	"CARD",
+	"MOBILE_MONEY",
+	"CASH_ON_DELIVERY",
+] as const;
+
+export const TRANSACTION_SORTS = ["created", "amount"] as const;
+
+export const transactionListParsers = {
+	q: parseAsString.withDefault(""),
+	status: parseAsStringLiteral(PAYMENT_STATUSES),
+	method: parseAsStringLiteral(PAYMENT_METHODS),
+	sort: parseAsStringLiteral(TRANSACTION_SORTS).withDefault("created"),
+	dir: parseAsStringLiteral(SORT_DIRECTIONS).withDefault("desc"),
+	page: parseAsInteger.withDefault(1),
+};
+
+export const loadTransactionListParams = createLoader(transactionListParsers);

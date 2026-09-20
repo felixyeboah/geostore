@@ -1589,6 +1589,159 @@ export async function getAdminOrderSummary(dispatchWindowHours: number) {
 	};
 }
 
+export type AdminTransactionSort = "created" | "amount";
+
+export interface AdminTransactionListQuery {
+	q?: string;
+	status?: StorePaymentStatus;
+	method?: StorePaymentMethod;
+	sort?: AdminTransactionSort;
+	dir?: "asc" | "desc";
+	/** 1-based. */
+	page?: number;
+	perPage?: number;
+}
+
+const ADMIN_TRANSACTIONS_PER_PAGE = 25;
+
+function adminTransactionSearchWhere(
+	q?: string,
+): Prisma.StoreTransactionWhereInput {
+	const query = q?.trim();
+
+	if (!query) {
+		return {};
+	}
+
+	return {
+		OR: [
+			{ reference: { contains: query } },
+			{ providerPaymentId: { contains: query } },
+			{ order: { orderNumber: { contains: query } } },
+			{ order: { customerEmail: { contains: query } } },
+		],
+	};
+}
+
+/**
+ * One page of the payment ledger.
+ *
+ * The screen used to load every order and flatten their transactions in the
+ * browser, which meant reconciling a hundred payments cost the whole order
+ * book. The database filters, sorts and pages it, like the other admin lists.
+ */
+export async function getAdminTransactionList(
+	query: AdminTransactionListQuery = {},
+) {
+	const perPage = query.perPage ?? ADMIN_TRANSACTIONS_PER_PAGE;
+	const search = adminTransactionSearchWhere(query.q);
+	const byStatus: Prisma.StoreTransactionWhereInput = query.status
+		? { status: query.status }
+		: {};
+	const byMethod: Prisma.StoreTransactionWhereInput = query.method
+		? { paymentMethod: query.method }
+		: {};
+
+	const where: Prisma.StoreTransactionWhereInput = {
+		AND: [search, byStatus, byMethod],
+	};
+
+	const total = await db.storeTransaction.count({ where });
+	const pageCount = Math.max(1, Math.ceil(total / perPage));
+	const page = Math.min(Math.max(1, query.page ?? 1), pageCount);
+
+	const [transactions, statusGroups, methodGroups] = await Promise.all([
+		db.storeTransaction.findMany({
+			where,
+			include: {
+				order: {
+					select: {
+						id: true,
+						orderNumber: true,
+						customerEmail: true,
+					},
+				},
+			},
+			orderBy:
+				query.sort === "amount"
+					? [{ amountInPesewas: query.dir ?? "desc" }]
+					: [{ createdAt: query.dir ?? "desc" }],
+			skip: (page - 1) * perPage,
+			take: perPage,
+		}),
+		db.storeTransaction.groupBy({
+			by: ["status"],
+			where: { AND: [search, byMethod] },
+			_count: { _all: true },
+		}),
+		db.storeTransaction.groupBy({
+			by: ["paymentMethod"],
+			where: { AND: [search, byStatus] },
+			_count: { _all: true },
+		}),
+	]);
+
+	return {
+		transactions,
+		total,
+		page,
+		pageCount,
+		perPage,
+		facets: {
+			status: Object.fromEntries(
+				statusGroups.map((group) => [group.status, group._count._all]),
+			) as Partial<Record<StorePaymentStatus, number>>,
+			method: Object.fromEntries(
+				methodGroups.map((group) => [
+					group.paymentMethod,
+					group._count._all,
+				]),
+			) as Partial<Record<StorePaymentMethod, number>>,
+		},
+	};
+}
+
+export type AdminTransactionList = Awaited<
+	ReturnType<typeof getAdminTransactionList>
+>;
+
+/**
+ * What the ledger adds up to, for reconciliation.
+ *
+ * Unfiltered on purpose: this is the position of the book, and it must not
+ * change when someone narrows the table to one payment method.
+ */
+export async function getAdminTransactionSummary() {
+	const [settled, refunded, failed, pending] = await Promise.all([
+		db.storeTransaction.aggregate({
+			where: { status: "PAID" },
+			_count: { _all: true },
+			_sum: { amountInPesewas: true },
+		}),
+		db.storeTransaction.aggregate({
+			where: { status: "REFUNDED" },
+			_count: { _all: true },
+			_sum: { amountInPesewas: true },
+		}),
+		db.storeTransaction.count({ where: { status: "FAILED" } }),
+		db.storeTransaction.count({ where: { status: "PENDING" } }),
+	]);
+
+	const settledInPesewas = settled._sum.amountInPesewas ?? 0;
+	const refundedInPesewas = refunded._sum.amountInPesewas ?? 0;
+
+	return {
+		settledCount: settled._count._all,
+		settledInPesewas,
+		refundedCount: refunded._count._all,
+		refundedInPesewas,
+		/** What the shop actually kept. */
+		netInPesewas: settledInPesewas - refundedInPesewas,
+		failedCount: failed,
+		pendingCount: pending,
+	};
+}
+
 export async function getStoreOrdersByUserId(userId: string) {
 	return db.order.findMany({
 		where: { userId },
