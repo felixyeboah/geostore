@@ -28,6 +28,12 @@ interface OrderStatusSelectProps {
 	status: OrderStatus;
 	paymentStatus: string;
 	paymentMethod: string;
+	/**
+	 * Fired after a change actually lands. The order sheet refetches its own
+	 * copy on this — `router.refresh()` alone cannot update state it fetched
+	 * itself.
+	 */
+	onChanged?: () => void;
 }
 
 export function OrderStatusSelect({
@@ -35,6 +41,7 @@ export function OrderStatusSelect({
 	status,
 	paymentStatus,
 	paymentMethod,
+	onChanged,
 }: OrderStatusSelectProps) {
 	const router = useRouter();
 	const [isSaving, setIsSaving] = useState(false);
@@ -69,6 +76,9 @@ export function OrderStatusSelect({
 
 		setResetKey((key) => key + 1);
 		router.refresh();
+		if (result.success) {
+			onChanged?.();
+		}
 	}
 
 	async function handleCashReceived() {
@@ -79,6 +89,9 @@ export function OrderStatusSelect({
 			? toastSuccess("Cash received")
 			: toastError("Payment not updated", result.message);
 		router.refresh();
+		if (result.success) {
+			onChanged?.();
+		}
 	}
 
 	return (
@@ -96,7 +109,8 @@ export function OrderStatusSelect({
 					label: ORDER_STATUS_LABELS[value],
 				}))}
 			/>
-			{paymentMethod === "CASH_ON_DELIVERY" &&
+			{(paymentMethod === "CASH_ON_DELIVERY" ||
+				paymentMethod === "WHATSAPP") &&
 			paymentStatus !== "PAID" &&
 			!isClosed ? (
 				<button
@@ -105,7 +119,7 @@ export function OrderStatusSelect({
 					onClick={handleCashReceived}
 					className="border-border border-b pb-px text-[12px] text-foreground transition-colors hover:border-foreground"
 				>
-					Mark cash received
+					Mark payment received
 				</button>
 			) : null}
 		</div>

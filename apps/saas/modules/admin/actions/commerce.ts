@@ -1,6 +1,10 @@
 "use server";
 
 import { collectionFormSchema } from "@admin/lib/collection-schema";
+import {
+	type AdminOrderDetail,
+	toAdminOrderDetail,
+} from "@admin/lib/order-detail";
 import { revalidateStorefrontMenu } from "@admin/lib/revalidate-storefront";
 import { getSession } from "@auth/lib/server";
 import {
@@ -329,6 +333,7 @@ export async function updateStoreOrderStatusAction(
 			}
 			if (
 				order.paymentMethod !== "CASH_ON_DELIVERY" &&
+				order.paymentMethod !== "WHATSAPP" &&
 				order.paymentMethod !== "MOCK"
 			) {
 				const paymentId = order.transactions[0]?.providerPaymentId;
@@ -410,6 +415,30 @@ export async function updateStoreOrderStatusAction(
 				error,
 				"We couldn’t update the order.",
 			),
+		};
+	}
+}
+
+export async function getAdminOrderDetailAction(
+	orderId: string,
+): Promise<AdminActionResult & { order?: AdminOrderDetail }> {
+	try {
+		await requireAdmin();
+		const order = await getAdminStoreOrder(
+			z.string().min(1).parse(orderId),
+		);
+		if (!order) {
+			return { success: false, message: "Order not found." };
+		}
+		return {
+			success: true,
+			message: "",
+			order: toAdminOrderDetail(order),
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(error, "We couldn’t load that order."),
 		};
 	}
 }

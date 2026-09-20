@@ -2,6 +2,7 @@
 
 import { bulkUpdateStoreOrderStatusAction } from "@admin/actions/commerce";
 import { ADMIN_TD, ADMIN_TH } from "@admin/components/AdminPage";
+import { OrderSheet } from "@admin/components/orders/OrderSheet";
 import { OrderStatusSelect } from "@admin/components/orders/OrderStatusSelect";
 import {
 	FacetField,
@@ -17,6 +18,7 @@ import {
 	formatRelativeTime,
 	ORDER_STATUS_LABELS,
 	type OrderStatusKey,
+	PAYMENT_METHOD_LABELS,
 } from "@admin/lib/overview";
 import { formatMoney } from "@repo/commerce";
 import { cn } from "@repo/ui";
@@ -80,6 +82,10 @@ export function OrdersTable({
 	const [isNavigating, startNavigation] = useTransition();
 	const [isBulkPending, startBulk] = useTransition();
 	const [selected, setSelected] = useState<string[]>([]);
+	const [sheetOrder, setSheetOrder] = useState<{
+		id: string;
+		orderNumber: string;
+	} | null>(null);
 
 	const [params, setParams] = useQueryStates(orderListParsers, {
 		shallow: false,
@@ -185,7 +191,7 @@ export function OrdersTable({
 					}
 					options={paymentValues.map((value) => ({
 						value,
-						label: titleCase(value),
+						label: paymentMethodLabel(value),
 						count: facets.payment[value] ?? 0,
 					}))}
 				/>
@@ -300,9 +306,27 @@ export function OrdersTable({
 								<tr
 									key={order.id}
 									className={cn(
-										"transition-colors",
+										"cursor-pointer transition-colors hover:bg-muted/60",
 										isSelected && "bg-muted",
 									)}
+									onClick={(event) => {
+										// Checkbox, status control and the mark-paid
+										// button own their clicks — everything else
+										// opens the order sheet.
+										if (
+											(
+												event.target as HTMLElement
+											).closest(
+												"button, input, select, a, [role='combobox'], [role='option']",
+											)
+										) {
+											return;
+										}
+										setSheetOrder({
+											id: order.id,
+											orderNumber: order.orderNumber,
+										});
+									}}
 								>
 									<td
 										className={cn(
@@ -372,7 +396,9 @@ export function OrdersTable({
 												{titleCase(order.paymentStatus)}
 											</span>
 											<span className="mt-1 block text-[12px] text-muted-foreground">
-												{titleCase(order.paymentMethod)}
+												{paymentMethodLabel(
+													order.paymentMethod,
+												)}
 											</span>
 										</div>
 									</td>
@@ -454,6 +480,12 @@ export function OrdersTable({
 				isPending={isNavigating}
 				onPage={(next) => void setParams({ page: next })}
 			/>
+
+			<OrderSheet
+				orderId={sheetOrder?.id ?? null}
+				orderNumber={sheetOrder?.orderNumber ?? null}
+				onClose={() => setSheetOrder(null)}
+			/>
 		</div>
 	);
 }
@@ -463,4 +495,12 @@ function titleCase(value: string): string {
 		.toLocaleLowerCase()
 		.replace(/_/g, " ")
 		.replace(/^./, (character) => character.toLocaleUpperCase());
+}
+
+// "WHATSAPP" title-cases to "Whatsapp" — the label map knows the real casing.
+function paymentMethodLabel(value: string): string {
+	return (
+		PAYMENT_METHOD_LABELS[value as keyof typeof PAYMENT_METHOD_LABELS] ??
+		titleCase(value)
+	);
 }
