@@ -1,11 +1,28 @@
 datasource db {
-  provider = "postgresql"
+  // Turso (libSQL) speaks SQLite. Cloudflare Workers cannot open a raw TCP
+  // socket, so Postgres is not reachable from the edge without Hyperdrive.
+  provider = "sqlite"
 }
 
 generator client {
   provider   = "prisma-client"
   output     = "./generated"
   engineType = "client"
+}
+
+/// A second client built for Cloudflare Workers.
+///
+/// The default client decodes its WASM query compiler from base64 and calls
+/// `new WebAssembly.Module(bytes)`, which workerd forbids — every query throws
+/// "Wasm code generation disallowed by embedder". The workerd runtime imports
+/// the wasm as a module instead, so the platform compiles it at deploy time.
+/// Node keeps using the client above, because that module import does not
+/// resolve under tsx.
+generator clientWorkerd {
+  provider   = "prisma-client"
+  output     = "./generated-workerd"
+  engineType = "client"
+  runtime    = "workerd"
 }
 
 generator zod {
@@ -76,9 +93,9 @@ model Account {
   providerId   String
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken  String?   @db.Text
-  refreshToken String?   @db.Text
-  idToken      String?   @db.Text
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
   expiresAt    DateTime?
   password     String?
 
@@ -95,7 +112,7 @@ model Account {
 model Verification {
   id         String   @id @default(cuid())
   identifier String
-  value      String   @db.Text
+  value      String
   expiresAt  DateTime
 
   createdAt DateTime?
@@ -234,9 +251,16 @@ enum StorePaymentStatus {
 
 enum StorePaymentMethod {
   MOCK
+  // The shopper chose "pay online"; the channel (mobile money or card) is
+  // picked on the provider's own page, so we do not pin one here.
+  ONLINE
   CARD
   MOBILE_MONEY
   CASH_ON_DELIVERY
+  // The shop is taking orders over WhatsApp instead of charging online: the
+  // order is confirmed in chat and the money is arranged there or collected
+  // on delivery. Settles like cash on delivery everywhere downstream.
+  WHATSAPP
 }
 
 enum InventoryEventType {
@@ -266,12 +290,46 @@ model Category {
   @@map("store_category")
 }
 
+/// A cross-department merchandising grouping: "what do I want to do",
+/// as opposed to Category, which answers "what kind of thing is it".
+/// A product sits in exactly one Category but any number of Collections.
+model Collection {
+  id          String              @id @default(cuid())
+  name        String
+  slug        String              @unique
+  description String?
+  imageUrl    String?
+  isActive    Boolean             @default(true)
+  /// Surface this collection in the landing page "shop by need" rail.
+  onLanding   Boolean             @default(false)
+  sortOrder   Int                 @default(0)
+  products    ProductCollection[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("store_collection")
+}
+
+model ProductCollection {
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+
+  @@id([productId, collectionId])
+  @@index([collectionId, sortOrder])
+  @@map("store_product_collection")
+}
+
 model Product {
   id                   String           @id @default(cuid())
   name                 String
   slug                 String           @unique
   shortDescription     String?
-  description          String           @db.Text
+  description          String
   brand                String
   sku                  String           @unique
   status               ProductStatus    @default(DRAFT)
@@ -280,9 +338,11 @@ model Product {
   stockQuantity        Int              @default(0)
   lowStockThreshold    Int              @default(5)
   isFeatured           Boolean          @default(false)
+  unitsSold            Int              @default(0)
   specifications       Json?
   categoryId           String
   category             Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  collections          ProductCollection[]
   images               ProductImage[]
   variants             ProductVariant[]
   orderItems           OrderItem[]
@@ -295,6 +355,8 @@ model Product {
   @@index([categoryId, status])
   @@index([brand, status])
   @@index([isFeatured, status])
+  @@index([status, unitsSold])
+  @@index([status, publishedAt])
   @@map("store_product")
 }
 
@@ -355,6 +417,9 @@ model Address {
 model Order {
   id                         String                 @id @default(cuid())
   orderNumber                String                 @unique
+  // Set by the checkout form so a retried or double-submitted request returns
+  // the order it already created instead of charging and restocking twice.
+  idempotencyKey             String?                @unique
   userId                     String?
   user                       User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   status                     OrderStatus            @default(PENDING)
@@ -368,7 +433,7 @@ model Order {
   customerEmail              String
   customerPhone              String
   shippingAddress            Json
-  customerNote               String?                @db.Text
+  customerNote               String?
   items                      OrderItem[]
   transactions               StoreTransaction[]
   statusEvents               OrderStatusEvent[]
@@ -405,17 +470,27 @@ model OrderItem {
   @@map("store_order_item")
 }
 
+/// A review is anchored to the order item it is about, never to an account:
+/// this shop has no customer sign-up, so the buyer entitled to review an item
+/// exists only as an order. `orderItemId` being unique is what stops one
+/// purchase being reviewed twice, and proving ownership of the order is what
+/// stands in for being signed in.
 model Review {
   id          String    @id @default(cuid())
   productId   String
   product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Set only when the buyer happened to have an account. Guests are the norm.
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Shown beside the review. Taken from the order, not typed by the reviewer.
+  authorName  String
+  /// Never shown. Kept so a review can be traced back to the order behind it.
+  authorEmail String
   orderItemId String    @unique
   orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   rating      Int
   title       String?
-  body        String    @db.Text
+  body        String
   isApproved  Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -426,23 +501,34 @@ model Review {
 }
 
 model StoreTransaction {
-  id              String             @id @default(cuid())
-  orderId         String
-  order           Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  reference       String             @unique
-  provider        String
-  paymentMethod   StorePaymentMethod
-  status          StorePaymentStatus @default(PENDING)
-  amountInPesewas Int
-  currency        String             @default("GHS")
-  providerPayload Json?
-  processedAt     DateTime?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id                String             @id @default(cuid())
+  orderId           String
+  order             Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  reference         String             @unique
+  provider          String
+  paymentMethod     StorePaymentMethod
+  status            StorePaymentStatus @default(PENDING)
+  amountInPesewas   Int
+  currency          String             @default("GHS")
+  providerPaymentId String?
+  providerPayload   Json?
+  processedAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@index([orderId, createdAt])
   @@index([status, createdAt])
+  @@index([providerPaymentId])
   @@map("store_transaction")
+}
+
+model WebhookEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+  payload     Json?
+
+  @@map("store_webhook_event")
 }
 
 model OrderStatusEvent {
@@ -476,4 +562,98 @@ model InventoryEvent {
   @@index([variantId, createdAt])
   @@index([orderItemId])
   @@map("store_inventory_event")
+}
+
+/// Better Auth's rate-limit counters.
+///
+/// The default "memory" storage keeps a Map per process, which on Workers means
+/// a counter per isolate: the effective limit becomes the configured max times
+/// however many isolates happen to be warm, and it resets whenever one is
+/// evicted. Database storage is the only shared counter available to us without
+/// adding Redis.
+///
+/// `lastRequest` is epoch milliseconds, stored as BigInt because it exceeds the
+/// range of a 32-bit Int.
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
+}
+
+/// One band of the marketing landing page.
+///
+/// The catalogue of section types lives in code (`@repo/commerce/landing`),
+/// because each one is a React component with its own shape. A row here
+/// records what an editor decided about a section: whether it shows, where it
+/// sits, and any copy that overrides the built-in default.
+///
+/// `settings` holds only the fields an editor actually changed. An absent or
+/// empty field falls back to the shipped default, so a half-filled row can
+/// never blank out a band of the page.
+model LandingSection {
+  id        String   @id @default(cuid())
+  /// Matches a key in the section registry, e.g. "hero" or "categories".
+  key       String   @unique
+  isVisible Boolean  @default(true)
+  sortOrder Int      @default(0)
+  settings  Json?
+  /// Staged edits sit beside the published values: null means "same as live",
+  /// a set value is what Publish writes. The storefront only ever reads the
+  /// published columns, so a draft can never leak onto the page.
+  draftIsVisible Boolean?
+  draftSortOrder  Int?
+  draftSettings   Json?
+  /// Name of the admin who last changed the row, stamped on publish.
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isVisible, sortOrder])
+  @@map("landing_section")
+}
+
+/// One row per section change an editor publishes.
+///
+/// The running log of who changed the front page and what it became. The
+/// section row only ever holds the latest state; this is where "who moved the
+/// hero last Tuesday" is answerable from. A row is written only for sections
+/// that actually changed in a publish, so the log stays readable.
+model LandingSectionRevision {
+  id         String   @id @default(cuid())
+  /// Matches a key in the section registry — deliberately not a foreign key,
+  /// so a retired section keeps its history.
+  sectionKey String
+  isVisible  Boolean
+  sortOrder  Int
+  settings   Json?
+  userId     String
+  userName   String?
+  createdAt  DateTime @default(now())
+
+  @@index([sectionKey, createdAt])
+  @@map("landing_section_revision")
+}
+
+/// Editable storefront chrome — the top strip, phone number, footer lines.
+///
+/// A key/value map rather than columns, so adding a field is a code change in
+/// `@repo/commerce`, not a migration. An absent key falls back to the copy the
+/// storefront ships with — the same blank-means-default contract the landing
+/// sections have.
+model StorefrontSetting {
+  key       String   @id
+  /// The published value; "" marks a row that only carries a staged change.
+  value     String
+  /// Staged value; "" stages a revert to the shipped default, null means the
+  /// published value stands.
+  draftValue String?
+  /// Name of the admin who last set the value.
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("storefront_setting")
 }

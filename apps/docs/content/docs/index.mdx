@@ -1,36 +1,36 @@
 ---
 title: Documentation
-description: This is a short description of this docs page that is also used as a meta description for SEO.
+description: Operator guide for Geostoresgh, the Ghana store for phones, audio, wearables, and home tech.
 ---
 
-Welcome to the documentation of Geostoresgh. Here you will find all the information you need to work with our software. 
+Geostoresgh is a Ghana-focused store. Customers browse the catalogue, pay with mobile money, card, or cash on delivery, and track fulfilment. Administrators publish products, manage stock, and move orders through delivery.
 
+## Start locally
 
-## 1.1 Getting started - Overview
+1. Copy `.env.local.example` to `.env` and set `BETTER_AUTH_SECRET`.
+2. Run `pnpm install`, `pnpm db:up`, `pnpm db:push`, and `pnpm db:seed`.
+3. Create an admin with `pnpm --filter @repo/scripts create:user`.
+4. Start the workspace with `pnpm dev`.
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+The storefront runs at `http://localhost:3001`; the account and admin app runs at `http://localhost:3000`.
 
-Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. 
+## Payments
 
-### Another sub-section
+Set `STORE_PAYMENT_PROVIDER=mock` for Playwright and offline local work.
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+For Reevit test payments:
 
-Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. 
-
-## Code example
-
-This is an example of code highlighting:
-
-```python {1}
-def hello_world():
-    print("Hello World!")
+```bash
+npm i -g @reevit/cli
+cd apps/saas
+reevit init --goal full --checkout-page -
 ```
 
-## Lists
+Copy `REEVIT_*` values into the repo-root `.env`, then:
 
-This is an example of a list:
+```bash
+reevit listen --forward-to http://localhost:3000/api/webhooks/reevit
+reevit doctor --webhook-url http://localhost:3000/api/webhooks/reevit
+```
 
-- Item 1
-- Item 2
-- Item 3
+Live launch needs a Reevit live key plus a connected Ghana provider (Paystack or Hubtel).

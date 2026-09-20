@@ -1,5 +1,10 @@
 import { PostContent } from "@blog/components/PostContent";
 import { getAllLegalPagePaths, getLegalPageByPath } from "@legal/lib/pages";
+import {
+	EditorialContainer,
+	EditorialHeader,
+	EditorialShell,
+} from "@shared/components/EditorialPage";
 import { getActivePathFromUrlParam } from "@shared/lib/content";
 import { redirect } from "next/navigation";
 
@@ -38,12 +43,13 @@ export default async function LegalPage(props: { params: Promise<Params> }) {
 	const { title, body } = page;
 
 	return (
-		<div className="container max-w-6xl py-16">
-			<div className="mx-auto mb-12 max-w-2xl">
-				<h1 className="text-center font-bold text-4xl">{title}</h1>
-			</div>
-
-			<PostContent content={body} />
-		</div>
+		<EditorialShell>
+			<EditorialContainer className="py-16 lg:py-24">
+				<EditorialHeader eyebrow="Legal" title={title} />
+				<div className="mt-14 border-foreground border-t pt-12">
+					<PostContent content={body} />
+				</div>
+			</EditorialContainer>
+		</EditorialShell>
 	);
 }

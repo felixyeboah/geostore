@@ -14,8 +14,8 @@ import {
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
 import { UserAvatarUpload } from "@settings/components/UserAvatarUpload";
-import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "@shared/lib/translations";
+import { ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

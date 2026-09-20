@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore — Option F · Counter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f7f8; --panel-2:#f0f0f2; --line:#e8e8ec; --line-2:#d8d8de;
+    --ink:#15151a; --ink-2:#3f3f48; --muted:#6e6e79; --faint:#9c9ca6;
+    --accent:#6b28d9; --accent-wash:#f5f0ff; --ok:#0a7c46; --ok-wash:#e9f7ef; --warn:#a35b00;
+    --r:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--ink);
+    font-size:14px;line-height:1.55;letter-spacing:-0.006em;-webkit-font-smoothing:antialiased
+  }
+  img{display:block;width:100%;height:100%;object-fit:cover}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1360px;margin:0 auto;padding:0 28px}
+  @media(max-width:700px){.wrap{padding:0 16px}}
+  h1,h2,h3{font-weight:600;letter-spacing:-0.032em;line-height:1.15}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  /* ---- chrome ---- */
+  .util{background:var(--panel);border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .util .wrap{display:flex;align-items:center;justify-content:space-between;min-height:34px;gap:16px}
+  .util .l{display:flex;gap:20px;flex-wrap:wrap}
+  .util b{color:var(--ink);font-weight:600}
+  header.site{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--line)}
+  .hdr{display:flex;align-items:center;gap:18px;padding:14px 0}
+  .mark{font-size:18px;font-weight:700;letter-spacing:-0.05em;white-space:nowrap}
+  .search{flex:1;max-width:640px;position:relative}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--faint)}
+  .search input{width:100%;height:42px;border:1px solid var(--line-2);border-radius:var(--r);background:#fff;padding:0 14px 0 40px;font:inherit;font-size:14px;outline:none}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(107,40,217,.1)}
+  .hr{margin-left:auto;display:flex;align-items:center;gap:18px;font-size:13.5px;white-space:nowrap}
+  .hr a{display:inline-flex;align-items:center;gap:7px;color:var(--ink-2)}
+  .hr a:hover{color:var(--accent)}
+  .hr .cnt{background:var(--accent);color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px}
+
+  /* ---- layout ---- */
+  .page{display:grid;grid-template-columns:232px 1fr;gap:44px;padding:32px 0 0;align-items:start}
+  aside{position:sticky;top:96px}
+  .fblock{padding-bottom:22px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+  .fblock:last-child{border-bottom:0}
+  .fblock h4{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
+  .flist{display:grid;gap:2px}
+  .flist a{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--ink-2)}
+  .flist a:hover{background:var(--panel);color:var(--ink)}
+  .flist a.on{background:var(--accent-wash);color:var(--accent);font-weight:600}
+  .flist a .n{font-size:11.5px;color:var(--faint)}
+  .flist a.on .n{color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:9px;padding:6px 10px;font-size:13.5px;color:var(--ink-2);border-radius:8px}
+  .chk:hover{background:var(--panel)}
+  .chk i{width:15px;height:15px;border:1.5px solid var(--line-2);border-radius:4px;display:inline-block;flex:none}
+  .chk.on i{background:var(--accent);border-color:var(--accent)}
+
+  /* ---- intro ---- */
+  .intro{padding-bottom:26px;border-bottom:1px solid var(--line)}
+  .intro h1{font-size:clamp(25px,3vw,36px);max-width:22ch;text-wrap:balance}
+  .intro p{color:var(--muted);margin-top:11px;max-width:62ch;line-height:1.65;font-size:14.5px}
+  .strip{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .strip span{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12.5px;color:var(--ink-2);background:#fff}
+  .strip svg{color:var(--accent)}
+
+  /* ---- toolbar ---- */
+  .tool{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 0;flex-wrap:wrap}
+  .tool .count{font-size:13px;color:var(--muted)}
+  .tool .count b{color:var(--ink);font-weight:600}
+  .tool .right{display:flex;align-items:center;gap:10px}
+  .tool label{font-size:13px;color:var(--muted)}
+  .tool select{height:36px;border:1px solid var(--line-2);border-radius:9px;padding:0 10px;font:inherit;font-size:13.5px;background:#fff;color:var(--ink)}
+
+  /* ---- rows ---- */
+  .rows{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .r{background:#fff;padding:16px;display:flex;flex-direction:column;transition:.16s}
+  .r:hover{background:#fcfcfd}
+  /* 8 products in a 3-col grid leaves a trailing cell; fill it so the
+     hairline background does not show through as a grey block */
+  .rows::after{content:"";background:#fff}
+  .r .im{aspect-ratio:4/3;background:var(--panel);border-radius:9px;overflow:hidden;position:relative}
+  .r .im img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+  .r:hover .im img{transform:scale(1.04)}
+  .r .mk{position:absolute;top:9px;left:9px;font-size:10.5px;font-weight:600;letter-spacing:.02em;background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+  .r .mk.a{color:var(--accent);border-color:#e0d3fb;background:var(--accent-wash)}
+  .r .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-top:14px}
+  .r .br{font-size:11.5px;color:var(--faint);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+  .r .rt{font-size:12px;color:var(--muted);white-space:nowrap}
+  .r h3{font-size:15px;margin-top:5px;letter-spacing:-0.025em}
+  .r .spec{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .r .spec span{font-size:11.5px;color:var(--ink-2);background:var(--panel);border-radius:6px;padding:3px 8px}
+  .r .avail{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--ok);background:var(--ok-wash);border-radius:6px;padding:3px 8px;margin-top:11px;align-self:flex-start}
+  .r .avail.low{color:var(--warn);background:#fdf3e6}
+  .r .buy{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:auto;padding-top:16px}
+  .r .pr{font-size:17px;font-weight:600;letter-spacing:-0.035em;white-space:nowrap}
+  .r .was{font-size:12px;color:var(--faint);text-decoration:line-through;white-space:nowrap}
+  .r .add{height:36px;padding:0 15px;border:1px solid var(--line-2);border-radius:9px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;white-space:nowrap}
+  .r:hover .add{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  /* ---- help ---- */
+  .help{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:34px}
+  .help .c{background:#fff;padding:22px}
+  .help h3{font-size:14.5px;margin-top:12px}
+  .help p{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6}
+  .help svg{color:var(--accent)}
+  .help a{display:inline-block;margin-top:12px;font-size:13px;font-weight:600;color:var(--accent);border-bottom:1px solid currentColor;padding-bottom:1px}
+
+  /* ---- footer ---- */
+  footer{border-top:1px solid var(--line);margin-top:56px;padding:48px 0 30px;background:var(--panel)}
+  .fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:38px}
+  .fg h4{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:13px}
+  .fg li{list-style:none;margin-bottom:8px;font-size:13.5px;color:var(--muted)}
+  .fg li a:hover{color:var(--ink)}
+  .pay{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+  .pay span{border:1px solid var(--line-2);background:#fff;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--ink-2)}
+  .fbot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--faint)}
+
+  @media(max-width:1100px){
+    .page{grid-template-columns:1fr;gap:26px}
+    aside{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .fblock{border-bottom:0;padding-bottom:0;margin-bottom:0}
+    .rows{grid-template-columns:1fr 1fr}
+    .help{grid-template-columns:1fr}
+    .fg{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:700px){
+    .search{display:none}
+    aside{grid-template-columns:1fr}
+    .rows{grid-template-columns:1fr}
+    .util .l span:nth-child(n+3){display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="util"><div class="wrap">
+  <div class="l">
+    <span><b>Free delivery</b> from GH&#8373;&nbsp;1,000 in Accra</span>
+    <span>12-month warranty</span>
+    <span>7-day returns</span>
+  </div>
+  <span>MoMo &middot; Visa &middot; Mastercard</span>
+</div></div>
+
+<header class="site"><div class="wrap hdr">
+  <div class="mark">GeoStore</div>
+  <label class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input placeholder="Search phones, audio, wearables, home tech&hellip;">
+  </label>
+  <div class="hr">
+    <a>Track order</a>
+    <a>Account</a>
+    <a>Bag <span class="cnt tnum">2</span></a>
+  </div>
+</div></header>
+
+<div class="wrap"><div class="page">
+
+  <aside>
+    <div class="fblock">
+      <h4>Category</h4>
+      <div class="flist">
+        <a class="on">All products <span class="n tnum">8</span></a>
+        <a>Phones <span class="n tnum">3</span></a>
+        <a>Audio <span class="n tnum">2</span></a>
+        <a>Wearables <span class="n tnum">2</span></a>
+        <a>Home tech <span class="n tnum">1</span></a>
+      </div>
+    </div>
+    <div class="fblock">
+      <h4>Brand</h4>
+      <div class="flist">
+        <a>Apple <span class="n tnum">3</span></a>
+        <a>Samsung <span class="n tnum">3</span></a>
+        <a>Google <span class="n tnum">1</span></a>
+        <a>JBL <span class="n tnum">1</span></a>
+      </div>
+    </div>
+    <div class="fblock">
+      <h4>Price</h4>
+      <div class="flist">
+        <a>Under GH&#8373; 3,000 <span class="n tnum">3</span></a>
+        <a>GH&#8373; 3,000 &ndash; 7,000 <span class="n tnum">3</span></a>
+        <a>Over GH&#8373; 7,000 <span class="n tnum">2</span></a>
+      </div>
+    </div>
+    <div class="fblock">
+      <h4>Availability</h4>
+      <span class="chk on"><i></i>In stock only</span>
+      <span class="chk"><i></i>Price drops</span>
+      <span class="chk"><i></i>New arrivals</span>
+    </div>
+  </aside>
+
+  <main>
+    <div class="intro">
+      <h1>Phones, audio, wearables and home tech &mdash; in stock in Accra.</h1>
+      <p>Eight products we keep, know and service ourselves. Storage, condition, warranty and stock count are listed on every one, and the delivery fee is calculated before you pay.</p>
+      <div class="strip">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.95a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>12-month warranty</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Delivery nationwide</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>MoMo &amp; card</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Advice before you buy</span>
+      </div>
+    </div>
+
+    <div class="tool">
+      <span class="count"><b class="tnum">8</b> products &middot; all in stock</span>
+      <div class="right">
+        <label for="s">Sort by</label>
+        <select id="s"><option>Featured</option><option>Top rated</option><option>Price: low to high</option><option>Price: high to low</option></select>
+      </div>
+    </div>
+
+    <div class="rows">
+      <a class="r">
+        <div class="im"><span class="mk a">Price drop</span><img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Apple</span><span class="rt tnum">&#9733; 4.8 (34)</span></div>
+        <h3>iPhone 15 Pro</h3>
+        <div class="spec"><span>256 GB</span><span>6.1&#8243; OLED</span><span>5G</span></div>
+        <span class="avail tnum">&#9679; 6 in stock</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 12,900</div><div class="was tnum">GH&#8373; 13,650</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><span class="mk">New</span><img src="https://images.unsplash.com/photo-1512054502232-10a0a035d672?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Samsung</span><span class="rt tnum">&#9733; 4.7 (27)</span></div>
+        <h3>Galaxy S24 Ultra</h3>
+        <div class="spec"><span>512 GB</span><span>S Pen</span><span>5G</span></div>
+        <span class="avail low tnum">&#9679; Only 4 left</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 11,400</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><span class="mk">New</span><img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Google</span><span class="rt tnum">&#9733; 4.5 (18)</span></div>
+        <h3>Pixel 8a</h3>
+        <div class="spec"><span>128 GB</span><span>Clean Android</span></div>
+        <span class="avail tnum">&#9679; 8 in stock</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 6,250</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><span class="mk a">Price drop</span><img src="https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Apple</span><span class="rt tnum">&#9733; 4.9 (52)</span></div>
+        <h3>AirPods Pro (2nd gen)</h3>
+        <div class="spec"><span>Noise cancelling</span><span>USB-C</span></div>
+        <span class="avail tnum">&#9679; 14 in stock</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 2,350</div><div class="was tnum">GH&#8373; 2,600</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Apple</span><span class="rt tnum">&#9733; 4.7 (16)</span></div>
+        <h3>Watch Series 9</h3>
+        <div class="spec"><span>45 mm</span><span>GPS</span></div>
+        <span class="avail tnum">&#9679; 5 in stock</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 4,750</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><img src="https://images.unsplash.com/photo-1544117519-31a4b719223d?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Samsung</span><span class="rt tnum">&#9733; 4.4 (12)</span></div>
+        <h3>Galaxy Watch6</h3>
+        <div class="spec"><span>44 mm</span><span>Wear OS</span></div>
+        <span class="avail tnum">&#9679; 7 in stock</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 2,850</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">JBL</span><span class="rt tnum">&#9733; 4.6 (21)</span></div>
+        <h3>Charge 5</h3>
+        <div class="spec"><span>Waterproof</span><span>20 h battery</span></div>
+        <span class="avail tnum">&#9679; 9 in stock</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 1,450</div></div><span class="add">Add</span></div>
+      </a>
+      <a class="r">
+        <div class="im"><span class="mk">3 left</span><img src="https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=800&q=85" alt=""></div>
+        <div class="top"><span class="br">Samsung</span><span class="rt tnum">&#9733; 4.5 (9)</span></div>
+        <h3>55&#8243; Crystal UHD TV</h3>
+        <div class="spec"><span>4K</span><span>Smart TV</span></div>
+        <span class="avail low tnum">&#9679; Only 3 left</span>
+        <div class="buy"><div><div class="pr tnum">GH&#8373; 4,700</div></div><span class="add">Add</span></div>
+      </a>
+    </div>
+
+    <div class="help">
+      <div class="c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+        <h3>Delivery, costed up front</h3>
+        <p>Same or next day in Accra, two to four working days nationwide. The fee appears before you pay.</p>
+        <a>See delivery rates</a>
+      </div>
+      <div class="c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.95a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        <h3>Warranty you can claim</h3>
+        <p>Twelve months on every device, handled locally. No posting anything abroad and hoping.</p>
+        <a>How claims work</a>
+      </div>
+      <div class="c">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <h3>Advice before you spend</h3>
+        <p>Tell us your budget and how you use your device. We&rsquo;ll narrow it down honestly.</p>
+        <a>Ask the store</a>
+      </div>
+    </div>
+  </main>
+</div></div>
+
+<footer><div class="wrap">
+  <div class="fg">
+    <div>
+      <div class="mark">GeoStore</div>
+      <p style="color:var(--muted);font-size:13.5px;margin-top:11px;max-width:32ch;line-height:1.6">Phones, audio, wearables and home tech, stocked and serviced in Accra.</p>
+      <div class="pay"><span>MTN MoMo</span><span>Telecel Cash</span><span>Visa</span><span>Mastercard</span></div>
+    </div>
+    <div><h4>Shop</h4><ul><li><a>Phones</a></li><li><a>Audio</a></li><li><a>Wearables</a></li><li><a>Home tech</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a>Delivery rates</a></li><li><a>Returns</a></li><li><a>Warranty claims</a></li><li><a>Track your order</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a>About</a></li><li><a>Privacy</a></li><li><a>Terms</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>&copy; 2026 GeoStore Ghana</span><span>Accra &middot; support@geostoresgh.com</span></div>
+</div></footer>
+
+</body></html>

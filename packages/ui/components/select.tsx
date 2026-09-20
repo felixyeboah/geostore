@@ -14,8 +14,12 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = ({
 	className,
 	children,
+	icon,
 	...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger>) => (
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
+	/** Replaces the default up/down chevron. */
+	icon?: React.ReactNode;
+}) => (
 	<SelectPrimitive.Trigger
 		className={cn(
 			"flex h-9 w-full items-center justify-between rounded-md bg-card shadow-xs border border-input px-3 py-2 text-base ring-offset-background placeholder:text-foreground/60 focus:outline-hidden focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
@@ -25,7 +29,7 @@ const SelectTrigger = ({
 	>
 		{children}
 		<SelectPrimitive.Icon asChild>
-			<ChevronsUpDownIcon className="size-4 opacity-50" />
+			{icon ?? <ChevronsUpDownIcon className="size-4 opacity-50" />}
 		</SelectPrimitive.Icon>
 	</SelectPrimitive.Trigger>
 );

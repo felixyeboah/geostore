@@ -31,27 +31,36 @@ export function ChangelogSection() {
 	];
 
 	return (
-		<section id="changelog">
-			<div className="mx-auto grid w-full max-w-xl grid-cols-1 gap-4 text-left">
-				{items?.map((item, i) => (
-					<div key={i} className="rounded-3xl bg-muted p-6 border">
-						<div className="flex flex-col items-start gap-1">
-							<small className="font-medium text-primary uppercase tracking-wide text-xs whitespace-nowrap">
-								{formatter.dateTime(new Date(item.date))}
-							</small>
-
-							<h2 className="text-xl font-semibold">
-								{item.title}
-							</h2>
-						</div>
-						<ul className="mt-4 list-disc space-y-2 pl-6">
-							{item.changes.map((change, j) => (
-								<li key={j}>{change}</li>
+		<section id="changelog" className="border-foreground border-t">
+			{items?.map((item) => (
+				<article
+					key={item.date}
+					className="grid gap-x-14 gap-y-4 border-border border-b py-10 lg:grid-cols-[200px_minmax(0,1fr)]"
+				>
+					<p className="eyebrow text-muted-foreground lg:pt-1.5">
+						{formatter.dateTime(new Date(item.date))}
+					</p>
+					<div>
+						<h2 className="font-semibold text-[clamp(20px,1.8vw,26px)] text-foreground leading-[1.15] tracking-[-0.035em]">
+							{item.title}
+						</h2>
+						<ul className="mt-5 space-y-2.5">
+							{item.changes.map((change, index) => (
+								<li
+									key={index}
+									className="flex gap-3 text-[14.5px] text-muted-foreground leading-[1.6]"
+								>
+									<span
+										aria-hidden="true"
+										className="mt-[9px] size-1 shrink-0 rounded-full bg-border"
+									/>
+									{change}
+								</li>
 							))}
 						</ul>
 					</div>
-				))}
-			</div>
+				</article>
+			))}
 		</section>
 	);
 }

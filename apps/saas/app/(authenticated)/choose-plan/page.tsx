@@ -5,8 +5,8 @@ import { config as authConfig } from "@repo/auth/config";
 import { config as paymentsConfig } from "@repo/payments/config";
 import { createPurchasesHelper } from "@repo/payments/lib/helper";
 import { AuthWrapper } from "@shared/components/AuthWrapper";
-import { redirect } from "next/navigation";
 import { getTranslations } from "@shared/lib/translations";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

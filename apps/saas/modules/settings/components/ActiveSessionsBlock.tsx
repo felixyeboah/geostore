@@ -7,9 +7,9 @@ import { Button } from "@repo/ui/components/button";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { toastSuccess } from "@repo/ui/components/toast";
 import { SettingsItem } from "@shared/components/SettingsItem";
+import { useTranslations } from "@shared/lib/translations";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ComputerIcon, XIcon } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 
 export function ActiveSessionsBlock() {
 	const t = useTranslations();

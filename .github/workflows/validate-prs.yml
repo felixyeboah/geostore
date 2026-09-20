@@ -5,8 +5,27 @@ on:
     branches: [main]
 
 env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  # The app runs on Turso (libSQL) now, which speaks HTTP. CI stands up a
+  # throwaway libsql-server rather than sharing a database, so a pull request
+  # cannot see or disturb anyone's data and needs no secret to run.
+  DATABASE_URL: "http://127.0.0.1:8080"
   BETTER_AUTH_SECRET: "better-auth-e2e-secret-1234567890"
+  # The e2e suite builds and runs the app with NODE_ENV=production, so the
+  # mock payment provider needs its explicit opt-in. Never set this on a real
+  # deployment: it is what stops a misconfigured deploy giving stock away.
+  STORE_PAYMENT_PROVIDER: "mock"
+  ALLOW_MOCK_PAYMENTS: "true"
+  # getBaseUrl() now throws in production rather than silently falling back to
+  # localhost, and the e2e job runs a production build.
+  NEXT_PUBLIC_SAAS_URL: "http://localhost:3000"
+  NEXT_PUBLIC_MARKETING_URL: "http://localhost:3001"
+  # Order access tokens are signed with their own key now, and instrumentation
+  # refuses to boot if it matches BETTER_AUTH_SECRET.
+  ORDER_TOKEN_SECRET: "order-token-e2e-secret-0987654321"
+  # The e2e suite signs in nine times against a 3-per-10s default, so the
+  # limiter has to be off for it. Switched off explicitly rather than relying on
+  # it no-opping because nothing sets a trusted IP header locally.
+  RATE_LIMIT_ENABLED: "false"
 
 jobs:
   lint:
@@ -20,9 +39,8 @@ jobs:
           version: 2.3.13
       - name: Run Biome
         run: biome ci .
-  e2e:
-    name: Run e2e tests
-    timeout-minutes: 60
+  unit:
+    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,10 +49,63 @@ jobs:
           node-version: lts/*
       - uses: pnpm/action-setup@v4
       - name: Install dependencies
+        run: pnpm install
+      - name: Run commerce and payments unit tests
+        run: pnpm test:commerce
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+  e2e:
+    name: Run e2e tests
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    env:
+      # The Playwright probes and the browser drive 127.0.0.1, so the
+      # canonical URLs have to match it: better-auth rejects a sign-in whose
+      # Origin is not in trustedOrigins, and a localhost cookie jar is a
+      # different host from the one the tests actually visit.
+      NEXT_PUBLIC_SAAS_URL: "http://127.0.0.1:3000"
+      NEXT_PUBLIC_MARKETING_URL: "http://127.0.0.1:3001"
+    services:
+      libsql:
+        image: ghcr.io/tursodatabase/libsql-server:latest
+        ports:
+          - 8080:8080
+        env:
+          SQLD_NODE: primary
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - uses: pnpm/action-setup@v4
+      - name: Install dependencies
         run: pnpm install && pnpm --filter database generate
+      - name: Apply the schema
+        # prisma db push cannot talk to a libSQL server, so the DDL is
+        # generated and executed through the libSQL client instead.
+        run: pnpm --filter @repo/scripts exec tsx ./src/push-schema.ts
+      - name: Seed the catalogue
+        run: pnpm --filter @repo/scripts exec tsx ./src/seed-store.ts
+      - name: Create the QA sign-in fixtures
+        # The suite signs in as these. They used to live in the shared
+        # database the job pointed at; a throwaway one starts empty.
+        run: pnpm --filter @repo/scripts exec tsx ./src/qa-users.ts
       - name: Run Playwright tests for SaaS app
+        # 127.0.0.1 rather than localhost: on the runner localhost resolves to
+        # ::1 first, and `next start` listens on IPv4, so Playwright's readiness
+        # probe never reaches the server it just started and the job dies on the
+        # webServer timeout with nothing in the log.
+        env:
+          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3000"
+          # The saas specs also drive the storefront (cart, checkout, landing
+          # CMS); its webServer entry in the playwright config builds and
+          # starts the marketing app on this address.
+          PLAYWRIGHT_STOREFRONT_URL: "http://127.0.0.1:3001"
         run: pnpm --filter saas e2e:ci
       - name: Run Playwright tests for Marketing app
+        env:
+          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3001"
         run: pnpm --filter marketing e2e:ci
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

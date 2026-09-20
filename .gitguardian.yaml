@@ -1,0 +1,12 @@
+version: 2
+
+secret:
+  # The QA fixture passwords live in the e2e specs and the qa-users seed
+  # script. They sign in accounts that only ever exist in the throwaway
+  # libsql container CI stands up per run — there is no deployment they can
+  # open, so they are matched by hash rather than scanned as incidents.
+  ignored_matches:
+    - name: QA admin e2e fixture password
+      match: 2ec66496678ca65f8bf9a75bed6452c5b8c3103d400382337971f06af71b8009
+    - name: QA buyer e2e fixture password
+      match: ca0733a301fa3f76963e27afb05a8780a937683e1f81e3e8f59da9824efc5a44

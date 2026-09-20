@@ -16,38 +16,52 @@ export const rpcHandler = new RPCHandler(router, {
 	],
 });
 
+/**
+ * The reference UI enumerates every route including the auth surface, which is
+ * a free map of the attack surface. Useful while building, not something to
+ * serve to the internet.
+ */
+const exposeApiReference = process.env.NODE_ENV !== "production";
+
 export const openApiHandler = new OpenAPIHandler(router, {
 	plugins: [
 		new SmartCoercionPlugin({
 			schemaConverters: [new ZodToJsonSchemaConverter()],
 		}),
-		new OpenAPIReferencePlugin({
-			schemaConverters: [new ZodToJsonSchemaConverter()],
-			specGenerateOptions: async () => {
-				const authSchema = await auth.api.generateOpenAPISchema();
+		...(exposeApiReference
+			? [
+					new OpenAPIReferencePlugin({
+						schemaConverters: [new ZodToJsonSchemaConverter()],
+						specGenerateOptions: async () => {
+							const authSchema =
+								await auth.api.generateOpenAPISchema();
 
-				authSchema.paths = Object.fromEntries(
-					Object.entries(authSchema.paths).map(([path, pathItem]) => [
-						`/auth${path}`,
-						pathItem,
-					]),
-				);
+							authSchema.paths = Object.fromEntries(
+								Object.entries(authSchema.paths).map(
+									([path, pathItem]) => [
+										`/auth${path}`,
+										pathItem,
+									],
+								),
+							);
 
-				return {
-					...(authSchema as any),
-					info: {
-						title: "Geostoresgh API",
-						version: "1.0.0",
-					},
-					servers: [
-						{
-							url: "/api",
+							return {
+								...(authSchema as any),
+								info: {
+									title: "Geostoresgh API",
+									version: "1.0.0",
+								},
+								servers: [
+									{
+										url: "/api",
+									},
+								],
+							};
 						},
-					],
-				};
-			},
-			docsPath: "/docs",
-		}),
+						docsPath: "/docs",
+					}),
+				]
+			: []),
 	],
 	clientInterceptors: [
 		onError((error) => {

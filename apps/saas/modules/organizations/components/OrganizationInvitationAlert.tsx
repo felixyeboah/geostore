@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@repo/ui/components/alert";
-import { MailCheckIcon } from "lucide-react";
 import { useTranslations } from "@shared/lib/translations";
+import { MailCheckIcon } from "lucide-react";
 
 export function OrganizationInvitationAlert({
 	className,

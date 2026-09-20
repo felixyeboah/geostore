@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3 — Top nav · GeoStore Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --brand:#6b28d9; --brand-deep:#4b13a3; --brand-soft:#f4efff; --brand-ring:#e4d8ff;
+    --ink:#101014; --text:#3f3f46; --muted:#71717a; --faint:#a1a1aa;
+    --line:#e9e9ec; --line-soft:#f2f2f4; --canvas:#fbfbfc; --surface:#fff;
+    --pos:#12805c; --pos-soft:#edfbf4; --neg:#c02626; --neg-soft:#fef3f2;
+    --warn:#b54708; --warn-soft:#fffaeb;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.05);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--text);
+    font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased}
+  .n{font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer}
+
+  /* ================= top shell ================= */
+  .brandbar{background:var(--surface);border-bottom:1px solid var(--line)}
+  .bb-in{max-width:1280px;margin:0 auto;padding:0 28px;height:58px;
+    display:flex;align-items:center;gap:18px}
+  .brand{display:flex;align-items:center;gap:10px;flex:none}
+  .mark{width:30px;height:30px;border-radius:8px;color:#fff;
+    background:linear-gradient(140deg,var(--brand-deep),#8343e6);
+    display:grid;place-items:center;font-size:13px;font-weight:700;
+    box-shadow:0 1px 2px rgba(75,19,163,.3)}
+  .brand b{color:var(--ink);font-size:15px;font-weight:600;letter-spacing:-0.01em}
+  .storepick{display:flex;align-items:center;gap:7px;height:30px;padding:0 9px;
+    border:1px solid var(--line);border-radius:7px;background:var(--surface);
+    color:var(--muted);font-size:12.5px;flex:none}
+  .storepick svg{color:var(--faint)}
+  .search{flex:1;max-width:400px;margin-left:6px;display:flex;align-items:center;gap:9px;
+    height:34px;padding:0 11px;border:1px solid var(--line);border-radius:8px;background:var(--canvas)}
+  .search input{flex:1;border:0;background:transparent;font:inherit;font-size:13.5px;
+    color:var(--ink);outline:0;min-width:0}
+  .search input::placeholder{color:var(--faint)}
+  .search svg,.search kbd{color:var(--faint);flex:none}
+  .search kbd{font:inherit;font-size:10.5px;border:1px solid var(--line);border-radius:4px;
+    padding:1px 4px;background:var(--surface)}
+  .bb-in .sp{flex:1}
+  .live{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;
+    border-radius:999px;background:var(--pos-soft);color:var(--pos);font-size:12px;font-weight:600;flex:none}
+  .live i{width:6px;height:6px;border-radius:999px;background:var(--pos);
+    box-shadow:0 0 0 3px rgba(18,128,92,.15)}
+  .icon-btn{width:30px;height:30px;border-radius:8px;border:0;background:transparent;
+    color:var(--faint);display:grid;place-items:center;position:relative;flex:none}
+  .icon-btn:hover{background:var(--line-soft);color:var(--ink)}
+  .icon-btn .dot{position:absolute;top:4px;right:5px;width:6px;height:6px;border-radius:999px;
+    background:var(--neg);border:1.5px solid var(--surface)}
+  .av{width:30px;height:30px;border-radius:999px;flex:none;display:grid;place-items:center;
+    background:var(--brand-soft);border:1px solid var(--brand-ring);
+    color:var(--brand-deep);font-size:11px;font-weight:600}
+
+  /* ---- horizontal nav ---- */
+  .navbar{background:var(--surface);border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:5}
+  .nav-in{max-width:1280px;margin:0 auto;padding:0 28px;display:flex;gap:2px;overflow-x:auto}
+  .tab{position:relative;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;
+    color:var(--muted);font-size:13.5px;font-weight:500;white-space:nowrap}
+  .tab svg{color:var(--faint)}
+  .tab:hover{color:var(--ink)}
+  .tab:hover svg{color:var(--muted)}
+  .tab.on{color:var(--brand-deep);font-weight:600}
+  .tab.on svg{color:var(--brand)}
+  .tab.on::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;
+    background:var(--brand);border-radius:2px 2px 0 0}
+  .tab .count{font-size:11px;font-weight:600;background:var(--ink);color:#fff;
+    border-radius:999px;padding:1px 6px;font-variant-numeric:tabular-nums}
+  .tab.on .count{background:var(--brand)}
+
+  /* ================= page ================= */
+  .page{max-width:1280px;margin:0 auto;padding:24px 28px 72px}
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;
+    flex-wrap:wrap;margin-bottom:18px}
+  h1{margin:0;font-size:22px;font-weight:600;color:var(--ink);letter-spacing:-0.02em}
+  .page-head p{margin:5px 0 0;color:var(--muted);font-size:13.5px}
+  .head-act{display:flex;align-items:center;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px;
+    border:1px solid var(--line);border-radius:8px;background:var(--surface);
+    color:var(--ink);font-size:13.5px;font-weight:500;box-shadow:var(--shadow)}
+  .btn:hover{background:var(--canvas)}
+  .btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;
+    box-shadow:0 1px 2px rgba(75,19,163,.25)}
+  .btn-primary:hover{background:var(--brand-deep)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+    box-shadow:var(--shadow);min-width:0}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    padding:15px 17px}
+  .card-head.sep{border-bottom:1px solid var(--line-soft)}
+  h2{margin:0;font-size:14px;font-weight:600;color:var(--ink)}
+  .card-head p{margin:3px 0 0;color:var(--muted);font-size:12.5px}
+  .link{color:var(--brand);font-size:13px;font-weight:500}
+  .seg{display:flex;padding:2px;background:var(--canvas);border:1px solid var(--line);border-radius:8px}
+  .seg button{border:0;background:transparent;font-size:12.5px;font-weight:500;
+    color:var(--muted);padding:4px 10px;border-radius:6px}
+  .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);
+    box-shadow:0 1px 2px rgba(16,24,40,.07)}
+  .chip{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;
+    padding:2px 7px;border-radius:6px}
+  .chip.up{color:var(--pos);background:var(--pos-soft)}
+  .chip.down{color:var(--neg);background:var(--neg-soft)}
+
+  /* ---- hero: number left, chart right ---- */
+  .hero{display:grid;grid-template-columns:300px 1fr}
+  .hero-l{padding:20px 22px;border-right:1px solid var(--line-soft)}
+  .hero-lab{color:var(--muted);font-size:13px;font-weight:500}
+  .hero-num{margin-top:9px;font-size:36px;font-weight:600;color:var(--ink);
+    letter-spacing:-0.03em;line-height:1}
+  .hero-cmp{margin-top:11px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .hero-cmp small{color:var(--faint);font-size:12px}
+  .hero-split{margin-top:20px;padding-top:18px;border-top:1px solid var(--line-soft);
+    display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .hs-l{color:var(--muted);font-size:12px}
+  .hs-v{margin-top:3px;color:var(--ink);font-size:16px;font-weight:600}
+  .hero-r{padding:14px 18px 10px;min-width:0}
+  .hero-r-top{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding-bottom:6px}
+  .hero-r-top span{color:var(--muted);font-size:12.5px}
+  .xax{display:flex;justify-content:space-between;color:var(--faint);font-size:11px;padding-top:6px}
+
+  /* ---- metric tiles ---- */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+  .tile{padding:14px 16px}
+  .t-l{color:var(--muted);font-size:12.5px;font-weight:500}
+  .t-v{margin-top:9px;font-size:22px;font-weight:600;color:var(--ink);letter-spacing:-0.025em;line-height:1}
+  .t-f{margin-top:9px;display:flex;align-items:center;gap:8px}
+  .t-f small{color:var(--faint);font-size:11.5px}
+
+  /* ---- three column ---- */
+  .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;align-items:start}
+
+  .att{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--line-soft)}
+  .att:last-of-type{border-bottom:0}
+  .att:hover{background:var(--canvas)}
+  .att-ic{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;
+    border:1px solid transparent}
+  .att-ic.red{background:var(--neg-soft);color:var(--neg);border-color:#fee4e2}
+  .att-ic.amb{background:var(--warn-soft);color:var(--warn);border-color:#fef0c7}
+  .att-ic.vio{background:var(--brand-soft);color:var(--brand-deep);border-color:var(--brand-ring)}
+  .att-b{flex:1;min-width:0}
+  .att-b b{display:block;color:var(--ink);font-size:12.5px;font-weight:500}
+  .att-b span{display:block;color:var(--muted);font-size:11.5px}
+  .att-n{color:var(--ink);font-size:14px;font-weight:600}
+
+  .prow{display:flex;align-items:center;gap:11px;padding:10px 16px;border-bottom:1px solid var(--line-soft)}
+  .prow:last-of-type{border-bottom:0}
+  .prow:hover{background:var(--canvas)}
+  .pthumb{flex:none;display:grid;place-items:center;color:#fff;font-weight:600;
+    letter-spacing:.02em;text-shadow:0 1px 1px rgba(0,0,0,.18);
+    width:34px;height:34px;border-radius:8px;font-size:11.5px;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .pb{flex:1;min-width:0}
+  .pb b{display:block;color:var(--ink);font-size:12.5px;font-weight:500;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pb span{display:block;color:var(--muted);font-size:11.5px}
+  .pv{text-align:right;flex:none}
+  .pv b{display:block;color:var(--ink);font-size:12.5px;font-weight:600}
+  .pv span{display:block;color:var(--faint);font-size:11px}
+  .stock-chip{flex:none;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:7px;
+    border:1px solid transparent}
+  .stock-chip.crit{color:var(--neg);background:var(--neg-soft);border-color:#fee4e2}
+  .stock-chip.warm{color:var(--warn);background:var(--warn-soft);border-color:#fef0c7}
+
+  /* ---- table ---- */
+  .tw{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;padding:0 17px;height:34px;background:var(--canvas);
+    border-bottom:1px solid var(--line);color:var(--muted);
+    font-size:11px;font-weight:600;letter-spacing:.055em;text-transform:uppercase;white-space:nowrap}
+  td{padding:11px 17px;border-bottom:1px solid var(--line-soft);font-size:13px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover td{background:#fcfbfe}
+  .cust{display:flex;align-items:center;gap:10px;min-width:0}
+  .cust b{display:block;color:var(--ink);font-size:13px;font-weight:500;white-space:nowrap}
+  .cust span{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap}
+  .thumbs{display:flex;align-items:center}
+  .thumbs .pthumb{width:28px;height:28px;border-radius:7px;font-size:10px;
+    border:1.5px solid var(--surface);margin-left:-7px;box-shadow:0 1px 2px rgba(16,24,40,.08)}
+  .thumbs .pthumb:first-child{margin-left:0}
+  .thumbs .plus{width:28px;height:28px;border-radius:7px;margin-left:-7px;
+    border:1.5px solid var(--surface);background:var(--line-soft);color:var(--muted);
+    display:grid;place-items:center;font-size:10px;font-weight:600;flex:none}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:7px;
+    background:var(--surface);border:1px solid var(--line);color:var(--ink);
+    font-size:12px;font-weight:500;white-space:nowrap}
+  .badge i{width:5px;height:5px;border-radius:999px;flex:none}
+  .badge.ok i{background:var(--pos)} .badge.ship i{background:#4338ca}
+  .badge.proc i{background:#d97706} .badge.pend i{background:#a1a1aa}
+  .r{text-align:right;white-space:nowrap}
+  .money{color:var(--ink);font-weight:600}
+
+  @media (max-width:1100px){
+    .hero{grid-template-columns:1fr}
+    .hero-l{border-right:0;border-bottom:1px solid var(--line-soft)}
+    .tiles{grid-template-columns:1fr 1fr}
+    .trio{grid-template-columns:1fr}
+  }
+  @media (max-width:620px){
+    .bb-in,.nav-in,.page{padding-left:14px;padding-right:14px}
+    .search,.storepick{display:none}
+    .tiles{grid-template-columns:1fr}
+    .hero-num{font-size:30px}
+    table{min-width:720px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== brand bar ==================== -->
+<div class="brandbar">
+  <div class="bb-in">
+    <span class="brand"><span class="mark">G</span><b>GeoStore</b></span>
+    <span class="storepick">Accra · Ghana
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </span>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="Search orders, products, customers…" />
+      <kbd>⌘K</kbd>
+    </div>
+    <span class="sp"></span>
+    <span class="live"><i></i>Store live</span>
+    <button class="icon-btn" type="button" aria-label="Notifications">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      <span class="dot"></span>
+    </button>
+    <span class="av" aria-label="Kenneth Mensah">KM</span>
+  </div>
+</div>
+
+<!-- ==================== horizontal nav ==================== -->
+<div class="navbar">
+  <nav class="nav-in">
+    <a class="tab on" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Overview
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+      Orders <span class="count">18</span>
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+      Products
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9V5a2 2 0 0 1 2-2h4l10 10-6 6L2 9z"/><path d="M7 8h.01"/></svg>
+      Categories
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+      Analytics
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Transactions
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      Customers
+    </a>
+    <a class="tab" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Users
+    </a>
+  </nav>
+</div>
+
+<!-- ==================== page ==================== -->
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Overview</h1>
+      <p>Thursday, 18 September · revenue excludes cancelled and refunded orders</p>
+    </div>
+    <div class="head-act">
+      <button class="btn" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Export
+      </button>
+      <button class="btn btn-primary" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add product
+      </button>
+    </div>
+  </div>
+
+  <!-- ---------- hero ---------- -->
+  <section class="card hero">
+    <div class="hero-l">
+      <div class="hero-lab">Paid revenue · last 30 days</div>
+      <div class="hero-num n">GH₵ 48,320</div>
+      <div class="hero-cmp">
+        <span class="chip up">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          12.4%
+        </span>
+        <small class="n">from GH₵ 42,990</small>
+      </div>
+      <div class="hero-split">
+        <div>
+          <div class="hs-l">Paid orders</div>
+          <div class="hs-v n">264</div>
+        </div>
+        <div>
+          <div class="hs-l">Best day</div>
+          <div class="hs-v n">GH₵ 3,410</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-r">
+      <div class="hero-r-top">
+        <span>Daily · compared to previous 30 days</span>
+        <div class="seg">
+          <button type="button">7d</button>
+          <button type="button" aria-pressed="true">30d</button>
+          <button type="button">90d</button>
+        </div>
+      </div>
+      <svg viewBox="0 0 1000 200" width="100%" height="186" preserveAspectRatio="none"
+           role="img" aria-label="Daily paid revenue over the last 30 days">
+        <defs>
+          <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6b28d9" stop-opacity=".2"/>
+            <stop offset="100%" stop-color="#6b28d9" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g stroke="#f2f2f4" stroke-width="1">
+          <line x1="0" y1="26" x2="1000" y2="26"/>
+          <line x1="0" y1="80" x2="1000" y2="80"/>
+          <line x1="0" y1="134" x2="1000" y2="134"/>
+        </g>
+        <line x1="0" y1="182" x2="1000" y2="182" stroke="#e6e6ea"/>
+        <polyline fill="none" stroke="#d9d3e6" stroke-width="1.8" stroke-dasharray="4 5" stroke-linejoin="round"
+          points="6,150 40,140 74,157 108,128 142,134 176,118 210,100 244,130 278,143 312,124 346,113 380,92 414,107 448,122 482,133 516,116 550,98 584,80 618,92 652,110 686,119 720,102 754,86 788,70 822,60 856,80 890,96 924,76 958,63 994,49"/>
+        <path fill="url(#g3)" d="M6,139 40,127 74,149 108,114 142,123 176,105 210,87 244,118 278,130 312,110 346,97 380,76 414,91 448,107 482,119 516,100 550,80 584,60 618,72 652,93 686,103 720,84 754,66 788,48 822,37 856,59 890,76 924,55 958,39 994,24 L994,182 L6,182 Z"/>
+        <polyline fill="none" stroke="#6b28d9" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"
+          points="6,139 40,127 74,149 108,114 142,123 176,105 210,87 244,118 278,130 312,110 346,97 380,76 414,91 448,107 482,119 516,100 550,80 584,60 618,72 652,93 686,103 720,84 754,66 788,48 822,37 856,59 890,76 924,55 958,39 994,24"/>
+        <circle cx="994" cy="24" r="4.2" fill="#fff" stroke="#6b28d9" stroke-width="2.5"/>
+      </svg>
+      <div class="xax n">
+        <span>20 Aug</span><span>27 Aug</span><span>3 Sep</span><span>10 Sep</span><span>18 Sep</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- tiles ---------- -->
+  <div class="tiles">
+    <div class="card tile">
+      <div class="t-l">Orders</div>
+      <div class="t-v n">312</div>
+      <div class="t-f"><span class="chip up">+8.1%</span><small class="n">48 still open</small></div>
+    </div>
+    <div class="card tile">
+      <div class="t-l">Average order value</div>
+      <div class="t-v n">GH₵ 183</div>
+      <div class="t-f"><span class="chip up">+4.0%</span><small>paid orders</small></div>
+    </div>
+    <div class="card tile">
+      <div class="t-l">Payment success</div>
+      <div class="t-v n">94%</div>
+      <div class="t-f"><span class="chip down">−1.8%</span><small class="n">218 of 232</small></div>
+    </div>
+    <div class="card tile">
+      <div class="t-l">Customers</div>
+      <div class="t-v n">1,842</div>
+      <div class="t-f"><span class="chip up">+64</span><small>this month</small></div>
+    </div>
+  </div>
+
+  <!-- ---------- three columns ---------- -->
+  <div class="trio">
+    <section class="card">
+      <div class="card-head sep">
+        <div><h2>Needs attention</h2><p>38 items</p></div>
+      </div>
+      <a class="att" href="#">
+        <span class="att-ic red">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </span>
+        <span class="att-b"><b>Past dispatch window</b><span>Paid over 48 hours ago</span></span>
+        <span class="att-n n">4</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-ic vio">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        <span class="att-b"><b>Orders to fulfil</b><span>Awaiting dispatch</span></span>
+        <span class="att-n n">18</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-ic amb">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 16.5-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 19.5h16a2 2 0 0 0 1.7-3z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </span>
+        <span class="att-b"><b>Low on stock</b><span>Two sell out this week</span></span>
+        <span class="att-n n">6</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-ic red">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </span>
+        <span class="att-b"><b>Failed payments</b><span>Last 7 days</span></span>
+        <span class="att-n n">14</span>
+      </a>
+      <a class="att" href="#">
+        <span class="att-ic vio">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 15h-.09A5 5 0 1 1 16 6.71a4 4 0 0 1 1 7.87"/><path d="M12 13v8M9 18l3 3 3-3"/></svg>
+        </span>
+        <span class="att-b"><b>Draft products</b><span>Not published</span></span>
+        <span class="att-n n">18</span>
+      </a>
+    </section>
+
+    <section class="card">
+      <div class="card-head sep">
+        <div><h2>Best sellers</h2><p>By 30-day revenue</p></div>
+        <a class="link" href="#">All</a>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#a9744f,#c9a179)">Bo</span>
+        <span class="pb"><b>Bolga Market Basket</b><span>82 sold</span></span>
+        <span class="pv"><b class="n">GH₵ 9,840</b><span class="n">GH₵ 120 avg</span></span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#1f6f5c,#41a088)">Ke</span>
+        <span class="pb"><b>Kente Throw Pillow Set</b><span>65 sold</span></span>
+        <span class="pv"><b class="n">GH₵ 7,215</b><span class="n">GH₵ 111 avg</span></span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#8a6d3b,#c4ab7b)">Sh</span>
+        <span class="pb"><b>Raw Shea Butter 500g</b><span>156 sold</span></span>
+        <span class="pv"><b class="n">GH₵ 5,460</b><span class="n">GH₵ 35 avg</span></span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#2d4a8a,#5177c6)">An</span>
+        <span class="pb"><b>Ankara Tote Bag</b><span>47 sold</span></span>
+        <span class="pv"><b class="n">GH₵ 4,120</b><span class="n">GH₵ 88 avg</span></span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#3f3f46,#6d6d78)">Ad</span>
+        <span class="pb"><b>Adinkra Wall Print A2</b><span>38 sold</span></span>
+        <span class="pv"><b class="n">GH₵ 2,980</b><span class="n">GH₵ 78 avg</span></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head sep">
+        <div><h2>Running low</h2><p>128 of 146 active</p></div>
+        <a class="link" href="#">Inventory</a>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#8a6d3b,#c4ab7b)">Sh</span>
+        <span class="pb"><b>Raw Shea Butter 500g</b><span>~5 a day · out in 1 day</span></span>
+        <span class="stock-chip crit n">2 left</span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#1f6f5c,#41a088)">Ke</span>
+        <span class="pb"><b>Kente Throw Pillow Set</b><span>~2 a day · out in 2 days</span></span>
+        <span class="stock-chip crit n">3 left</span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#a9744f,#c9a179)">Bo</span>
+        <span class="pb"><b>Bolga Market Basket</b><span>~3 a day</span></span>
+        <span class="stock-chip warm n">4 left</span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#2d4a8a,#5177c6)">An</span>
+        <span class="pb"><b>Ankara Tote Bag</b><span>~1 a day</span></span>
+        <span class="stock-chip warm n">5 left</span>
+      </div>
+      <div class="prow">
+        <span class="pthumb" style="background:linear-gradient(135deg,#7a5c2e,#b28f57)">Ra</span>
+        <span class="pb"><b>Woven Raffia Coaster Set</b><span>~1 a day</span></span>
+        <span class="stock-chip warm n">6 left</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ---------- orders ---------- -->
+  <section class="card" style="margin-top:14px">
+    <div class="card-head sep">
+      <div><h2>Recent orders</h2><p>Newest customer activity</p></div>
+      <a class="link" href="#">View all 312 →</a>
+    </div>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:118px">Order</th>
+            <th>Customer</th>
+            <th style="width:120px">Items</th>
+            <th style="width:126px">Status</th>
+            <th style="width:140px">Payment</th>
+            <th class="r" style="width:108px">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b class="n" style="color:var(--ink)">GS-10428</b><div style="color:var(--muted);font-size:11.5px">6 min ago</div></td>
+            <td><span class="cust"><span class="av">AO</span><span><b>Ama Owusu</b><span>ama.owusu@gmail.com</span></span></span></td>
+            <td><span class="thumbs">
+              <span class="pthumb" style="background:linear-gradient(135deg,#a9744f,#c9a179)">Bo</span>
+              <span class="pthumb" style="background:linear-gradient(135deg,#1f6f5c,#41a088)">Ke</span>
+              <span class="plus">+1</span>
+            </span></td>
+            <td><span class="badge proc"><i></i>Processing</span></td>
+            <td style="color:var(--muted);white-space:nowrap">Mobile money</td>
+            <td class="r money n">GH₵ 412</td>
+          </tr>
+          <tr>
+            <td><b class="n" style="color:var(--ink)">GS-10427</b><div style="color:var(--muted);font-size:11.5px">42 min ago</div></td>
+            <td><span class="cust"><span class="av">KM</span><span><b>Kofi Mensah</b><span>kofi.mensah@outlook.com</span></span></span></td>
+            <td><span class="thumbs">
+              <span class="pthumb" style="background:linear-gradient(135deg,#8a6d3b,#c4ab7b)">Sh</span>
+            </span></td>
+            <td><span class="badge ship"><i></i>Shipped</span></td>
+            <td style="color:var(--muted);white-space:nowrap">Card</td>
+            <td class="r money n">GH₵ 149</td>
+          </tr>
+          <tr>
+            <td><b class="n" style="color:var(--ink)">GS-10426</b><div style="color:var(--muted);font-size:11.5px">2 hours ago</div></td>
+            <td><span class="cust"><span class="av">EB</span><span><b>Esi Boateng</b><span>esi.boateng@gmail.com</span></span></span></td>
+            <td><span class="thumbs">
+              <span class="pthumb" style="background:linear-gradient(135deg,#2d4a8a,#5177c6)">An</span>
+              <span class="pthumb" style="background:linear-gradient(135deg,#3f3f46,#6d6d78)">Ad</span>
+              <span class="pthumb" style="background:linear-gradient(135deg,#7a5c2e,#b28f57)">Ra</span>
+              <span class="plus">+2</span>
+            </span></td>
+            <td><span class="badge ok"><i></i>Delivered</span></td>
+            <td style="color:var(--muted);white-space:nowrap">Mobile money</td>
+            <td class="r money n">GH₵ 878</td>
+          </tr>
+          <tr>
+            <td><b class="n" style="color:var(--ink)">GS-10425</b><div style="color:var(--muted);font-size:11.5px">5 hours ago</div></td>
+            <td><span class="cust"><span class="av">YA</span><span><b>Yaw Asante</b><span>yaw.asante@gmail.com</span></span></span></td>
+            <td><span class="thumbs">
+              <span class="pthumb" style="background:linear-gradient(135deg,#1f6f5c,#41a088)">Ke</span>
+              <span class="pthumb" style="background:linear-gradient(135deg,#a9744f,#c9a179)">Bo</span>
+            </span></td>
+            <td><span class="badge pend"><i></i>Pending</span></td>
+            <td style="color:var(--muted);white-space:nowrap">Cash on delivery</td>
+            <td class="r money n">GH₵ 236</td>
+          </tr>
+          <tr>
+            <td><b class="n" style="color:var(--ink)">GS-10424</b><div style="color:var(--muted);font-size:11.5px">9 hours ago</div></td>
+            <td><span class="cust"><span class="av">AN</span><span><b>Adjoa Nyarko</b><span>adjoa.nyarko@yahoo.com</span></span></span></td>
+            <td><span class="thumbs">
+              <span class="pthumb" style="background:linear-gradient(135deg,#3f3f46,#6d6d78)">Ad</span>
+            </span></td>
+            <td><span class="badge ok"><i></i>Delivered</span></td>
+            <td style="color:var(--muted);white-space:nowrap">Card</td>
+            <td class="r money n">GH₵ 94</td>
+          </tr>
+          <tr>
+            <td><b class="n" style="color:var(--ink)">GS-10423</b><div style="color:var(--muted);font-size:11.5px">11 hours ago</div></td>
+            <td><span class="cust"><span class="av">NS</span><span><b>Nana Addo Sarpong</b><span>nana.sarpong@gmail.com</span></span></span></td>
+            <td><span class="thumbs">
+              <span class="pthumb" style="background:linear-gradient(135deg,#7a5c2e,#b28f57)">Ra</span>
+              <span class="pthumb" style="background:linear-gradient(135deg,#8a6d3b,#c4ab7b)">Sh</span>
+              <span class="plus">+2</span>
+            </span></td>
+            <td><span class="badge ship"><i></i>Shipped</span></td>
+            <td style="color:var(--muted);white-space:nowrap">Mobile money</td>
+            <td class="r money n">GH₵ 521</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

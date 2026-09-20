@@ -1,12 +1,11 @@
 "use client";
 
+import { config } from "@config";
 import {
-	MOCK_REVIEWS_STORAGE_KEY,
-	type MockReview,
-	ReviewComposer,
-} from "@commerce/components/ReviewComposer";
-import { formatMoney } from "@commerce/lib/money";
-import { MOCK_ORDERS_STORAGE_KEY, type MockOrder } from "@commerce/lib/order";
+	formatMoney,
+	MOCK_ORDERS_STORAGE_KEY,
+	type MockOrder,
+} from "@repo/commerce";
 import { Button } from "@repo/ui/components/button";
 import {
 	ArrowRightIcon,
@@ -22,36 +21,6 @@ import { useEffect, useMemo, useState } from "react";
 interface OrderHistoryProps {
 	initialOrders?: MockOrder[];
 	limit?: number;
-}
-
-function readOrders(): MockOrder[] {
-	try {
-		const storedOrders = window.localStorage.getItem(
-			MOCK_ORDERS_STORAGE_KEY,
-		);
-		const parsedOrders: unknown = storedOrders
-			? JSON.parse(storedOrders)
-			: [];
-		return Array.isArray(parsedOrders) ? (parsedOrders as MockOrder[]) : [];
-	} catch {
-		return [];
-	}
-}
-
-function readReviews(): MockReview[] {
-	try {
-		const storedReviews = window.localStorage.getItem(
-			MOCK_REVIEWS_STORAGE_KEY,
-		);
-		const parsedReviews: unknown = storedReviews
-			? JSON.parse(storedReviews)
-			: [];
-		return Array.isArray(parsedReviews)
-			? (parsedReviews as MockReview[])
-			: [];
-	} catch {
-		return [];
-	}
 }
 
 function getStatusDetails(status: MockOrder["status"]) {
@@ -80,6 +49,18 @@ function getStatusDetails(status: MockOrder["status"]) {
 				icon: Clock3Icon,
 				className: "bg-red-100 text-red-800",
 			};
+		case "refunded":
+			return {
+				label: "Refunded",
+				icon: Clock3Icon,
+				className: "bg-red-100 text-red-800",
+			};
+		case "pending":
+			return {
+				label: "Awaiting payment",
+				icon: Clock3Icon,
+				className: "bg-amber-100 text-amber-900",
+			};
 		default:
 			return {
 				label: "Confirmed",
@@ -91,16 +72,15 @@ function getStatusDetails(status: MockOrder["status"]) {
 
 export function OrderHistory({ initialOrders = [], limit }: OrderHistoryProps) {
 	const [orders, setOrders] = useState<MockOrder[] | null>(null);
-	const [reviews, setReviews] = useState<MockReview[]>([]);
 
 	useEffect(() => {
-		const localOrders = readOrders();
-		const serverOrderIds = new Set(initialOrders.map((order) => order.id));
-		setOrders([
-			...initialOrders,
-			...localOrders.filter((order) => !serverOrderIds.has(order.id)),
-		]);
-		setReviews(readReviews());
+		// Orders live in the database. An earlier build also mirrored them into
+		// localStorage, which meant anyone could hand-write a "delivered" order
+		// into their own history — and on a shared device the previous person's
+		// address and items showed up inside the next account. Nothing writes
+		// that key any more, so drop any leftovers instead of rendering them.
+		window.localStorage.removeItem(MOCK_ORDERS_STORAGE_KEY);
+		setOrders(initialOrders);
 	}, [initialOrders]);
 
 	const visibleOrders = useMemo(
@@ -110,12 +90,9 @@ export function OrderHistory({ initialOrders = [], limit }: OrderHistoryProps) {
 
 	if (!orders) {
 		return (
-			<div
-				className="h-64 animate-pulse rounded-2xl bg-muted"
-				role="status"
-			>
+			<output className="block h-64 animate-pulse rounded-2xl bg-muted">
 				<span className="sr-only">Loading orders</span>
-			</div>
+			</output>
 		);
 	}
 
@@ -127,11 +104,12 @@ export function OrderHistory({ initialOrders = [], limit }: OrderHistoryProps) {
 				</span>
 				<h2 className="mt-4 font-semibold text-xl">No orders yet</h2>
 				<p className="mt-2 max-w-md text-muted-foreground text-sm leading-6">
-					Signed-in purchases appear here automatically. Guest orders
-					remain available on the device used at checkout.
+					Signed-in purchases appear here automatically. If you
+					checked out as a guest, use the confirmation link we emailed
+					you.
 				</p>
 				<Button asChild className="mt-5" size="sm">
-					<Link href="/">
+					<Link href={`${config.marketingUrl ?? "/"}/shop`}>
 						Browse the store <ArrowRightIcon className="size-4" />
 					</Link>
 				</Button>
@@ -173,13 +151,11 @@ export function OrderHistory({ initialOrders = [], limit }: OrderHistoryProps) {
 
 						<div className="divide-y px-5">
 							{order.items.map((item) => {
-								const existingReview = reviews.find(
-									(review) =>
-										review.orderId === order.id &&
-										review.productId === item.productId,
-								);
 								return (
-									<div key={item.productId} className="py-5">
+									<div
+										key={item.orderItemId ?? item.productId}
+										className="py-5"
+									>
 										<div className="flex items-start justify-between gap-4">
 											<div>
 												<p className="font-medium">
@@ -192,29 +168,20 @@ export function OrderHistory({ initialOrders = [], limit }: OrderHistoryProps) {
 													)}
 												</p>
 											</div>
-											{item.hasReview ||
-											existingReview ? (
+											{item.hasReview ? (
 												<span className="inline-flex items-center gap-1.5 text-emerald-700 text-xs">
 													<StarIcon className="size-3.5 fill-current" />{" "}
 													Review submitted
 												</span>
-											) : order.status === "delivered" ? (
-												<ReviewComposer
-													orderId={order.id}
-													orderItemId={
-														item.orderItemId
-													}
-													productId={item.productId}
-													productName={item.name}
-													onSaved={(review) =>
-														setReviews(
-															(current) => [
-																review,
-																...current,
-															],
-														)
-													}
-												/>
+											) : order.status === "delivered" &&
+												config.marketingUrl ? (
+												<a
+													href={`${config.marketingUrl}/shop?q=${encodeURIComponent(item.name)}`}
+													className="inline-flex items-center gap-1.5 font-medium text-primary text-xs"
+												>
+													<StarIcon className="size-3.5" />
+													Write a review
+												</a>
 											) : (
 												<span className="text-muted-foreground text-xs">
 													Review after delivery

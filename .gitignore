@@ -29,6 +29,11 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+# Wrangler's local secret store for `wrangler dev`. Holds the same values as
+# .env.local, so it must never be committed.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 
 # turbo
 .turbo
@@ -43,3 +48,7 @@ dist/
 .react-email/
 .content-collections/
 .prisma-zod-generator-manifest.json
+
+# wrangler
+.wrangler/
+.open-next/

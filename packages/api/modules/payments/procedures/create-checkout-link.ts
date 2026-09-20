@@ -10,6 +10,7 @@ import {
 } from "@repo/payments";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
+import { verifyOrganizationMembership } from "../../organizations/lib/membership";
 
 export const createCheckoutLink = protectedProcedure
 	.route({
@@ -26,7 +27,7 @@ export const createCheckoutLink = protectedProcedure
 			type: z.enum(["one-time", "subscription"]),
 			interval: z.enum(["month", "year"]).optional(),
 			redirectUrl: z.string().optional(),
-			organizationId: z.string().optional(),
+			organizationId: z.string().min(1).max(64).optional(),
 		}),
 	)
 	.handler(
@@ -34,6 +35,20 @@ export const createCheckoutLink = protectedProcedure
 			input: { planId, redirectUrl, type, interval, organizationId },
 			context: { user },
 		}) => {
+			if (organizationId) {
+				// Resolving a customer id and seat count for an arbitrary
+				// organisation would let a signed-in user attach a checkout to
+				// someone else's billing entity.
+				const membership = await verifyOrganizationMembership(
+					organizationId,
+					user.id,
+				);
+
+				if (!membership) {
+					throw new ORPCError("FORBIDDEN");
+				}
+			}
+
 			const customerId = await getCustomerIdFromEntity(
 				organizationId
 					? {

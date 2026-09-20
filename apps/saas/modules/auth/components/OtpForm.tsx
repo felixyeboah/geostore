@@ -21,12 +21,13 @@ import {
 	InputOTPSlot,
 } from "@repo/ui/components/input-otp";
 import { useRouter } from "@shared/hooks/router";
+import { useTranslations } from "@shared/lib/translations";
 import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "@shared/lib/translations";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { AUTH_BUTTON, AUTH_LABEL } from "./AuthShell";
 
 const formSchema = z.object({
 	code: z.string().min(6).max(6),
@@ -76,16 +77,19 @@ export function OtpForm() {
 
 	return (
 		<>
-			<h1 className="font-bold text-xl md:text-2xl">
+			<p className="eyebrow mb-4 text-muted-foreground">
+				{t("auth.login.customerAccount")}
+			</p>
+			<h1 className="max-w-[16ch] font-semibold text-[clamp(28px,3vw,40px)] text-foreground leading-[1.05] tracking-[-0.042em]">
 				{t("auth.verify.title")}
 			</h1>
-			<p className="mt-1 mb-4 text-foreground/60">
+			<p className="mt-4 mb-8 max-w-[44ch] text-[14.5px] text-muted-foreground leading-[1.6]">
 				{t("auth.verify.message")}
 			</p>
 
 			<Form {...form}>
 				<form
-					className="flex flex-col items-stretch gap-4"
+					className="flex flex-col items-stretch gap-6"
 					onSubmit={onSubmit}
 				>
 					{form.formState.errors.root && (
@@ -102,7 +106,9 @@ export function OtpForm() {
 						name="code"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("auth.verify.code")}</FormLabel>
+								<FormLabel className={AUTH_LABEL}>
+									{t("auth.verify.code")}
+								</FormLabel>
 								<FormControl>
 									<InputOTP
 										maxLength={6}
@@ -115,30 +121,30 @@ export function OtpForm() {
 									>
 										<InputOTPGroup>
 											<InputOTPSlot
-												className="size-10 text-lg"
+												className="size-12 rounded-[2px] border-border text-[17px]"
 												index={0}
 											/>
 											<InputOTPSlot
-												className="size-10 text-lg"
+												className="size-12 rounded-[2px] border-border text-[17px]"
 												index={1}
 											/>
 											<InputOTPSlot
-												className="size-10 text-lg"
+												className="size-12 rounded-[2px] border-border text-[17px]"
 												index={2}
 											/>
 										</InputOTPGroup>
-										<InputOTPSeparator className="opacity-40" />
+										<InputOTPSeparator className="text-muted-foreground" />
 										<InputOTPGroup>
 											<InputOTPSlot
-												className="size-10 text-lg"
+												className="size-12 rounded-[2px] border-border text-[17px]"
 												index={3}
 											/>
 											<InputOTPSlot
-												className="size-10 text-lg"
+												className="size-12 rounded-[2px] border-border text-[17px]"
 												index={4}
 											/>
 											<InputOTPSlot
-												className="size-10 text-lg"
+												className="size-12 rounded-[2px] border-border text-[17px]"
 												index={5}
 											/>
 										</InputOTPGroup>
@@ -149,13 +155,17 @@ export function OtpForm() {
 						)}
 					/>
 
-					<Button loading={form.formState.isSubmitting}>
+					<Button
+						className={AUTH_BUTTON}
+						variant="primary"
+						loading={form.formState.isSubmitting}
+					>
 						{t("auth.verify.submit")}
 					</Button>
 				</form>
 			</Form>
 
-			<div className="mt-6 text-center text-sm">
+			<div className="mt-9 border-border border-t pt-6 text-[13.5px] text-muted-foreground">
 				<Link href="/login">
 					<ArrowLeftIcon className="mr-1 inline size-4 align-middle" />
 					{t("auth.verify.backToSignin")}

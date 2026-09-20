@@ -1,5 +1,5 @@
+import type { MockOrder } from "@repo/commerce";
 import { getStoreOrdersByUserId } from "@repo/database";
-import type { MockOrder } from "./order";
 
 function parseAddress(value: unknown): MockOrder["address"] {
 	if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -19,17 +19,38 @@ function parseAddress(value: unknown): MockOrder["address"] {
 
 function mapStatus(status: string): MockOrder["status"] {
 	switch (status) {
+		// An order still waiting on a payment prompt is NOT confirmed. It used
+		// to fall through to "confirmed" here, so a customer who abandoned a
+		// mobile-money prompt saw a green "Confirmed" badge for an order they
+		// had never paid for.
+		case "PENDING":
+			return "pending";
 		case "PROCESSING":
+		case "READY_FOR_DELIVERY":
 			return "processing";
 		case "OUT_FOR_DELIVERY":
 			return "out-for-delivery";
 		case "DELIVERED":
 			return "delivered";
 		case "CANCELLED":
-		case "REFUNDED":
 			return "cancelled";
+		case "REFUNDED":
+			return "refunded";
 		default:
 			return "confirmed";
+	}
+}
+
+function mapPaymentStatus(status: string): MockOrder["paymentStatus"] {
+	switch (status) {
+		case "PAID":
+			return "paid";
+		case "FAILED":
+			return "failed";
+		case "REFUNDED":
+			return "refunded";
+		default:
+			return "pending";
 	}
 }
 
@@ -40,8 +61,8 @@ export async function getCustomerOrderHistory(
 	return orders.map((order) => ({
 		id: order.orderNumber,
 		status: mapStatus(order.status),
-		paymentStatus: "paid",
-		paymentMethod: "mock",
+		paymentStatus: mapPaymentStatus(order.paymentStatus),
+		paymentMethod: order.paymentMethod,
 		placedAt: order.placedAt.toISOString(),
 		customer: {
 			name: "Customer",

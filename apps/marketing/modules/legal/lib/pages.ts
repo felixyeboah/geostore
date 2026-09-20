@@ -12,7 +12,9 @@ export function getAllLegalPagePaths(): string[] {
 /**
  * Returns all legal pages.
  */
-export async function getAllLegalPages(): Promise<Array<Omit<LegalPage, "_meta">>> {
+export async function getAllLegalPages(): Promise<
+	Array<Omit<LegalPage, "_meta">>
+> {
 	const paths = getUniqueBasePaths(allLegalPages);
 
 	const pages = paths

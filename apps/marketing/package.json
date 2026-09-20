@@ -2,8 +2,15 @@
 	"dependencies": {
 		"@bprogress/next": "^3.2.12",
 		"@hookform/resolvers": "catalog:",
+		"@libsql/client": "^0.18.0",
+		"@libsql/isomorphic-ws": "^0.1.5",
 		"@next/third-parties": "catalog:",
+		"@prisma/nextjs-monorepo-workaround-plugin": "catalog:",
+		"@repo/auth": "workspace:*",
+		"@repo/commerce": "workspace:*",
+		"@repo/database": "workspace:*",
 		"@repo/logs": "workspace:*",
+		"@repo/mail": "workspace:*",
 		"@repo/payments": "workspace:*",
 		"@repo/ui": "workspace:*",
 		"@repo/utils": "workspace:*",
@@ -23,6 +30,7 @@
 		"server-only": "catalog:",
 		"sharp": "catalog:",
 		"slugify": "catalog:",
+		"sonner": "catalog:",
 		"tailwind-merge": "catalog:",
 		"usehooks-ts": "catalog:",
 		"uuid": "catalog:",
@@ -34,8 +42,8 @@
 		"@content-collections/mdx": "^0.2.2",
 		"@content-collections/next": "^0.2.11",
 		"@mdx-js/mdx": "catalog:",
+		"@opennextjs/cloudflare": "^1.20.6",
 		"@playwright/test": "catalog:",
-		"@repo/auth": "workspace:*",
 		"@repo/tailwind-config": "workspace:*",
 		"@repo/tsconfig": "workspace:*",
 		"@shikijs/rehype": "catalog:",
@@ -55,7 +63,8 @@
 		"postcss": "catalog:",
 		"start-server-and-test": "catalog:",
 		"tailwindcss": "catalog:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"wrangler": "^4.135.0"
 	},
 	"name": "marketing",
 	"private": true,
@@ -66,7 +75,11 @@
 		"e2e": "pnpm exec playwright test --ui",
 		"e2e:ci": "pnpm exec playwright install && pnpm exec playwright test",
 		"start": "next start",
-		"type-check": "tsc --noEmit"
+		"test:unit": "tsx --test \"modules/**/*.test.ts\"",
+		"type-check": "tsc --noEmit",
+		"cf:build": "opennextjs-cloudflare build",
+		"cf:preview": "opennextjs-cloudflare preview",
+		"cf:deploy": "opennextjs-cloudflare deploy"
 	},
 	"version": "0.0.0"
 }

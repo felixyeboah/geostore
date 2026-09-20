@@ -26,11 +26,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: PropsWithChildren) {
 	return (
-		<html
-			lang="en"
-			suppressHydrationWarning
-			className={sansFont.variable}
-		>
+		<html lang="en" suppressHydrationWarning className={sansFont.variable}>
 			<body
 				className={cn(
 					"min-h-screen bg-background text-foreground antialiased",

@@ -1,0 +1,35 @@
+{
+	"version": "0.0.1",
+	"configurations": [
+		{
+			"name": "marketing",
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": [
+				"exec",
+				"dotenv",
+				"-c",
+				"--",
+				"pnpm",
+				"--filter",
+				"marketing",
+				"dev"
+			],
+			"port": 3001
+		},
+		{
+			"name": "saas",
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": [
+				"exec",
+				"dotenv",
+				"-c",
+				"--",
+				"pnpm",
+				"--filter",
+				"saas",
+				"dev"
+			],
+			"port": 3000
+		}
+	]
+}

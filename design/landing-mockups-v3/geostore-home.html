@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoStore — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f5f5f7; --panel-2:#ebebef; --line:#e3e3e8;
+    --ink:#1d1d1f; --ink-2:#48484d; --muted:#6e6e73; --faint:#9c9ca3;
+    --accent:#6b28d9; --accent-d:#5a1fbd;
+    --r:18px; --r-sm:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55;
+    letter-spacing:-0.01em;-webkit-font-smoothing:antialiased
+  }
+  img{display:block;width:100%;height:100%;object-fit:cover}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+  @media(max-width:700px){.wrap{padding:0 18px}}
+  h1,h2,h3{font-weight:600;letter-spacing:-0.035em;line-height:1.1}
+  .tnum{font-variant-numeric:tabular-nums}
+  .fill{position:relative;overflow:hidden}
+  .fill img{position:absolute;inset:0}
+
+  /* ---------- header ---------- */
+  header.site{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .hdr{display:flex;align-items:center;gap:32px;height:64px}
+  .logo{font-size:19px;font-weight:700;letter-spacing:-0.05em;white-space:nowrap}
+  .nav{display:flex;gap:26px;font-size:14px;font-weight:500;color:var(--ink-2)}
+  .nav a:hover{color:var(--ink)}
+  .hright{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .search{position:relative;width:300px}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--faint)}
+  .search input{width:100%;height:40px;border:0;border-radius:999px;background:var(--panel);padding:0 16px 0 38px;font:inherit;font-size:14px;outline:none}
+  .search input:focus{background:#fff;box-shadow:0 0 0 2px var(--accent)}
+  .ibtn{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;color:var(--ink-2);position:relative}
+  .ibtn:hover{background:var(--panel)}
+  .ibtn .n{position:absolute;top:3px;right:3px;min-width:17px;height:17px;border-radius:999px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border-radius:999px;font-size:15px;font-weight:600;border:1px solid transparent;transition:.15s;white-space:nowrap}
+  .btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent-d)}
+  .btn-ink{background:var(--ink);color:#fff}.btn-ink:hover{background:#333}
+  .btn-line{border-color:var(--line);color:var(--ink);background:#fff}.btn-line:hover{border-color:var(--ink)}
+  .btn-sm{height:40px;padding:0 18px;font-size:14px}
+  .link{display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--accent)}
+  .link:hover{text-decoration:underline}
+
+  /* ---------- hero ---------- */
+  .hero{padding:56px 0 24px}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+  .eyebrow{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+  .hero h1{font-size:clamp(38px,5vw,62px);margin-top:14px;max-width:13ch;text-wrap:balance}
+  .hero h1 span{color:var(--muted)}
+  .hero p{margin-top:20px;max-width:44ch;font-size:17px;line-height:1.6;color:var(--ink-2)}
+  .hero .acts{display:flex;align-items:center;gap:22px;margin-top:30px;flex-wrap:wrap}
+  .hero .trust{display:flex;gap:22px;margin-top:34px;padding-top:24px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .hero .trust span{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-2);font-weight:500}
+  .hero .trust svg{color:var(--accent)}
+  .hero-shot{aspect-ratio:1/1;background:var(--panel);border-radius:28px}
+  .hero-shot .cap{
+    position:absolute;left:18px;bottom:18px;z-index:2;background:#fff;border-radius:14px;
+    padding:12px 16px;box-shadow:0 8px 24px -12px rgba(0,0,0,.25);display:flex;align-items:center;gap:14px
+  }
+  .hero-shot .cap b{display:block;font-size:14px;font-weight:600}
+  .hero-shot .cap small{font-size:12.5px;color:var(--muted)}
+  .hero-shot .cap .p{font-size:15px;font-weight:700;margin-left:6px;white-space:nowrap}
+
+  /* ---------- sections ---------- */
+  section.blk{padding:56px 0}
+  .shead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}
+  .shead h2{font-size:clamp(26px,3vw,36px)}
+  .shead h2 span{color:var(--muted)}
+  .shead .r{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:18px}
+  .shead select{height:38px;border:1px solid var(--line);border-radius:999px;padding:0 14px;font:inherit;font-size:13.5px;background:#fff;color:var(--ink)}
+
+  /* categories */
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .cat .im{aspect-ratio:4/3;background:var(--panel);border-radius:var(--r)}
+  .cat .im img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+  .cat:hover .im img{transform:scale(1.04)}
+  .cat .t{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding:0 4px}
+  .cat b{font-size:16px;font-weight:600;letter-spacing:-0.02em}
+  .cat small{font-size:13px;color:var(--muted)}
+  .cat:hover b{color:var(--accent)}
+
+  /* products */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:.18s}
+  .card:hover{box-shadow:0 12px 32px -18px rgba(0,0,0,.28);border-color:#d5d5dc;transform:translateY(-2px)}
+  .card .im{aspect-ratio:1/1;background:var(--panel)}
+  .card .im img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+  .card:hover .im img{transform:scale(1.04)}
+  .card .tag{position:absolute;top:12px;left:12px;z-index:2;font-size:11.5px;font-weight:600;background:#fff;border-radius:999px;padding:5px 11px}
+  .card .tag.a{color:var(--accent)}
+  .card .body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+  .card .br{font-size:12px;color:var(--muted);font-weight:500}
+  .card h3{font-size:15.5px;margin-top:4px;letter-spacing:-0.025em;line-height:1.3}
+  .card .sub{font-size:13px;color:var(--muted);margin-top:4px}
+  .card .rate{font-size:12.5px;color:var(--muted);margin-top:8px;display:inline-flex;align-items:center;gap:5px}
+  .card .rate i{color:#f5a623;font-style:normal}
+  .card .buy{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:16px}
+  .card .pr{font-size:17px;font-weight:700;letter-spacing:-0.03em;white-space:nowrap}
+  .card .was{display:block;font-size:12px;color:var(--faint);text-decoration:line-through;font-weight:400;margin-top:1px}
+  .card .add{height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--line);font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;white-space:nowrap;transition:.15s}
+  .card:hover .add{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  /* value band */
+  .band{background:var(--panel);border-radius:28px;padding:44px 48px;display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:40px;align-items:start}
+  .band h2{font-size:26px;max-width:12ch}
+  .band .lead p{color:var(--ink-2);margin-top:10px;font-size:14.5px;max-width:30ch}
+  .band .it svg{color:var(--accent)}
+  .band .it b{display:block;font-size:15px;font-weight:600;margin-top:12px}
+  .band .it p{font-size:13.5px;color:var(--muted);margin-top:5px;line-height:1.55}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);margin-top:24px;padding:52px 0 32px}
+  .fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px}
+  .fg h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .fg li{list-style:none;margin-bottom:9px;font-size:14px;color:var(--muted)}
+  .fg li a:hover{color:var(--ink)}
+  .fbot{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--faint)}
+
+  @media(max-width:1000px){
+    .nav,.search{display:none}
+    .hero-grid{grid-template-columns:1fr;gap:28px}
+    .hero-shot{order:-1;aspect-ratio:4/3}
+    .cats{grid-template-columns:1fr 1fr}
+    .grid{grid-template-columns:1fr 1fr}
+    .band{grid-template-columns:1fr 1fr;padding:32px 28px;gap:28px}
+    .band .lead{grid-column:span 2}
+    .fg{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){
+    .hero{padding:28px 0 12px}
+    .grid{gap:12px}
+    .card .body{padding:12px 13px 14px}
+    .card .add{display:none}
+    .band{grid-template-columns:1fr}
+    .band .lead{grid-column:auto}
+    .shead{flex-direction:column;align-items:flex-start;gap:12px}
+    section.blk{padding:40px 0}
+  }
+</style>
+</head>
+<body>
+
+<header class="site"><div class="wrap hdr">
+  <a class="logo">GeoStore</a>
+  <nav class="nav"><a>Phones</a><a>Audio</a><a>Wearables</a><a>Home tech</a><a>Price drops</a></nav>
+  <div class="hright">
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input placeholder="Search products">
+    </label>
+    <a class="ibtn" aria-label="Account"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.66a8 8 0 0 1 10 0"/></svg></a>
+    <a class="ibtn" aria-label="Bag"><span class="n">2</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></a>
+  </div>
+</div></header>
+
+<!-- HERO -->
+<section class="hero"><div class="wrap">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">GeoStore &middot; Accra, Ghana</div>
+      <h1>The right tech, <span>at the right price.</span></h1>
+      <p>Phones, audio, wearables and home tech &mdash; genuine, priced in cedis, with a 12-month warranty and delivery across Ghana.</p>
+      <div class="acts">
+        <a class="btn btn-accent">Shop all products</a>
+        <a class="link">Browse phones <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      </div>
+      <div class="trust">
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.95a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>12-month warranty</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Free delivery from GH&#8373; 1,000</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>MoMo &amp; card</span>
+      </div>
+    </div>
+    <div class="hero-shot fill">
+      <img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=1400&q=88" alt="iPhone 15 Pro">
+      <div class="cap"><div><b>iPhone 15 Pro</b><small>Apple &middot; 256 GB</small></div><span class="p tnum">GH&#8373; 12,900</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CATEGORIES -->
+<section class="blk"><div class="wrap">
+  <div class="shead"><h2>Shop by category.</h2><a class="link">All products <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+  <div class="cats">
+    <a class="cat"><div class="im fill"><img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=900&q=85" alt=""></div><div class="t"><b>Phones</b><small class="tnum">3 products</small></div></a>
+    <a class="cat"><div class="im fill"><img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=900&q=85" alt=""></div><div class="t"><b>Audio</b><small class="tnum">2 products</small></div></a>
+    <a class="cat"><div class="im fill"><img src="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=900&q=85" alt=""></div><div class="t"><b>Wearables</b><small class="tnum">2 products</small></div></a>
+    <a class="cat"><div class="im fill"><img src="https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=900&q=85" alt=""></div><div class="t"><b>Home tech</b><small class="tnum">1 product</small></div></a>
+  </div>
+</div></section>
+
+<!-- PRODUCTS -->
+<section class="blk" style="padding-top:8px"><div class="wrap">
+  <div class="shead">
+    <h2>Popular right now. <span>Everything in stock.</span></h2>
+    <div class="r"><span class="tnum">8 products</span><select><option>Featured</option><option>Top rated</option><option>Price: low to high</option><option>Price: high to low</option></select></div>
+  </div>
+  <div class="grid">
+    <a class="card"><div class="im fill"><span class="tag a">Price drop</span><img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Apple</span><h3>iPhone 15 Pro</h3><span class="sub">256 GB &middot; 6 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.8 (34)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 12,900<span class="was">GH&#8373; 13,650</span></div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><span class="tag">New</span><img src="https://images.unsplash.com/photo-1512054502232-10a0a035d672?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Samsung</span><h3>Galaxy S24 Ultra</h3><span class="sub">512 GB &middot; 4 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.7 (27)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 11,400</div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><span class="tag">New</span><img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Google</span><h3>Pixel 8a</h3><span class="sub">128 GB &middot; 8 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.5 (18)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 6,250</div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><span class="tag a">Price drop</span><img src="https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Apple</span><h3>AirPods Pro (2nd gen)</h3><span class="sub">Noise cancelling &middot; 14 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.9 (52)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 2,350<span class="was">GH&#8373; 2,600</span></div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Apple</span><h3>Apple Watch Series 9</h3><span class="sub">45 mm &middot; 5 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.7 (16)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 4,750</div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><img src="https://images.unsplash.com/photo-1544117519-31a4b719223d?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Samsung</span><h3>Galaxy Watch6</h3><span class="sub">44 mm &middot; 7 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.4 (12)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 2,850</div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">JBL</span><h3>JBL Charge 5</h3><span class="sub">Waterproof &middot; 9 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.6 (21)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 1,450</div><span class="add">Add to bag</span></div></div></a>
+    <a class="card"><div class="im fill"><span class="tag">3 left</span><img src="https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=800&q=85" alt=""></div>
+      <div class="body"><span class="br">Samsung</span><h3>55&#8243; Crystal UHD TV</h3><span class="sub">4K smart TV &middot; 3 in stock</span><span class="rate"><i>&#9733;</i><span class="tnum">4.5 (9)</span></span>
+      <div class="buy"><div class="pr tnum">GH&#8373; 4,700</div><span class="add">Add to bag</span></div></div></a>
+  </div>
+</div></section>
+
+<!-- VALUE BAND -->
+<section class="blk" style="padding-top:8px"><div class="wrap">
+  <div class="band">
+    <div class="lead"><h2>Buy with confidence.</h2><p>Every listing states its condition, storage and warranty before checkout.</p><a class="btn btn-ink btn-sm" style="margin-top:20px">Ask us what to buy</a></div>
+    <div class="it"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><b>Delivery across Ghana</b><p>Same or next day in Accra. The fee is shown before you pay.</p></div>
+    <div class="it"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.95a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><b>12-month warranty</b><p>Claims handled locally by people you can reach.</p></div>
+    <div class="it"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><b>Pay your way</b><p>MTN MoMo, Telecel Cash, Visa, Mastercard, or cash on delivery in Accra.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fg">
+    <div><div class="logo">GeoStore</div><p style="color:var(--muted);font-size:14px;margin-top:12px;max-width:30ch;line-height:1.6">Phones, audio, wearables and home tech, delivered across Ghana.</p></div>
+    <div><h4>Shop</h4><ul><li><a>Phones</a></li><li><a>Audio</a></li><li><a>Wearables</a></li><li><a>Home tech</a></li><li><a>Price drops</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a>Delivery</a></li><li><a>Returns</a></li><li><a>Warranty</a></li><li><a>Track your order</a></li><li><a>Contact</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a>About</a></li><li><a>Privacy</a></li><li><a>Terms</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>&copy; 2026 GeoStore Ghana</span><span>Accra &middot; support@geostoresgh.com</span></div>
+</div></footer>
+
+</body></html>

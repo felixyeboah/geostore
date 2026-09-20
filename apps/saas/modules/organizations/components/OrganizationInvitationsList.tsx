@@ -23,6 +23,7 @@ import {
 	TableRow,
 } from "@repo/ui/components/table";
 import { toastPromise } from "@repo/ui/components/toast";
+import { useFormatter, useTranslations } from "@shared/lib/translations";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -40,7 +41,6 @@ import {
 	MoreVerticalIcon,
 	XIcon,
 } from "lucide-react";
-import { useFormatter, useTranslations } from "@shared/lib/translations";
 import { useMemo } from "react";
 import { OrganizationRoleSelect } from "./OrganizationRoleSelect";
 export function OrganizationInvitationsList({

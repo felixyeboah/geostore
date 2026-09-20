@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geostoresgh landing — round 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16150F;--muted:#6B675C;--faint:#9a968b;--line:#E3DFD4;--cream:#F4F2EC;--accent:#6b28d9}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);line-height:1.6;background:#fff;font-size:15px;-webkit-font-smoothing:antialiased;padding:64px 28px 96px}
+.wrap{max-width:1120px;margin:0 auto}
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:46px;letter-spacing:-0.045em;line-height:1.05;font-weight:700;margin-top:14px}
+.lede{color:var(--muted);margin-top:18px;max-width:66ch;font-size:16.5px}
+.note{background:var(--cream);border-radius:18px;padding:22px 24px;margin-top:28px;font-size:14px;color:var(--muted)}
+.note b{color:var(--ink)}
+.note code{font-family:ui-monospace,monospace;font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1.5px 6px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.card{border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;background:#fff}
+.tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.card h2{font-size:22px;letter-spacing:-0.035em;margin-top:10px;font-weight:700}
+.card .one{font-size:13px;color:var(--faint);margin-top:3px}
+.card p{color:var(--muted);font-size:14px;margin-top:14px}
+.card ul{margin:14px 0 0;padding-left:17px;font-size:13.5px;color:var(--muted)}
+.card li{margin-bottom:6px}
+.best{margin-top:16px;font-size:13px;background:var(--cream);border-radius:12px;padding:12px 14px;color:var(--muted)}
+.best b{color:var(--ink)}
+.btn{margin-top:22px;display:flex;align-items:center;justify-content:center;height:46px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:14.5px;text-decoration:none}
+.btn:hover{background:var(--accent)}
+.card a.btn{margin-top:auto}
+.works{margin-top:44px;border-top:1px solid var(--line);padding-top:28px}
+.works h3{font-size:17px;font-weight:600;letter-spacing:-0.02em}
+.works ul{margin-top:12px;padding-left:18px;color:var(--muted);font-size:14px;columns:2;column-gap:44px}
+.works li{margin-bottom:7px;break-inside:avoid}
+@media(max-width:880px){.grid{grid-template-columns:1fr}.works ul{columns:1}h1{font-size:34px}body{padding:40px 18px 64px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Geostoresgh · round five</p>
+  <h1>Three clean directions,<br>built for one store.</h1>
+  <p class="lede">All three take their cleanliness from SouqAfric — big confident headings against small product type, generous space, one accent — but each is a different visual language. Nothing here is a marketplace: no merchants, no vendors, one shop with eight real products.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Option A</span>
+      <h2>Warm</h2>
+      <span class="one">Cream, ink and air</span>
+      <p>The closest to your reference. Warm cream bands alternating with white, a split hero with one tall product card, category tiles, a live product grid, ordering steps with small UI mocks, and a dark closing band.</p>
+      <ul>
+        <li>Friendliest and most familiar</li>
+        <li>Carries offers and stock counts well</li>
+        <li>Warmest, least "tech"</li>
+      </ul>
+      <div class="best">Pick this if Geostoresgh should feel <b>warm, trustworthy and easy</b>.</div>
+      <a class="btn" href="01-warm.html">Open Option A</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option B</span>
+      <h2>Editorial</h2>
+      <span class="one">Paper, hairlines and big type</span>
+      <p>Quiet and typographic. Paper-white ground and hairline rules instead of cards. A split hero puts the statement and search beside one product plate, then a category index strip, a featured device, and the catalogue set like a printed index.</p>
+      <ul>
+        <li>Most distinctive and premium</li>
+        <li>Fastest page, least decoration</li>
+        <li>Leans on copy and photography</li>
+      </ul>
+      <div class="best">Pick this if Geostoresgh should look like it has <b>taste and nothing to prove</b>.</div>
+      <a class="btn" href="02-editorial.html">Open Option B</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Option C</span>
+      <h2>Soft</h2>
+      <span class="one">Floating cards on grey</span>
+      <p>Modern and app-like. A floating pill header, white rounded cards on a soft grey ground, category chips that filter, a roomy product grid, and a purple closing card.</p>
+      <ul>
+        <li>Most modern and product-forward</li>
+        <li>Scales best as the catalogue grows</li>
+        <li>Most conventional of the three</li>
+      </ul>
+      <div class="best">Pick this if Geostoresgh should feel <b>current, quick and app-like</b>.</div>
+      <a class="btn" href="03-soft.html">Open Option C</a>
+    </div>
+  </div>
+
+  <div class="works">
+    <h3>Working on all three</h3>
+    <ul>
+      <li>Search with live product and category suggestions, keyboard navigation, and a real handoff to the store search</li>
+      <li>Add to bag from any card, quick view, or the hero — with stock limits enforced</li>
+      <li>Slide-out bag with quantity steppers, remove, subtotal, savings, and the GH₵ 1,000 free-delivery progress bar</li>
+      <li>The bag persists across all three pages</li>
+      <li>Quick view with specs, rating, stock and a link to the full product page</li>
+      <li>Saved items with a header counter</li>
+      <li>Category, brand and deals filters plus sort, all re-rendering the grid live</li>
+      <li>FAQ accordions, newsletter validation, mobile menu</li>
+      <li>Every link points at the real store routes on <code>localhost:3000</code></li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <b>Photography note:</b> the product shots were re-picked from the images already in this repo, favouring plain light backgrounds and the correct device, so the grid finally reads as one set. <b>How to view:</b> serve the folder over HTTP — <code>python3 -m http.server 8787 --directory design</code> — then open <code>http://localhost:8787/landing-v5/</code>. Nothing under <code>apps/</code> has been touched.
+  </div>
+</div>
+</body>
+</html>

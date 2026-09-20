@@ -7,8 +7,8 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@repo/ui/components/tooltip";
-import { MonitorCogIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTranslations } from "@shared/lib/translations";
+import { MonitorCogIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useIsClient } from "usehooks-ts";

@@ -39,3 +39,38 @@
 		stroke-width: 1.75;
 	}
 }
+
+/* The storefront's editorial surface, scoped so it only dresses the auth
+   screens. A shopper arrives here straight from apps/marketing, so sign-in has
+   to look like the same shop; the admin keeps the default theme. Mirrors the
+   block in apps/marketing/app/globals.css. */
+.editorial {
+	--background: #fbf8f7;
+	--foreground: #111110;
+	--muted-foreground: #6f6e69;
+	--border: #e2e1dc;
+	--input: #e2e1dc;
+	--muted: #f1f0ec;
+	--ed-accent: #6b28d9;
+
+	/* theme.css resolves every --color-* once at :root, so redefining the base
+	   variable alone would never reach `text-foreground`. */
+	--color-background: #fbf8f7;
+	--color-foreground: #111110;
+	--color-muted-foreground: #6f6e69;
+	--color-border: #e2e1dc;
+	--color-input: #e2e1dc;
+	--color-muted: #f1f0ec;
+}
+
+.editorial .eyebrow {
+	letter-spacing: 0.12em;
+}
+
+@utility eyebrow {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	line-height: 1;
+	text-transform: uppercase;
+}

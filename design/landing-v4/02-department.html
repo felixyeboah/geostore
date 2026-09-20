@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geostoresgh — gadgets &amp; more</title>
+<meta name="description" content="Phones, audio, wearables and home tech, delivered across Ghana. Prices in Ghana cedis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="shared/core.css">
+<style>
+/* ============================================================
+   1. TOKENS
+   ============================================================ */
+:root{
+  --geo-accent:#6b28d9;
+  --geo-accent-d:#5a1fbd;
+  --geo-radius:4px;
+  --geo-radius-sm:2px;
+  --geo-ink:#111;
+  --ink:#111;
+  --ink-2:#3d3d3d;
+  --muted:#6b6b6b;
+  --line:#e2e2e2;
+  --band:#f4f4f4;
+  --tile:#f7f7f7;
+  --panel:#f8f7f4;
+  --max:1280px;
+}
+body{color:var(--ink);font-size:15px;letter-spacing:-0.005em;overflow-x:hidden;}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-0.03em;line-height:1.08;}
+p{margin:0;}
+ul{margin:0;padding:0;list-style:none;}
+[hidden]{display:none !important;}
+.geo-btn{border-radius:2px;}
+.geo-qty{border-radius:2px;}
+.geo-suggest{border-radius:2px;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+.up{text-transform:uppercase;letter-spacing:.08em;}
+.ul-link{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;}
+
+/* ============================================================
+   2. UTILITY BAR
+   ============================================================ */
+.util{background:var(--ink);color:#fff;font-size:12px;}
+.util__in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;min-height:34px;}
+.util__mid{grid-column:2;display:inline-flex;align-items:center;gap:8px;justify-self:center;}
+.util__mid svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6;}
+.util__right{grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px;color:#d6d6d6;}
+.util__right a{padding:8px 0;}
+.util__right a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px;}
+.util__sep{opacity:.45;}
+
+/* ============================================================
+   3. HEADER
+   ============================================================ */
+.topstick{background:#fff;}
+.hd{border-bottom:1px solid var(--line);}
+.hd__in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;min-height:78px;}
+.hd__loc{font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:6px;}
+.hd__loc b{font-weight:600;color:var(--ink);}
+.logo{display:inline-flex;align-items:center;gap:9px;color:var(--ink);justify-self:center;}
+.logo svg{flex:none;}
+.logo span{font-size:23px;font-weight:700;letter-spacing:-0.04em;text-transform:uppercase;line-height:1;}
+.hd__right{justify-self:end;display:flex;align-items:center;gap:6px;}
+.hd__acct{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:8px;}
+.hd__acct span{white-space:nowrap;}
+.hd__acct b{font-weight:600;}
+.iconlink{position:relative;display:grid;place-items:center;width:40px;height:40px;color:var(--ink);}
+.iconlink svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.iconlink:hover{color:var(--geo-accent);}
+.badge{position:absolute;top:2px;right:1px;min-width:16px;height:16px;padding:0 4px;border-radius:2px;background:var(--geo-accent);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;font-variant-numeric:tabular-nums;}
+.hd__search{margin-left:10px;}
+.geo-search input{width:240px;height:40px;border:1px solid var(--ink);border-radius:2px;background:#fff;padding:0 38px 0 12px;font-size:13px;}
+.geo-search input::placeholder{color:#8a8a8a;}
+.geo-search button[type=submit]{position:absolute;right:0;top:0;width:38px;height:40px;display:grid;place-items:center;color:var(--ink);}
+.geo-search button[type=submit] svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;}
+.hd__burger{display:none;width:40px;height:40px;place-items:center;}
+.hd__burger svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;}
+.searchbar-mob{display:none;border-bottom:1px solid var(--line);padding:10px 0;}
+.searchbar-mob .geo-search input{width:100%;}
+
+/* ============================================================
+   4. CATEGORY NAV
+   ============================================================ */
+.navrow{background:var(--band);border-bottom:1px solid #ebebeb;}
+.navrow ul{display:flex;justify-content:center;flex-wrap:wrap;gap:0 26px;}
+.navrow a,.navrow button{display:block;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;padding:14px 0;color:var(--ink);border-bottom:2px solid transparent;}
+.navrow a:hover,.navrow button:hover{border-bottom-color:var(--ink);}
+.navrow .is-deal{color:var(--geo-accent);font-weight:600;}
+.navrow .is-deal:hover{border-bottom-color:var(--geo-accent);}
+
+/* ============================================================
+   5. PROMO STRIP
+   ============================================================ */
+.promo{background:var(--ink);color:#fff;}
+.promo button{display:block;width:100%;padding:13px 24px;font-size:13px;color:#fff;text-align:center;}
+.promo u{text-underline-offset:3px;}
+
+/* ============================================================
+   6. HERO CAROUSEL
+   ============================================================ */
+.hero{position:relative;border-bottom:1px solid var(--line);}
+.hero__track{display:grid;grid-template-columns:minmax(0,1fr);}
+.hero__slide{grid-area:1/1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-width:0;opacity:0;visibility:hidden;transition:opacity .5s ease;}
+.hero__slide.is-on{opacity:1;visibility:visible;}
+.hero__panel{background:var(--panel);display:flex;flex-direction:column;justify-content:center;padding:64px clamp(24px,5vw,80px) 104px;}
+.hero__inner{max-width:490px;width:100%;}
+.hero__eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-2);margin-bottom:18px;}
+.hero__slide h1{font-size:clamp(30px,3.4vw,44px);margin-bottom:16px;}
+.hero__body{font-size:16px;color:var(--ink-2);line-height:1.55;max-width:42ch;}
+.hero__cta{display:flex;align-items:center;gap:22px;margin-top:32px;flex-wrap:wrap;}
+.btn-accent{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 30px;background:var(--geo-accent);color:#fff;font-size:15px;font-weight:600;border-radius:2px;}
+.btn-accent:hover{background:var(--geo-accent-d);}
+.hero__read{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;border-bottom:1px solid var(--ink);padding-bottom:2px;}
+.hero__read svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;}
+.hero__media{position:relative;background:var(--tile);min-height:420px;min-width:0;}
+.hero__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.hero__ui{position:absolute;left:0;bottom:0;width:50%;display:flex;align-items:center;gap:14px;padding:0 clamp(24px,5vw,80px) 34px;}
+.hero__dots{display:flex;gap:10px;}
+.hero__dots button{width:10px;height:10px;border-radius:50%;border:1px solid var(--ink);background:transparent;}
+.hero__dots button[aria-current=true]{background:var(--ink);}
+.hero__arrows{display:flex;gap:8px;margin-left:8px;}
+.hero__arrows button{width:34px;height:34px;border:1px solid var(--ink);border-radius:2px;display:grid;place-items:center;background:#fff;}
+.hero__arrows button:hover{background:var(--ink);color:#fff;}
+.hero__arrows svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ============================================================
+   7. SECTION FURNITURE
+   ============================================================ */
+.sec{padding:64px 0;}
+.sec--tight{padding:52px 0;}
+.sec__head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px;flex-wrap:wrap;}
+.sec h2{font-size:clamp(24px,2.4vw,30px);}
+.sec__sub{font-size:13px;color:var(--muted);margin-top:8px;}
+
+/* ============================================================
+   8. RAIL (recommended)
+   ============================================================ */
+.rail-wrap{position:relative;}
+.rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px;}
+.rail::-webkit-scrollbar{display:none;}
+.rcard{flex:0 0 220px;scroll-snap-align:start;}
+.rcard__top{position:relative;overflow:hidden;background:var(--tile);}
+.rcard__img{display:block;width:100%;aspect-ratio:1/1;background:var(--tile);}
+.rcard__img img{width:100%;height:100%;object-fit:cover;}
+.rcard__add{position:absolute;left:0;right:0;bottom:0;height:42px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;transform:translateY(100%);transition:transform .22s ease;}
+.rcard__add.is-added{background:#39a561;transform:translateY(0);}
+.rcard:hover .rcard__add,.rcard__add:focus-visible,.rcard__img:focus-visible + .rcard__add{transform:translateY(0);}
+.rcard__info{display:block;width:100%;text-align:left;padding-top:12px;}
+.rcard__brand{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);}
+.rcard__name{display:block;font-size:14px;font-weight:500;margin-top:5px;line-height:1.3;min-height:2.6em;}
+.rcard__price{display:block;font-size:14px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums;}
+.rcard__price s{color:var(--muted);font-weight:400;margin-left:6px;}
+.railbtn{position:absolute;top:calc(50% - 60px);width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid var(--ink);display:grid;place-items:center;z-index:3;transition:opacity .2s;}
+.railbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.railbtn:hover{background:var(--ink);color:#fff;}
+.railbtn--prev{left:-14px;}
+.railbtn--next{right:-14px;}
+.railbtn:disabled{opacity:0;pointer-events:none;}
+@media (hover:none){
+  .rcard__add{transform:translateY(0);}
+  .railbtn{display:none;}
+}
+
+/* ============================================================
+   9. CAMPAIGN TILES
+   ============================================================ */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.tile__media{aspect-ratio:4/5;background:var(--tile);overflow:hidden;}
+.tile__media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.tile:hover .tile__media img{transform:scale(1.035);}
+.tile h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:16px;}
+.tile p{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45;}
+.tile__cta{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--ink);padding-bottom:2px;}
+.tile__cta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;}
+
+/* ============================================================
+   10. SHOP GRID + TOGGLE
+   ============================================================ */
+.shopbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
+.toggle{display:flex;gap:8px;flex-wrap:wrap;}
+.toggle button{height:40px;padding:0 18px;border:1px solid var(--ink);background:#fff;font-size:14px;font-weight:500;border-radius:2px;}
+.toggle button[aria-pressed=true]{background:var(--ink);color:#fff;}
+.shopbar__right{display:flex;align-items:center;gap:18px;}
+.count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.viewall{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--ink);padding-bottom:2px;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 16px;margin-top:22px;}
+.pcard{display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:14px;}
+.pcard__media{position:relative;aspect-ratio:1/1;background:var(--tile);display:block;overflow:hidden;}
+.pcard__media img{width:100%;height:100%;object-fit:cover;}
+.pcard__flag{position:absolute;top:10px;left:10px;background:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;padding:5px 8px;}
+.pcard__brand{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-top:14px;}
+.pcard__name{font-size:15px;font-weight:500;margin-top:6px;line-height:1.3;}
+.pcard__name:hover{text-decoration:underline;text-underline-offset:3px;}
+.pcard__rate{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:12px;color:var(--muted);}
+.pcard__price{margin-top:8px;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;}
+.pcard__price s{color:var(--muted);font-weight:400;margin-left:8px;}
+.pcard__act{display:flex;gap:8px;margin-top:14px;padding-bottom:4px;}
+.btn-ink{flex:1;height:42px;background:var(--ink);color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;border-radius:2px;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.btn-ink:hover{background:#000;}
+.btn-ink.is-added{background:#39a561;}
+.btn-ink svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;}
+.heartbtn{width:42px;height:42px;border:1px solid var(--line);border-radius:2px;display:grid;place-items:center;color:var(--ink);}
+.heartbtn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.5;}
+.heartbtn:hover{border-color:var(--ink);}
+.heartbtn.is-on{border-color:var(--geo-accent);color:var(--geo-accent);}
+.heartbtn.is-on svg{fill:currentColor;}
+
+/* ============================================================
+   11. POPULAR RIGHT NOW
+   ============================================================ */
+.popular{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;}
+.pop{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);}
+.pop__name{font-size:clamp(20px,2.2vw,28px);font-weight:500;letter-spacing:-0.03em;text-transform:lowercase;}
+.pop__price{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-2);opacity:0;transition:opacity .2s ease;white-space:nowrap;}
+.pop:hover .pop__name{text-decoration:underline;text-underline-offset:5px;}
+.pop:hover .pop__price,.pop:focus-visible .pop__price{opacity:1;}
+@media (hover:none){.pop__price{opacity:1;}}
+
+/* ============================================================
+   12. NEWSLETTER
+   ============================================================ */
+.nl{background:var(--band);}
+.nl__in{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:56px 0;}
+.nl h2{font-size:clamp(24px,2.4vw,30px);}
+.nl p{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:46ch;}
+.geo-nl-form{display:flex;gap:8px;}
+.geo-nl-form input{flex:1;height:48px;border:1px solid var(--ink);border-radius:2px;padding:0 14px;background:#fff;font-size:14px;min-width:0;}
+.geo-nl-form button{height:48px;padding:0 26px;background:var(--ink);color:#fff;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;border-radius:2px;}
+.geo-nl-success{align-items:center;gap:10px;font-size:15px;font-weight:600;height:48px;}
+.geo-nl-success svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.geo-nl-note{font-size:12px;color:var(--muted);margin-top:10px;}
+
+/* ============================================================
+   13. FOOTER
+   ============================================================ */
+.ft{border-top:1px solid var(--line);padding:56px 0 0;}
+.ft__cols{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;}
+.ft h3{font-size:12px;text-transform:uppercase;letter-spacing:.09em;margin-bottom:16px;}
+.ft li{margin-bottom:10px;}
+.ft a{font-size:14px;color:var(--ink-2);}
+.ft a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px;}
+.ft p{font-size:14px;color:var(--ink-2);line-height:1.55;}
+.pays{display:flex;flex-wrap:wrap;gap:8px;}
+.pays li{margin:0;border:1px solid var(--line);padding:7px 10px;font-size:12px;font-weight:500;color:var(--ink-2);border-radius:2px;}
+.ft__logo{margin-bottom:14px;}
+.ft__bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:48px;padding:22px 0;font-size:12px;color:var(--muted);}
+
+/* ============================================================
+   14. MOBILE NAV PANEL
+   ============================================================ */
+.mnav{position:fixed;inset:0;background:#fff;z-index:80;transform:translateX(-100%);transition:transform .3s cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column;overflow-y:auto;}
+.mnav.is-open{transform:translateX(0);}
+.mnav__head{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--line);}
+.mnav__close{width:40px;height:40px;display:grid;place-items:center;}
+.mnav__close svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;}
+.mnav ul{padding:8px 16px;}
+.mnav li{border-bottom:1px solid var(--line);}
+.mnav a,.mnav button{display:block;width:100%;text-align:left;padding:16px 0;font-size:13px;text-transform:uppercase;letter-spacing:.08em;font-weight:500;}
+.mnav .is-deal{color:var(--geo-accent);font-weight:600;}
+.mnav__foot{padding:16px;display:flex;flex-direction:column;gap:12px;font-size:14px;color:var(--ink-2);}
+
+/* ============================================================
+   15. RESPONSIVE
+   ============================================================ */
+@media (min-width:900px){
+  .topstick{position:sticky;top:0;z-index:50;}
+}
+@media (max-width:1100px){
+  .grid{grid-template-columns:repeat(3,1fr);}
+  .geo-search input{width:190px;}
+  .hd__acct span{display:none;}
+}
+@media (max-width:900px){
+  .wrap{padding:0 16px;}
+  .util__right,.hd__loc,.navrow,.hd__acct,.hd__search,.iconlink--desk{display:none;}
+  .hd__burger{display:grid;}
+  .searchbar-mob{display:block;}
+  .hd__in{grid-template-columns:1fr auto 1fr;min-height:60px;}
+  .logo span{font-size:19px;}
+  .hero__slide{grid-template-columns:minmax(0,1fr);}
+  .hero__media{order:-1;min-height:0;height:min(72vw,360px);}
+  .hero__panel{padding:36px 16px 44px;}
+  .hero__inner{margin-left:0;max-width:none;}
+  .hero__ui{position:static;width:100%;padding:0 16px 36px;}
+  .sec{padding:44px 0;}
+  .tiles{grid-template-columns:repeat(2,1fr);}
+  .grid{grid-template-columns:repeat(2,1fr);}
+  .popular{grid-template-columns:1fr;gap:0;}
+  .nl__in{grid-template-columns:1fr;padding:44px 0;}
+  .ft__cols{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:560px){
+  .rcard{flex:0 0 65vw;}
+  .grid{grid-template-columns:1fr 1fr;gap:12px;}
+  .btn-ink{font-size:11px;letter-spacing:.05em;padding:0 4px;}
+  .pcard__name{font-size:14px;}
+  .ft__cols{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== UTILITY BAR ========== -->
+<div class="util">
+  <div class="wrap util__in">
+    <a class="util__mid" data-url="account">Download the Geostoresgh app
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <div class="util__right">
+      <a data-url="account">Stores</a><span class="util__sep">·</span>
+      <a data-url="account">Track order</a><span class="util__sep">·</span>
+      <a data-url="support">Help</a>
+    </div>
+  </div>
+</div>
+
+<div class="topstick">
+  <!-- ========== HEADER ========== -->
+  <header class="hd">
+    <div class="wrap hd__in">
+      <div class="hd__loc">GH · <b>GH₵</b> <span aria-hidden="true">|</span> English</div>
+      <button class="hd__burger" type="button" data-menu-toggle="mobile-nav" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a class="logo" data-url="store" aria-label="Geostoresgh home">
+        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+        <span>Geostoresgh</span>
+      </a>
+      <div class="hd__right">
+        <a class="hd__acct" data-url="login"><span>Hello, <b>sign in</b></span></a>
+        <a class="iconlink iconlink--desk" data-url="login" aria-label="Sign in to your account">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+        </a>
+        <a class="iconlink iconlink--desk" data-url="account" aria-label="Saved items">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9-8.5C1.5 8 3.5 4.5 7 4.5c2 0 3.5 1 5 3 1.5-2 3-3 5-3 3.5 0 5.5 3.5 4 7-2 4.1-9 8.5-9 8.5z"/></svg>
+          <span class="badge" data-wishlist-count data-hide-empty hidden>0</span>
+        </a>
+        <button class="iconlink" type="button" data-cart-open aria-label="Open shopping bag">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <span class="badge" data-cart-count data-hide-empty hidden>0</span>
+        </button>
+        <form class="hd__search geo-search" role="search" aria-label="Search products">
+          <label class="sr-only" for="search-desk">Search Geostoresgh</label>
+          <input id="search-desk" type="search" placeholder="Search Geostoresgh…">
+          <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        </form>
+      </div>
+    </div>
+    <div class="wrap searchbar-mob">
+      <form class="geo-search" role="search" aria-label="Search products, mobile">
+        <label class="sr-only" for="search-mob">Search Geostoresgh</label>
+        <input id="search-mob" type="search" placeholder="Search Geostoresgh…">
+        <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      </form>
+    </div>
+  </header>
+
+  <!-- ========== CATEGORY NAV ========== -->
+  <nav class="navrow" aria-label="Departments">
+    <div class="wrap">
+      <ul>
+        <li><button type="button" data-shop="new">New in</button></li>
+        <li><a data-url="category:phones">Phones</a></li>
+        <li><a data-url="category:audio">Audio</a></li>
+        <li><a data-url="category:wearables">Wearables</a></li>
+        <li><a data-url="category:home-tech">Home tech</a></li>
+        <li><button type="button" class="is-deal" data-shop="deals">Deals</button></li>
+        <li><a data-url="store">Brands</a></li>
+        <li><a data-url="support">Support</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<!-- ========== PROMO STRIP ========== -->
+<div class="promo">
+  <button type="button" data-shop="deals">Price drops on iPhone 15 Pro and AirPods Pro. <u>Shop now</u></button>
+</div>
+
+<main>
+  <!-- ========== HERO CAROUSEL ========== -->
+  <section class="hero" id="hero" role="region" aria-roledescription="carousel" aria-label="Featured offers">
+    <div class="hero__track" id="hero-track"></div>
+    <div class="hero__ui">
+      <div class="hero__dots" id="hero-dots" role="group" aria-label="Choose slide"></div>
+      <div class="hero__arrows">
+        <button type="button" id="hero-prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+        <button type="button" id="hero-next" aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+    <p class="sr-only" id="hero-live" aria-live="off"></p>
+  </section>
+
+  <!-- ========== RECOMMENDED RAIL ========== -->
+  <section class="sec" aria-labelledby="rec-h">
+    <div class="wrap">
+      <div class="sec__head">
+        <div>
+          <h2 id="rec-h">Recommended for you</h2>
+          <p class="sec__sub">Based on what customers in Ghana are buying this week.</p>
+        </div>
+      </div>
+      <div class="rail-wrap" data-rail-wrap>
+        <button class="railbtn railbtn--prev" type="button" data-rail-prev aria-label="Scroll recommendations left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+        <div class="rail" data-rail id="rec-rail" tabindex="0" role="group" aria-label="Recommended products"></div>
+        <button class="railbtn railbtn--next" type="button" data-rail-next aria-label="Scroll recommendations right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CAMPAIGN TILES ========== -->
+  <section class="sec sec--tight" aria-labelledby="dep-h">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 id="dep-h">Shop the departments</h2>
+      </div>
+      <div class="tiles" id="dep-tiles"></div>
+    </div>
+  </section>
+
+  <!-- ========== SHOP GRID ========== -->
+  <section class="sec" id="shop" aria-labelledby="shop-h">
+    <div class="wrap">
+      <h2 class="sr-only" id="shop-h">Shop new arrivals, best sellers and price drops</h2>
+      <div class="shopbar">
+        <div class="toggle" id="shop-toggle">
+          <button type="button" data-state="new" aria-pressed="true">New arrivals</button>
+          <button type="button" data-state="best" aria-pressed="false">Best sellers</button>
+          <button type="button" data-state="deals" aria-pressed="false">Price drops</button>
+        </div>
+        <div class="shopbar__right">
+          <span class="count" id="shop-count" aria-live="polite">8 products</span>
+          <a class="viewall" data-url="store">View all</a>
+        </div>
+      </div>
+      <div class="grid" id="shop-grid"></div>
+    </div>
+  </section>
+
+  <!-- ========== POPULAR RIGHT NOW ========== -->
+  <section class="sec sec--tight" aria-labelledby="pop-h">
+    <div class="wrap">
+      <div class="sec__head"><h2 id="pop-h">Popular right now</h2></div>
+      <div class="popular" id="popular"></div>
+    </div>
+  </section>
+
+  <!-- ========== NEWSLETTER ========== -->
+  <section class="nl" aria-labelledby="nl-h">
+    <div class="wrap nl__in">
+      <div>
+        <h2 id="nl-h">Get price drops first.</h2>
+        <p>One email a week: new stock, honest product notes, and the deals that are actually worth it.</p>
+      </div>
+      <form data-newsletter novalidate>
+        <div class="geo-nl-form">
+          <label class="sr-only" for="nl-email">Email address</label>
+          <input id="nl-email" type="email" placeholder="you@example.com" autocomplete="email">
+          <button type="submit">Sign up</button>
+        </div>
+        <p class="geo-nl-success"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg> You’re on the list.</p>
+        <p class="geo-nl-error">Enter a valid email address, for example you@example.com.</p>
+        <p class="geo-nl-note">No spam. Unsubscribe any time.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft__cols">
+      <div>
+        <h3>Shop</h3>
+        <ul>
+          <li><a data-url="store">Featured products</a></li>
+          <li><a data-url="category:phones">Phones</a></li>
+          <li><a data-url="category:audio">Audio</a></li>
+          <li><a data-url="category:wearables">Wearables</a></li>
+          <li><a data-url="category:home-tech">Home tech</a></li>
+          <li><a data-url="cart">Shopping bag</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Help &amp; account</h3>
+        <ul>
+          <li><a data-url="account">Orders and account</a></li>
+          <li><a data-url="support">Contact support</a></li>
+          <li><a data-url="legal:privacy-policy">Privacy policy</a></li>
+          <li><a data-url="legal:terms">Terms</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Pay with</h3>
+        <ul class="pays" id="pay-list"></ul>
+      </div>
+      <div>
+        <a class="logo ft__logo" data-url="store" aria-label="Geostoresgh home">
+          <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+          <span style="font-size:18px">Geostoresgh</span>
+        </a>
+        <h3>About</h3>
+        <p>Useful tech, honest product details, and support you can reach. Delivered across Ghana.</p>
+      </div>
+    </div>
+    <div class="ft__bottom">
+      <span>© <span data-year></span> Geostoresgh</span>
+      <span>Prices are shown in Ghana cedis.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== MOBILE NAV ========== -->
+<div class="mnav" id="mobile-nav">
+  <div class="mnav__head">
+    <a class="logo" data-url="store" aria-label="Geostoresgh home">
+      <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle cx="15" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="4.6"/><path d="M6.5 21.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/><circle cx="25.5" cy="5" r="2.8" fill="currentColor"/></svg>
+      <span style="font-size:18px">Geostoresgh</span>
+    </a>
+    <button class="mnav__close" type="button" data-menu-close aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <nav aria-label="Departments, mobile">
+    <ul>
+      <li><button type="button" data-shop="new" data-menu-close>New in</button></li>
+      <li><a data-url="category:phones">Phones</a></li>
+      <li><a data-url="category:audio">Audio</a></li>
+      <li><a data-url="category:wearables">Wearables</a></li>
+      <li><a data-url="category:home-tech">Home tech</a></li>
+      <li><button type="button" class="is-deal" data-shop="deals" data-menu-close>Deals</button></li>
+      <li><a data-url="store">Brands</a></li>
+      <li><a data-url="support">Support</a></li>
+    </ul>
+  </nav>
+  <div class="mnav__foot">
+    <a data-url="login">Hello, sign in</a>
+    <a data-url="account">Orders and account</a>
+    <a data-url="support">Help</a>
+    <span style="font-size:12px;color:var(--muted)">GH · GH₵ · English</span>
+  </div>
+</div>
+
+<script src="shared/data.js"></script>
+<script src="shared/core.js"></script>
+<script>
+(function () {
+  function boot() {
+    var G = window.GEO;
+    var esc = G.esc;
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var big = function (p, w) {
+      return G.img(p.imageUrl.split("/").pop().split("?")[0], w);
+    };
+
+    /* ---------- real URLs on every static link ---------- */
+    document.querySelectorAll("[data-url]").forEach(function (el) {
+      var parts = el.dataset.url.split(":");
+      var v = G.urls[parts[0]];
+      el.setAttribute("href", typeof v === "function" ? v(parts[1]) : v);
+    });
+
+    /* ---------- search ---------- */
+    ["search-desk", "search-mob"].forEach(function (id, i) {
+      var input = document.getElementById(id);
+      if (input) G.bindSearch(input, { showDefault: i === 0 });
+    });
+
+    /* ---------- hero carousel ---------- */
+    var slides = [
+      {
+        slug: "iphone-15-pro",
+        eyebrow: "Price drop",
+        title: "iPhone 15 Pro, now GH₵ 750 less.",
+        body: "Titanium build, A17 Pro performance and the camera system people actually upgrade for. Supplied unlocked and ready for Ghanaian networks.",
+      },
+      {
+        slug: "galaxy-s24-ultra",
+        eyebrow: "New in",
+        title: "New in: Galaxy S24 Ultra.",
+        body: "A 6.8-inch display, the S Pen and a 200 MP camera with the sharpest zoom we stock. Built for people who want one device to do everything.",
+      },
+      {
+        slug: "airpods-pro-2",
+        eyebrow: "Price drop",
+        title: "AirPods Pro, price drop.",
+        body: "Strong noise cancellation for the trotro, clear calls for work, and a USB-C case that charges with the same cable as your phone.",
+      },
+    ];
+    var track = document.getElementById("hero-track");
+    var dotWrap = document.getElementById("hero-dots");
+    var live = document.getElementById("hero-live");
+    track.innerHTML = slides
+      .map(function (s, i) {
+        var p = G.bySlug[s.slug];
+        return (
+          '<div class="hero__slide' + (i === 0 ? " is-on" : "") + '" role="group" aria-roledescription="slide" aria-label="' +
+          (i + 1) + ' of ' + slides.length + '"' + (i === 0 ? "" : ' aria-hidden="true"') + '>' +
+          '<div class="hero__panel"><div class="hero__inner">' +
+          '<p class="hero__eyebrow">' + esc(s.eyebrow) + " · " + esc(p.brand) + "</p>" +
+          "<h1>" + esc(s.title) + "</h1>" +
+          '<p class="hero__body">' + esc(s.body) + "</p>" +
+          '<div class="hero__cta">' +
+          '<button type="button" class="btn-accent" data-quickview="' + p.id + '">Shop now</button>' +
+          '<a class="hero__read" href="' + G.urls.product(p.slug) + '">Read &amp; compare <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
+          "</div></div></div>" +
+          '<div class="hero__media"><img src="' + esc(big(p, 1400)) + '" alt="' + esc(p.name) + '"' +
+          (i === 0 ? ' fetchpriority="high"' : ' loading="lazy" data-fade') + "></div>" +
+          "</div>"
+        );
+      })
+      .join("");
+    dotWrap.innerHTML = slides
+      .map(function (s, i) {
+        return '<button type="button" class="hero__dot" aria-label="Show slide ' + (i + 1) + ': ' + esc(s.eyebrow) + '" aria-current="' + (i === 0) + '"></button>';
+      })
+      .join("");
+
+    var slideEls = Array.prototype.slice.call(track.children);
+    var dotEls = Array.prototype.slice.call(dotWrap.children);
+    var index = 0;
+    var timer = null;
+
+    function show(n) {
+      index = (n + slides.length) % slides.length;
+      slideEls.forEach(function (el, i) {
+        el.classList.toggle("is-on", i === index);
+        if (i === index) el.removeAttribute("aria-hidden");
+        else el.setAttribute("aria-hidden", "true");
+      });
+      dotEls.forEach(function (d, i) {
+        d.setAttribute("aria-current", String(i === index));
+      });
+      live.textContent = "Slide " + (index + 1) + " of " + slides.length + ": " + slides[index].title;
+    }
+    function play() {
+      if (reduce) {
+        live.setAttribute("aria-live", "polite");
+        return;
+      }
+      if (timer) return;
+      live.setAttribute("aria-live", "off");
+      timer = setInterval(function () {
+        show(index + 1);
+      }, 6000);
+    }
+    function pause() {
+      clearInterval(timer);
+      timer = null;
+      live.setAttribute("aria-live", "polite");
+    }
+    dotEls.forEach(function (d, i) {
+      d.addEventListener("click", function () {
+        pause();
+        show(i);
+      });
+    });
+    document.getElementById("hero-prev").addEventListener("click", function () {
+      pause();
+      show(index - 1);
+    });
+    document.getElementById("hero-next").addEventListener("click", function () {
+      pause();
+      show(index + 1);
+    });
+    var hero = document.getElementById("hero");
+    hero.addEventListener("mouseenter", pause);
+    hero.addEventListener("mouseleave", play);
+    hero.addEventListener("focusin", pause);
+    hero.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") {
+        pause();
+        show(index - 1);
+      } else if (e.key === "ArrowRight") {
+        pause();
+        show(index + 1);
+      }
+    });
+    show(0);
+    play();
+
+    /* ---------- recommended rail ---------- */
+    var rec = G.filterProducts({ sort: "featured" });
+    document.getElementById("rec-rail").innerHTML = rec
+      .map(function (p) {
+        return (
+          '<article class="rcard">' +
+          '<div class="rcard__top">' +
+          '<button type="button" class="rcard__img" data-quickview="' + p.id + '" aria-label="Quick view: ' + esc(p.name) + '">' +
+          '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy" data-fade></button>' +
+          '<button type="button" class="rcard__add" data-add="' + p.id + '">Add to bag</button>' +
+          "</div>" +
+          '<button type="button" class="rcard__info" data-quickview="' + p.id + '">' +
+          '<span class="rcard__brand">' + esc(p.brand) + "</span>" +
+          '<span class="rcard__name">' + esc(p.name) + "</span>" +
+          '<span class="rcard__price">' + G.formatMoney(p.priceInPesewas) +
+          (p.compareAtInPesewas ? "<s>" + G.formatMoney(p.compareAtInPesewas) + "</s>" : "") +
+          "</span></button></article>"
+        );
+      })
+      .join("");
+
+    /* ---------- department tiles ---------- */
+    document.getElementById("dep-tiles").innerHTML = G.categories
+      .map(function (c) {
+        return (
+          '<a class="tile" href="' + G.urls.category(c.slug) + '">' +
+          '<div class="tile__media"><img src="' + esc(c.imageUrl) + '" alt="' + esc(c.name) + '" loading="lazy" data-fade></div>' +
+          "<h3>" + esc(c.name) + "</h3>" +
+          "<p>" + esc(c.description) + "</p>" +
+          '<span class="tile__cta">Shop now <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>' +
+          "</a>"
+        );
+      })
+      .join("");
+
+    /* ---------- shop grid ---------- */
+    var STATES = {
+      new: function () {
+        return G.filterProducts({ sort: "newest" });
+      },
+      best: function () {
+        return G.filterProducts({ sort: "rating" });
+      },
+      deals: function () {
+        return G.filterProducts({ onSale: true, sort: "price-desc" });
+      },
+    };
+    var grid = document.getElementById("shop-grid");
+    var countEl = document.getElementById("shop-count");
+    var toggle = document.getElementById("shop-toggle");
+
+    function card(p) {
+      var flag = p.compareAtInPesewas ? "Price drop" : p.isNew ? "New" : "";
+      return (
+        '<article class="pcard">' +
+        '<a class="pcard__media" href="' + G.urls.product(p.slug) + '">' +
+        '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy" data-fade>' +
+        (flag ? '<span class="pcard__flag">' + flag + "</span>" : "") +
+        "</a>" +
+        '<div class="pcard__brand">' + esc(p.brand) + "</div>" +
+        '<a class="pcard__name" href="' + G.urls.product(p.slug) + '">' + esc(p.name) + "</a>" +
+        '<div class="pcard__rate">' + G.stars(p.rating) + "<span>" + p.rating + " (" + p.reviewCount + ")</span></div>" +
+        '<div class="pcard__price">' + G.formatMoney(p.priceInPesewas) +
+        (p.compareAtInPesewas ? "<s>" + G.formatMoney(p.compareAtInPesewas) + "</s>" : "") +
+        "</div>" +
+        '<div class="pcard__act">' +
+        '<button type="button" class="btn-ink" data-add="' + p.id + '">Add to bag</button>' +
+        '<button type="button" class="heartbtn" data-wishlist="' + p.id + '" aria-pressed="false" aria-label="Save ' + esc(p.name) + ' for later">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9-8.5C1.5 8 3.5 4.5 7 4.5c2 0 3.5 1 5 3 1.5-2 3-3 5-3 3.5 0 5.5 3.5 4 7-2 4.1-9 8.5-9 8.5z"/></svg>' +
+        "</button></div></article>"
+      );
+    }
+
+    function renderShop(state, scroll) {
+      var list = (STATES[state] || STATES.new)();
+      grid.innerHTML = list.map(card).join("");
+      countEl.textContent = list.length + (list.length === 1 ? " product" : " products");
+      Array.prototype.forEach.call(toggle.children, function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.state === state));
+      });
+      G.paintWishlist();
+      G.bindImages();
+      var target = document.getElementById("shop");
+      if (scroll && target.scrollIntoView) {
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      }
+    }
+    Array.prototype.forEach.call(toggle.children, function (b) {
+      b.addEventListener("click", function () {
+        renderShop(b.dataset.state, false);
+      });
+    });
+    document.querySelectorAll("[data-shop]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        renderShop(b.dataset.shop, true);
+      });
+    });
+    renderShop("new", false);
+
+    /* ---------- popular right now ---------- */
+    var popular = [
+      { slug: "iphone-15-pro", label: "iphone 15 pro" },
+      { slug: "airpods-pro-2", label: "airpods pro" },
+      { slug: "galaxy-s24-ultra", label: "galaxy s24 ultra" },
+      { slug: "apple-watch-series-9", label: "apple watch series 9" },
+      { slug: "jbl-charge-5", label: "jbl charge 5" },
+      { slug: "samsung-55-crystal-uhd-tv", label: 'samsung 55" tv' },
+    ];
+    document.getElementById("popular").innerHTML = popular
+      .map(function (item) {
+        var p = G.bySlug[item.slug];
+        return (
+          '<a class="pop" href="' + G.urls.product(p.slug) + '">' +
+          '<span class="pop__name">' + esc(item.label) + "</span>" +
+          '<span class="pop__price">' + G.formatMoney(p.priceInPesewas) + "</span></a>"
+        );
+      })
+      .join("");
+
+    /* ---------- payment methods ---------- */
+    document.getElementById("pay-list").innerHTML = G.paymentMethods
+      .map(function (m) {
+        return "<li>" + esc(m.name) + "</li>";
+      })
+      .join("");
+
+    /* ---------- rails + images after injection ----------
+       core.js binds rails during init, before these cards exist. Swap the
+       arrow buttons for clones first so re-binding cannot stack listeners. */
+    document
+      .querySelectorAll("[data-rail-wrap] [data-rail-prev], [data-rail-wrap] [data-rail-next]")
+      .forEach(function (b) {
+        b.replaceWith(b.cloneNode(true));
+      });
+    G.bindRails();
+    G.bindImages();
+  }
+
+  if (window.GEO && window.GEO.cart && document.getElementById("geo-shell")) boot();
+  else document.addEventListener("geo:ready", boot);
+})();
+</script>
+</body>
+</html>

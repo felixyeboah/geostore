@@ -1,13 +1,19 @@
 {
 	"extends": "@repo/tsconfig/nextjs.json",
 	"compilerOptions": {
-		"plugins": [{ "name": "next" }],
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
 		"paths": {
-			"@config": ["./config"],
 			"@analytics": ["./modules/analytics"],
-			"@home/*": ["./modules/home/*"],
+			"@auth/*": ["./modules/auth/*"],
 			"@blog/*": ["./modules/blog/*"],
 			"@changelog/*": ["./modules/changelog/*"],
+			"@commerce/*": ["./modules/commerce/*"],
+			"@config": ["./config"],
+			"@home/*": ["./modules/home/*"],
 			"@legal/*": ["./modules/legal/*"],
 			"@shared/*": ["./modules/shared/*"],
 			"content-collections": ["./.content-collections/generated"]

@@ -5,6 +5,7 @@ import { isOrganizationAdmin } from "@repo/auth/lib/helper";
 import { config as paymentsConfig } from "@repo/payments/config";
 import { SettingsMenu } from "@settings/components/SettingsMenu";
 import { PageHeader } from "@shared/components/PageHeader";
+import { getTranslations } from "@shared/lib/translations";
 import {
 	CreditCardIcon,
 	Settings2Icon,
@@ -12,7 +13,6 @@ import {
 	Users2Icon,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { getTranslations } from "@shared/lib/translations";
 import type { PropsWithChildren } from "react";
 
 export default async function SettingsLayout({

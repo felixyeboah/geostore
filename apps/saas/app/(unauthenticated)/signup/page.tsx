@@ -1,48 +1,10 @@
-import { SignupForm } from "@auth/components/SignupForm";
-import { getInvitation } from "@auth/lib/server";
-import { config } from "@repo/auth/config";
 import { redirect } from "next/navigation";
-import { getTranslations } from "@shared/lib/translations";
-import { withQuery } from "ufo";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-export async function generateMetadata() {
-	const t = await getTranslations("auth.signup");
-
-	return {
-		title: t("title"),
-	};
-}
-export default async function SignupPage({
-	searchParams,
-}: {
-	searchParams: Promise<{
-		[key: string]: string | string[] | undefined;
-		invitationId?: string;
-	}>;
-}) {
-	const params = await searchParams;
-	const { invitationId } = params;
-
-	if (!(config.enableSignup || invitationId)) {
-		redirect(withQuery("/login", params));
-	}
-
-	if (invitationId) {
-		const invitation = await getInvitation(invitationId);
-
-		if (
-			!invitation ||
-			invitation.status !== "pending" ||
-			invitation.expiresAt.getTime() < Date.now()
-		) {
-			redirect(withQuery("/login", params));
-		}
-
-		return <SignupForm prefillEmail={invitation.email} />;
-	}
-
-	return <SignupForm />;
+/**
+ * Public sign-up is closed: staff accounts are created with
+ * `pnpm --filter @repo/scripts create:user`. The route stays so existing links
+ * and bookmarks land somewhere sensible instead of a 404.
+ */
+export default function SignupPage() {
+	redirect("/login");
 }

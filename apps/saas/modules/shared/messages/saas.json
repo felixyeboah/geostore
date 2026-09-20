@@ -2,12 +2,16 @@
 	"admin": {
 		"menu": {
 			"analytics": "Analytics",
+			"categories": "Departments",
 			"orders": "Orders",
 			"overview": "Overview",
 			"organizations": "Organizations",
 			"products": "Products",
 			"transactions": "Transactions",
-			"users": "Users"
+			"users": "Users",
+			"collections": "Collections",
+			"storefront": "Storefront",
+			"settings": "Settings"
 		},
 		"organizations": {
 			"backToList": "Back to organizations",
@@ -138,10 +142,16 @@
 			"title": "Forgot your password?"
 		},
 		"login": {
+			"backToStore": "Back to store",
+			"customerAccount": "Staff access",
 			"continueWith": "Or continue with",
 			"createAnAccount": "Create an account",
 			"dontHaveAnAccount": "Don't have an account yet?",
+			"emailPlaceholder": "you@example.com",
 			"forgotPassword": "Forgot password?",
+			"legal": "By continuing, you agree to our",
+			"privacy": "Privacy Policy",
+			"terms": "Store Terms",
 			"hints": {
 				"invalidCredentials": "The email or password you entered are invalid. Please try again.",
 				"linkSent": {
@@ -150,12 +160,24 @@
 				}
 			},
 			"loginWithPasskey": "Login with passkey",
+			"panel": {
+				"eyebrow": "Everything in one place",
+				"title": "Your tech, right where you left it.",
+				"description": "Sign in to track deliveries, revisit past orders, save your details, and review the gadgets you love.",
+				"orders": "Track every order",
+				"checkout": "Check out faster",
+				"security": "Secure account access",
+				"orderLabel": "Latest order",
+				"orderStatus": "Delivered",
+				"orderProduct": "AirPods Pro (2nd generation)",
+				"orderDate": "Arrived today"
+			},
 			"modes": {
 				"magicLink": "Magic link",
 				"password": "Password"
 			},
 			"submit": "Sign in",
-			"subtitle": "Please enter your credentials to sign in.",
+			"subtitle": "Sign in to manage orders, products and stock.",
 			"title": "Welcome back",
 			"sendMagicLink": "Send magic link"
 		},
@@ -202,8 +224,11 @@
 	"notFound": {
 		"code": "404",
 		"title": "Page not found",
+		"description": "The link is old, or the page was moved — nothing in the back office answers to that address.",
 		"goToDashboard": "Go to dashboard",
-		"goToHomepage": "Go to homepage"
+		"goToHomepage": "Go to homepage",
+		"backToOverview": "Back to overview",
+		"viewStorefront": "View storefront"
 	},
 	"onboarding": {
 		"account": {

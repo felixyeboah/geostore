@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>C — Brief · GeoStore Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --page:#fcfcfb;          /* warm off-white, no cards anywhere */
+    --ink:#1c1c1a; --text:#46443f; --muted:#78756d; --faint:#a8a49a;
+    --rule:#e7e5df; --rule-soft:#efedE7;
+    --accent:#6b28d9; --pos:#15803d; --neg:#b3261e; --warn:#9a6700;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text);
+    font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14.5px;line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  .shell{max-width:1000px;margin:0 auto;padding:64px 40px 110px}
+  .num{font-variant-numeric:tabular-nums}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- the brief: language before numbers ---------- */
+  .kicker{color:var(--faint);font-size:12.5px;font-weight:500;letter-spacing:.04em}
+  .brief{margin:14px 0 0;font-size:29px;font-weight:500;color:var(--ink);
+    letter-spacing:-0.024em;line-height:1.32;max-width:24ch}
+  .brief b{font-weight:600}
+  .brief .q{color:var(--faint);font-weight:400}
+
+  /* ---------- quick actions ---------- */
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+  .act{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;
+    border:1px solid var(--rule);border-radius:999px;background:#fff;
+    font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;
+    transition:border-color .12s,background .12s}
+  .act:hover{border-color:#d6d3ca;background:#fdfdfc}
+  .act .n{color:var(--muted);font-weight:400}
+  .act.lead{background:var(--ink);border-color:var(--ink);color:#fff}
+  .act.lead .n{color:#c9c6c0}
+
+  /* ---------- section rhythm: whitespace, not boxes ---------- */
+  section{margin-top:64px}
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+    padding-bottom:14px;border-bottom:1px solid var(--rule)}
+  h2{margin:0;font-size:13px;font-weight:600;color:var(--ink);
+    letter-spacing:.02em}
+  .sec-note{color:var(--muted);font-size:12.5px}
+  .more{color:var(--accent);font-size:12.5px;font-weight:500}
+
+  /* ---------- queue: the page's centre of gravity ---------- */
+  .q-row{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;
+    padding:17px 0;border-bottom:1px solid var(--rule-soft)}
+  .q-row:last-child{border-bottom:0}
+  .q-main{min-width:0}
+  .q-title{display:block;color:var(--ink);font-size:15px;font-weight:500}
+  .q-sub{display:block;margin-top:2px;color:var(--muted);font-size:13px}
+  .q-count{color:var(--ink);font-size:22px;font-weight:600;letter-spacing:-0.02em;
+    white-space:nowrap;min-width:44px;text-align:right}
+  .q-count.flag{color:var(--neg)}
+  .q-go{color:var(--faint);display:flex;align-items:center}
+  .q-row:hover .q-go{color:var(--ink)}
+
+  /* ---------- numbers, stated quietly ---------- */
+  .figs{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:26px}
+  .fig-l{color:var(--muted);font-size:12.5px}
+  .fig-v{margin-top:4px;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:-0.025em}
+  .fig-c{margin-top:3px;font-size:12.5px;color:var(--muted)}
+  .pos{color:var(--pos);font-weight:500}
+  .neg{color:var(--neg);font-weight:500}
+
+  .trend{margin-top:34px}
+  .axis{display:flex;justify-content:space-between;margin-top:9px;color:var(--faint);font-size:11.5px}
+
+  /* ---------- two quiet lists ---------- */
+  .lists{display:grid;grid-template-columns:1fr 1fr;gap:56px}
+  .li{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    padding:12px 0;border-bottom:1px solid var(--rule-soft);font-size:13.5px}
+  .li:last-child{border-bottom:0}
+  .li-k{color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .li-k small{color:var(--muted);font-size:12.5px;margin-left:7px}
+  .li-v{color:var(--ink);font-weight:500;white-space:nowrap}
+  .li-v.low{color:var(--neg)}
+  .li-v.mid{color:var(--warn)}
+
+  @media (max-width:860px){
+    .shell{padding:44px 24px 84px}
+    .brief{font-size:25px;max-width:none}
+    .figs{grid-template-columns:1fr 1fr;gap:24px}
+    .lists{grid-template-columns:1fr;gap:56px}
+  }
+  @media (max-width:560px){
+    .shell{padding:34px 18px 72px}
+    .brief{font-size:22px}
+    .figs{grid-template-columns:1fr 1fr;gap:20px}
+    .q-row{grid-template-columns:1fr auto}
+    .q-go{display:none}
+    .fig-v{font-size:21px}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===================== the brief ===================== -->
+  <div class="kicker">Thursday, 18 September</div>
+  <p class="brief">
+    Trade is up <b>12.4%</b> this month. <span class="q">Four orders are late, six products are nearly out.</span>
+  </p>
+
+  <div class="acts">
+    <button class="act lead" type="button">Fulfil orders <span class="n">18</span></button>
+    <button class="act" type="button">Restock products <span class="n">6</span></button>
+    <button class="act" type="button">Review drafts <span class="n">18</span></button>
+    <button class="act" type="button">Add product</button>
+  </div>
+
+  <!-- ===================== queue ===================== -->
+  <section>
+    <div class="sec-head">
+      <h2>Waiting on you</h2>
+      <span class="sec-note num">38 items</span>
+    </div>
+
+    <a class="q-row" href="#">
+      <span class="q-main">
+        <span class="q-title">Orders past their dispatch window</span>
+        <span class="q-sub">Paid more than 48 hours ago and still not shipped</span>
+      </span>
+      <span class="q-count flag num">4</span>
+      <span class="q-go">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="q-row" href="#">
+      <span class="q-main">
+        <span class="q-title">Orders to fulfil</span>
+        <span class="q-sub">Paid and awaiting dispatch, oldest from Monday</span>
+      </span>
+      <span class="q-count num">18</span>
+      <span class="q-go">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="q-row" href="#">
+      <span class="q-main">
+        <span class="q-title">Products low on stock</span>
+        <span class="q-sub">Two will sell out within the week at current pace</span>
+      </span>
+      <span class="q-count num">6</span>
+      <span class="q-go">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="q-row" href="#">
+      <span class="q-main">
+        <span class="q-title">Failed payments</span>
+        <span class="q-sub">Last 7 days — retry or cancel the order</span>
+      </span>
+      <span class="q-count num">14</span>
+      <span class="q-go">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="q-row" href="#">
+      <span class="q-main">
+        <span class="q-title">Draft products</span>
+        <span class="q-sub">Written but never published to the catalogue</span>
+      </span>
+      <span class="q-count num">18</span>
+      <span class="q-go">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+  </section>
+
+  <!-- ===================== the month ===================== -->
+  <section>
+    <div class="sec-head">
+      <h2>The last 30 days</h2>
+      <a class="more" href="#">Full analytics</a>
+    </div>
+
+    <div class="figs">
+      <div>
+        <div class="fig-l">Paid revenue</div>
+        <div class="fig-v num">GH₵ 48,320</div>
+        <div class="fig-c"><span class="pos">+12.4%</span></div>
+      </div>
+      <div>
+        <div class="fig-l">Orders</div>
+        <div class="fig-v num">312</div>
+        <div class="fig-c"><span class="pos">+8.1%</span> · 264 paid</div>
+      </div>
+      <div>
+        <div class="fig-l">Average order</div>
+        <div class="fig-v num">GH₵ 183</div>
+        <div class="fig-c"><span class="pos">+4.0%</span></div>
+      </div>
+      <div>
+        <div class="fig-l">Payment success</div>
+        <div class="fig-v num">94%</div>
+        <div class="fig-c"><span class="neg">−1.8%</span> · 218 of 232</div>
+      </div>
+    </div>
+
+    <div class="trend">
+      <svg viewBox="0 0 1000 150" width="100%" height="140" preserveAspectRatio="none"
+           role="img" aria-label="Daily paid revenue over the last 30 days">
+        <defs>
+          <linearGradient id="wash" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1c1c1a" stop-opacity=".07"/>
+            <stop offset="100%" stop-color="#1c1c1a" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="140" x2="1000" y2="140" stroke="#e7e5df" stroke-width="1"/>
+        <path fill="url(#wash)" d="M4,108 38,99 72,115 106,89 140,95 174,81 208,67 242,90 276,99 310,84 344,75 378,59 412,71 446,82 480,93 514,78 548,63 582,48 616,58 650,74 684,83 718,68 752,54 786,40 820,32 854,50 888,63 922,45 956,33 996,23 L996,140 L4,140 Z"/>
+        <polyline fill="none" stroke="#1c1c1a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"
+          points="4,108 38,99 72,115 106,89 140,95 174,81 208,67 242,90 276,99 310,84 344,75 378,59 412,71 446,82 480,93 514,78 548,63 582,48 616,58 650,74 684,83 718,68 752,54 786,40 820,32 854,50 888,63 922,45 956,33 996,23"/>
+        <circle cx="996" cy="23" r="2.8" fill="#1c1c1a"/>
+      </svg>
+      <div class="axis num">
+        <span>20 Aug</span><span>27 Aug</span><span>3 Sep</span><span>10 Sep</span><span>18 Sep</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== two quiet lists ===================== -->
+  <section>
+    <div class="lists">
+      <div>
+        <div class="sec-head">
+          <h2>Selling best</h2>
+          <span class="sec-note">by revenue</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Bolga Market Basket <small>82 sold</small></span>
+          <span class="li-v num">GH₵ 9,840</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Kente Throw Pillow Set <small>65 sold</small></span>
+          <span class="li-v num">GH₵ 7,215</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Raw Shea Butter 500g <small>156 sold</small></span>
+          <span class="li-v num">GH₵ 5,460</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Ankara Tote Bag <small>47 sold</small></span>
+          <span class="li-v num">GH₵ 4,120</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Adinkra Wall Print A2 <small>38 sold</small></span>
+          <span class="li-v num">GH₵ 2,980</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-head">
+          <h2>Running out</h2>
+          <a class="more" href="#">Inventory</a>
+        </div>
+        <div class="li">
+          <span class="li-k">Raw Shea Butter 500g <small>~5 a day</small></span>
+          <span class="li-v low num">2 left</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Kente Throw Pillow Set <small>~2 a day</small></span>
+          <span class="li-v low num">3 left</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Bolga Market Basket <small>~3 a day</small></span>
+          <span class="li-v mid num">4 left</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Ankara Tote Bag <small>~1 a day</small></span>
+          <span class="li-v mid num">5 left</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Adinkra Wall Print A2 <small>~1 a day</small></span>
+          <span class="li-v mid num">5 left</span>
+        </div>
+        <div class="li">
+          <span class="li-k">Woven Raffia Coaster Set <small>~1 a day</small></span>
+          <span class="li-v mid num">6 left</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== recent activity, last ===================== -->
+  <section>
+    <div class="sec-head">
+      <h2>Latest orders</h2>
+      <a class="more" href="#">View all 312</a>
+    </div>
+    <div class="li">
+      <span class="li-k">Ama Owusu <small>GS-10428 · 3 items · processing</small></span>
+      <span class="li-v num">GH₵ 412</span>
+    </div>
+    <div class="li">
+      <span class="li-k">Kofi Mensah <small>GS-10427 · 1 item · shipped</small></span>
+      <span class="li-v num">GH₵ 149</span>
+    </div>
+    <div class="li">
+      <span class="li-k">Esi Boateng <small>GS-10426 · 5 items · delivered</small></span>
+      <span class="li-v num">GH₵ 878</span>
+    </div>
+    <div class="li">
+      <span class="li-k">Yaw Asante <small>GS-10425 · 2 items · pending</small></span>
+      <span class="li-v num">GH₵ 236</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

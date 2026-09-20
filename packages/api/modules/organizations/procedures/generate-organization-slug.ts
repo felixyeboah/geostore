@@ -3,9 +3,9 @@ import { getOrganizationBySlug } from "@repo/database";
 import slugify from "@sindresorhus/slugify";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { protectedProcedure } from "../../../orpc/procedures";
 
-export const generateOrganizationSlug = publicProcedure
+export const generateOrganizationSlug = protectedProcedure
 	.route({
 		method: "GET",
 		path: "/organizations/generate-slug",
@@ -15,7 +15,10 @@ export const generateOrganizationSlug = publicProcedure
 	})
 	.input(
 		z.object({
-			name: z.string(),
+			// This route does up to three database lookups per call, so the
+			// input is bounded. It is also protected now: slug probing let an
+			// anonymous caller enumerate which organisations exist.
+			name: z.string().trim().min(1).max(64),
 		}),
 	)
 	.handler(async ({ input: { name } }) => {

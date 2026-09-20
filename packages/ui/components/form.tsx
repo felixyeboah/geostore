@@ -132,13 +132,53 @@ const FormDescription = ({
 	);
 };
 
+/**
+ * Pulls the first real message out of a react-hook-form error.
+ *
+ * For a scalar field the error is `{ message }` and this is trivial. For an
+ * array field it is a sparse *array* of per-element errors whose own `.message`
+ * is `undefined` — so the previous `String(error.message)` rendered the literal
+ * text "undefined" under the field, and the message the schema actually defined
+ * could never be shown. Nested objects have the same shape one level down.
+ */
+function getFirstErrorMessage(error: unknown): string | undefined {
+	if (!error || typeof error !== "object") {
+		return undefined;
+	}
+
+	const { message } = error as { message?: unknown };
+	if (typeof message === "string" && message.length > 0) {
+		return message;
+	}
+
+	// Sparse arrays are why this is a `for…in`: only populated indexes are
+	// visited, and only the entries react-hook-form actually wrote exist.
+	for (const key in error) {
+		// `ref` points at the DOM node and `type` names the failed rule; neither
+		// carries a message, and `ref` would recurse into the whole element.
+		if (key === "ref" || key === "type") {
+			continue;
+		}
+		const nested = getFirstErrorMessage(
+			(error as Record<string, unknown>)[key],
+		);
+		if (nested) {
+			return nested;
+		}
+	}
+
+	return undefined;
+}
+
 const FormMessage = ({
 	className,
 	children,
 	...props
 }: React.HTMLAttributes<HTMLParagraphElement>) => {
 	const { error, formMessageId } = useFormField();
-	const body = error ? String(error?.message) : children;
+	// Falling back to `children` rather than to nothing keeps a field that is
+	// flagged `aria-invalid` from being left with no explanation at all.
+	const body = (error ? getFirstErrorMessage(error) : undefined) ?? children;
 
 	if (!body) {
 		return null;

@@ -7,6 +7,7 @@ export const config = {
 	enabledThemes: ["light", "dark"],
 	defaultTheme: "light",
 	useSidebarLayout: true,
-	redirectAfterSignIn: "/dashboard",
+	// Only staff can sign in, so the back office is the destination.
+	redirectAfterSignIn: "/admin/overview",
 	redirectAfterLogout: "/login",
 } as const satisfies SaasConfig;

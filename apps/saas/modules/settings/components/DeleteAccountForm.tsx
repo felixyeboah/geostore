@@ -6,8 +6,8 @@ import { Button } from "@repo/ui/components/button";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { useConfirmationAlert } from "@shared/components/ConfirmationAlertProvider";
 import { SettingsItem } from "@shared/components/SettingsItem";
-import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "@shared/lib/translations";
+import { useMutation } from "@tanstack/react-query";
 
 export function DeleteAccountForm() {
 	const t = useTranslations();

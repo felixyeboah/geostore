@@ -5,9 +5,9 @@ import { organizationListQueryKey } from "@organizations/lib/api";
 import { authClient } from "@repo/auth/client";
 import { Button } from "@repo/ui/components/button";
 import { useRouter } from "@shared/hooks/router";
+import { useTranslations } from "@shared/lib/translations";
 import { useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, XIcon } from "lucide-react";
-import { useTranslations } from "@shared/lib/translations";
 import { useState } from "react";
 
 export function OrganizationInvitationModal({

@@ -3,4 +3,10 @@ title: Overview
 subtitle: This is the first step to start using Geostoresgh
 ---
 
-This is the overview page of the getting started section.
+Use this section after the local database is running.
+
+1. Seed the sample catalogue with `pnpm db:seed`.
+2. Create an administrator and sign in at `/login`.
+3. Publish or restock products from `/admin/products`.
+4. Place a test order. With `STORE_PAYMENT_PROVIDER=mock`, checkout marks the order paid immediately. With Reevit, complete the phone prompt and wait for the webhook.
+5. Move the order through fulfilment from `/admin/orders`.

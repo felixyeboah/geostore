@@ -9,6 +9,7 @@ import { config as paymentsConfig } from "@repo/payments/config";
 import { ConfirmationAlertProvider } from "@shared/components/ConfirmationAlertProvider";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { getServerQueryClient } from "@shared/lib/server";
+import { storefront } from "@shared/lib/storefront";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -23,6 +24,13 @@ export default async function AuthenticatedLayout({
 
 	if (!session) {
 		redirect("/login");
+	}
+
+	// There are no customer accounts: everything behind sign-in is the back
+	// office. Anyone else is sent to the storefront rather than back to /login,
+	// which would bounce them straight here again on a valid session.
+	if (session.user?.role !== "admin") {
+		redirect(storefront.shop);
 	}
 
 	const queryClient = getServerQueryClient();

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin overview — round 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--brand:#6b28d9;--brand-deep:#4b13a3;--brand-soft:#f4efff;--brand-ring:#e4d8ff;
+        --ink:#101014;--text:#3f3f46;--muted:#71717a;--faint:#a1a1aa;
+        --line:#e9e9ec;--line-soft:#f2f2f4;--canvas:#fbfbfc;
+        --shadow:0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.05)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--text);
+    font-family:Inter,system-ui,sans-serif;font-size:14.5px;line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  .shell{max-width:880px;margin:0 auto;padding:56px 32px 96px}
+  .mark{width:34px;height:34px;border-radius:9px;color:#fff;
+    background:linear-gradient(140deg,var(--brand-deep),#8343e6);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  h1{margin:16px 0 0;font-size:27px;font-weight:600;color:var(--ink);letter-spacing:-0.025em}
+  .lede{margin:12px 0 0;max-width:64ch}
+  .lede b{color:var(--ink);font-weight:600}
+  .fix{margin:22px 0 0;padding:16px 18px;background:#fff;border:1px solid var(--line);
+    border-radius:10px;box-shadow:var(--shadow);font-size:13.5px}
+  .fix b{color:var(--ink);font-weight:600}
+  .fix ul{margin:9px 0 0;padding-left:18px}
+  .fix li{margin-top:4px}
+
+  .opt{display:block;margin-top:16px;padding:20px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:var(--shadow);text-decoration:none;color:inherit;
+    transition:box-shadow .13s,border-color .13s}
+  .opt:hover{border-color:#dcdce1;box-shadow:0 2px 6px rgba(16,24,40,.07)}
+  .opt-top{display:flex;align-items:center;gap:12px}
+  .badge{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;
+    background:var(--brand-soft);border:1px solid var(--brand-ring);
+    color:var(--brand-deep);font-size:12.5px;font-weight:600}
+  h2{margin:0;font-size:16.5px;font-weight:600;color:var(--ink);letter-spacing:-0.012em}
+  .tag{margin-left:auto;color:var(--muted);font-size:12.5px;white-space:nowrap}
+  .desc{margin:9px 0 0;font-size:13.5px}
+  dl{margin:13px 0 0;display:grid;grid-template-columns:106px 1fr;gap:6px 18px;font-size:13px}
+  dt{color:var(--muted)}
+  dd{margin:0}
+  .open{display:inline-block;margin-top:14px;color:var(--brand);font-size:13px;font-weight:500}
+  .note{margin-top:32px;font-size:13px;color:var(--muted)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--ink)}
+  @media (max-width:600px){.shell{padding:36px 16px 72px}dl{grid-template-columns:1fr;gap:1px}dt{margin-top:7px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <span class="mark">G</span>
+  <h1>Admin overview — round 3</h1>
+  <p class="lede">
+    Rounds 1 and 2 both missed. Looking at how Shopify, Squarespace, Etsy, Fresha and PandaDoc
+    actually build admin screens, the thing all six of my earlier mockups were missing wasn't
+    styling — it was the <b>application shell</b>. No sidebar, no store switcher, no global search,
+    no avatar, no product thumbnails. A bare content column can't look like a finished product no
+    matter how the type is set.
+  </p>
+
+  <div class="fix">
+    <b>What's new in this round</b>
+    <ul>
+      <li>Full app shell — store switcher, grouped navigation with an order count, global search with ⌘K, notification bell, signed-in user</li>
+      <li>Product thumbnails on every order, best-seller and low-stock row, plus customer avatars</li>
+      <li>Designed tiles instead of stock photos, so nothing depends on an external image host</li>
+      <li>Brand purple carried through logo, active nav, primary button and the chart — present but not decorative</li>
+      <li>Soft one-pixel shadows and 11px radii rather than flat hard borders</li>
+    </ul>
+  </div>
+
+  <a class="opt" href="1-studio-light.html">
+    <div class="opt-top"><span class="badge">1</span><h2>Studio — light</h2><span class="tag">Recommended</span></div>
+    <p class="desc">
+      Sidebar shell, light. KPI cards across the top, revenue chart beside the attention queue,
+      then a full-width order table with thumbnails and avatars, then best sellers and low stock
+      side by side.
+    </p>
+    <dl>
+      <dt>Shell</dt><dd>252px sidebar, sticky, with grouped nav and user footer</dd>
+      <dt>Chart</dt><dd>Purple area with gradient, dashed previous period, endpoint marker</dd>
+      <dt>Closest to</dt><dd>Shopify admin, Fresha</dd>
+    </dl>
+    <span class="open">Open option 1 →</span>
+  </a>
+
+  <a class="opt" href="2-studio-dark.html">
+    <div class="opt-top"><span class="badge">2</span><h2>Studio — dark</h2><span class="tag">Same layout, dark</span></div>
+    <p class="desc">
+      Structurally identical to option 1, rebuilt on GeoStore's shipped dark theme — the deep
+      purple background and surfaces already in <code>theme.css</code>. Often reads as the more
+      premium of the two.
+    </p>
+    <dl>
+      <dt>Shell</dt><dd>Identical to option 1</dd>
+      <dt>Palette</dt><dd>#12081f canvas, #1a0d2a surfaces, #8343e6 accent</dd>
+      <dt>Trade-off</dt><dd>Needs the dark tokens wired through the admin</dd>
+    </dl>
+    <span class="open">Open option 2 →</span>
+  </a>
+
+  <a class="opt" href="3-topnav-light.html">
+    <div class="opt-top"><span class="badge">3</span><h2>Top nav</h2><span class="tag">Least code to adopt</span></div>
+    <p class="desc">
+      Horizontal navigation instead of a sidebar, which maps onto the <code>PageHeader</code> +
+      <code>SettingsMenu</code> pattern the admin already uses. Different content rhythm too: one
+      wide hero pairing the revenue figure with its chart, four secondary tiles, then a
+      three-column band and the order table.
+    </p>
+    <dl>
+      <dt>Shell</dt><dd>Brand bar plus sticky tab row, 1280px centred</dd>
+      <dt>Hero</dt><dd>Number and chart side by side in one card</dd>
+      <dt>Trade-off</dt><dd>Less room for nav as the admin grows</dd>
+    </dl>
+    <span class="open">Open option 3 →</span>
+  </a>
+
+  <p class="note">
+    Same data across all three. Everything is derivable from <code>getStoreAdminMetrics()</code> and
+    <code>getStoreSalesAnalytics()</code> except the period deltas, dispatch-SLA count, failed
+    payments, draft count and per-product sell-through, which need small query additions.
+    Earlier rounds are kept in <code>archive/</code>.
+  </p>
+</div>
+</body>
+</html>

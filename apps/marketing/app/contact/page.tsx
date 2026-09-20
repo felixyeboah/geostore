@@ -1,25 +1,37 @@
 import { ContactForm } from "@home/components/ContactForm";
+import {
+	EditorialContainer,
+	EditorialHeader,
+	EditorialShell,
+} from "@shared/components/EditorialPage";
+import { pageMetadata } from "@shared/lib/seo";
 import { getTranslations } from "@shared/lib/translations";
 
 export async function generateMetadata() {
 	const t = await getTranslations({ namespace: "contact" });
-	return {
+	return pageMetadata({
 		title: t("title"),
-	};
+		description: t("description"),
+		path: "/contact",
+	});
 }
 
 export default async function ContactPage() {
 	const t = await getTranslations({ namespace: "contact" });
 	return (
-		<div className="container max-w-xl py-16">
-			<div className="mb-12 pt-8 text-center">
-				<h1 className="mb-2 font-bold text-5xl">{t("title")}</h1>
-				<p className="text-balance text-lg opacity-50">
-					{t("description")}
-				</p>
-			</div>
-
-			<ContactForm />
-		</div>
+		<EditorialShell>
+			<EditorialContainer className="py-16 lg:py-24">
+				<div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:gap-24">
+					<EditorialHeader
+						eyebrow="Get in touch"
+						title={t("title")}
+						subtitle={t("description")}
+					/>
+					<div className="border-foreground border-t pt-10">
+						<ContactForm />
+					</div>
+				</div>
+			</EditorialContainer>
+		</EditorialShell>
 	);
 }

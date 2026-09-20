@@ -1,5 +1,13 @@
+import { LANDING_COPY } from "@repo/commerce";
 import { createElement, Fragment, type ReactNode } from "react";
-import messages from "../messages/marketing.json";
+import siteMessages from "../messages/marketing.json";
+
+/**
+ * The landing page's copy lives in @repo/commerce because the back office
+ * edits it too. Merging it back under `home.` keeps every t("home.…") call in
+ * the storefront's components working unchanged.
+ */
+const messages = { ...siteMessages, home: LANDING_COPY };
 
 type TranslationParams = Record<
 	string,

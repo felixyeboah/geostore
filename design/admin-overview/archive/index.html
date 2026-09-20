@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin overview — 3 design options</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{--primary:#6b28d9;--accent:#f3eeff;--border:#e5e5e5;--fg:#262626;--mfg:#525252}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f5f5f5;color:var(--fg);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.55}
+  .shell{max-width:1100px;margin:0 auto;padding:48px 24px 80px}
+  .eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--primary)}
+  h1{margin:8px 0 0;font-size:31px;font-weight:600;letter-spacing:-0.028em}
+  .lede{margin:8px 0 0;color:var(--mfg);max-width:62ch}
+  .opts{display:grid;gap:18px;margin-top:34px}
+  .opt{display:grid;grid-template-columns:52px 1fr auto;gap:18px;align-items:start;
+    padding:22px;background:#fff;border:1px solid var(--border);border-radius:16px;
+    text-decoration:none;color:inherit;transition:border-color .12s,box-shadow .12s}
+  .opt:hover{border-color:#d4d4d4;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .num{width:52px;height:52px;border-radius:13px;background:var(--accent);color:#4b13a3;
+    display:grid;place-items:center;font-size:19px;font-weight:600}
+  h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-0.015em}
+  .tag{display:inline-block;margin-left:9px;font-size:11px;font-weight:600;padding:2px 8px;
+    border-radius:999px;background:#f0fdf4;color:#166534;vertical-align:2px}
+  .desc{margin:6px 0 0;color:var(--mfg);font-size:13.5px}
+  ul{margin:12px 0 0;padding-left:18px;color:var(--mfg);font-size:13px}
+  li{margin-top:4px}
+  .refs{margin:12px 0 0;font-size:12px;color:#8a8a8a}
+  .go{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 15px;border-radius:10px;
+    background:var(--primary);color:#fff;font-size:13px;font-weight:500;white-space:nowrap}
+  .note{margin-top:34px;padding:18px 20px;background:#fff;border:1px solid var(--border);
+    border-radius:14px;font-size:13px;color:var(--mfg)}
+  @media (max-width:720px){.opt{grid-template-columns:1fr}.num{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <span class="eyebrow">GeoStore</span>
+  <h1>Admin overview — three directions</h1>
+  <p class="lede">Each option is a full-fidelity static mockup built with the real GeoStore design
+  tokens (brand purple, 0.75rem radii, Inter) and plausible Ghana-store data. Same information in
+  all three — only the priority order and layout differ. Pick one and I'll build it for real.</p>
+
+  <div class="opts">
+    <a class="opt" href="option-1-command-center.html">
+      <span class="num">1</span>
+      <div>
+        <h2>Command Center<span class="tag">Most data-dense</span></h2>
+        <p class="desc">Analytics-forward. A unified KPI band with period-over-period deltas and
+        sparklines, a large comparison chart, then supporting tables.</p>
+        <ul>
+          <li>4-up KPI band in one card, divided by rules — deltas vs the previous 30 days</li>
+          <li>Hero chart overlays this period against the previous one</li>
+          <li>Recent orders as a real table with status pills; "Needs attention" queue beside it</li>
+          <li>Top products and a stacked fulfilment mix at the bottom</li>
+        </ul>
+        <p class="refs">Inspired by: Stripe overview, Jobber Insights, Shopify Home</p>
+      </div>
+      <span class="go">Open →</span>
+    </a>
+
+    <a class="opt" href="option-2-action-desk.html">
+      <span class="num">2</span>
+      <div>
+        <h2>Action Desk<span class="tag">Most useful daily</span></h2>
+        <p class="desc">Operations-forward. Opens with what needs doing, not what happened. Numbers
+        stay available but move below the work queue.</p>
+        <ul>
+          <li>Greeting plus a 4-card action queue with severity accents (overdue, low stock, to fulfil, drafts)</li>
+          <li>Quiet 4-up "glance" strip for revenue, orders, AOV, payment success</li>
+          <li>Main column is a working fulfilment queue with age badges and inline "Mark shipped"</li>
+          <li>Right rail: restock list with progress bars, this-week bars, customer count</li>
+          <li>30-day trend chart demoted to the bottom</li>
+        </ul>
+        <p class="refs">Inspired by: Etsy Shop Manager "Top tasks", Shopify Home, Salesforce Commerce</p>
+      </div>
+      <span class="go">Open →</span>
+    </a>
+
+    <a class="opt" href="option-3-editorial.html">
+      <span class="num">3</span>
+      <div>
+        <h2>Editorial<span class="tag">Calmest</span></h2>
+        <p class="desc">Spacious and asymmetric. One confident hero metric carries the page; a right
+        rail holds three compact feeds. Reads like a well-set report.</p>
+        <ul>
+          <li>Header states the situation in a sentence instead of a generic subtitle</li>
+          <li>Tall hero card: 46px revenue figure, gradient area chart, three sub-metrics in its footer</li>
+          <li>Right rail stacks attention / recent orders / inventory watch as light feeds</li>
+          <li>Bottom trio: ranked top products, a donut fulfilment mix, customers &amp; catalogue</li>
+        </ul>
+        <p class="refs">Inspired by: Squarespace "Track your performance", Whop Analytics, Depop Stats</p>
+      </div>
+      <span class="go">Open →</span>
+    </a>
+  </div>
+
+  <div class="note">
+    <strong style="color:var(--fg);font-weight:600">Note on data:</strong> every figure shown is
+    already derivable from <code>getStoreAdminMetrics()</code> and
+    <code>getStoreSalesAnalytics()</code>, except the period-over-period deltas, the dispatch-SLA
+    count, failed-payment count, draft-product count, and per-product sell-through rate. Those need
+    small additions to the queries in <code>packages/database/prisma/queries/commerce.ts</code> —
+    a second call to the analytics query for the prior window covers most of it.
+  </div>
+</div>
+</body>
+</html>
