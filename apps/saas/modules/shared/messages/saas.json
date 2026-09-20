@@ -9,7 +9,8 @@
 			"products": "Products",
 			"transactions": "Transactions",
 			"users": "Users",
-			"collections": "Collections"
+			"collections": "Collections",
+			"storefront": "Storefront"
 		},
 		"organizations": {
 			"backToList": "Back to organizations",

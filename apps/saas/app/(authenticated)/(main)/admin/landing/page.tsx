@@ -50,7 +50,7 @@ export default async function AdminLandingPage() {
 			<AdminHeader
 				eyebrow="Storefront"
 				title="Landing page"
-				description="Every band of the shop's front page, in the order a customer meets them. Change the wording, move a band up or down, or hide one entirely. Anything you leave blank keeps the text the site ships with."
+				description="Every band of the shop’s front page, in the order a customer meets them, beside the page itself. Change the wording, move a band, or hide one — the preview updates as you go."
 				actions={
 					storefrontUrl ? (
 						<a
@@ -70,6 +70,7 @@ export default async function AdminLandingPage() {
 				<LandingSectionManager
 					definitions={LANDING_SECTIONS}
 					initial={initial}
+					storefrontUrl={storefrontUrl}
 				/>
 			</div>
 		</div>

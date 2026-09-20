@@ -54,7 +54,7 @@ export async function getAdminNavItems(): Promise<AdminNavItem[]> {
 			icon: <LayersIcon />,
 		},
 		{
-			title: "Landing page",
+			title: t("menu.storefront"),
 			href: "/admin/landing",
 			icon: <LayoutTemplateIcon />,
 		},

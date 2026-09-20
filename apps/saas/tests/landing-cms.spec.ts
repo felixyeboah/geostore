@@ -72,9 +72,11 @@ test("the landing editor controls the storefront", async ({
 	await signIn(page);
 	await page.goto("/admin/landing", { waitUntil: "networkidle" });
 
-	// 1. Copy override reaches the page.
+	// 1. Copy override reaches the page. The editor is a sheet over the
+	// preview now, so the band has to be opened before its fields exist.
+	await page.getByRole("button", { name: /^Hero/ }).click();
 	await page.getByLabel("Headline, first line").fill(HERO_MARKER);
-	await page.getByRole("button", { name: "Save section" }).click();
+	await page.getByRole("button", { name: "Save band" }).click();
 	await expect(page.getByText("Hero saved.")).toBeVisible({
 		timeout: 20_000,
 	});
@@ -85,7 +87,7 @@ test("the landing editor controls the storefront", async ({
 	// 2. A second section, so the hide check has something unique to look for.
 	await page.getByRole("button", { name: /^Brand line/ }).click();
 	await page.getByLabel("First line").fill(BRAND_MARKER);
-	await page.getByRole("button", { name: "Save section" }).click();
+	await page.getByRole("button", { name: "Save band" }).click();
 	await expect(page.getByText("Brand line saved.")).toBeVisible({
 		timeout: 20_000,
 	});
@@ -146,7 +148,7 @@ test("the landing editor controls the storefront", async ({
 		await page
 			.getByRole("button", { name: "Reset to built-in text" })
 			.click();
-		await page.getByRole("button", { name: "Save section" }).click();
+		await page.getByRole("button", { name: "Save band" }).click();
 		await expect(page.getByText(toast)).toBeVisible({ timeout: 20_000 });
 	}
 

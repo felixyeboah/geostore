@@ -2,10 +2,10 @@
 
 import {
 	reorderLandingSectionsAction,
-	saveLandingSectionCopyAction,
 	setLandingSectionVisibilityAction,
 } from "@admin/actions/landing";
-import { AdminButton, AdminInput, AdminTextarea } from "@admin/components/ui";
+import { LandingSectionSheet } from "@admin/components/landing/LandingSectionSheet";
+import { StorefrontPreview } from "@admin/components/landing/StorefrontPreview";
 import type { LandingSectionDefinition } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
@@ -15,6 +15,7 @@ import {
 	EyeIcon,
 	EyeOffIcon,
 	LockIcon,
+	PencilIcon,
 } from "lucide-react";
 import { useState, useTransition } from "react";
 
@@ -27,11 +28,12 @@ export interface LandingSectionState {
 interface LandingSectionManagerProps {
 	definitions: LandingSectionDefinition[];
 	initial: LandingSectionState[];
+	/** Empty when NEXT_PUBLIC_MARKETING_URL is unset; the preview is dropped. */
+	storefrontUrl: string;
 }
 
 /**
- * The landing page editor: the running order on the left, the selected
- * section's copy on the right.
+ * The landing page editor: the running order beside the page itself.
  *
  * Order is changed with buttons rather than drag and drop. With fifteen bands
  * a drag is fiddly and impossible on a keyboard, and every move here is one
@@ -40,16 +42,22 @@ interface LandingSectionManagerProps {
 export function LandingSectionManager({
 	definitions,
 	initial,
+	storefrontUrl,
 }: LandingSectionManagerProps) {
-	const [sections, setSections] = useState(() => orderedState(initial));
-	const [selectedKey, setSelectedKey] = useState(
-		() => sections[0]?.key ?? "",
-	);
+	const [sections, setSections] = useState(initial);
+	const [editingKey, setEditingKey] = useState<string | null>(null);
+	const [refreshToken, setRefreshToken] = useState(0);
 	const [isPending, startTransition] = useTransition();
 
 	const byKey = new Map(definitions.map((entry) => [entry.key, entry]));
-	const selected = byKey.get(selectedKey);
-	const selectedState = sections.find((entry) => entry.key === selectedKey);
+	const editing = editingKey ? (byKey.get(editingKey) ?? null) : null;
+	const editingCopy =
+		sections.find((entry) => entry.key === editingKey)?.copy ?? {};
+
+	/** Anything that changes the page changes the preview. */
+	function refreshPreview() {
+		setRefreshToken((token) => token + 1);
+	}
 
 	function move(index: number, direction: -1 | 1) {
 		const target = index + direction;
@@ -67,7 +75,9 @@ export function LandingSectionManager({
 			const result = await reorderLandingSectionsAction(
 				next.map((entry) => entry.key),
 			);
-			if (!result.success) {
+			if (result.success) {
+				refreshPreview();
+			} else {
 				// Put it back: the page the shopper sees did not change.
 				setSections(sections);
 				toastError(result.message);
@@ -98,6 +108,7 @@ export function LandingSectionManager({
 			);
 			if (result.success) {
 				toastSuccess(result.message);
+				refreshPreview();
 			} else {
 				setSections((previous) =>
 					previous.map((entry) =>
@@ -111,49 +122,61 @@ export function LandingSectionManager({
 		});
 	}
 
+	const hidden = sections.filter((entry) => !entry.isVisible).length;
+	const edited = sections.filter(
+		(entry) => Object.keys(entry.copy ?? {}).length > 0,
+	).length;
+
 	return (
-		<div className="grid gap-10 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)] lg:gap-14">
-			<div>
-				<p className="eyebrow block text-muted-foreground">
-					Running order
-				</p>
-				<ol className="mt-4 border-border border-t">
-					{sections.map((entry, index) => {
-						const definition = byKey.get(entry.key);
+		<>
+			<div
+				className={cn(
+					"grid gap-8",
+					storefrontUrl &&
+						"lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-10",
+				)}
+			>
+				<div className={cn(isPending && "opacity-60")}>
+					<div className="flex items-baseline justify-between gap-3 border-border border-b pb-3">
+						<p className="eyebrow text-muted-foreground">
+							Running order
+						</p>
+						<p className="text-[12px] text-muted-foreground tabular-nums">
+							{sections.length} bands
+							{hidden > 0 && ` · ${hidden} hidden`}
+							{edited > 0 && ` · ${edited} edited`}
+						</p>
+					</div>
 
-						if (!definition) {
-							return null;
-						}
+					<ol className="mt-1">
+						{sections.map((entry, index) => {
+							const definition = byKey.get(entry.key);
 
-						const isSelected = entry.key === selectedKey;
-						const hasCopy =
-							Object.keys(entry.copy ?? {}).length > 0;
+							if (!definition) {
+								return null;
+							}
 
-						return (
-							<li
-								key={entry.key}
-								className="border-border border-b"
-							>
-								<div
-									className={cn(
-										"flex items-start gap-3 py-3 pr-1 pl-3 transition-colors",
-										isSelected && "bg-muted",
-									)}
+							const hasCopy =
+								Object.keys(entry.copy ?? {}).length > 0;
+
+							return (
+								<li
+									key={entry.key}
+									className="flex items-center gap-2 border-border border-b py-2.5"
 								>
+									<span className="w-5 shrink-0 text-right font-mono text-[11px] text-muted-foreground tabular-nums">
+										{index + 1}
+									</span>
+
 									<button
 										type="button"
-										onClick={() =>
-											setSelectedKey(entry.key)
-										}
-										className="min-w-0 flex-1 text-left"
-										aria-current={
-											isSelected ? "true" : undefined
-										}
+										onClick={() => setEditingKey(entry.key)}
+										className="group min-w-0 flex-1 text-left"
 									>
 										<span className="flex items-center gap-2">
 											<span
 												className={cn(
-													"truncate font-medium text-[13.5px]",
+													"truncate font-medium text-[13.5px] transition-colors group-hover:text-[var(--ed-accent)]",
 													entry.isVisible
 														? "text-foreground"
 														: "text-muted-foreground line-through",
@@ -167,12 +190,22 @@ export function LandingSectionManager({
 												</span>
 											)}
 										</span>
-										<span className="mt-1 block truncate text-[12px] text-muted-foreground">
+										<span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
 											{definition.description}
 										</span>
 									</button>
 
 									<div className="flex shrink-0 items-center">
+										<button
+											type="button"
+											onClick={() =>
+												setEditingKey(entry.key)
+											}
+											aria-label={`Edit ${definition.name}`}
+											className="rounded-[2px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+										>
+											<PencilIcon className="size-3.5" />
+										</button>
 										<button
 											type="button"
 											onClick={() => move(index, -1)}
@@ -197,7 +230,7 @@ export function LandingSectionManager({
 										{definition.pinned ? (
 											<span
 												className="p-1.5 text-muted-foreground/50"
-												title="This section is always shown"
+												title="This band is always shown"
 											>
 												<LockIcon className="size-3.5" />
 											</span>
@@ -224,189 +257,53 @@ export function LandingSectionManager({
 											</button>
 										)}
 									</div>
-								</div>
-							</li>
-						);
-					})}
-				</ol>
-				<p className="mt-4 text-[12px] text-muted-foreground leading-[1.6]">
-					Arrows move a section up or down the page. The eye hides it
-					from shoppers without deleting anything you have written.
-				</p>
+								</li>
+							);
+						})}
+					</ol>
+
+					<p className="mt-4 text-[12px] text-muted-foreground leading-[1.6]">
+						Click a band to change its wording. The arrows move it
+						up or down the page; the eye hides it from shoppers
+						without deleting anything you have written.
+					</p>
+				</div>
+
+				{storefrontUrl ? (
+					<div className="lg:sticky lg:top-6 lg:h-[calc(100vh-7rem)]">
+						<StorefrontPreview
+							url={storefrontUrl}
+							refreshToken={refreshToken}
+							onRefresh={refreshPreview}
+						/>
+					</div>
+				) : (
+					<p className="border-border border-t pt-6 text-[13px] text-muted-foreground">
+						Set{" "}
+						<span className="font-mono">
+							NEXT_PUBLIC_MARKETING_URL
+						</span>{" "}
+						to preview the page here.
+					</p>
+				)}
 			</div>
 
-			{selected && selectedState && (
-				<LandingSectionEditor
-					key={selected.key}
-					definition={selected}
-					copy={selectedState.copy}
-					onSaved={(copy) =>
-						setSections((previous) =>
-							previous.map((entry) =>
-								entry.key === selected.key
-									? { ...entry, copy }
-									: entry,
-							),
-						)
-					}
-				/>
-			)}
-		</div>
+			<LandingSectionSheet
+				definition={editing}
+				copy={editingCopy}
+				onClose={() => setEditingKey(null)}
+				onSaved={(copy) => {
+					setSections((previous) =>
+						previous.map((entry) =>
+							entry.key === editingKey
+								? { ...entry, copy }
+								: entry,
+						),
+					);
+					setEditingKey(null);
+					refreshPreview();
+				}}
+			/>
+		</>
 	);
-}
-
-function LandingSectionEditor({
-	definition,
-	copy,
-	onSaved,
-}: {
-	definition: LandingSectionDefinition;
-	copy: Record<string, string>;
-	onSaved: (copy: Record<string, string>) => void;
-}) {
-	const [values, setValues] = useState<Record<string, string>>(() =>
-		Object.fromEntries(
-			definition.fields.map((field) => [
-				field.key,
-				copy[field.key] ?? "",
-			]),
-		),
-	);
-	const [isSaving, setIsSaving] = useState(false);
-
-	const isDirty = definition.fields.some(
-		(field) => (values[field.key] ?? "") !== (copy[field.key] ?? ""),
-	);
-
-	async function save() {
-		setIsSaving(true);
-		const result = await saveLandingSectionCopyAction(
-			definition.key,
-			values,
-		);
-		setIsSaving(false);
-
-		if (result.success) {
-			toastSuccess(result.message);
-			onSaved(
-				Object.fromEntries(
-					Object.entries(values).filter(
-						([, value]) => value.trim().length > 0,
-					),
-				),
-			);
-		} else {
-			toastError(result.message);
-		}
-	}
-
-	return (
-		<div>
-			<div className="border-border border-b pb-5">
-				<h2 className="font-semibold text-[19px] text-foreground tracking-[-0.025em]">
-					{definition.name}
-				</h2>
-				<p className="mt-2 max-w-[56ch] text-[13.5px] text-muted-foreground leading-[1.6]">
-					{definition.description}
-				</p>
-			</div>
-
-			{definition.fields.length === 0 ? (
-				<p className="py-10 text-[13.5px] text-muted-foreground leading-[1.6]">
-					This section has no editable text. You can still move it or
-					hide it from the list.
-				</p>
-			) : (
-				<>
-					<div className="mt-7 grid gap-6 sm:grid-cols-2">
-						{definition.fields.map((field) => (
-							<div
-								key={field.key}
-								className={cn(
-									field.type === "textarea" &&
-										"sm:col-span-2",
-								)}
-							>
-								<label
-									className="eyebrow block text-muted-foreground"
-									htmlFor={`${definition.key}-${field.key}`}
-								>
-									{field.label}
-								</label>
-								<div className="mt-2.5">
-									{field.type === "textarea" ? (
-										<AdminTextarea
-											id={`${definition.key}-${field.key}`}
-											rows={3}
-											value={values[field.key] ?? ""}
-											placeholder="Using the built-in text"
-											onChange={(event) =>
-												setValues((previous) => ({
-													...previous,
-													[field.key]:
-														event.target.value,
-												}))
-											}
-										/>
-									) : (
-										<AdminInput
-											id={`${definition.key}-${field.key}`}
-											type="text"
-											value={values[field.key] ?? ""}
-											placeholder="Using the built-in text"
-											onChange={(event) =>
-												setValues((previous) => ({
-													...previous,
-													[field.key]:
-														event.target.value,
-												}))
-											}
-										/>
-									)}
-								</div>
-								{field.help && (
-									<p className="mt-2 text-[12px] text-muted-foreground">
-										{field.help}
-									</p>
-								)}
-							</div>
-						))}
-					</div>
-
-					<div className="mt-8 flex flex-wrap items-center gap-3 border-border border-t pt-6">
-						<AdminButton
-							variant="primary"
-							onClick={save}
-							disabled={!isDirty || isSaving}
-						>
-							{isSaving ? "Saving…" : "Save section"}
-						</AdminButton>
-						<AdminButton
-							onClick={() =>
-								setValues(
-									Object.fromEntries(
-										definition.fields.map((field) => [
-											field.key,
-											"",
-										]),
-									),
-								)
-							}
-							disabled={isSaving}
-						>
-							Reset to built-in text
-						</AdminButton>
-						<p className="text-[12px] text-muted-foreground">
-							Leave a field blank to keep the text the site ships
-							with.
-						</p>
-					</div>
-				</>
-			)}
-		</div>
-	);
-}
-
-function orderedState(initial: LandingSectionState[]): LandingSectionState[] {
-	return [...initial];
 }
