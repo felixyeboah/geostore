@@ -30,6 +30,8 @@ interface LandingSectionManagerProps {
 	initial: LandingSectionState[];
 	/** Empty when NEXT_PUBLIC_MARKETING_URL is unset; the preview is dropped. */
 	storefrontUrl: string;
+	/** The brands the catalogue carries, for the brand line's picker. */
+	brands: string[];
 }
 
 /**
@@ -43,6 +45,7 @@ export function LandingSectionManager({
 	definitions,
 	initial,
 	storefrontUrl,
+	brands,
 }: LandingSectionManagerProps) {
 	const [sections, setSections] = useState(initial);
 	const [editingKey, setEditingKey] = useState<string | null>(null);
@@ -291,6 +294,7 @@ export function LandingSectionManager({
 			<LandingSectionSheet
 				definition={editing}
 				copy={editingCopy}
+				brands={brands}
 				onClose={() => setEditingKey(null)}
 				onSaved={(copy) => {
 					setSections((previous) =>

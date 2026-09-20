@@ -1,6 +1,17 @@
+/** A product a band points at, resolved from the catalogue at render time. */
+export interface ReferencedProduct {
+	id: string;
+	name: string;
+	slug: string;
+	brand: string;
+	imageUrl: string | null;
+}
+
 /** Copy overrides an editor saved for this band, empty when untouched. */
 export interface SectionCopyProps {
 	copy?: Record<string, string>;
+	/** Resolved products, keyed by the field that references them. */
+	products?: Record<string, ReferencedProduct>;
 }
 
 type Translator = (path: string) => string;

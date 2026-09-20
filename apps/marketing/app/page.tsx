@@ -66,9 +66,11 @@ export default async function Home() {
 	return (
 		<>
 			<StructuredData data={[organisationSchema(), websiteSchema()]} />
-			{sections.map(({ key, copy }) => {
+			{sections.map(({ key, copy, products }) => {
 				const Section = SECTION_COMPONENTS[key];
-				return Section ? <Section key={key} copy={copy} /> : null;
+				return Section ? (
+					<Section key={key} copy={copy} products={products} />
+				) : null;
 			})}
 		</>
 	);

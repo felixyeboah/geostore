@@ -10,11 +10,30 @@
  * band of the page empty. That is what makes the editor safe to hand over.
  */
 
+/**
+ * What an editor is choosing.
+ *
+ * `text` and `textarea` store the words themselves. The rest store a
+ * reference: `image` a URL, `product` a product id, `brands` a JSON array of
+ * brand names. A reference is resolved when the page renders, so a product
+ * featured on the front page follows its own price and photograph rather than
+ * freezing a copy of them.
+ */
+export type LandingFieldType =
+	| "text"
+	| "textarea"
+	| "image"
+	| "product"
+	| "brands";
+
 export interface LandingFieldDefinition {
-	/** Key inside the section's `settings` object. */
+	/**
+	 * Key inside the section's `settings` object. May be dotted, to reach copy
+	 * that is nested in the shipped set — `card.product`, say.
+	 */
 	key: string;
 	label: string;
-	type: "text" | "textarea";
+	type: LandingFieldType;
 	/** Sits under the input when the field needs explaining. */
 	help?: string;
 }
@@ -46,6 +65,54 @@ const paragraph = (
 	help?: string,
 ): LandingFieldDefinition => ({ key, label, type: "textarea", help });
 
+const image = (
+	key: string,
+	label: string,
+	help?: string,
+): LandingFieldDefinition => ({ key, label, type: "image", help });
+
+const product = (
+	key: string,
+	label: string,
+	help?: string,
+): LandingFieldDefinition => ({ key, label, type: "product", help });
+
+const brands = (
+	key: string,
+	label: string,
+	help?: string,
+): LandingFieldDefinition => ({ key, label, type: "brands", help });
+
+/**
+ * Reads a `brands` field back out.
+ *
+ * The settings column is a flat map of strings, so a list is stored as JSON in
+ * one of them. A malformed or half-written value yields an empty list, which
+ * every caller treats as "use the shipped set" — the same contract the text
+ * fields have.
+ */
+export function parseBrandList(value: string | undefined): string[] {
+	if (!value?.trim()) {
+		return [];
+	}
+
+	try {
+		const parsed: unknown = JSON.parse(value);
+		return Array.isArray(parsed)
+			? parsed.filter(
+					(entry): entry is string =>
+						typeof entry === "string" && entry.trim().length > 0,
+				)
+			: [];
+	} catch {
+		return [];
+	}
+}
+
+export function serialiseBrandList(brands: string[]): string {
+	return brands.length > 0 ? JSON.stringify(brands) : "";
+}
+
 export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 	{
 		key: "hero",
@@ -64,6 +131,23 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 			paragraph("subtitle2", "Supporting line, continued"),
 			text("primaryCta", "Main button"),
 			text("secondaryCta", "Second button"),
+			product(
+				"card.productId",
+				"Spotlight product",
+				"The product on the card beside the headline. It takes its name, photograph and link from the catalogue, so a price or photo change follows automatically.",
+			),
+			image(
+				"card.image",
+				"Spotlight image",
+				"Overrides the product\u2019s own photograph on this card. Leave it empty to use the catalogue image.",
+			),
+			text("card.eyebrow", "Card eyebrow"),
+			text("card.spotlight", "Card label"),
+			text(
+				"card.product",
+				"Card product name",
+				"Only used when no spotlight product is chosen.",
+			),
 		],
 	},
 	{
@@ -79,7 +163,15 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 		name: "Brand line",
 		description: "The sentence naming the brands you stock.",
 		defaultSortOrder: 2,
-		fields: [text("line1", "First line"), text("line2", "Second line")],
+		fields: [
+			brands(
+				"brandList",
+				"Brands shown",
+				"Chosen from the brands your catalogue actually carries. Leave it empty for the set the page ships with.",
+			),
+			text("line1", "First line"),
+			text("line2", "Second line"),
+		],
 	},
 	{
 		key: "categories",

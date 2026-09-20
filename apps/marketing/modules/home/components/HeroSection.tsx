@@ -1,4 +1,4 @@
-import { IMAGES, links } from "@home/data/landing";
+import { IMAGES, links, productHref } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { Container, Eyebrow } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
@@ -6,9 +6,25 @@ import { ArrowRightIcon, MessageCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function HeroSection({ copy }: SectionCopyProps) {
+export function HeroSection({ copy, products }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.hero");
+
+	/*
+	 * The spotlight card. A chosen product supplies its own name, photograph
+	 * and link, so the front page follows the catalogue instead of freezing a
+	 * copy of it. Everything falls back to the shipped card: an id that no
+	 * longer resolves leaves the band intact rather than blank.
+	 */
+	const spotlight = products?.["card.productId"];
+	const imageOverride = copy?.["card.image"]?.trim();
+	const cardProductName =
+		spotlight?.name ?? c("card.product") ?? t("home.hero.card.product");
+	const cardImage =
+		imageOverride || spotlight?.imageUrl || IMAGES.surfaceLaptop;
+	const cardHref = spotlight
+		? productHref(spotlight.slug)
+		: links.category("laptops");
 	const tagline = t.raw("home.hero.tagline") as string[];
 
 	return (
@@ -69,11 +85,11 @@ export function HeroSection({ copy }: SectionCopyProps) {
 
 				<div className="relative aspect-[632/574] overflow-hidden rounded-[6px] bg-[#5e4e98] text-white">
 					<Eyebrow className="absolute top-8 left-8 text-[10px] text-white/90">
-						{t("home.hero.card.eyebrow")}
+						{c("card.eyebrow")}
 					</Eyebrow>
 					<Image
-						src={IMAGES.surfaceLaptop}
-						alt={t("home.hero.card.product")}
+						src={cardImage}
+						alt={cardProductName}
 						fill
 						priority
 						sizes="(min-width: 1024px) 632px, 100vw"
@@ -81,15 +97,15 @@ export function HeroSection({ copy }: SectionCopyProps) {
 					/>
 					<div className="absolute bottom-8 left-8">
 						<Eyebrow className="text-[9.5px] text-white/80">
-							{t("home.hero.card.spotlight")}
+							{c("card.spotlight")}
 						</Eyebrow>
 						<p className="mt-2.5 font-medium text-[15px]">
-							{t("home.hero.card.product")}
+							{cardProductName}
 						</p>
 					</div>
 					<Link
-						href={links.category("laptops")}
-						aria-label={t("home.hero.card.product")}
+						href={cardHref}
+						aria-label={cardProductName}
 						className="absolute right-8 bottom-7 flex size-11 items-center justify-center rounded-full border border-white/60 transition-colors hover:bg-white/10"
 					>
 						<ArrowRightIcon className="size-4" />

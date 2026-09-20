@@ -5,7 +5,7 @@ import {
 } from "@admin/components/landing/LandingSectionManager";
 import { adminButtonClass } from "@admin/components/ui";
 import { LANDING_SECTIONS, parseLandingSettings } from "@repo/commerce";
-import { ensureLandingSections } from "@repo/database";
+import { ensureLandingSections, getStoreBrands } from "@repo/database";
 import { ArrowUpRightIcon } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -19,12 +19,16 @@ export default async function AdminLandingPage() {
 	// A section shipped since the last visit has no row yet, so it is created
 	// here rather than in a migration. That keeps deploying a new section to
 	// one file change.
-	const rows = await ensureLandingSections(
-		LANDING_SECTIONS.map((section) => ({
-			key: section.key,
-			defaultSortOrder: section.defaultSortOrder,
-		})),
-	);
+	const [rows, brands] = await Promise.all([
+		ensureLandingSections(
+			LANDING_SECTIONS.map((section) => ({
+				key: section.key,
+				defaultSortOrder: section.defaultSortOrder,
+			})),
+		),
+		// The brand line offers what the shop actually carries.
+		getStoreBrands(),
+	]);
 
 	const byKey = new Map(rows.map((row) => [row.key, row]));
 
@@ -71,6 +75,7 @@ export default async function AdminLandingPage() {
 					definitions={LANDING_SECTIONS}
 					initial={initial}
 					storefrontUrl={storefrontUrl}
+					brands={brands}
 				/>
 			</div>
 		</div>

@@ -323,6 +323,57 @@ export async function setStoreCollectionProducts(
 	});
 }
 
+/**
+ * The brands the shop actually carries.
+ *
+ * Brand is free text on a product rather than a table of its own, so this is
+ * the distinct set in use. It is what the landing page's brand picker offers,
+ * which keeps the front page from naming something no longer stocked.
+ */
+export async function getStoreBrands(): Promise<string[]> {
+	const rows = await db.product.findMany({
+		where: { status: "ACTIVE", category: { isActive: true } },
+		select: { brand: true },
+		distinct: ["brand"],
+		orderBy: { brand: "asc" },
+	});
+
+	return rows
+		.map((row) => row.brand)
+		.filter((brand) => brand.trim().length > 0);
+}
+
+/**
+ * Published products by id, in the order asked for.
+ *
+ * Backs the landing page's product references: a band stores an id, and the
+ * name, photograph and price it shows are read here at render time rather than
+ * copied into the band and left to go stale.
+ */
+export async function getPublishedStoreProductsByIds(ids: string[]) {
+	if (ids.length === 0) {
+		return [];
+	}
+
+	const products = await db.product.findMany({
+		where: {
+			id: { in: ids },
+			status: "ACTIVE",
+			category: { isActive: true },
+		},
+		include: {
+			category: { select: { slug: true, name: true } },
+			images: { orderBy: { sortOrder: "asc" }, take: 1 },
+		},
+	});
+	const byId = new Map(products.map((product) => [product.id, product]));
+
+	return ids.flatMap((id) => {
+		const product = byId.get(id);
+		return product ? [product] : [];
+	});
+}
+
 /** Stored, editor-picked collections. Smart ones are resolved by rule. */
 export async function getStoreCollections(options?: {
 	includeInactive?: boolean;

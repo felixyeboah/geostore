@@ -1,7 +1,8 @@
 "use client";
 
 import { saveLandingSectionCopyAction } from "@admin/actions/landing";
-import { AdminButton, AdminInput, AdminTextarea } from "@admin/components/ui";
+import { LandingFieldControl } from "@admin/components/landing/LandingFieldControl";
+import { AdminButton } from "@admin/components/ui";
 import {
 	type LandingSectionDefinition,
 	landingFieldDefault,
@@ -28,11 +29,13 @@ import { useState } from "react";
 export function LandingSectionSheet({
 	definition,
 	copy,
+	brands,
 	onClose,
 	onSaved,
 }: {
 	definition: LandingSectionDefinition | null;
 	copy: Record<string, string>;
+	brands: string[];
 	onClose: () => void;
 	onSaved: (copy: Record<string, string>) => void;
 }) {
@@ -60,6 +63,7 @@ export function LandingSectionSheet({
 						key={definition.key}
 						definition={definition}
 						copy={copy}
+						brands={brands}
 						onClose={onClose}
 						onSaved={onSaved}
 					/>
@@ -72,11 +76,13 @@ export function LandingSectionSheet({
 function SectionEditor({
 	definition,
 	copy,
+	brands,
 	onClose,
 	onSaved,
 }: {
 	definition: LandingSectionDefinition;
 	copy: Record<string, string>;
+	brands: string[];
 	onClose: () => void;
 	onSaved: (copy: Record<string, string>) => void;
 }) {
@@ -169,8 +175,7 @@ function SectionEditor({
 							<div
 								key={field.key}
 								className={cn(
-									field.type === "textarea" &&
-										"sm:col-span-2",
+									field.type !== "text" && "sm:col-span-2",
 								)}
 							>
 								<label
@@ -180,35 +185,18 @@ function SectionEditor({
 									{field.label}
 								</label>
 								<div className="mt-2.5">
-									{field.type === "textarea" ? (
-										<AdminTextarea
-											id={`${definition.key}-${field.key}`}
-											rows={3}
-											value={values[field.key] ?? ""}
-											placeholder="Blank restores the built-in text"
-											onChange={(event) =>
-												setValues((previous) => ({
-													...previous,
-													[field.key]:
-														event.target.value,
-												}))
-											}
-										/>
-									) : (
-										<AdminInput
-											id={`${definition.key}-${field.key}`}
-											type="text"
-											value={values[field.key] ?? ""}
-											placeholder="Blank restores the built-in text"
-											onChange={(event) =>
-												setValues((previous) => ({
-													...previous,
-													[field.key]:
-														event.target.value,
-												}))
-											}
-										/>
-									)}
+									<LandingFieldControl
+										sectionKey={definition.key}
+										field={field}
+										value={values[field.key] ?? ""}
+										brands={brands}
+										onChange={(next) =>
+											setValues((previous) => ({
+												...previous,
+												[field.key]: next,
+											}))
+										}
+									/>
 								</div>
 								{field.help && (
 									<p className="mt-2 text-[12px] text-muted-foreground">

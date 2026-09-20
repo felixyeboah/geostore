@@ -288,13 +288,15 @@ export function landingFieldDefault(
 	sectionKey: string,
 	fieldKey: string,
 ): string {
-	const section = (LANDING_COPY as Record<string, unknown>)[sectionKey];
-
-	if (!section || typeof section !== "object") {
-		return "";
-	}
-
-	const value = (section as Record<string, unknown>)[fieldKey];
+	// Field keys may be dotted to reach nested copy, such as the hero card's
+	// own eyebrow at `card.eyebrow`.
+	const value = [sectionKey, ...fieldKey.split(".")].reduce<unknown>(
+		(current, key) =>
+			current && typeof current === "object"
+				? (current as Record<string, unknown>)[key]
+				: undefined,
+		LANDING_COPY,
+	);
 
 	return typeof value === "string" ? value : "";
 }
