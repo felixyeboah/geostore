@@ -1,6 +1,6 @@
+import { createClient } from "@libsql/client";
 import { expect, type Page, test } from "@playwright/test";
 import { LANDING_SECTIONS } from "@repo/commerce";
-import { Client } from "pg";
 
 const ADMIN = { email: "qa-admin@geostore.test", password: "QaAdmin!2345" };
 const STOREFRONT = process.env.STOREFRONT_URL ?? "http://localhost:3001";
@@ -54,18 +54,20 @@ test("the landing editor controls the storefront", async ({
 	// are not enough: step 5 moves a band up, so without restoring the order
 	// each run would start one place further along and eventually select a
 	// different section than the one these assertions name.
-	const reset = new Client({ connectionString: process.env.DATABASE_URL });
-	await reset.connect();
-	await reset.query(
-		'UPDATE landing_section SET "isVisible" = true, settings = NULL',
+	const reset = createClient({
+		url: process.env.DATABASE_URL ?? "",
+		authToken: process.env.DATABASE_AUTH_TOKEN,
+	});
+	await reset.execute(
+		'UPDATE landing_section SET "isVisible" = 1, settings = NULL',
 	);
 	for (const section of LANDING_SECTIONS) {
-		await reset.query(
-			'UPDATE landing_section SET "sortOrder" = $1 WHERE key = $2',
-			[section.defaultSortOrder, section.key],
-		);
+		await reset.execute({
+			sql: 'UPDATE landing_section SET "sortOrder" = ? WHERE key = ?',
+			args: [section.defaultSortOrder, section.key],
+		});
 	}
-	await reset.end();
+	reset.close();
 
 	await signIn(page);
 	await page.goto("/admin/landing", { waitUntil: "networkidle" });
@@ -119,13 +121,15 @@ test("the landing editor controls the storefront", async ({
 	await page.getByRole("button", { name: "Move Brand line up" }).click();
 	await page.waitForTimeout(2500);
 
-	const db = new Client({ connectionString: process.env.DATABASE_URL });
-	await db.connect();
-	const { rows } = await db.query<{ key: string; sortOrder: number }>(
+	const db = createClient({
+		url: process.env.DATABASE_URL ?? "",
+		authToken: process.env.DATABASE_AUTH_TOKEN,
+	});
+	const { rows } = await db.execute(
 		'SELECT key, "sortOrder" FROM landing_section ORDER BY "sortOrder" ASC',
 	);
-	await db.end();
-	const order = rows.map((row) => row.key);
+	db.close();
+	const order = rows.map((row) => String(row.key));
 	expect(
 		order.indexOf("brands"),
 		"Brand line should now sit above the delivery strip",

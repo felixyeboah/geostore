@@ -1,5 +1,5 @@
+import { createClient } from "@libsql/client";
 import { expect, type Page, test } from "@playwright/test";
-import { Client } from "pg";
 
 const ADMIN = { email: "qa-admin@geostore.test", password: "QaAdmin!2345" };
 const BUYER = { email: "qa-buyer@geostore.test", password: "QaBuyer!2345" };
@@ -40,25 +40,27 @@ test.afterAll(async () => {
 		);
 		return;
 	}
-	// Raw pg rather than the Prisma client: Playwright's TypeScript transform
-	// chokes on Prisma's generated client, and this only needs one statement.
-	// Variants and images cascade; an order line would block the delete, but a
-	// fixture product is never ordered by this suite.
-	const client = new Client({ connectionString: process.env.DATABASE_URL });
+	// The raw libSQL client rather than Prisma: Playwright's TypeScript
+	// transform chokes on Prisma's generated client, and this only needs one
+	// statement. Variants and images cascade; an order line would block the
+	// delete, but a fixture product is never ordered by this suite.
+	const client = createClient({
+		url: process.env.DATABASE_URL ?? "",
+		authToken: process.env.DATABASE_AUTH_TOKEN,
+	});
 	try {
-		await client.connect();
-		const { rowCount } = await client.query(
-			'DELETE FROM "store_product" WHERE slug = $1',
-			[PRODUCT_SLUG],
-		);
-		if (rowCount) {
+		const { rowsAffected } = await client.execute({
+			sql: 'DELETE FROM "store_product" WHERE slug = ?',
+			args: [PRODUCT_SLUG],
+		});
+		if (rowsAffected) {
 			console.log(`[admin-qa] removed fixture ${PRODUCT_SLUG}`);
 		}
 	} catch (error) {
 		// Teardown must never turn a green suite red.
 		console.warn(`[admin-qa] could not remove ${PRODUCT_SLUG}:`, error);
 	} finally {
-		await client.end().catch(() => {});
+		client.close();
 	}
 });
 

@@ -80,6 +80,10 @@ jobs:
         run: pnpm --filter @repo/scripts exec tsx ./src/push-schema.ts
       - name: Seed the catalogue
         run: pnpm --filter @repo/scripts exec tsx ./src/seed-store.ts
+      - name: Create the QA sign-in fixtures
+        # The suite signs in as these. They used to live in the shared
+        # database the job pointed at; a throwaway one starts empty.
+        run: pnpm --filter @repo/scripts exec tsx ./src/qa-users.ts
       - name: Run Playwright tests for SaaS app
         run: pnpm --filter saas e2e:ci
       - name: Run Playwright tests for Marketing app

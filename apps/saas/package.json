@@ -81,7 +81,8 @@
 		"start-server-and-test": "catalog:",
 		"tailwindcss": "catalog:",
 		"tsx": "catalog:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"@libsql/client": "^0.17.4"
 	},
 	"name": "saas",
 	"private": true,
