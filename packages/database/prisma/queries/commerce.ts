@@ -206,6 +206,123 @@ export async function getPublishedStoreProducts(
 	});
 }
 
+export interface CreateStoreCollectionInput {
+	name: string;
+	slug: string;
+	description?: string;
+	imageUrl?: string;
+	isActive: boolean;
+	/** Tile this collection in the landing "shop by need" band. */
+	onLanding: boolean;
+	sortOrder: number;
+}
+
+export interface UpdateStoreCollectionInput
+	extends Omit<CreateStoreCollectionInput, "imageUrl"> {
+	/** `null` clears the stored banner; `undefined` leaves it unchanged. */
+	imageUrl?: string | null;
+}
+
+/**
+ * The admin list.
+ *
+ * Unlike the storefront's, this one carries each collection's membership: the
+ * screen has to show what is already in before anyone can change it.
+ */
+export async function getAdminStoreCollections() {
+	return db.collection.findMany({
+		orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+		include: {
+			_count: { select: { products: true } },
+			products: {
+				orderBy: { sortOrder: "asc" },
+				select: { productId: true },
+			},
+		},
+	});
+}
+
+export async function getStoreCollectionById(id: string) {
+	return db.collection.findUnique({
+		where: { id },
+		include: {
+			products: {
+				orderBy: { sortOrder: "asc" },
+				select: { productId: true },
+			},
+		},
+	});
+}
+
+export async function createStoreCollection(input: CreateStoreCollectionInput) {
+	return db.collection.create({ data: input });
+}
+
+export async function updateStoreCollection(
+	id: string,
+	input: UpdateStoreCollectionInput,
+) {
+	return db.collection.update({ where: { id }, data: input });
+}
+
+/**
+ * Deleting a collection only removes the grouping.
+ *
+ * `ProductCollection` cascades, so the join rows go with it and the products
+ * themselves are untouched — which is why this needs no guard, unlike a
+ * department, where every product must belong to one.
+ */
+export async function deleteStoreCollection(id: string) {
+	return db.collection.delete({ where: { id } });
+}
+
+/**
+ * Writes the running order of the collections.
+ *
+ * Takes the full list and rewrites every row from its index, for the same
+ * reason the departments do: seeded rows can share a `sortOrder`, and swapping
+ * two equal values changes nothing.
+ */
+export async function reorderStoreCollections(ids: string[]) {
+	return db.$transaction(
+		ids.map((id, index) =>
+			db.collection.update({ where: { id }, data: { sortOrder: index } }),
+		),
+	);
+}
+
+/**
+ * Replaces a collection's membership.
+ *
+ * The incoming order becomes the stored `sortOrder`, which is the order the
+ * storefront rail shows them in — so this is how an editor merchandises a
+ * collection, not just which products are in it.
+ */
+export async function setStoreCollectionProducts(
+	collectionId: string,
+	productIds: string[],
+) {
+	return db.$transaction(async (transaction) => {
+		await transaction.productCollection.deleteMany({
+			where: { collectionId },
+		});
+
+		if (productIds.length) {
+			await transaction.productCollection.createMany({
+				data: productIds.map((productId, sortOrder) => ({
+					collectionId,
+					productId,
+					sortOrder,
+				})),
+			});
+		}
+
+		return transaction.collection.findUnique({
+			where: { id: collectionId },
+		});
+	});
+}
+
 /** Stored, editor-picked collections. Smart ones are resolved by rule. */
 export async function getStoreCollections(options?: {
 	includeInactive?: boolean;
@@ -468,6 +585,30 @@ export async function getAdminProductSummary() {
 		lowStock,
 		liveStockValueInPesewas: Number(liveValue[0]?.value ?? 0),
 	};
+}
+
+/**
+ * An explicit set of products, in the order the caller asked for them.
+ *
+ * A picker needs this alongside its search: what is already chosen has to stay
+ * visible and in its stored order even when the current query does not match
+ * it, and `findMany` returns rows in the database's order, not the argument's.
+ */
+export async function getAdminStoreProductsByIds(ids: string[]) {
+	if (ids.length === 0) {
+		return [];
+	}
+
+	const products = await db.product.findMany({
+		where: { id: { in: ids } },
+		include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
+	});
+	const byId = new Map(products.map((product) => [product.id, product]));
+
+	return ids.flatMap((id) => {
+		const product = byId.get(id);
+		return product ? [product] : [];
+	});
 }
 
 export async function getAdminStoreProductById(id: string) {

@@ -8,7 +8,8 @@
 			"organizations": "Organizations",
 			"products": "Products",
 			"transactions": "Transactions",
-			"users": "Users"
+			"users": "Users",
+			"collections": "Collections"
 		},
 		"organizations": {
 			"backToList": "Back to organizations",

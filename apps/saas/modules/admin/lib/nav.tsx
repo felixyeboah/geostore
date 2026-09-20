@@ -5,6 +5,7 @@ import { getTranslations } from "@shared/lib/translations";
 import {
 	Building2Icon,
 	ChartNoAxesCombinedIcon,
+	LayersIcon,
 	LayoutDashboardIcon,
 	LayoutTemplateIcon,
 	PackageIcon,
@@ -46,6 +47,11 @@ export async function getAdminNavItems(): Promise<AdminNavItem[]> {
 			title: t("menu.categories"),
 			href: "/admin/categories",
 			icon: <TagsIcon />,
+		},
+		{
+			title: t("menu.collections"),
+			href: "/admin/collections",
+			icon: <LayersIcon />,
 		},
 		{
 			title: "Landing page",

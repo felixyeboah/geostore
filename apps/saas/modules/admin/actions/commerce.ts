@@ -1,5 +1,6 @@
 "use server";
 
+import { collectionFormSchema } from "@admin/lib/collection-schema";
 import { revalidateStorefrontMenu } from "@admin/lib/revalidate-storefront";
 import { getSession } from "@auth/lib/server";
 import {
@@ -8,22 +9,28 @@ import {
 } from "@repo/api/modules/commerce/types";
 import {
 	createStoreCategory,
+	createStoreCollection,
 	createStoreProduct,
 	deleteStoreCategory,
+	deleteStoreCollection,
 	deleteStoreProduct,
 	getAdminStoreOrder,
 	getAdminStoreProductById,
 	getPrismaErrorCode,
 	getRecipientName,
 	getStoreCategoryById,
+	getStoreCollectionById,
 	getStorePagesForOrder,
 	isStoreOperationError,
 	markCashOnDeliveryPaid,
 	recordStoreOrderStatusNote,
 	reorderStoreCategories,
+	reorderStoreCollections,
 	StoreOperationError,
 	setStoreCategoryActive,
+	setStoreCollectionProducts,
 	updateStoreCategory,
+	updateStoreCollection,
 	updateStoreOrderStatus,
 	updateStoreProduct,
 	updateStoreProductStatus,
@@ -596,6 +603,182 @@ export async function reorderStoreCategoriesAction(
 			message: toAdminErrorMessage(
 				error,
 				"We couldn’t save the new order.",
+			),
+		};
+	}
+}
+
+/**
+ * A collection has no page of its own — the storefront reaches one through
+ * `/shop?collection=<slug>` — so the landing band, the catalogue and the shop
+ * menu are the surfaces an edit can make stale.
+ */
+async function revalidateCollectionSurfaces() {
+	revalidatePath("/");
+	revalidatePath("/shop");
+	revalidatePath("/admin/collections");
+	revalidatePath("/admin/products");
+	revalidatePath("/admin/overview");
+	await revalidateStorefrontMenu();
+}
+
+export async function saveStoreCollectionAction(
+	values: z.infer<typeof collectionFormSchema>,
+	collectionId?: string,
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const input = collectionFormSchema.parse(values);
+		const saved = collectionId
+			? await updateStoreCollection(collectionId, {
+					...input,
+					// An emptied field must actually clear the stored banner.
+					// `undefined` would tell Prisma "leave unchanged".
+					imageUrl: input.imageUrl ? input.imageUrl : null,
+				})
+			: await createStoreCollection({
+					...input,
+					imageUrl: input.imageUrl || undefined,
+				});
+		await revalidateCollectionSurfaces();
+		return {
+			success: true,
+			message: collectionId
+				? "Collection updated."
+				: "Collection created.",
+			id: saved.id,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn\u2019t save the collection.",
+			),
+		};
+	}
+}
+
+export async function deleteStoreCollectionAction(
+	collectionId: string,
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const collection = await getStoreCollectionById(collectionId);
+
+		if (!collection) {
+			return {
+				success: false,
+				message: "That collection no longer exists.",
+			};
+		}
+
+		await deleteStoreCollection(collectionId);
+		await revalidateCollectionSurfaces();
+		return {
+			success: true,
+			message: `${collection.name} deleted. The products in it are untouched.`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn\u2019t delete the collection.",
+			),
+		};
+	}
+}
+
+export async function setStoreCollectionActiveAction(
+	collectionId: string,
+	isActive: boolean,
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const collection = await getStoreCollectionById(collectionId);
+
+		if (!collection) {
+			return {
+				success: false,
+				message: "That collection no longer exists.",
+			};
+		}
+
+		await updateStoreCollection(collectionId, {
+			name: collection.name,
+			slug: collection.slug,
+			description: collection.description ?? undefined,
+			onLanding: collection.onLanding,
+			sortOrder: collection.sortOrder,
+			isActive: z.boolean().parse(isActive),
+		});
+		await revalidateCollectionSurfaces();
+		return {
+			success: true,
+			message: isActive
+				? `${collection.name} is visible to customers.`
+				: `${collection.name} is hidden from customers.`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn\u2019t change that collection\u2019s visibility.",
+			),
+		};
+	}
+}
+
+export async function reorderStoreCollectionsAction(
+	collectionIds: string[],
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const ids = z.array(z.string().min(1)).min(1).parse(collectionIds);
+		await reorderStoreCollections(ids);
+		await revalidateCollectionSurfaces();
+		return { success: true, message: "Order saved." };
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn\u2019t save the new order.",
+			),
+		};
+	}
+}
+
+export async function setStoreCollectionProductsAction(
+	collectionId: string,
+	productIds: string[],
+): Promise<AdminActionResult> {
+	try {
+		await requireAdmin();
+		const ids = z.array(z.string().min(1)).parse(productIds);
+		const collection = await getStoreCollectionById(collectionId);
+
+		if (!collection) {
+			return {
+				success: false,
+				message: "That collection no longer exists.",
+			};
+		}
+
+		await setStoreCollectionProducts(collectionId, ids);
+		await revalidateCollectionSurfaces();
+		return {
+			success: true,
+			message: `${ids.length} product${ids.length === 1 ? "" : "s"} in ${collection.name}.`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: toAdminErrorMessage(
+				error,
+				"We couldn\u2019t save the collection\u2019s products.",
 			),
 		};
 	}
