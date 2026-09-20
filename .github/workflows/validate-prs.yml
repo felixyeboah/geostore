@@ -85,8 +85,16 @@ jobs:
         # database the job pointed at; a throwaway one starts empty.
         run: pnpm --filter @repo/scripts exec tsx ./src/qa-users.ts
       - name: Run Playwright tests for SaaS app
+        # 127.0.0.1 rather than localhost: on the runner localhost resolves to
+        # ::1 first, and `next start` listens on IPv4, so Playwright's readiness
+        # probe never reaches the server it just started and the job dies on the
+        # webServer timeout with nothing in the log.
+        env:
+          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3000"
         run: pnpm --filter saas e2e:ci
       - name: Run Playwright tests for Marketing app
+        env:
+          PLAYWRIGHT_BASE_URL: "http://127.0.0.1:3001"
         run: pnpm --filter marketing e2e:ci
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
