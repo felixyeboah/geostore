@@ -1,0 +1,401 @@
+{
+  "verifiedAt": "2026-09-21",
+  "purpose": "Manufacturer-specific catalogue provenance. Assets downloaded unchanged and visually inspected individually. No stock photography or generated images.",
+  "products": [
+    {
+      "key": "iphone-18-pro",
+      "name": "iPhone 18 Pro",
+      "categorySlug": "phones",
+      "sourceUrls": [
+        "https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/",
+        "https://www.apple.com/iphone-18-pro/specs/"
+      ],
+      "specifications": {
+        "Chip": "A20 Pro"
+      },
+      "verifiedVariantAxes": {
+        "Colour": [
+          "Black",
+          "Silver",
+          "Glacier",
+          "Burgundy"
+        ],
+        "Storage": [
+          "256 GB",
+          "512 GB",
+          "1 TB",
+          "2 TB"
+        ]
+      },
+      "variantScope": "Apple technical specifications separately list iPhone 18 Pro (not only Pro Max) in 256 GB, 512 GB, 1 TB and 2 TB, with Black, Silver, Glacier and Burgundy finishes. Base image is the mixed-color Pro lineup; do not tag it to one finish. Inventory and selling prices remain store-controlled.",
+      "images": [
+        {
+          "path": "/images/catalogue/iphone-18-pro.jpg",
+          "sourceUrl": "https://www.apple.com/newsroom/images/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/article/Apple-iPhone-18-Pro-color-lineup-260909_big.jpg.large.jpg",
+          "sha256": "0a3860ee2f48fa94cf0597aac939858d1971176b14dc5a6047178f04c55d2a7d",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Four-color lineup, suitable only for the base gallery; not a single-color variant image."
+        }
+      ]
+    },
+    {
+      "key": "ipad-air-m4",
+      "name": "iPad Air (M4)",
+      "categorySlug": "phones",
+      "sourceUrls": [
+        "https://www.apple.com/newsroom/2026/03/apple-introduces-the-new-ipad-air-powered-by-m4/"
+      ],
+      "specifications": {
+        "Chip": "M4",
+        "Memory": "12 GB"
+      },
+      "verifiedVariantAxes": {
+        "Size": [
+          "11-inch",
+          "13-inch"
+        ],
+        "Colour": [
+          "Blue",
+          "Purple",
+          "Starlight",
+          "Space Gray"
+        ],
+        "Storage": [
+          "128 GB",
+          "256 GB",
+          "512 GB",
+          "1 TB"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/ipad-air-m4.jpg",
+          "sourceUrl": "https://www.apple.com/newsroom/images/2026/03/apple-introduces-the-new-ipad-air-powered-by-m4/article/Apple-iPad-Air-M4-multitasking-260302_big.jpg.large.jpg",
+          "sha256": "fa0bd3efd62f0cc4c65954339fbdaa353effc8e8b14721c0f06299771c594fc6",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Front view; finish and size are not established by the image caption. Base gallery only."
+        }
+      ]
+    },
+    {
+      "key": "macbook-air-m5",
+      "name": "MacBook Air (M5)",
+      "categorySlug": "computing",
+      "sourceUrls": [
+        "https://www.apple.com/newsroom/2026/03/apple-introduces-the-new-macbook-air-with-m5/"
+      ],
+      "specifications": {
+        "Chip": "M5",
+        "Starting storage": "512 GB"
+      },
+      "verifiedVariantAxes": {
+        "Size": [
+          "13-inch",
+          "15-inch"
+        ],
+        "Colour": [
+          "Sky Blue",
+          "Midnight",
+          "Starlight",
+          "Silver"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/macbook-air-m5.jpg",
+          "sourceUrl": "https://www.apple.com/newsroom/images/2026/03/apple-introduces-the-new-macbook-air-with-m5/article/Apple-MacBook-Air-hero-260303_big.jpg.large.jpg",
+          "sha256": "043afd34f8e468adc0d1f95823c8cc51e30fdce4c55b344e9673c60f0b824569",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Front view. Do not infer a finish or size from this photograph. Storage configurations beyond the documented starting capacity need specific SKU evidence."
+        }
+      ]
+    },
+    {
+      "key": "apple-watch-series-12",
+      "name": "Apple Watch Series 12",
+      "categorySlug": "watches-wearables",
+      "sourceUrls": [
+        "https://www.apple.com/newsroom/2026/09/introducing-apple-watch-series-12-with-the-all-new-health-sensing-system/"
+      ],
+      "specifications": {},
+      "verifiedVariantAxes": {
+        "Size": [
+          "42 mm",
+          "46 mm"
+        ]
+      },
+      "variantScope": "42 mm and 46 mm are documented case sizes, not a complete sellable SKU. Do not cross-product material, finish, band and connectivity without purchase-page SKU evidence. Hero is base gallery only; no exact finish/band mapping approved.",
+      "images": [
+        {
+          "path": "/images/catalogue/apple-watch-series-12.jpg",
+          "sourceUrl": "https://www.apple.com/newsroom/images/2026/09/introducing-apple-watch-series-12-with-the-all-new-health-sensing-system/article/Apple-Watch-Series-12-2up-260909_big.jpg.large.jpg",
+          "sha256": "a86881189b8c259493b67d20a6664ff197bfc5a8f2f71205df2e9b483ad2d7c9",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Two views of the watch; exact finish and band combination is not assigned. Source separately documents aluminum, titanium and ceramic finishes; do not create an unrestricted finish/material cross product."
+        }
+      ]
+    },
+    {
+      "key": "airpods-5",
+      "name": "AirPods 5",
+      "categorySlug": "audio",
+      "sourceUrls": [
+        "https://www.apple.com/newsroom/2026/09/apple-introduces-airpods-5-with-best-in-class-open-ear-active-noise-cancellation/"
+      ],
+      "specifications": {},
+      "verifiedVariantAxes": {},
+      "variantScope": "Source describes USB-C Charging Case and Wireless Charging Case configurations; this hero does not establish which case is depicted. Do not tag the image to a case variant.",
+      "images": [
+        {
+          "path": "/images/catalogue/airpods-5.jpg",
+          "sourceUrl": "https://www.apple.com/newsroom/images/2026/09/apple-introduces-airpods-5-with-best-in-class-open-ear-active-noise-cancellation/article/Apple-AirPods-5-hero-260909_big.jpg.large.jpg",
+          "sha256": "7f58e7fa7acf74ab058a52c9adf9f6a7e17b0e846b35324247fc9b49e642f2ec",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "White earbuds and open charging case. Base gallery only; case configuration is not inferred from this hero image."
+        }
+      ]
+    },
+    {
+      "key": "galaxy-s26-ultra",
+      "name": "Samsung Galaxy S26 Ultra",
+      "categorySlug": "phones",
+      "sourceUrls": [
+        "https://www.samsung.com/us/smartphones/galaxy-s26-ultra/",
+        "https://www.samsung.com/us/smartphones/galaxy-s26-ultra/buy/galaxy-s26-ultra-256gb-unlocked-sku-sm-s948uzvaxaa/"
+      ],
+      "specifications": {},
+      "verifiedVariantAxes": {
+        "Colour": [
+          "Cobalt Violet"
+        ],
+        "Storage": [
+          "256 GB"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/galaxy-s26-ultra.png",
+          "sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948uzvaxaa-550993934",
+          "sha256": "e153127475f2d2ba7f86b45b5a445603184478f0a5044824c206336ac0ce3277",
+          "colour": "Cobalt Violet",
+          "visuallyInspected": true,
+          "inspectionNote": "Full-size exact model packshot, downloaded unchanged from official purchase page and visually inspected. Front, rear, and S Pen in Cobalt Violet; unlocked SM-S948UZVAXAA."
+        }
+      ],
+      "verifiedVariantCombinations": [
+        {
+          "Colour": "Cobalt Violet",
+          "Storage": "256 GB",
+          "Model": "SM-S948UZVAXAA"
+        }
+      ]
+    },
+    {
+      "key": "galaxy-tab-s11",
+      "name": "Samsung Galaxy Tab S11 5G",
+      "categorySlug": "phones",
+      "sourceUrls": [
+        "https://www.samsung.com/uk/tablets/galaxy-tab-s/galaxy-tab-s11-silver-128gb-5g-sm-x736bzsreub/",
+        "https://www.samsung.com/uk/tablets/galaxy-tab-s11/buy/"
+      ],
+      "specifications": {
+        "Display": "11-inch Dynamic AMOLED 2X",
+        "Model": "SM-X736BZSREUB"
+      },
+      "verifiedVariantAxes": {
+        "Colour": [
+          "Silver"
+        ],
+        "Storage": [
+          "128 GB"
+        ],
+        "Connectivity": [
+          "5G"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/galaxy-tab-s11.png",
+          "sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/uk/sm-x736bzsreub/gallery/uk-galaxy-tab-s11-sm-x730-563798-sm-x736bzsreub-548920019",
+          "sha256": "5dbf8f41e29c2c360bae9a6a4c287ebb97b61ec15b0aff2f819c79876fc62c87",
+          "colour": "Silver",
+          "visuallyInspected": true,
+          "inspectionNote": "Full-size exact model packshot, downloaded unchanged from official purchase page and visually inspected. Front view of Silver SM-X736BZSREUB; full-size gallery asset, not thumbnail."
+        }
+      ],
+      "verifiedVariantCombinations": [
+        {
+          "Colour": "Silver",
+          "Storage": "128 GB",
+          "Connectivity": "5G",
+          "Model": "SM-X736BZSREUB"
+        }
+      ]
+    },
+    {
+      "key": "samsung-ms23k3513ak",
+      "name": "Samsung MS23K3513AK 23L Microwave",
+      "categorySlug": "home-tv",
+      "sourceUrls": [
+        "https://www.samsung.com/uk/microwave-ovens/solo/microwave-solo-ms23k3513ak/"
+      ],
+      "specifications": {
+        "Model": "MS23K3513AK/EU",
+        "Capacity": "23 L"
+      },
+      "verifiedVariantAxes": {
+        "Colour": [
+          "Black"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/samsung-ms23k3513ak.png",
+          "sourceUrl": "https://images.samsung.com/is/image/samsung/uk-microwave-solo-ms23k3513ak-ms23k3513ak-eu-rperspectiveblack-71689163?$1164_776_PNG$",
+          "sha256": "20f0c9a6e85bb435c97e271022920bddc64e744fcb376c102ec19f2d0a3f8d91",
+          "colour": "Black",
+          "visuallyInspected": true,
+          "inspectionNote": "Clean right-perspective photograph, not the gallery award badge or feature illustration."
+        }
+      ]
+    },
+    {
+      "key": "hisense-h670sit-wd",
+      "name": "Hisense H670SIT-WD 508L Refrigerator",
+      "categorySlug": "home-tv",
+      "sourceUrls": [
+        "https://hisense.co.za/products/hisense-h670sit-wd-side-by-side-refrigerator/"
+      ],
+      "specifications": {
+        "Model": "H670SIT-WD",
+        "Capacity": "508 L"
+      },
+      "verifiedVariantAxes": {
+        "Colour": [
+          "Titanium Inox"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/hisense-h670sit-wd.jpg",
+          "sourceUrl": "https://hisense.co.za/wp-content/uploads/2025/01/H670SIT-WD-6_sq.jpg",
+          "sha256": "5746e2e84290cb620f51062a8694b51e51c78090503f506b2e9514b9f3925444",
+          "colour": "Titanium Inox",
+          "visuallyInspected": true,
+          "inspectionNote": "Open-door interior photograph from exact model gallery. Source is South African regional model."
+        }
+      ]
+    },
+    {
+      "key": "lg-oled55c6pua",
+      "name": "LG OLED evo C6 55-inch TV",
+      "categorySlug": "home-tv",
+      "sourceUrls": [
+        "https://www.lg.com/us/tvs/lg-oled55c6pua-oled-4k-tv"
+      ],
+      "specifications": {
+        "Model": "OLED55C6PUA.AUS",
+        "Display": "55-inch 4K OLED",
+        "Model year": "2026"
+      },
+      "verifiedVariantAxes": {
+        "Size": [
+          "55-inch"
+        ]
+      },
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/lg-oled55c6pua.jpg",
+          "sourceUrl": "https://media.us.lg.com/transform/ecomm-PDPGallery-1100x730/4b0e4cf4-7761-4c46-9d3b-5234af16c5a5/TVs_OLED55C6PUA_gallery-02_3000x3000",
+          "sha256": "bec552741b75e7a222353004fe12ea29dede0a1c7de711c8860337f5ad6bf584",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Exact US regional SKU gallery photograph. Do not describe as UK OLED55C6ELB; region-specific electrical/tuner compatibility requires supplier validation."
+        }
+      ]
+    },
+    {
+      "key": "anker-715-a2663",
+      "name": "Anker 715 Charger (Nano II 65W)",
+      "categorySlug": "accessories-power",
+      "sourceUrls": [
+        "https://www.anker.com/uk/products/a2663"
+      ],
+      "specifications": {
+        "Model": "A2663",
+        "Power": "65 W"
+      },
+      "verifiedVariantAxes": {},
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/anker-715-a2663.png",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0491/8460/4324/products/Anker_715_Charger_Nano_II_65W.png?v=1773829229",
+          "sha256": "29affa8e321b8e8e2d978e8ab8a7cb93f9b75cb99eda8223d71e49cb53805369",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Exact charger photograph from UK product page. Plug appearance is shown; do not infer universal plug compatibility."
+        }
+      ]
+    },
+    {
+      "key": "ugreen-revodok-70410",
+      "name": "UGREEN Revodok 6-in-1 USB-C Hub",
+      "categorySlug": "accessories-power",
+      "sourceUrls": [
+        "https://uk.ugreen.com/products/ugreen-6-in-1-4k-hdmi-usb-c-hub"
+      ],
+      "specifications": {
+        "Model": "70410",
+        "HDMI": "4K at 30 Hz",
+        "Power delivery": "100 W"
+      },
+      "verifiedVariantAxes": {},
+      "variantScope": "Only documented values; axes do not imply every cross-product combination is stocked. Prices and inventory are not manufacturer-verified.",
+      "images": [
+        {
+          "path": "/images/catalogue/ugreen-revodok-70410.png",
+          "sourceUrl": "https://uk.ugreen.com/cdn/shop/products/ugreen-revodok-6-in-1-usb-c-hub-100w-pd-4k-at-30hz-hdmi-70410-476098.png?v=1702000456",
+          "sha256": "b2a3eda345a535a0fae256758488269c967c624565dea43d29fb685516adde24",
+          "colour": null,
+          "visuallyInspected": true,
+          "inspectionNote": "Exact hub from UK listing; US URL redirected to unrelated campaign page and was rejected."
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "model": "iPhone 18 Pro Max",
+      "reason": "Available hero mixes Pro and Pro Max; no separate exact model asset approved."
+    },
+    {
+      "model": "Sony WH-1000XM6",
+      "reason": "Manufacturer product endpoints returned HTTP 403; no approved downloaded asset."
+    },
+    {
+      "model": "JBL Charge 6",
+      "reason": "Manufacturer product endpoints returned HTTP 403; no approved downloaded asset."
+    },
+    {
+      "model": "Xiaomi Smart Band 10",
+      "reason": "Downloaded hero shows metal accessory band; not approved as a bundled standard variant."
+    },
+    {
+      "model": "Hisense RC-70WS",
+      "reason": "Global product URL redirected to unrelated homepage. Replaced with verified H670SIT-WD regional listing."
+    }
+  ]
+}
