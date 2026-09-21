@@ -1,7 +1,12 @@
 import { AddToCartButton } from "@commerce/components/AddToCartButton";
 import { storeLinks } from "@commerce/lib/store-links";
 import type { StoreProduct } from "@repo/commerce";
-import { formatMoney } from "@repo/commerce";
+import {
+	colourHex,
+	formatMoney,
+	isColourAxis,
+	variantAxes,
+} from "@repo/commerce";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,15 +16,36 @@ interface ProductCardProps {
 	categoryName?: string;
 }
 
+const MAX_SWATCHES = 6;
+
 /**
  * The catalogue card from design/landing-v5/02-editorial.html: a 4:5 plate,
  * then a hairline, then name and price sharing a baseline row, the short
  * description, and a stock line pinned to the bottom so every card in a row
  * lines up regardless of how far its name wraps.
+ *
+ * A product with variants shows its colour dots and option counts, and its
+ * action becomes "Choose options" — quick-add would have to guess which
+ * combination the buyer wanted.
  */
 export function ProductCard({ product, categoryName }: ProductCardProps) {
 	const href = storeLinks.product(product.slug);
-	const isLowStock = product.stockQuantity > 0 && product.stockQuantity <= 3;
+	const variants = product.variants ?? [];
+	const hasVariants = variants.length > 0;
+	const stock = hasVariants
+		? variants.reduce((total, variant) => total + variant.stockQuantity, 0)
+		: product.stockQuantity;
+	const isLowStock = stock > 0 && stock <= 3;
+
+	const axes = hasVariants ? variantAxes(variants) : [];
+	const colourValues =
+		axes.find((axis) => isColourAxis(axis.key))?.values ?? [];
+	const optionSummary = axes
+		.map(
+			(axis) =>
+				`${axis.values.length} ${axis.label.toLowerCase()}${axis.values.length === 1 ? "" : "s"}`,
+		)
+		.join(" · ");
 
 	return (
 		<article className="group flex h-full min-w-0 flex-col">
@@ -62,20 +88,53 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 					{product.shortDescription}
 				</p>
 
+				{hasVariants ? (
+					<div className="mt-2 flex items-center gap-2">
+						{colourValues.slice(0, MAX_SWATCHES).map((value) => {
+							const hex = colourHex(value);
+							return hex ? (
+								<span
+									key={value}
+									title={value}
+									className="size-3 rounded-full border border-black/15"
+									style={{ backgroundColor: hex }}
+								/>
+							) : null;
+						})}
+						{colourValues.length > MAX_SWATCHES ? (
+							<span className="text-[11px] text-muted-foreground">
+								+{colourValues.length - MAX_SWATCHES}
+							</span>
+						) : null}
+						<span className="eyebrow text-muted-foreground">
+							{optionSummary}
+						</span>
+					</div>
+				) : null}
+
 				<p
 					className={`eyebrow mt-auto pt-[11px] ${isLowStock ? "text-foreground" : "text-muted-foreground"}`}
 				>
-					{product.stockQuantity < 1
+					{stock < 1
 						? "Out of stock"
 						: isLowStock
-							? `Only ${product.stockQuantity} left`
-							: `In stock · ${product.stockQuantity}`}
+							? `Only ${stock} left`
+							: `In stock · ${stock}`}
 					{" · "}
 					{categoryName ?? product.brand}
 				</p>
 
 				<div className="mt-[13px] flex items-center gap-2.5">
-					<AddToCartButton product={product} appearance="text" />
+					{hasVariants ? (
+						<Link
+							href={href}
+							className="border-transparent border-b pb-px font-medium text-[13px] text-foreground transition-colors hover:border-foreground"
+						>
+							Choose options
+						</Link>
+					) : (
+						<AddToCartButton product={product} appearance="text" />
+					)}
 					<span
 						aria-hidden="true"
 						className="text-[12px] text-border"
