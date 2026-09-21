@@ -2,7 +2,6 @@
 
 import { getAdminPath } from "@admin/lib/links";
 import { OrganizationLogo } from "@organizations/components/OrganizationLogo";
-import { authClient } from "@repo/auth/client";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import {
@@ -22,6 +21,7 @@ import {
 import { toastPromise } from "@repo/ui/components/toast";
 import { useConfirmationAlert } from "@shared/components/ConfirmationAlertProvider";
 import { Pagination } from "@shared/components/Pagination";
+import { orpcClient } from "@shared/lib/orpc-client";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { useTranslations } from "@shared/lib/translations";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -75,7 +75,10 @@ export function OrganizationList() {
 		orpc.admin.organizations.list.queryOptions({
 			input: {
 				limit: ITEMS_PER_PAGE,
-				offset: (page - 1) * ITEMS_PER_PAGE,
+				offset: Math.min(
+					(page - 1) * ITEMS_PER_PAGE,
+					Number.MAX_SAFE_INTEGER,
+				),
 				query: debouncedSearchTerm,
 			},
 		}),
@@ -94,13 +97,7 @@ export function OrganizationList() {
 	const deleteOrganization = async (id: string) => {
 		toastPromise(
 			async () => {
-				const { error } = await authClient.organization.delete({
-					organizationId: id,
-				});
-
-				if (error) {
-					throw error;
-				}
+				await orpcClient.admin.organizations.delete({ id });
 			},
 			{
 				loading: t("admin.organizations.deleteOrganization.deleting"),
@@ -110,7 +107,12 @@ export function OrganizationList() {
 					});
 					return t("admin.organizations.deleteOrganization.deleted");
 				},
-				error: t("admin.organizations.deleteOrganization.notDeleted"),
+				error: (error: unknown) =>
+					error instanceof Error
+						? error.message
+						: t(
+								"admin.organizations.deleteOrganization.notDeleted",
+							),
 			},
 		);
 	};

@@ -4,12 +4,7 @@ import { getAdminPath } from "@admin/lib/links";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InviteMemberForm } from "@organizations/components/InviteMemberForm";
 import { OrganizationMembersBlock } from "@organizations/components/OrganizationMembersBlock";
-import {
-	fullOrganizationQueryKey,
-	useCreateOrganizationMutation,
-	useFullOrganizationQuery,
-	useUpdateOrganizationMutation,
-} from "@organizations/lib/api";
+import { useCreateOrganizationMutation } from "@organizations/lib/api";
 import { Button } from "@repo/ui/components/button";
 import {
 	Card,
@@ -30,12 +25,12 @@ import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { useRouter } from "@shared/hooks/router";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { useTranslations } from "@shared/lib/translations";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const organizationFormSchema = z.object({
-	name: z.string().min(1),
+	name: z.string().trim().min(1).max(64),
 });
 
 export function OrganizationForm({
@@ -46,15 +41,27 @@ export function OrganizationForm({
 	const t = useTranslations();
 	const router = useRouter();
 
-	const { data: organization } = useFullOrganizationQuery(organizationId);
-
-	const updateOrganizationMutation = useUpdateOrganizationMutation();
+	const isCreating = organizationId === "new";
+	const {
+		data: organization,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery({
+		...orpc.admin.organizations.find.queryOptions({
+			input: { id: organizationId },
+		}),
+		enabled: !isCreating,
+	});
+	const updateOrganizationMutation = useMutation(
+		orpc.admin.organizations.update.mutationOptions(),
+	);
 	const createOrganizationMutation = useCreateOrganizationMutation();
 	const queryClient = useQueryClient();
 
 	const form = useForm({
 		resolver: zodResolver(organizationFormSchema),
-		defaultValues: {
+		values: {
 			name: organization?.name ?? "",
 		},
 	});
@@ -65,7 +72,6 @@ export function OrganizationForm({
 				? await updateOrganizationMutation.mutateAsync({
 						id: organization.id,
 						name,
-						updateSlug: organization.name !== name,
 					})
 				: await createOrganizationMutation.mutateAsync({
 						name,
@@ -75,10 +81,9 @@ export function OrganizationForm({
 				throw new Error("Could not save organization");
 			}
 
-			queryClient.setQueryData(
-				fullOrganizationQueryKey(organizationId),
-				newOrganization,
-			);
+			await queryClient.invalidateQueries({
+				queryKey: orpc.admin.organizations.find.key(),
+			});
 
 			queryClient.invalidateQueries({
 				queryKey: orpc.admin.organizations.list.key(),
@@ -95,6 +100,20 @@ export function OrganizationForm({
 			toastError(t("admin.organizations.form.notifications.error"));
 		}
 	});
+
+	if (!isCreating && isPending) {
+		return <p role="status">{t("admin.organizations.form.loading")}</p>;
+	}
+	if (!isCreating && (isError || !organization)) {
+		return (
+			<div>
+				<p role="alert">{t("admin.organizations.form.loadError")}</p>
+				<Button onClick={() => void refetch()}>
+					{t("admin.organizations.retry")}
+				</Button>
+			</div>
+		);
+	}
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
@@ -144,14 +163,16 @@ export function OrganizationForm({
 				</CardContent>
 			</Card>
 
-			{organization && (
-				<>
-					<OrganizationMembersBlock
-						organizationId={organization.id}
-					/>
-					<InviteMemberForm organizationId={organization.id} />
-				</>
-			)}
+			{organization &&
+				(organization.currentMemberRole === "owner" ||
+					organization.currentMemberRole === "admin") && (
+					<>
+						<OrganizationMembersBlock
+							organizationId={organization.id}
+						/>
+						<InviteMemberForm organizationId={organization.id} />
+					</>
+				)}
 		</div>
 	);
 }

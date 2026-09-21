@@ -12,15 +12,20 @@ export const findOrganization = adminProcedure
 	})
 	.input(
 		z.object({
-			id: z.string(),
+			id: z.string().min(1),
 		}),
 	)
-	.handler(async ({ input: { id } }) => {
+	.handler(async ({ input: { id }, context: { user } }) => {
 		const organization = await getOrganizationByIdFn(id);
 
 		if (!organization) {
 			throw new ORPCError("NOT_FOUND");
 		}
 
-		return organization;
+		return {
+			...organization,
+			currentMemberRole:
+				organization.members.find((member) => member.userId === user.id)
+					?.role ?? null,
+		};
 	});
