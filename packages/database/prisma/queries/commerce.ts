@@ -496,13 +496,13 @@ function adminProductOrderBy(
 ): Prisma.ProductOrderByWithRelationInput[] {
 	switch (sort) {
 		case "name":
-			return [{ name: dir }];
+			return [{ name: dir }, { id: "asc" }];
 		case "price":
-			return [{ priceInPesewas: dir }];
+			return [{ priceInPesewas: dir }, { id: "asc" }];
 		case "stock":
-			return [{ stockQuantity: dir }];
+			return [{ stockQuantity: dir }, { id: "asc" }];
 		default:
-			return [{ updatedAt: dir }];
+			return [{ updatedAt: dir }, { id: "asc" }];
 	}
 }
 
@@ -1622,11 +1622,11 @@ function adminOrderOrderBy(
 ): Prisma.OrderOrderByWithRelationInput[] {
 	switch (sort) {
 		case "total":
-			return [{ totalInPesewas: dir }];
+			return [{ totalInPesewas: dir }, { id: "asc" }];
 		case "customer":
-			return [{ customerEmail: dir }];
+			return [{ customerEmail: dir }, { id: "asc" }];
 		default:
-			return [{ placedAt: dir }];
+			return [{ placedAt: dir }, { id: "asc" }];
 	}
 }
 
@@ -1821,8 +1821,8 @@ export async function getAdminTransactionList(
 			},
 			orderBy:
 				query.sort === "amount"
-					? [{ amountInPesewas: query.dir ?? "desc" }]
-					: [{ createdAt: query.dir ?? "desc" }],
+					? [{ amountInPesewas: query.dir ?? "desc" }, { id: "asc" }]
+					: [{ createdAt: query.dir ?? "desc" }, { id: "asc" }],
 			skip: (page - 1) * perPage,
 			take: perPage,
 		}),

@@ -29,6 +29,7 @@ export async function getUsers({
 					],
 				}
 			: undefined,
+		orderBy: [{ createdAt: "desc" }, { id: "asc" }],
 		take: limit,
 		skip: offset,
 	});
@@ -225,8 +226,8 @@ export async function getAdminUserList(query: AdminUserListQuery = {}) {
 				where,
 				orderBy:
 					query.sort === "name"
-						? [{ name: query.dir ?? "asc" }]
-						: [{ createdAt: query.dir ?? "desc" }],
+						? [{ name: query.dir ?? "asc" }, { id: "asc" }]
+						: [{ createdAt: query.dir ?? "desc" }, { id: "asc" }],
 				skip: (page - 1) * perPage,
 				take: perPage,
 				include: {
