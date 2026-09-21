@@ -133,7 +133,7 @@ export function StorefrontPreview({
 
 			<div
 				ref={paneRef}
-				className="relative min-h-0 flex-1 overflow-hidden bg-muted/40 py-4"
+				className="relative min-h-0 flex-1 overflow-auto bg-muted/40 py-4"
 			>
 				{device === "desktop" ? (
 					<div

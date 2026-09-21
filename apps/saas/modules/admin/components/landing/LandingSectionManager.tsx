@@ -322,7 +322,7 @@ export function LandingSectionManager({
 
 			<div
 				className={cn(
-					"grid gap-8",
+					"grid grid-cols-1 gap-8",
 					storefrontUrl &&
 						"lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-10",
 				)}
@@ -510,7 +510,7 @@ export function LandingSectionManager({
 				</div>
 
 				{storefrontUrl ? (
-					<div className="lg:sticky lg:top-6 lg:h-[calc(100vh-7rem)]">
+					<div className="h-[70vh] min-h-[320px] lg:sticky lg:top-6 lg:h-[calc(100vh-7rem)]">
 						<StorefrontPreview
 							url={storefrontUrl}
 							previewUrl={previewUrl}
