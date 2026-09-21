@@ -6,7 +6,11 @@ import {
 	colourHex,
 	defaultVariantSelection,
 	isColourAxis,
+	normalizeOptionMedia,
 	normalizeVariantAttributes,
+	optionMediaKey,
+	optionValueHex,
+	resolveOptionGallery,
 	resolveVariant,
 	variantAxes,
 	variantDisplayName,
@@ -159,6 +163,131 @@ describe("normalizeVariantAttributes", () => {
 				colour: "ignored duplicate",
 			}),
 			{ colour: "Black", size: "256 GB" },
+		);
+	});
+});
+
+describe("option media", () => {
+	it("keys axis and value case-insensitively", () => {
+		assert.equal(optionMediaKey(" Colour ", "Black"), "colour:black");
+		assert.equal(
+			optionMediaKey("colour", "NATURAL TITANIUM"),
+			"colour:natural titanium",
+		);
+	});
+
+	it("prefers a saved hex over the colour name table", () => {
+		const media = [{ axis: "colour", value: "Burgundy", hex: "#6d1a36" }];
+		assert.equal(optionValueHex(media, "colour", "Burgundy"), "#6d1a36");
+		assert.equal(optionValueHex(media, "colour", "Navy"), "#1e3a5f");
+		assert.equal(optionValueHex(media, "storage", "1 TB"), undefined);
+		assert.equal(
+			optionValueHex(
+				[{ axis: "colour", value: "Odd", hex: "not-a-hex" }],
+				"colour",
+				"Odd",
+			),
+			undefined,
+		);
+	});
+
+	it("normalizes rows: lowercase axis, deduped, hex validated", () => {
+		assert.deepEqual(
+			normalizeOptionMedia([
+				{
+					axis: " Colour ",
+					value: " Black ",
+					hex: "#111111",
+					images: [" a.jpg ", "a.jpg", ""],
+				},
+				{ axis: "colour", value: "BLACK", hex: "#222222", images: [] },
+				{
+					axis: "colour",
+					value: "",
+					hex: "#333333",
+					images: ["x.jpg"],
+				},
+				{ axis: "size", value: "L", hex: "blue", images: [] },
+			]),
+			[
+				{
+					axis: "colour",
+					value: "Black",
+					hex: "#111111",
+					images: ["a.jpg"],
+				},
+				{ axis: "size", value: "L", hex: undefined, images: [] },
+			],
+		);
+	});
+});
+
+describe("resolveOptionGallery", () => {
+	const product = {
+		images: ["generic-1.jpg", "generic-2.jpg"],
+		optionMedia: [
+			{
+				axis: "colour",
+				value: "Black",
+				images: ["black-1.jpg", "black-2.jpg"],
+			},
+			{ axis: "colour", value: "White", images: ["white-1.jpg"] },
+			{ axis: "strap", value: "Leather", images: ["leather-1.jpg"] },
+			{ axis: "storage", value: "1 TB", images: [] },
+		],
+	};
+
+	it("swaps to the picked colour's shots, untagged shots trailing", () => {
+		assert.deepEqual(
+			resolveOptionGallery(product, {
+				colour: "Black",
+				storage: "256 GB",
+			}),
+			["black-1.jpg", "black-2.jpg", "generic-1.jpg", "generic-2.jpg"],
+		);
+	});
+
+	it("unions media across axes and dedupes", () => {
+		assert.deepEqual(
+			resolveOptionGallery(product, {
+				colour: "Black",
+				strap: "Leather",
+			}),
+			[
+				"black-1.jpg",
+				"black-2.jpg",
+				"leather-1.jpg",
+				"generic-1.jpg",
+				"generic-2.jpg",
+			],
+		);
+	});
+
+	it("keeps only generic shots when the picked value owns nothing", () => {
+		assert.deepEqual(
+			resolveOptionGallery(product, {
+				colour: "Missing",
+				storage: "1 TB",
+			}),
+			["generic-1.jpg", "generic-2.jpg"],
+		);
+	});
+
+	it("returns every shot when no selected axis owns media", () => {
+		assert.deepEqual(resolveOptionGallery(product, { size: "L" }), [
+			"generic-1.jpg",
+			"generic-2.jpg",
+			"black-1.jpg",
+			"black-2.jpg",
+			"white-1.jpg",
+			"leather-1.jpg",
+		]);
+	});
+
+	it("returns the base gallery when the product has no option media", () => {
+		assert.deepEqual(
+			resolveOptionGallery({ images: ["a.jpg"] }, { colour: "Black" }),
+			["a.jpg"],
 		);
 	});
 });

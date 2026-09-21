@@ -60,6 +60,11 @@ export interface StoreProduct {
 	stockQuantity: number;
 	imageUrl: string;
 	images: string[];
+	/**
+	 * Media and styling attached to option values — "Colour: Black" carrying
+	 * a swatch hex plus its own shots. Selecting a value swaps the gallery.
+	 */
+	optionMedia?: StoreOptionMedia[];
 	rating: number;
 	reviewCount: number;
 	isFeatured: boolean;
@@ -73,6 +78,21 @@ export interface StoreProduct {
 	specifications: Record<string, string>;
 	reviews?: StoreReview[];
 	variants?: StoreProductVariant[];
+}
+
+/**
+ * Everything one option value owns beyond its name: a swatch colour for the
+ * picker chip, and the photographs that make up that value's gallery.
+ */
+export interface StoreOptionMedia {
+	/** The attribute key as stored on the variant, e.g. `"colour"`. */
+	axis: string;
+	/** The display value, e.g. `"Black"`. */
+	value: string;
+	/** Swatch colour for colour-like axes — `"#1c1c1e"`. */
+	hex?: string;
+	/** Shots shown when this value is picked; empty means the base gallery. */
+	images: string[];
 }
 
 export interface StoreProductVariant {

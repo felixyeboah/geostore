@@ -60,6 +60,17 @@ export interface SaveStoreProductInput {
 	specifications?: Prisma.InputJsonValue;
 	categoryId: string;
 	imageUrls: string[];
+	/**
+	 * Media and swatches keyed to option values — expected already
+	 * normalised (lowercase axis, trimmed value, valid hex). Images become
+	 * tagged `ProductImage` rows; hexes land in `Product.optionStyles`.
+	 */
+	optionMedia?: Array<{
+		axis: string;
+		value: string;
+		hex?: string;
+		images: string[];
+	}>;
 	variants?: Array<{
 		id?: string;
 		name: string;
@@ -694,18 +705,57 @@ function variantCreateData(
 	}));
 }
 
+/**
+ * Flattens option media into the two places it is stored: hexes become the
+ * `optionStyles` list — `[{axis, value, hex}]`, keeping the value's display
+ * case — and images become tagged `ProductImage` rows ordered after the
+ * untagged product shots.
+ */
+function optionMediaWriteData(
+	name: string,
+	imageUrls: string[],
+	optionMedia: NonNullable<SaveStoreProductInput["optionMedia"]>,
+) {
+	const optionStyles = optionMedia.flatMap((media) =>
+		media.hex
+			? [{ axis: media.axis, value: media.value, hex: media.hex }]
+			: [],
+	);
+	const tagged = optionMedia.flatMap((media) =>
+		media.images.map((url) => ({ url, media })),
+	);
+
+	return {
+		optionStyles: optionStyles.length ? optionStyles : Prisma.DbNull,
+		images: [
+			...imageUrls.map((url, sortOrder) => ({
+				url,
+				alt: name,
+				sortOrder,
+				optionAxis: null,
+				optionValue: null,
+			})),
+			...tagged.map(({ url, media }, index) => ({
+				url,
+				alt: `${name} — ${media.value}`,
+				sortOrder: imageUrls.length + index,
+				optionAxis: media.axis,
+				optionValue: media.value,
+			})),
+		],
+	};
+}
+
 export async function createStoreProduct(input: SaveStoreProductInput) {
-	const { imageUrls, variants = [], ...product } = input;
+	const { imageUrls, optionMedia = [], variants = [], ...product } = input;
+	const optionData = optionMediaWriteData(input.name, imageUrls, optionMedia);
 	return db.product.create({
 		data: {
 			...product,
+			optionStyles: optionData.optionStyles,
 			publishedAt: input.status === "ACTIVE" ? new Date() : null,
 			images: {
-				create: imageUrls.map((url, sortOrder) => ({
-					url,
-					alt: input.name,
-					sortOrder,
-				})),
+				create: optionData.images,
 			},
 			variants: { create: variantCreateData(variants) },
 		},
@@ -717,7 +767,7 @@ export async function updateStoreProduct(
 	id: string,
 	input: SaveStoreProductInput,
 ) {
-	const { imageUrls, variants = [], ...product } = input;
+	const { imageUrls, optionMedia = [], variants = [], ...product } = input;
 	const existingVariantIds = variants
 		.map((variant) => variant.id)
 		.filter((variantId): variantId is string => Boolean(variantId));
@@ -752,18 +802,20 @@ export async function updateStoreProduct(
 			}
 		}
 
+		const optionData = optionMediaWriteData(
+			input.name,
+			imageUrls,
+			optionMedia,
+		);
 		return transaction.product.update({
 			where: { id },
 			data: {
 				...product,
+				optionStyles: optionData.optionStyles,
 				publishedAt: input.status === "ACTIVE" ? new Date() : null,
 				images: {
 					deleteMany: {},
-					create: imageUrls.map((url, sortOrder) => ({
-						url,
-						alt: input.name,
-						sortOrder,
-					})),
+					create: optionData.images,
 				},
 			},
 			include: { category: { select: { slug: true } } },
