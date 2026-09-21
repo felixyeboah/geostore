@@ -14,7 +14,7 @@
 		"check": "biome check --write",
 		"clean": "turbo clean",
 		"format": "biome format --write",
-		"test:commerce": "tsx --test packages/commerce/cart.test.ts packages/commerce/order.test.ts packages/payments/lib/store-payments.test.ts packages/payments/lib/reevit-webhook.test.ts apps/marketing/modules/commerce/lib/order-token.test.ts packages/utils/lib/image-hosts.test.ts apps/saas/modules/admin/lib/overview.test.ts",
+		"test:commerce": "tsx --test packages/commerce/cart.test.ts packages/commerce/order.test.ts packages/commerce/variants.test.ts packages/payments/lib/store-payments.test.ts packages/payments/lib/reevit-webhook.test.ts apps/marketing/modules/commerce/lib/order-token.test.ts packages/utils/lib/image-hosts.test.ts apps/saas/modules/admin/lib/overview.test.ts",
 		"dev:mail": "dotenv -c -- turbo dev --filter=mail-preview"
 	},
 	"engines": {
