@@ -35,7 +35,7 @@ import {
 import { EditIcon, MoreVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { withQuery } from "ufo";
 import { useDebounceValue } from "usehooks-ts";
 
@@ -53,16 +53,12 @@ export function OrganizationList() {
 		"query",
 		parseAsString.withDefault(""),
 	);
-	const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounceValue(
-		searchTerm,
-		300,
-		{
-			leading: true,
-			trailing: false,
-		},
-	);
+	const [debouncedSearchTerm] = useDebounceValue(searchTerm, 300, {
+		leading: false,
+		trailing: true,
+	});
 
-	const previousSearchTermRef = useRef(debouncedSearchTerm);
+	const page = Math.max(1, currentPage);
 
 	const getPathWithBackToParemeter = (path: string) => {
 		const searchParams = new URLSearchParams(window.location.search);
@@ -75,29 +71,25 @@ export function OrganizationList() {
 		return getPathWithBackToParemeter(getAdminPath(`/organizations/${id}`));
 	};
 
-	useEffect(() => {
-		setDebouncedSearchTerm(searchTerm);
-	}, [searchTerm]);
-
-	const { data, isLoading } = useQuery(
+	const { data, isLoading, isError, refetch } = useQuery(
 		orpc.admin.organizations.list.queryOptions({
 			input: {
 				limit: ITEMS_PER_PAGE,
-				offset: (currentPage - 1) * ITEMS_PER_PAGE,
+				offset: (page - 1) * ITEMS_PER_PAGE,
 				query: debouncedSearchTerm,
 			},
 		}),
 	);
 
 	useEffect(() => {
-		if (
-			previousSearchTermRef.current !== debouncedSearchTerm &&
-			previousSearchTermRef.current !== undefined
-		) {
-			setCurrentPage(1);
+		const lastPage = data
+			? Math.max(1, Math.ceil(data.total / ITEMS_PER_PAGE))
+			: page;
+		const validPage = Math.min(page, lastPage);
+		if (currentPage !== validPage) {
+			void setCurrentPage(validPage);
 		}
-		previousSearchTermRef.current = debouncedSearchTerm;
-	}, [debouncedSearchTerm, setCurrentPage]);
+	}, [currentPage, page, data, setCurrentPage]);
 
 	const deleteOrganization = async (id: string) => {
 		toastPromise(
@@ -244,14 +236,34 @@ export function OrganizationList() {
 				type="search"
 				placeholder={t("admin.organizations.search")}
 				value={searchTerm}
-				onChange={(e) => setSearchTerm(e.target.value)}
+				onChange={(e) => {
+					void setCurrentPage(1);
+					void setSearchTerm(e.target.value);
+				}}
 				className="mb-4"
 			/>
 
 			<div className="rounded-md border">
 				<Table>
 					<TableBody>
-						{isLoading ? (
+						{isError ? (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									<p role="alert">
+										{t("admin.organizations.loadError")}
+									</p>
+									<Button
+										variant="link"
+										onClick={() => void refetch()}
+									>
+										{t("admin.organizations.retry")}
+									</Button>
+								</TableCell>
+							</TableRow>
+						) : isLoading ? (
 							Array.from({ length: ITEMS_PER_PAGE }).map(
 								(_, index) => (
 									<TableRow key={`skeleton-${index}`}>
@@ -313,7 +325,7 @@ export function OrganizationList() {
 					className="mt-4"
 					totalItems={data.total}
 					itemsPerPage={ITEMS_PER_PAGE}
-					currentPage={currentPage}
+					currentPage={page}
 					onChangeCurrentPage={setCurrentPage}
 				/>
 			)}

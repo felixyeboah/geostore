@@ -115,11 +115,12 @@ const nextConfig: NextConfig = {
 				permanent: true,
 			},
 			{
-				// Adding a product is a sheet over the list now. The old
-				// route keeps working because the sheet's open state lives
-				// in the query string rather than in component state.
-				source: "/admin/products/new",
-				destination: "/admin/products?new=true",
+				// Adding a product was briefly a sheet over the list, opened
+				// by `?new=true`. It is a page again; the old address still
+				// lands on it.
+				source: "/admin/products",
+				has: [{ type: "query", key: "new", value: "true" }],
+				destination: "/admin/products/new",
 				permanent: false,
 			},
 		];

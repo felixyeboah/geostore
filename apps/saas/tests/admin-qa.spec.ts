@@ -69,66 +69,61 @@ test.describe("admin product management", () => {
 	test("admin can create a product with a variant", async ({ page }) => {
 		await signIn(page, ADMIN);
 
-		// Adding a product is a sheet over the list now; the query parameter is
-		// what the retired /admin/products/new route redirects to.
-		await page.goto("/admin/products?new=true");
+		await page.goto("/admin/products/new");
 		await expect(
 			page.getByRole("heading", { name: "Add product" }),
 		).toBeVisible({ timeout: 30_000 });
 
 		const main = page.locator("form");
-		await main
-			.getByLabel("Name", { exact: true })
-			.first()
-			.fill(PRODUCT_NAME);
+		await main.getByLabel("Name", { exact: true }).fill(PRODUCT_NAME);
+		await main.getByRole("button", { name: "Change" }).click();
 		await main.getByLabel("URL slug").fill(PRODUCT_SLUG);
 		await main.getByLabel("Brand").fill("QA Labs");
+		await chooseAdminOption(
+			page,
+			main.getByLabel("Department"),
+			"Phones & tablets",
+		);
 		await main
-			.getByLabel("SKU", { exact: true })
-			.first()
-			.fill(`QA-SKU-${SUFFIX}`);
-		await main
-			.getByLabel("Short description")
+			.getByLabel("Summary")
 			.fill("A QA fixture gadget used by the end-to-end suite.");
 		await main
-			.getByLabel("Full description")
+			.getByLabel("Description", { exact: true })
 			.fill(
 				"This product exists only so the automated QA suite can exercise admin product creation, variant creation, stock edits, and storefront revalidation end to end.",
 			);
+		await main
+			.locator("#photos")
+			.getByRole("button", { name: "Paste image URLs instead" })
+			.click();
 		await main
 			.getByLabel("Product image URLs")
 			.fill(
 				"https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
 			);
 
-		await chooseAdminOption(page, main.getByLabel("Status"), "Active");
-		await chooseAdminOption(
-			page,
-			main.getByLabel("Category"),
-			"Phones & tablets",
-		);
-
-		// Price / stock
-		await main
-			.getByLabel("Price (GH₵)", { exact: true })
-			.first()
-			.fill("250");
-		await main.getByLabel("On-hand quantity").fill("7");
-
-		// Add a variant — closes the "zero variants ever created" coverage gap.
-		// Located by field name rather than by the row's styling, which has
-		// changed twice and silently took this assertion with it.
-		await page.getByRole("button", { name: "Add variant" }).click();
-		await main.locator('input[name="variants.0.name"]').fill("256 GB");
-		await main
-			.locator('input[name="variants.0.sku"]')
-			.fill(`QA-VAR-${SUFFIX}`);
+		// It comes in one storage size — a single option with one choice, so
+		// the product still carries a variant row. Located by field name rather
+		// than by the row's styling, which has changed twice and silently took
+		// this assertion with it.
+		await main.getByRole("radio", { name: /Comes in options/ }).check();
+		await main.getByLabel("Starting price (GH₵)").fill("250");
+		await expect(
+			main.getByLabel("Base product code (SKU)"),
+		).toHaveAttribute("readonly", "");
+		const option = page.getByTestId("option-0");
+		await option.getByLabel("Option name").fill("Storage");
+		await option.getByLabel("Option values").fill("256 GB");
+		await option.getByLabel("Option values").press("Enter");
+		await expect(
+			main.locator('input[name="variants.0.sku"]'),
+		).toHaveAttribute("readonly", "");
 		await main
 			.locator('input[name="variants.0.priceInPesewas"]')
 			.fill("300");
-		await main.locator('input[name="variants.0.stockQuantity"]').fill("4");
+		await main.locator('input[name="variants.0.stockQuantity"]').fill("7");
 
-		await page.getByRole("button", { name: "Save product" }).click();
+		await page.getByRole("button", { name: "Publish" }).click();
 
 		await expect(
 			page.getByText(/Product created|created/i).first(),

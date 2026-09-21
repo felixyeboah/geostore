@@ -45,6 +45,7 @@ function hostnameOf(endpoint: string | undefined): string | null {
 export function getUploadImageHosts(): string[] {
 	const hosts = [
 		hostnameOf(process.env.NEXT_PUBLIC_STORAGE_URL),
+		hostnameOf(process.env.NEXT_PUBLIC_PRODUCTS_STORAGE_URL),
 		hostnameOf(process.env.S3_ENDPOINT),
 	].filter((host): host is string => host !== null);
 

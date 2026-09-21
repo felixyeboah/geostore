@@ -1,5 +1,12 @@
 {
 	"admin": {
+		"collectionPicker": {
+			"noUnselected": "No unselected products on this page.",
+			"pages": "Catalogue search pages",
+			"previous": "Previous",
+			"next": "Next",
+			"summary": "Page {page} of {pages} · {total} matches"
+		},
 		"menu": {
 			"analytics": "Analytics",
 			"categories": "Departments",
@@ -39,6 +46,8 @@
 				"updateTitle": "Edit organization"
 			},
 			"loading": "Loading organizations...",
+			"loadError": "Organizations could not be loaded.",
+			"retry": "Try again",
 			"membersCount": "{count} {count, plural, one {member} other {members}}",
 			"search": "Search for an organization...",
 			"title": "Manage organizations"
@@ -90,9 +99,8 @@
 		"userMenu": {
 			"accountSettings": "Account settings",
 			"colorMode": "Color mode",
-			"documentation": "Documentation",
-			"home": "Home",
-			"logout": "Logout"
+			"security": "Password & security",
+			"logout": "Log out"
 		}
 	},
 	"auth": {

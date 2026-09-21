@@ -45,7 +45,7 @@ export function AdminTopBar({ items }: { items: AdminNavItem[] }) {
 							View the shop
 							<ArrowUpRightIcon className="size-3.5" />
 						</a>
-						<UserMenu />
+						<UserMenu variant="admin" />
 					</div>
 				</div>
 			</div>

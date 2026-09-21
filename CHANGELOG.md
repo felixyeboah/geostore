@@ -18,6 +18,8 @@
 
 ### Changed
 
+- Product and variant SKUs are generated on the server when created; variant codes share their product's prefix and saved codes remain stable when edited.
+- Storefront search matches individual words across product names, brands, categories, and active variant SKUs, with bounded database results and a retry state for failed requests.
 - Storefront catalogue now reads the same live database records managed by administrators.
 - Mail providers load lazily so local console mail does not require third-party API credentials.
 - Local Docker services use GeoStore-specific container names and PostgreSQL port `55432` to avoid common local conflicts.
@@ -29,6 +31,9 @@
 - Unit tests and a dependency audit now run in CI, and Biome skips the scratch design mockups and generated Prisma output.
 
 ### Fixed
+
+- Product updates validate variant ownership, clear removed product sale prices, and preserve variants referenced by orders.
+- Product stock totals follow active variants; variant order cancellations restore both variant and product stock.
 
 Full end-to-end QA pass over the buyer and admin journeys — see `QA-REPORT.md`
 for the complete list, reproductions, and verification.

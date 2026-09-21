@@ -65,14 +65,8 @@ export default async function AdminOrdersPage({
 	const [list, summary] = await Promise.all([
 		getAdminOrderList({
 			q: params.q,
-			status: (params.status as OrderStatusKey | null) ?? undefined,
-			paymentStatus:
-				(params.payment as
-					| "PENDING"
-					| "PAID"
-					| "FAILED"
-					| "REFUNDED"
-					| null) ?? undefined,
+			status: params.status ?? undefined,
+			paymentStatus: params.payment ?? undefined,
 			sort: params.sort,
 			dir: params.dir,
 			page: params.page,

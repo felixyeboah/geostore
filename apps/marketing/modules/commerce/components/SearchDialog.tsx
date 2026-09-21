@@ -35,6 +35,8 @@ export function SearchDialog({ label }: { label: string }) {
 	const [query, setQuery] = useState("");
 	const [results, setResults] = useState<SearchResponse>(EMPTY);
 	const [isSearching, setIsSearching] = useState(false);
+	const [hasError, setHasError] = useState(false);
+	const [retry, setRetry] = useState(0);
 
 	const trimmed = query.trim();
 	const hasQuery = trimmed.length >= 2;
@@ -64,6 +66,8 @@ export function SearchDialog({ label }: { label: string }) {
 		}
 
 		const controller = new AbortController();
+		setResults(EMPTY);
+		setHasError(false);
 		setIsSearching(true);
 		const timeoutId = window.setTimeout(async () => {
 			try {
@@ -71,11 +75,18 @@ export function SearchDialog({ label }: { label: string }) {
 					`/api/search?q=${encodeURIComponent(trimmed)}`,
 					{ signal: controller.signal },
 				);
-				setResults(response.ok ? await response.json() : EMPTY);
+				if (!response.ok) {
+					throw new Error("Search failed");
+				}
+				const data: SearchResponse = await response.json();
+				if (!controller.signal.aborted) {
+					setResults(data);
+				}
 			} catch {
 				// An aborted request is the normal case while typing.
 				if (!controller.signal.aborted) {
 					setResults(EMPTY);
+					setHasError(true);
 				}
 			} finally {
 				if (!controller.signal.aborted) {
@@ -88,7 +99,7 @@ export function SearchDialog({ label }: { label: string }) {
 			controller.abort();
 			window.clearTimeout(timeoutId);
 		};
-	}, [open, trimmed, hasQuery]);
+	}, [open, trimmed, hasQuery, retry]);
 
 	function goToShop() {
 		setOpen(false);
@@ -133,6 +144,7 @@ export function SearchDialog({ label }: { label: string }) {
 					<input
 						autoFocus
 						type="search"
+						maxLength={200}
 						value={query}
 						onChange={(event) => setQuery(event.target.value)}
 						placeholder="Search products or brands…"
@@ -164,7 +176,21 @@ export function SearchDialog({ label }: { label: string }) {
 							</p>
 						)}
 
+					{hasQuery && hasError && !isSearching && (
+						<div role="alert" className="px-5 py-8 text-sm">
+							<p>Search is unavailable. Please try again.</p>
+							<button
+								type="button"
+								onClick={() => setRetry((value) => value + 1)}
+								className="mt-2 underline"
+							>
+								Retry search
+							</button>
+						</div>
+					)}
+
 					{hasQuery &&
+						!hasError &&
 						!isSearching &&
 						results.products.length === 0 && (
 							<div className="px-5 py-8">

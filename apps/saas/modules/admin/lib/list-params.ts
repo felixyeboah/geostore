@@ -20,6 +20,24 @@ export const PRODUCT_STATUSES = ["ACTIVE", "DRAFT", "ARCHIVED"] as const;
 export const STOCK_STATES = ["OUT", "LOW", "OK"] as const;
 export const PRODUCT_SORTS = ["updated", "name", "price", "stock"] as const;
 
+export const ORDER_STATUSES = [
+	"PENDING",
+	"CONFIRMED",
+	"PROCESSING",
+	"READY_FOR_DELIVERY",
+	"OUT_FOR_DELIVERY",
+	"DELIVERED",
+	"CANCELLED",
+	"REFUNDED",
+] as const;
+
+export const PAYMENT_STATUSES = [
+	"PAID",
+	"PENDING",
+	"FAILED",
+	"REFUNDED",
+] as const;
+
 export const ORDER_SORTS = ["placed", "total", "customer"] as const;
 
 const SORT_DIRECTIONS = ["asc", "desc"] as const;
@@ -42,8 +60,8 @@ export type ProductListParams = Awaited<
 
 export const orderListParsers = {
 	q: parseAsString.withDefault(""),
-	status: parseAsString,
-	payment: parseAsString,
+	status: parseAsStringLiteral(ORDER_STATUSES),
+	payment: parseAsStringLiteral(PAYMENT_STATUSES),
 	sort: parseAsStringLiteral(ORDER_SORTS).withDefault("placed"),
 	dir: parseAsStringLiteral(SORT_DIRECTIONS).withDefault("desc"),
 	page: parseAsInteger.withDefault(1),
@@ -62,13 +80,6 @@ export const analyticsParsers = {
 };
 
 export const loadAnalyticsParams = createLoader(analyticsParsers);
-
-export const PAYMENT_STATUSES = [
-	"PAID",
-	"PENDING",
-	"FAILED",
-	"REFUNDED",
-] as const;
 
 export const PAYMENT_METHODS = [
 	"MOCK",

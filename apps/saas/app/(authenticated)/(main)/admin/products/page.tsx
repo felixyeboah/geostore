@@ -1,8 +1,5 @@
 import { AdminHeader } from "@admin/components/AdminPage";
-import {
-	AddProductButton,
-	AddProductSheet,
-} from "@admin/components/products/ProductSheet";
+import { AddProductButton } from "@admin/components/products/AddProductButton";
 import {
 	type ProductRow,
 	type ProductStatus,
@@ -11,11 +8,7 @@ import {
 } from "@admin/components/products/ProductsTable";
 import { loadProductListParams } from "@admin/lib/list-params";
 import { formatMoney } from "@repo/commerce";
-import {
-	getAdminProductList,
-	getAdminProductSummary,
-	getStoreCategories,
-} from "@repo/database";
+import { getAdminProductList, getAdminProductSummary } from "@repo/database";
 import type { Metadata } from "next";
 import type { SearchParams } from "nuqs/server";
 
@@ -38,7 +31,7 @@ export default async function AdminProductsPage({
 }) {
 	const params = await loadProductListParams(searchParams);
 
-	const [list, summary, categories] = await Promise.all([
+	const [list, summary] = await Promise.all([
 		getAdminProductList({
 			q: params.q,
 			status: params.status ?? undefined,
@@ -49,7 +42,6 @@ export default async function AdminProductsPage({
 			page: params.page,
 		}),
 		getAdminProductSummary(),
-		getStoreCategories({ includeInactive: true }),
 	]);
 
 	const rows: ProductRow[] = list.products.map((product) => ({
@@ -164,10 +156,6 @@ export default async function AdminProductsPage({
 					stock on hand.
 				</p>
 			)}
-
-			<AddProductSheet
-				categories={categories.map(({ id, name }) => ({ id, name }))}
-			/>
 		</div>
 	);
 }

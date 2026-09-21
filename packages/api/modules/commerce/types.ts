@@ -21,7 +21,8 @@ export const productFormSchema = z.object({
 		.trim()
 		.min(30, "Add a more complete product description."),
 	brand: z.string().trim().min(2, "Enter the brand."),
-	sku: z.string().trim().min(3, "Enter a SKU."),
+	// Assigned by the server on first save; retained for displaying saved codes.
+	sku: z.string().trim(),
 	status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
 	condition: z.enum(["NEW", "USED", "REFURBISHED"]),
 	priceInPesewas: z.number().int().min(1, "Enter a price greater than zero."),
@@ -78,7 +79,7 @@ export const productFormSchema = z.object({
 			// become the name — that is what buyers read, so the values are the
 			// label anyway.
 			name: z.string().trim(),
-			sku: z.string().trim().min(3),
+			sku: z.string().trim(),
 			priceInPesewas: z.number().int().min(1),
 			stockQuantity: z.number().int().min(0),
 			attributes: z.record(z.string(), z.string()),

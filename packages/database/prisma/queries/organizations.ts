@@ -31,6 +31,7 @@ export async function getOrganizations({
 					},
 				},
 			},
+			orderBy: [{ createdAt: "desc" }, { id: "asc" }],
 			take: limit,
 			skip: offset,
 		})

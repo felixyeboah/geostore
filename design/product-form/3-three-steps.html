@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3 — Three steps · Add product · GeoStore admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* ---- Option 3: three screens, one job each ---- */
+  .page { padding: 32px 0 80px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .back:hover { color: var(--ink); }
+  .back svg { width: 14px; height: 14px; }
+  .head { border-bottom: 1px solid var(--line-strong); padding: 14px 0 22px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .head .state { font-size: 13px; color: var(--muted); }
+
+  .stepper { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+  .stepper button { display: flex; align-items: center; gap: 12px; padding: 18px 0; text-align: left; color: var(--muted); position: relative; }
+  .stepper button + button { padding-left: 24px; }
+  .stepper .n { width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 600; color: var(--muted); flex: none; }
+  .stepper button.done .n { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .stepper button.on { color: var(--ink); }
+  .stepper button.on .n { border-color: var(--ink); color: var(--ink); }
+  .stepper button.on.done .n { color: #fff; }
+  .stepper button.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+  .stepper button + button.on::after { left: 24px; }
+  .stepper b { display: block; font-size: 13.5px; font-weight: 600; }
+  .stepper small { display: block; font-size: 12px; color: var(--muted); }
+
+  .sheet { max-width: 720px; margin: 0 auto; padding: 44px 0 0; }
+  .sheet h2 { font-size: 24px; letter-spacing: -0.03em; }
+  .sheet .lede { margin-top: 8px; }
+  .fields { display: grid; gap: 22px; margin-top: 28px; }
+  .photos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .screen { display: none; }
+  .screen.on { display: block; }
+
+  .foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .foot .l { font-size: 13px; color: var(--muted); }
+  .foot .r { display: flex; gap: 8px; }
+  .foot-err { margin-top: 20px; padding: 12px 14px; border: 1px solid var(--danger); border-radius: 2px; font-size: 13px; color: var(--danger); }
+  .foot-err ul { margin: 6px 0 0; padding-left: 18px; }
+
+  .optionrow { display: grid; grid-template-columns: 180px 1fr 28px; gap: 14px; align-items: start; padding: 16px 0; border-top: 1px solid var(--line); }
+  .optionrows .optionrow:last-child { border-bottom: 1px solid var(--line); }
+  .optionrow .values { display: grid; gap: 10px; min-width: 0; }
+  .optionrow .rm { color: var(--faint); margin-top: 32px; }
+  .optionrow .rm:hover { color: var(--danger); }
+  .optionrow .rm svg { width: 15px; height: 15px; }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+  .quick button { border: 1px solid var(--line); border-radius: 2px; padding: 3px 8px; font-size: 12px; color: var(--muted); }
+  .quick button:hover { color: var(--ink); border-color: var(--ink); }
+  .valuepanel { grid-column: 1 / -1; padding: 16px 18px; background: var(--plate); border-radius: 2px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+  .valuepanel .who { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13.5px; }
+  .valuepanel .sw { width: 14px; height: 14px; border-radius: 999px; border: 1px solid rgba(0,0,0,.15); }
+  .valuepanel .row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+  .valuepanel .photos { margin-top: 12px; }
+  .bulk { display: flex; align-items: center; gap: 14px; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; }
+  .bulk .l { font-size: 13px; color: var(--muted); }
+  .bulk .r { display: flex; gap: 6px; }
+
+  .review { border-top: 1px solid var(--line); margin-top: 28px; }
+  .rv { display: grid; grid-template-columns: 160px 1fr auto; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: start; }
+  .rv .k { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+  .rv .v { font-size: 14px; line-height: 1.55; min-width: 0; }
+  .rv .v .sub { color: var(--muted); font-size: 13px; }
+  .rv .edit { font-size: 12.5px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding-top: 2px; }
+  .rv .edit:hover { color: var(--ink); }
+  .rv .thumbs { display: flex; gap: 6px; }
+  .rv .thumbs span { width: 44px; height: 44px; border-radius: 2px; border: 1px solid var(--line); overflow: hidden; display: grid; place-items: center; color: #fff; font-size: 11px; font-weight: 600; }
+  .rv .thumbs span img { width: 100%; height: 100%; object-fit: cover; }
+  .rv .warn { color: var(--danger); }
+  .rv .missing { color: var(--danger); }
+  .combos { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+  .combos li { display: grid; grid-template-columns: 1fr 120px 60px; gap: 12px; }
+  .combos li .num { color: var(--muted); }
+  .combos li.off { color: var(--faint); }
+
+  .publishbox { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line-strong); display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .publishbox button.pub { display: block; padding: 16px 18px; border: 1px solid var(--line); border-radius: 2px; background: #fff; text-align: left; }
+  .publishbox button.pub.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .publishbox button.pub b { display: block; font-size: 14px; }
+  .publishbox button.pub span { display: block; color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container brandrow">
+    <div class="brand"><img src="logo.png" alt="Geostoresgh" /><span class="sep"></span><span class="eyebrow">Back office</span></div>
+    <div class="right"><a class="shoplink" href="#">View the shop <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></a><span class="avatar">KM</span></div>
+  </div>
+  <div class="container">
+    <ul class="tabs">
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Overview</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Orders <span class="count">6</span></a></li>
+      <li><a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>Products</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Departments</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Collections</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l1-5h16l1 5M3 9v11h18V9M3 9h18"/></svg>Storefront</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>Analytics</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Transactions</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Users</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>Settings</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="container page">
+  <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7M19 12H5"/></svg> Products</a>
+  <div class="head">
+    <div><h1>Add product</h1></div>
+    <div style="display:flex;gap:12px;align-items:center"><span class="state" data-state></span><button type="button" class="btn ghost" data-action="discard">Discard</button></div>
+  </div>
+
+  <div class="stepper">
+    <button type="button" id="tab1" data-go="1"><span class="n">1</span><span><b>Describe it</b><small>Name, department, photos</small></span></button>
+    <button type="button" id="tab2" data-go="2"><span class="n">2</span><span><b>Price it</b><small>One version or options</small></span></button>
+    <button type="button" id="tab3" data-go="3"><span class="n">3</span><span><b>Check and publish</b><small>Review, then go live or keep as draft</small></span></button>
+  </div>
+
+  <!-- Step 1 -->
+  <section class="sheet screen" id="s1">
+    <h2>Describe it</h2>
+    <p class="lede">Just the essentials. You can always come back and polish.</p>
+    <div class="fields">
+      <div class="field" id="basics">
+        <label>Product name <span class="req">*</span></label>
+        <div class="ctl"><input class="input" placeholder="e.g. Apple Watch Series 11" data-bind="name" /></div>
+        <p class="hint">Shop address: geostoresgh.com/products/<b id="slugOut"></b> · <a href="#" style="text-decoration:underline;text-underline-offset:3px" data-action="slug:edit">change</a></p>
+        <div id="slugEdit" style="display:none"><input class="input sm num" aria-label="URL slug" /><button type="button" class="btn sm" data-action="slug:done">Done</button><button type="button" class="btn ghost sm" data-action="slug:reset">Back to automatic</button></div>
+        <p data-err="basics">Name, brand and department are needed.</p>
+      </div>
+      <div class="grid3">
+        <div class="field"><label>Brand <span class="req">*</span></label><div class="ctl"><input class="input" placeholder="Apple" data-bind="brand" /></div></div>
+        <div class="field"><label>Department <span class="req">*</span></label><div class="ctl"><select class="select" data-bind="department"><option value="">Choose…</option><option>Watches &amp; wearables</option><option>Phones &amp; tablets</option><option>Laptops</option><option>Audio</option><option>Home &amp; TV</option><option>Accessories</option></select></div></div>
+        <div class="field"><label>Condition</label><div class="ctl"><select class="select" data-bind="condition"><option>New</option><option>Refurbished</option><option>Used</option></select></div></div>
+      </div>
+      <div class="field">
+        <label>Summary <span class="req">*</span> <span class="opt">one line, shown on cards</span></label>
+        <div class="ctl"><input class="input" placeholder="One sentence a shopper reads on the card" data-bind="summary" maxlength="200" /></div>
+        <p class="hint num" id="sumCount"></p>
+      </div>
+      <div class="field">
+        <label>Description <span class="req">*</span></label>
+        <div class="ctl"><textarea class="textarea" rows="5" placeholder="What should a customer know before buying?" data-bind="description"></textarea></div>
+        <p data-err="copy">The summary needs 10–180 characters and the description at least 30.</p>
+      </div>
+      <div class="field" id="photos">
+        <label>Photos <span class="req">*</span> <span class="opt">first is the cover · hover to change</span></label>
+        <div class="ctl photos" id="r-photos"></div>
+        <p class="hint">Colour-specific photos come in the next step, under “Photos for each colour”. <a href="#" style="text-decoration:underline;text-underline-offset:3px" data-action="photo:sample">Add a placeholder</a></p>
+        <p data-err="photo">Add at least one photo.</p>
+      </div>
+    </div>
+    <div class="foot-err" id="err1" style="display:none"></div>
+    <div class="foot">
+      <span class="l">Step 1 of 3</span>
+      <span class="r"><button type="button" class="btn" data-action="save">Save draft</button><button type="button" class="btn primary" data-go="2" data-validate="1">Continue to pricing →</button></span>
+    </div>
+  </section>
+
+  <!-- Step 2 -->
+  <section class="sheet screen" id="s2">
+    <h2>Price it</h2>
+    <p class="lede">Does a shopper have to choose anything — a colour, a size — before buying?</p>
+    <div class="fields" id="selling">
+      <div class="choice">
+        <button type="button" data-mode="single" data-action="mode:single"><span class="radio"></span><span><b>No, one version</b><span class="d">One price, one stock count.</span></span></button>
+        <button type="button" data-mode="options" data-action="mode:options"><span class="radio"></span><span><b>Yes, it comes in options</b><span class="d">Each combination priced and stocked on its own.</span></span></button>
+      </div>
+      <div id="modeSingle" class="grid3">
+        <div class="field"><label>Price <span class="req">*</span></label><div class="ctl with-prefix"><span class="prefix">GH₵</span><input class="input num" placeholder="0.00" data-bind="price" data-type="money" inputmode="decimal" /></div></div>
+        <div class="field"><label>Was <span class="opt">optional</span></label><div class="ctl with-prefix"><span class="prefix">GH₵</span><input class="input num" placeholder="0.00" data-bind="was" data-type="money" inputmode="decimal" /></div></div>
+        <div class="field"><label>Product code (SKU) <span class="req">*</span></label><div class="ctl"><input class="input num" placeholder="GST-APL-AWS11" data-bind="sku" /></div></div>
+        <div class="field"><label>In stock <span class="req">*</span></label><div class="ctl with-suffix"><input class="input num" data-bind="stock" data-type="int" inputmode="numeric" /><span class="suffix">units</span></div></div>
+        <div class="field"><label>Warn me at</label><div class="ctl with-suffix"><input class="input num" data-bind="lowStock" data-type="int" inputmode="numeric" /><span class="suffix">units</span></div></div>
+        <p data-err="price" style="grid-column:1/-1">A price above zero and a product code of at least 3 characters are needed.</p>
+        <p data-err="stock" style="grid-column:1/-1">Enter how many are in stock.</p>
+      </div>
+      <div id="modeOptions" style="display:grid;gap:26px">
+        <div class="grid2">
+          <div class="field"><label>Starting price <span class="req">*</span></label><div class="ctl with-prefix"><span class="prefix">GH₵</span><input class="input num" placeholder="0.00" data-bind="price" data-type="money" inputmode="decimal" /></div><p class="hint">Every combination starts here. Change any one below.</p></div>
+          <div class="field"><label>Base product code <span class="req">*</span></label><div class="ctl"><input class="input num" placeholder="GST-APL-AWS11" data-bind="sku" /></div><p class="hint">Combinations get a suffix, e.g. -JB-42MM.</p></div>
+          <p data-err="price" style="grid-column:1/-1">A starting price above zero and a base code of at least 3 characters are needed.</p>
+        </div>
+        <div>
+          <span class="lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:10px">What does the shopper choose?</span>
+          <div id="r-options" data-region="options"></div>
+          <div id="r-cmedia" data-region="cmedia"></div>
+          <p data-err="options">Add at least one option with a choice.</p>
+        </div>
+        <div id="r-combos" data-region="combos"></div>
+        <p data-err="combos">Every combination on sale needs a price and stock, or switch it off.</p>
+        <p data-err="swatch">Give every colour a swatch so shoppers can tell them apart.</p>
+      </div>
+    </div>
+    <div class="foot-err" id="err2" style="display:none"></div>
+    <div class="foot">
+      <span class="l">Step 2 of 3</span>
+      <span class="r"><button type="button" class="btn ghost" data-go="1">← Back</button><button type="button" class="btn" data-action="save">Save draft</button><button type="button" class="btn primary" data-go="3" data-validate="2">Continue to review →</button></span>
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section class="sheet screen" id="s3">
+    <h2>Check and publish</h2>
+    <p class="lede">This is what the shop will show. Anything wrong, jump back and fix it.</p>
+    <div class="review" id="review"></div>
+    <div id="specsWrap" style="margin-top:24px">
+      <span class="lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:10px">Specifications <span class="opt" style="font-weight:400;color:var(--faint)">optional</span></span>
+      <div id="r-specs" data-region="specs"></div>
+    </div>
+    <div class="publishbox">
+      <button type="button" class="pub" id="pubNow" data-pub="active"><b>Publish now</b><span>Live on the shop the moment you save.</span></button>
+      <button type="button" class="pub" id="pubDraft" data-pub="draft"><b>Keep as draft</b><span>Saved, hidden from shoppers. Publish later from the list.</span></button>
+    </div>
+    <label class="check" style="margin-top:16px"><input type="checkbox" data-bind="featured" /> Feature it on the home page</label>
+    <div class="foot-err" id="err3" style="display:none"></div>
+    <div class="foot">
+      <span class="l">Step 3 of 3</span>
+      <span class="r"><button type="button" class="btn ghost" data-go="2">← Back</button><button type="button" class="btn primary lg" id="finish">Publish product</button></span>
+    </div>
+  </section>
+</main>
+
+<div class="mock">Option <a href="1-guided-page.html">1</a><a href="2-workspace-preview.html">2</a><a class="on" href="3-three-steps.html">3</a><a class="util" href="#" data-action="sample">Reload sample</a></div>
+
+<script src="engine.js"></script>
+<script>
+    let step = 1, intent = 'active';
+  const STEP_RULES = { 1: ['basics', 'copy', 'photo'], 2: ['price', 'options', 'combos', 'swatch', 'stock'] };
+  function failing(n) { return Engine.rules(Engine.S).filter((r) => STEP_RULES[n].includes(r.id) && !r.ok); }
+  function go(n, validateFrom) {
+    if (validateFrom) {
+      const f = failing(validateFrom);
+      const box = document.getElementById('err' + validateFrom);
+      if (f.length) { Engine.S.touched = true; box.style.display = ''; box.innerHTML = `Fix these before moving on:<ul>${f.map((r) => `<li>${Engine.esc(r.label)}</li>`).join('')}</ul>`; Engine.render(); box.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      box.style.display = 'none';
+    }
+    step = n; window.scrollTo({ top: 0 }); Engine.render();
+  }
+  document.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-go]'); if (g) { go(+g.dataset.go, g.dataset.validate ? +g.dataset.validate : null); return; }
+    const p = e.target.closest('[data-pub]'); if (p) { intent = p.dataset.pub; Engine.render(); return; }
+    if (e.target.closest('#finish')) {
+      Engine.S.touched = true;
+      if (intent === 'active') {
+        if (!Engine.ready(Engine.S)) { const f = Engine.rules(Engine.S).filter((r) => !r.ok); const box = document.getElementById('err3'); box.style.display = ''; box.innerHTML = `Not ready to publish yet:<ul>${f.map((r) => `<li>${Engine.esc(r.label)}</li>`).join('')}</ul>`; Engine.render(); return; }
+        Engine.S.status = 'active'; Engine.S.savedAt = Date.now(); Engine.toast(`Published — ${Engine.S.name} is live on the shop`, 'ok');
+      } else { Engine.S.status = 'draft'; Engine.S.savedAt = Date.now(); Engine.toast('Saved as a draft — hidden from shoppers'); }
+      document.getElementById('err3').style.display = 'none'; Engine.render();
+    }
+  });
+
+  function reviewTpl(S) {
+    const E = Engine, esc = E.esc, axes = E.usableOptions(S), r = E.rules(S);
+    const bad = (id) => { const x = r.find((y) => y.id === id); return x && !x.ok; };
+    const th = (p) => p.url ? `<span><img src="${esc(p.url)}" alt="" /></span>` : `<span style="background:${p.bg}">${esc(p.label)}</span>`;
+    const colourAxis = axes.find((a) => /colou?r|finish/i.test(a.name));
+    const perColour = colourAxis ? colourAxis.values.map((v) => { const m = E.mediaFor(S, colourAxis.name, v); return m.photos.length ? `${esc(v)} has ${m.photos.length} of its own` : `<span class="warn">${esc(v)} has none of its own</span>`; }).join(' · ') : '';
+    const active = S.variants.filter((v) => v.active);
+    const min = active.length ? Math.min(...active.map((v) => v.price)) : S.price;
+    return `
+      <div class="rv"><span class="k">Product</span><div class="v">${S.name ? `<b>${esc(S.name)}</b>` : '<span class="missing">No name yet</span>'}<div class="sub">${esc(S.brand || '—')} · ${S.department ? esc(S.department) : '<span class="missing">no department</span>'} · ${esc(S.condition)}</div><div class="sub">geostoresgh.com/products/${esc(E.slug(S) || '…')}</div></div><a class="edit" href="#" data-go="1">Edit</a></div>
+      <div class="rv"><span class="k">Summary</span><div class="v ${bad('copy') ? 'missing' : ''}">${esc(S.summary) || 'Missing'}</div><a class="edit" href="#" data-go="1">Edit</a></div>
+      <div class="rv"><span class="k">Photos</span><div class="v">${S.photos.length ? `<div class="thumbs">${S.photos.slice(0, 6).map(th).join('')}</div>` : '<span class="missing">No photos yet</span>'}<div class="sub" style="margin-top:6px">${S.photos.length} photo${S.photos.length === 1 ? '' : 's'}${perColour ? ' · ' + perColour : ''}</div></div><a class="edit" href="#" data-go="1">Edit</a></div>
+      ${S.mode === 'options'
+        ? `<div class="rv"><span class="k">Options</span><div class="v">${axes.length ? axes.map((a) => `<b>${esc(a.name)}</b> ${a.values.map(esc).join(', ')}`).join('<br/>') : '<span class="missing">No options with choices yet</span>'}</div><a class="edit" href="#" data-go="2">Edit</a></div>
+           <div class="rv"><span class="k">Combinations</span><div class="v"><span class="sub">${S.variants.length} combination${S.variants.length === 1 ? '' : 's'} · ${active.length} on sale · from <span class="num">GH₵ ${E.money(min)}</span></span>
+             <ul class="combos">${S.variants.map((v) => `<li class="${v.active ? '' : 'off'}"><span>${Object.values(v.attrs).map(esc).join(' · ')}${v.active ? '' : ' — not on sale'}${v.active && v.stock <= 0 ? ' <span class="warn">— no stock</span>' : ''}</span><span class="num">GH₵ ${E.money(v.price)}</span><span class="num">${v.stock}</span></li>`).join('')}</ul></div><a class="edit" href="#" data-go="2">Edit</a></div>`
+        : `<div class="rv"><span class="k">Price &amp; stock</span><div class="v"><b class="num">GH₵ ${E.money(S.price)}</b>${S.was > S.price ? ` <s class="num sub">GH₵ ${E.money(S.was)}</s>` : ''}<div class="sub num">${S.stock} in stock · SKU ${esc(S.sku || '—')}${bad('price') || bad('stock') ? ' · <span class="warn">incomplete</span>' : ''}</div></div><a class="edit" href="#" data-go="2">Edit</a></div>`}
+    `;
+  }
+
+  Engine.page.render = function (S) {
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById('s' + i).classList.toggle('on', i === step);
+      const t = document.getElementById('tab' + i);
+      t.classList.toggle('on', i === step);
+      t.classList.toggle('done', i < 3 ? failing(i).length === 0 : S.status === 'active');
+    }
+    document.getElementById('review').innerHTML = reviewTpl(S);
+    document.getElementById('pubNow').classList.toggle('on', intent === 'active');
+    document.getElementById('pubDraft').classList.toggle('on', intent === 'draft');
+    document.getElementById('finish').textContent = intent === 'active' ? (S.status === 'active' ? 'Save changes' : 'Publish product') : 'Save as draft';
+  };
+</script>
+</body>
+</html>

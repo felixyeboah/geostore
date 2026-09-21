@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add product — three directions · GeoStore admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  .wrap { max-width: 880px; margin: 0 auto; padding: 72px 24px 96px; }
+  h1 { font-size: 40px; }
+  .lede { margin-top: 14px; }
+  .why { margin-top: 40px; border-top: 1px solid var(--line-strong); padding-top: 24px; }
+  .why h2 { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .why ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; line-height: 1.55; }
+  .why li b { font-weight: 600; }
+  .shared { margin-top: 36px; }
+  .shared ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; line-height: 1.55; }
+  .options { margin-top: 44px; border-top: 1px solid var(--line-strong); }
+  .option { display: grid; grid-template-columns: 56px 1fr auto; gap: 24px; padding: 26px 0; border-bottom: 1px solid var(--line); align-items: start; }
+  .option .n { font-size: 32px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: var(--ink); }
+  .option h3 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.025em; }
+  .option p { margin: 8px 0 0; font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 62ch; }
+  .option p b { color: var(--ink); font-weight: 500; }
+  .option .btn { margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">GeoStore admin · /admin/products?new=true</p>
+  <h1 style="margin-top:14px">Adding a product, three ways</h1>
+  <p class="lede">Same fields, same data model, same editorial language as the rest of the admin. Each option answers the brief differently: make it obvious what to fill in, make variants understandable, and make it hard to publish something broken.</p>
+
+  <section class="why">
+    <h2>What the current sheet gets wrong</h2>
+    <ol>
+      <li><b>A drawer for a 2,200 px form.</b> Six sections and a variant matrix squeezed into a 640 px side panel. The table gets five cramped columns and the photo editor nests three levels deep.</li>
+      <li><b>No hierarchy.</b> Every label is the same grey small caps. Name and Compare-at price weigh the same; nothing says which fields are required.</li>
+      <li><b>Order fights the mental model.</b> Price and stock are asked before "does it come in options?" — then the matrix overrides them. Department, which is required, hides under "Publishing" at the bottom.</li>
+      <li><b>Plumbing shown to everyone.</b> URL slug and a raw image-URL textarea sit in the main flow.</li>
+      <li><b>Variants are the hardest part and the least explained.</b> Option name, chip input, quick-add, the expanded swatch/photo box and the matrix all live inside one bordered card, with no statement of what a "combination" is.</li>
+      <li><b>No sense of progress.</b> There is no "what's left before this can go live", so the only feedback is a failed save.</li>
+    </ol>
+  </section>
+
+  <section class="shared" style="margin-top:28px">
+    <h2 class="eyebrow" style="margin-bottom:14px">These are working prototypes</h2>
+    <ul>
+      <li>Every control works: type a name and watch the address, counts and readiness update; add and remove options and choices (Enter or comma adds, Backspace removes the last); the combinations table regenerates and keeps what you typed.</li>
+      <li>As soon as a Colour option has choices, a <b>“Photos for each colour”</b> block appears under it: one row per colour with its swatch, its own photo strip and an Add photos button. Clicking a colour chip jumps to its row. Hover any photo to make it the cover or remove it; "Add photos" opens a real file picker.</li>
+      <li>Switch between "one version" and "comes in options" without losing anything. Publish is gated by the readiness list; Discard empties the form so you can try it from blank; "Reload sample" (bottom-left) brings the Apple Watch back.</li>
+      <li>Product photos are generated packshots, so the pages read like a real catalogue rather than placeholder tiles.</li>
+    </ul>
+  </section>
+
+  <section class="shared">
+    <h2 class="eyebrow" style="margin-bottom:14px">Shared by all three</h2>
+    <ul>
+      <li>A full page, not a drawer. The list is one click back.</li>
+      <li>One explicit decision — <b>"one version"</b> or <b>"comes in options"</b> — and the price/stock UI changes to match.</li>
+      <li>Required fields marked; a readiness list gates Publish; Save draft is always available.</li>
+      <li>Photos for a colour are edited in a visible “Photos for each colour” block with one row per colour, never behind a hidden click.</li>
+      <li>Specifications as label/value rows, not a "Label: Value" textarea.</li>
+      <li>Slug shown as a read-only address with "change"; image URLs behind a link.</li>
+    </ul>
+  </section>
+
+  <div class="options">
+    <div class="option">
+      <span class="n">1</span>
+      <div>
+        <h3>Guided page</h3>
+        <p>One column, four numbered questions — <b>What is it? · Photos · How is it sold? · Specifications</b> — with a sticky rail that lists what is left before it can go live. The most conventional; the easiest to hand to someone new.</p>
+      </div>
+      <a class="btn" href="1-guided-page.html">Open</a>
+    </div>
+    <div class="option">
+      <span class="n">2</span>
+      <div>
+        <h3>Workspace with live preview</h3>
+        <p>Form on the left, <b>the shopper's view on the right</b> updating as you type. Clicking a colour swaps the preview for that colour's swatch and photos, so per-value media has its own room. Readiness and visibility live under the preview. Best for anyone who thinks visually; heavier to build.</p>
+      </div>
+      <a class="btn" href="2-workspace-preview.html">Open</a>
+    </div>
+    <div class="option">
+      <span class="n">3</span>
+      <div>
+        <h3>Three steps</h3>
+        <p><b>Describe it → Price it → Check and publish.</b> One job per screen, so nothing is ever off-screen or out of order, and the last step is a plain-English review with "Edit" beside every block. The most hand-holding; slower for someone entering twenty products in a sitting.</p>
+      </div>
+      <a class="btn" href="3-three-steps.html">Open</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

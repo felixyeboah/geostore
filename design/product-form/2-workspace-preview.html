@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2 — Workspace with live preview · Add product · GeoStore admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* ---- Option 2: form on the left, what the shopper will see on the right ---- */
+  .page { padding: 32px 0 80px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .back:hover { color: var(--ink); }
+  .back svg { width: 14px; height: 14px; }
+  .head { border-bottom: 1px solid var(--line-strong); padding: 14px 0 22px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .head .actions { display: flex; gap: 8px; align-items: center; }
+  .head .state { font-size: 13px; color: var(--muted); margin-right: 8px; }
+  .head h1.empty { color: var(--faint); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: start; }
+
+  .jump { display: flex; gap: 22px; border-bottom: 1px solid var(--line); margin-top: 4px; position: sticky; top: 0; background: var(--bg); z-index: 3; }
+  .jump a { position: relative; height: 44px; display: flex; align-items: center; font-size: 13px; color: var(--muted); gap: 7px; }
+  .jump a.on { color: var(--ink); font-weight: 500; }
+  .jump a.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+  .jump a i { width: 6px; height: 6px; border-radius: 999px; background: var(--faint); }
+  .jump a i.ok { background: var(--ok); }
+
+  .block { padding: 32px 0; border-bottom: 1px solid var(--line); display: grid; gap: 20px; scroll-margin-top: 56px; }
+  .block:last-of-type { border-bottom: 0; }
+  .block-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .block-head p { margin: 4px 0 0; }
+  .photos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+
+  .optionrow { display: grid; grid-template-columns: 180px 1fr 28px; gap: 14px; align-items: start; padding: 14px 0; border-top: 1px solid var(--line); }
+  .optionrows .optionrow:last-child { border-bottom: 1px solid var(--line); }
+  .optionrow .values { display: grid; gap: 10px; min-width: 0; }
+  .optionrow .rm { color: var(--faint); margin-top: 32px; }
+  .optionrow .rm:hover { color: var(--danger); }
+  .optionrow .rm svg { width: 15px; height: 15px; }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+  .quick button { border: 1px solid var(--line); border-radius: 2px; padding: 3px 8px; font-size: 12px; color: var(--muted); }
+  .quick button:hover { color: var(--ink); border-color: var(--ink); }
+  .bulk { display: flex; align-items: center; gap: 14px; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; }
+  .bulk .l { font-size: 13px; color: var(--muted); }
+  .bulk .r { display: flex; gap: 6px; }
+  .tbl td .input.sm { width: 100%; }
+
+  /* right pane */
+  .pane { position: sticky; top: 24px; }
+  .pane-tabs { display: flex; gap: 18px; border-bottom: 1px solid var(--line); }
+  .pane-tabs button { height: 40px; font-size: 12.5px; color: var(--muted); position: relative; font-weight: 500; }
+  .pane-tabs button.on { color: var(--ink); }
+  .pane-tabs button.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+  .pane-tabs button:disabled { opacity: .4; cursor: default; }
+
+  .preview { padding: 22px 0 24px; border-bottom: 1px solid var(--line); }
+  .frame { border: 1px solid var(--line); background: #fff; padding: 20px; border-radius: 2px; }
+  .hero { height: 200px; border-radius: 2px; display: grid; place-items: center; color: #fff; font-size: 34px; font-weight: 600; letter-spacing: -0.03em; background: var(--plate); overflow: hidden; }
+  .hero.none { color: var(--faint); font-size: 13px; font-weight: 500; border: 1px dashed var(--line); }
+  .hero img { width: 100%; height: 100%; object-fit: contain; background: #fbf8f7; }
+  .thumbs { display: flex; gap: 6px; margin-top: 8px; }
+  .thumbs span { width: 40px; height: 40px; border-radius: 2px; border: 1px solid var(--line); overflow: hidden; }
+  .thumbs span img { width: 100%; height: 100%; object-fit: cover; }
+  .pv-brand { margin-top: 16px; }
+  .pname { font-size: 19px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; margin-top: 4px; }
+  .pname.empty { color: var(--faint); }
+  .price { margin-top: 8px; display: flex; align-items: baseline; gap: 8px; }
+  .price b { font-size: 18px; font-weight: 600; }
+  .price s { color: var(--faint); font-size: 13px; }
+  .axis { margin-top: 14px; }
+  .axis .eyebrow { display: block; margin-bottom: 8px; }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatches button { width: 26px; height: 26px; border-radius: 999px; border: 1px solid rgba(0,0,0,.15); }
+  .swatches button.on { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .swatches button.nohex { background: repeating-linear-gradient(45deg, #fff 0 4px, var(--line) 4px 8px); }
+  .sizes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sizes button { border: 1px solid var(--line); padding: 5px 12px; font-size: 12.5px; border-radius: 2px; background: #fff; }
+  .sizes button.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .sizes button.off { color: var(--faint); text-decoration: line-through; }
+  .cta { margin-top: 16px; height: 40px; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 600; border-radius: 2px; }
+  .cta.off { background: var(--plate); color: var(--muted); }
+  .stockline { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .cap { font-size: 12px; color: var(--faint); margin-top: 10px; text-align: center; }
+
+  .media-editor { padding: 22px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start; }
+  .media-editor .who { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+  .media-editor .sw { width: 14px; height: 14px; border-radius: 999px; border: 1px solid rgba(0,0,0,.15); }
+  .media-editor .row { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .media-editor .photos { margin-top: 14px; }
+  .media-empty { padding: 22px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+  .ready { padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .ready h3, .visibility h3 { margin: 0 0 12px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+  .ready h3 b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ready .readylist { border-top: 0; }
+  .ready .readylist li { border-bottom: 0; padding: 5px 0; }
+  .visibility { padding: 22px 0; display: grid; gap: 14px; }
+
+  @media (max-width: 1080px) { .layout { grid-template-columns: 1fr; } .pane { position: static; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container brandrow">
+    <div class="brand"><img src="logo.png" alt="Geostoresgh" /><span class="sep"></span><span class="eyebrow">Back office</span></div>
+    <div class="right"><a class="shoplink" href="#">View the shop <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></a><span class="avatar">KM</span></div>
+  </div>
+  <div class="container">
+    <ul class="tabs">
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Overview</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Orders <span class="count">6</span></a></li>
+      <li><a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>Products</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Departments</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Collections</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l1-5h16l1 5M3 9v11h18V9M3 9h18"/></svg>Storefront</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>Analytics</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Transactions</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Users</a></li>
+      <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>Settings</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="container page">
+  <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7M19 12H5"/></svg> Products</a>
+  <div class="head">
+    <div>
+      <p class="eyebrow" style="margin-bottom:12px" id="headEyebrow">New product · Draft</p>
+      <h1 id="headTitle">Add product</h1>
+    </div>
+    <div class="actions">
+      <span class="state" data-state></span>
+      <button type="button" class="btn ghost" data-action="discard">Discard</button>
+      <button type="button" class="btn" data-action="save">Save draft</button>
+      <button type="button" class="btn primary" data-action="publish">Publish</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="main">
+      <nav class="jump" id="jump">
+        <a href="#basics" data-action="jump:#basics" data-j="basics"><i></i>Basics</a>
+        <a href="#photos" data-action="jump:#photos" data-j="photo"><i></i>Photos</a>
+        <a href="#selling" data-action="jump:#selling" data-j="selling"><i></i>Options &amp; pricing</a>
+        <a href="#specs" data-action="jump:#specs" data-j="specs"><i class="ok"></i>Specifications</a>
+      </nav>
+
+      <section class="block" id="basics">
+        <div class="field">
+          <label>Product name <span class="req">*</span></label>
+          <div class="ctl"><input class="input" placeholder="e.g. Apple Watch Series 11" data-bind="name" /></div>
+          <p class="hint">Address on the shop: geostoresgh.com/products/<b id="slugOut"></b> · <a href="#" style="text-decoration:underline;text-underline-offset:3px" data-action="slug:edit">change</a></p>
+          <div id="slugEdit" style="display:none"><input class="input sm num" aria-label="URL slug" /><button type="button" class="btn sm" data-action="slug:done">Done</button><button type="button" class="btn ghost sm" data-action="slug:reset">Back to automatic</button></div>
+          <p data-err="basics">Name, brand and department are needed.</p>
+        </div>
+        <div class="grid3">
+          <div class="field"><label>Brand <span class="req">*</span></label><div class="ctl"><input class="input" placeholder="Apple" data-bind="brand" /></div></div>
+          <div class="field"><label>Department <span class="req">*</span></label><div class="ctl"><select class="select" data-bind="department"><option value="">Choose…</option><option>Watches &amp; wearables</option><option>Phones &amp; tablets</option><option>Laptops</option><option>Audio</option><option>Home &amp; TV</option><option>Accessories</option></select></div></div>
+          <div class="field"><label>Condition</label><div class="ctl"><select class="select" data-bind="condition"><option>New</option><option>Refurbished</option><option>Used</option></select></div></div>
+        </div>
+        <div class="field">
+          <label>Summary <span class="req">*</span> <span class="opt">one line, on product cards</span></label>
+          <div class="ctl"><input class="input" placeholder="One sentence a shopper reads on the card" data-bind="summary" maxlength="200" /></div>
+          <p class="hint num" id="sumCount"></p>
+        </div>
+        <div class="field">
+          <label>Description <span class="req">*</span></label>
+          <div class="ctl"><textarea class="textarea" rows="5" placeholder="What should a customer know before buying?" data-bind="description"></textarea></div>
+          <p data-err="copy">The summary needs 10–180 characters and the description at least 30.</p>
+        </div>
+      </section>
+
+      <section class="block" id="photos">
+        <div class="block-head"><div><h2>Photos</h2><p class="hint">First is the cover. Hover to make cover or remove. Colour-specific shots are set under Options, in “Photos for each colour”.</p></div><a class="hint" href="#" style="text-decoration:underline;text-underline-offset:3px" data-action="photo:sample">Add a placeholder</a></div>
+        <div class="photos" id="r-photos"></div>
+        <p data-err="photo">Add at least one photo.</p>
+      </section>
+
+      <section class="block" id="selling">
+        <div class="block-head"><div><h2>Options &amp; pricing</h2><p class="hint">Does a shopper have to choose anything before adding it to the basket?</p></div></div>
+        <div class="choice">
+          <button type="button" data-mode="single" data-action="mode:single"><span class="radio"></span><span><b>No — one version</b><span class="d">One price, one stock count.</span></span></button>
+          <button type="button" data-mode="options" data-action="mode:options"><span class="radio"></span><span><b>Yes — it comes in options</b><span class="d">Colour, size, storage… each combination priced and stocked on its own.</span></span></button>
+        </div>
+        <div id="modeSingle" class="grid3">
+          <div class="field"><label>Price <span class="req">*</span></label><div class="ctl with-prefix"><span class="prefix">GH₵</span><input class="input num" placeholder="0.00" data-bind="price" data-type="money" inputmode="decimal" /></div></div>
+          <div class="field"><label>Was <span class="opt">optional</span></label><div class="ctl with-prefix"><span class="prefix">GH₵</span><input class="input num" placeholder="0.00" data-bind="was" data-type="money" inputmode="decimal" /></div></div>
+          <div class="field"><label>Product code (SKU) <span class="req">*</span></label><div class="ctl"><input class="input num" placeholder="GST-APL-AWS11" data-bind="sku" /></div></div>
+          <div class="field"><label>In stock <span class="req">*</span></label><div class="ctl with-suffix"><input class="input num" data-bind="stock" data-type="int" inputmode="numeric" /><span class="suffix">units</span></div></div>
+          <div class="field"><label>Warn me at</label><div class="ctl with-suffix"><input class="input num" data-bind="lowStock" data-type="int" inputmode="numeric" /><span class="suffix">units</span></div></div>
+          <p data-err="price" style="grid-column:1/-1">A price above zero and a product code of at least 3 characters are needed.</p>
+          <p data-err="stock" style="grid-column:1/-1">Enter how many are in stock.</p>
+        </div>
+        <div id="modeOptions" style="display:grid;gap:24px">
+          <div class="grid3">
+            <div class="field"><label>Starting price <span class="req">*</span></label><div class="ctl with-prefix"><span class="prefix">GH₵</span><input class="input num" placeholder="0.00" data-bind="price" data-type="money" inputmode="decimal" /></div><p class="hint">Each combination starts here.</p></div>
+            <div class="field"><label>Base product code <span class="req">*</span></label><div class="ctl"><input class="input num" placeholder="GST-APL-AWS11" data-bind="sku" /></div><p class="hint">Combinations add a suffix.</p></div>
+            <div class="field"><label>Warn me at</label><div class="ctl with-suffix"><input class="input num" data-bind="lowStock" data-type="int" inputmode="numeric" /><span class="suffix">units</span></div></div>
+            <p data-err="price" style="grid-column:1/-1">A starting price above zero and a base code of at least 3 characters are needed.</p>
+          </div>
+          <div id="r-options" data-region="options"></div>
+          <div id="r-cmedia" data-region="cmedia"></div>
+          <p data-err="options">Add at least one option with a choice.</p>
+          <div id="r-combos" data-region="combos"></div>
+          <p data-err="combos">Every combination on sale needs a price and stock, or switch it off.</p>
+          <p data-err="swatch">Give every colour a swatch so shoppers can tell them apart.</p>
+        </div>
+      </section>
+
+      <section class="block" id="specs">
+        <div class="block-head"><div><h2>Specifications <span style="font-size:13px;font-weight:400;color:var(--faint)">optional</span></h2><p class="hint">Rows in the comparison table on the product page.</p></div></div>
+        <div id="r-specs" data-region="specs"></div>
+      </section>
+    </div>
+
+    <aside class="pane">
+      <div class="pane-tabs"><button type="button" class="on">Shopper's view</button></div>
+      <div class="preview" id="panePreview"></div>
+      <div class="ready">
+        <h3>Ready to publish? <b id="readyCount"></b></h3>
+        <div id="r-ready"></div>
+      </div>
+      <div class="visibility">
+        <h3>Visibility</h3>
+        <div class="field"><label>Status</label><div class="ctl"><select class="select" data-bind="status"><option value="draft">Draft — hidden from shop</option><option value="active">Active — on the shop</option><option value="archived">Archived</option></select></div></div>
+        <label class="check"><input type="checkbox" data-bind="featured" /> Featured on the home page</label>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="mock">Option <a href="1-guided-page.html">1</a><a class="on" href="2-workspace-preview.html">2</a><a href="3-three-steps.html">3</a><a class="util" href="#" data-action="sample">Reload sample</a></div>
+
+<script src="engine.js"></script>
+<script>
+  
+  function previewTpl(S) {
+    const E = Engine, esc = E.esc, axes = S.mode === 'options' ? E.usableOptions(S) : [];
+    // resolve the shopper's current pick per axis
+    const pick = {};
+    axes.forEach((a) => { pick[a.name] = a.values.includes(S.previewPick[a.name]) ? S.previewPick[a.name] : a.values[0]; });
+    const variant = S.variants.find((v) => Object.entries(pick).every(([k, val]) => v.attrs[k] === val));
+    const colourAxis = axes.find((a) => /colou?r|finish/i.test(a.name));
+    const cm = colourAxis ? E.mediaFor(S, colourAxis.name, pick[colourAxis.name]) : null;
+    const heroPhotos = cm && cm.photos.length ? cm.photos : S.photos;
+    const hero = heroPhotos[0];
+    const price = S.mode === 'options' ? (variant ? variant.price : S.price) : S.price;
+    const stock = S.mode === 'options' ? (variant ? variant.stock : 0) : S.stock;
+    const onSale = S.mode === 'options' ? (variant ? variant.active : false) : true;
+    const sku = S.mode === 'options' ? (variant ? variant.sku : '') : S.sku;
+    const th = (p) => p.url ? `<span><img src="${esc(p.url)}" alt="" /></span>` : `<span style="background:${p.bg}"></span>`;
+    return `<div class="frame">
+      <div class="hero ${hero ? '' : 'none'}" ${hero && !hero.url ? `style="background:${hero.bg}"` : ''}>${hero ? (hero.url ? `<img src="${esc(hero.url)}" alt="" />` : esc(hero.label)) : 'No photo yet'}</div>
+      ${heroPhotos.length > 1 ? `<div class="thumbs">${heroPhotos.slice(0, 5).map(th).join('')}</div>` : ''}
+      <p class="eyebrow pv-brand">${esc(S.brand || 'Brand')} · ${esc(S.department || 'Department')}</p>
+      <div class="pname ${S.name ? '' : 'empty'}">${esc(S.name || 'Product name')}</div>
+      <div class="price"><b class="num">GH₵ ${E.money(price)}</b>${S.was > price ? `<s class="num">GH₵ ${E.money(S.was)}</s>` : ''}</div>
+      ${axes.map((a) => {
+        const isC = /colou?r|finish/i.test(a.name);
+        return `<div class="axis"><span class="eyebrow">${esc(a.name)}${isC ? ' — ' + esc(pick[a.name]) : ''}</span>
+          <div class="${isC ? 'swatches' : 'sizes'}">${a.values.map((v) => {
+            const m = E.mediaFor(S, a.name, v); const hex = E.isHex(m.hex) ? m.hex : '';
+            const combo = { ...pick, [a.name]: v };
+            const vv = S.variants.find((x) => Object.entries(combo).every(([k, val]) => x.attrs[k] === val));
+            const off = vv && !vv.active;
+            return isC
+              ? `<button type="button" class="${pick[a.name] === v ? 'on' : ''} ${hex ? '' : 'nohex'}" style="${hex ? 'background:' + hex : ''}" title="${esc(v)}${hex ? '' : ' (no swatch yet)'}" data-action="preview:pick:${esc(a.name)}:${esc(v)}"></button>`
+              : `<button type="button" class="${pick[a.name] === v ? 'on' : ''} ${off ? 'off' : ''}" data-action="preview:pick:${esc(a.name)}:${esc(v)}">${esc(v)}</button>`;
+          }).join('')}</div></div>`;
+      }).join('')}
+      <div class="cta ${onSale && stock > 0 ? '' : 'off'}">${!onSale ? 'Not available' : stock > 0 ? 'Add to basket' : 'Out of stock'}</div>
+      <p class="stockline num">${stock} in stock${sku ? ' · SKU ' + esc(sku) : ''}${S.mode === 'options' && !variant && axes.length ? ' · no combination matches' : ''}</p>
+    </div>
+    <p class="cap">Updates as you type. ${axes.length ? 'Click a swatch or size to see that combination — including its own photos.' : ''}</p>`;
+  }
+
+  Engine.page.render = function (S) {
+    const r = Engine.rules(S); const ok = (id) => { const x = r.find((y) => y.id === id); return x ? x.ok : true; };
+    document.getElementById('panePreview').innerHTML = previewTpl(S);
+    document.getElementById('readyCount').textContent = `${r.filter((x) => x.ok).length} / ${r.length}`;
+    // jump dots
+    const j = { basics: ok('basics') && ok('copy'), photo: ok('photo'), selling: ok('price') && ok('options') && ok('combos') && ok('swatch') && ok('stock') };
+    document.querySelectorAll('#jump a').forEach((a) => { const i = a.querySelector('i'); if (a.dataset.j in j) i.classList.toggle('ok', j[a.dataset.j]); });
+    // head
+    document.getElementById('headTitle').textContent = S.name || 'Add product';
+    document.getElementById('headTitle').classList.toggle('empty', !S.name);
+    document.getElementById('headEyebrow').textContent = S.status === 'active' ? 'Product · Live' : 'New product · Draft';
+
+  };
+</script>
+</body>
+</html>

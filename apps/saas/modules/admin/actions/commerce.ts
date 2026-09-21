@@ -1,5 +1,6 @@
 "use server";
 
+import { bulkActionIdsSchema } from "@admin/lib/bulk-action-schema";
 import { collectionFormSchema } from "@admin/lib/collection-schema";
 import {
 	type AdminOrderDetail,
@@ -272,21 +273,26 @@ export async function bulkUpdateStoreProductStatusAction(
 	productIds: string[],
 	status: "DRAFT" | "ACTIVE" | "ARCHIVED",
 ): Promise<AdminActionResult & { updated: number; failed: number }> {
+	let ids: string[];
 	try {
 		await requireAdmin();
-	} catch {
+		ids = bulkActionIdsSchema.parse(productIds);
+	} catch (error) {
 		return {
 			success: false,
-			message: "You do not have permission to perform this action.",
+			message: toAdminErrorMessage(
+				error,
+				"We couldn’t update the selected items.",
+			),
 			updated: 0,
-			failed: productIds.length,
+			failed: Array.isArray(productIds) ? productIds.length : 0,
 		};
 	}
 
 	let updated = 0;
 	let firstError: string | undefined;
 
-	for (const productId of productIds) {
+	for (const productId of ids) {
 		const result = await updateStoreProductStatusAction(productId, status);
 
 		if (result.success) {
@@ -296,14 +302,14 @@ export async function bulkUpdateStoreProductStatusAction(
 		}
 	}
 
-	const failed = productIds.length - updated;
+	const failed = ids.length - updated;
 
 	return {
 		success: updated > 0,
 		updated,
 		failed,
 		message: failed
-			? `${updated} of ${productIds.length} updated. ${firstError ?? "Some products could not be changed."}`
+			? `${updated} of ${ids.length} updated. ${firstError ?? "Some products could not be changed."}`
 			: `${updated} ${updated === 1 ? "product" : "products"} updated.`,
 	};
 }
@@ -832,21 +838,26 @@ export async function bulkUpdateStoreOrderStatusAction(
 	orderIds: string[],
 	status: Parameters<typeof updateStoreOrderStatusAction>[1],
 ): Promise<AdminActionResult & { updated: number; failed: number }> {
+	let ids: string[];
 	try {
 		await requireAdmin();
-	} catch {
+		ids = bulkActionIdsSchema.parse(orderIds);
+	} catch (error) {
 		return {
 			success: false,
-			message: "You do not have permission to perform this action.",
+			message: toAdminErrorMessage(
+				error,
+				"We couldn’t update the selected items.",
+			),
 			updated: 0,
-			failed: orderIds.length,
+			failed: Array.isArray(orderIds) ? orderIds.length : 0,
 		};
 	}
 
 	let updated = 0;
 	let firstError: string | undefined;
 
-	for (const orderId of orderIds) {
+	for (const orderId of ids) {
 		const result = await updateStoreOrderStatusAction(orderId, status);
 
 		if (result.success) {
@@ -856,14 +867,14 @@ export async function bulkUpdateStoreOrderStatusAction(
 		}
 	}
 
-	const failed = orderIds.length - updated;
+	const failed = ids.length - updated;
 
 	return {
 		success: updated > 0,
 		updated,
 		failed,
 		message: failed
-			? `${updated} of ${orderIds.length} updated. ${firstError ?? "Some orders could not be changed."}`
+			? `${updated} of ${ids.length} updated. ${firstError ?? "Some orders could not be changed."}`
 			: `${updated} ${updated === 1 ? "order" : "orders"} updated.`,
 	};
 }

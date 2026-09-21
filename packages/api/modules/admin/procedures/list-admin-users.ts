@@ -23,7 +23,7 @@ export const listAdminUsers = adminProcedure
 			status: z.enum(["active", "banned", "unverified"]).optional(),
 			sort: z.enum(["created", "name"]).default("created"),
 			dir: z.enum(["asc", "desc"]).default("desc"),
-			page: z.number().min(1).default(1),
+			page: z.number().int().min(1).default(1),
 		}),
 	)
 	.handler(async ({ input }) => {

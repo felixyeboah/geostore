@@ -37,7 +37,6 @@ const CATEGORY_SLUG = `qa-coverage-category-${RUN_ID}`;
 const CATEGORY_RENAMED = `${CATEGORY_NAME} Edited`;
 
 const REJECTED_SLUG = `qa-coverage-rejected-${RUN_ID}`;
-const REJECTED_SKU = `QA-REJ-${RUN_ID}`.toUpperCase();
 const DISALLOWED_IMAGE_URL = "https://images.evil-example.com/x.png";
 
 const BASE_PRICE_IN_PESEWAS = 50_000; // GH₵ 500
@@ -577,55 +576,51 @@ test.describe("admin catalogue and fulfilment", () => {
 		page,
 	}) => {
 		await signIn(page, ADMIN);
-		// Adding a product is a sheet over the list now; the query parameter is
-		// what the retired /admin/products/new route redirects to.
-		await page.goto("/admin/products?new=true");
-		const sheet = page.getByRole("dialog");
+		await page.goto("/admin/products/new");
 		await expect(
-			sheet.getByRole("heading", { name: "Add product" }),
+			page.getByRole("heading", { name: "Add product" }),
 		).toBeVisible({ timeout: 30_000 });
 
-		const form = sheet.locator("form");
+		const form = page.locator("form");
 		await form
 			.getByLabel("Name", { exact: true })
-			.first()
 			.fill("QA Rejected Image Product");
+		await form.getByRole("button", { name: "Change" }).click();
 		await form.getByLabel("URL slug").fill(REJECTED_SLUG);
 		await form.getByLabel("Brand").fill("QA Labs");
-		await form
-			.getByLabel("SKU", { exact: true })
-			.first()
-			.fill(REJECTED_SKU);
-		await form
-			.getByLabel("Short description")
-			.fill("A product whose image host is not on the allow list.");
-		await form
-			.getByLabel("Full description")
-			.fill(
-				"This submission must be rejected before it reaches the database because next/image would throw on an unconfigured remote host at render time.",
-			);
-		await form.getByLabel("Product image URLs").fill(DISALLOWED_IMAGE_URL);
-		await chooseAdminOption(page, form.getByLabel("Status"), "Active");
 		await chooseAdminOption(
 			page,
-			form.getByLabel("Category"),
+			form.getByLabel("Department"),
 			"Phones & tablets",
 		);
 		await form
-			.getByLabel("Price (GH₵)", { exact: true })
-			.first()
-			.fill("250");
-		await form.getByLabel("On-hand quantity").fill("4");
+			.getByLabel("Summary")
+			.fill("A product whose image host is not on the allow list.");
+		await form
+			.getByLabel("Description", { exact: true })
+			.fill(
+				"This submission must be rejected before it reaches the database because next/image would throw on an unconfigured remote host at render time.",
+			);
+		await form
+			.getByRole("button", { name: "Paste image URLs instead" })
+			.click();
+		await form.getByLabel("Product image URLs").fill(DISALLOWED_IMAGE_URL);
+		await expect(form.getByLabel("Product code (SKU)")).toHaveAttribute(
+			"readonly",
+			"",
+		);
+		await form.getByLabel("Price (GH₵)", { exact: true }).fill("250");
+		await form.getByLabel("In stock").fill("4");
 
-		await form.getByRole("button", { name: "Save product" }).click();
+		await form.getByRole("button", { name: "Publish" }).click();
 
 		// The submission is refused: the form stays put and nothing is written.
 		const inlineMessages = form.locator("p.text-destructive");
 		await expect(inlineMessages.first()).toBeVisible({ timeout: 20_000 });
-		await expect(page).toHaveURL(/\/admin\/products\?new=true/);
+		await expect(page).toHaveURL(/\/admin\/products\/new/);
 		expect(
 			await sql(
-				`SELECT COUNT(*) FROM store_product WHERE slug = '${REJECTED_SLUG}' OR sku = '${REJECTED_SKU}'`,
+				`SELECT COUNT(*) FROM store_product WHERE slug = '${REJECTED_SLUG}'`,
 			),
 			"no product row was created",
 		).toBe("0");

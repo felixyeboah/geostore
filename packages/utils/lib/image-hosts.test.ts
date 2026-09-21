@@ -27,6 +27,7 @@ function withEnv(env: Record<string, string | undefined>, fn: () => void) {
 }
 
 const NO_STORAGE = {
+	NEXT_PUBLIC_PRODUCTS_STORAGE_URL: undefined,
 	NEXT_PUBLIC_STORAGE_URL: undefined,
 	S3_ENDPOINT: undefined,
 };
@@ -164,6 +165,27 @@ describe("getUploadImageHosts", () => {
 			{ NEXT_PUBLIC_STORAGE_URL: "not a url", S3_ENDPOINT: undefined },
 			() => {
 				assert.deepEqual(getUploadImageHosts(), []);
+			},
+		);
+	});
+});
+
+describe("R2 product bucket domain", () => {
+	it("accepts a configured bucket domain in production", () => {
+		withEnv(
+			{
+				...NO_STORAGE,
+				NODE_ENV: "production",
+				NEXT_PUBLIC_PRODUCTS_STORAGE_URL: "https://images.example.com",
+			},
+			() => {
+				assert.equal(
+					isAllowedImageUrl(
+						"https://images.example.com/catalogue/phone.jpg",
+					),
+					true,
+				);
+				assert.deepEqual(getUploadImageHosts(), ["images.example.com"]);
 			},
 		);
 	});

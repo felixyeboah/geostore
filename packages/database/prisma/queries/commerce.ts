@@ -13,7 +13,9 @@ import {
 	type StorePaymentStatus,
 } from "../generated/client";
 import { StoreOperationError } from "./errors";
+import { newProductSku, newVariantSku } from "./product-sku";
 import { getDeliveryRule } from "./store-settings";
+import { storefrontSearchWhere } from "./storefront-search";
 
 /** How a smart collection ranks the catalogue to find its own members. */
 export type StoreSmartCollectionRule = "best-selling" | "newest";
@@ -49,7 +51,7 @@ export interface SaveStoreProductInput {
 	shortDescription?: string;
 	description: string;
 	brand: string;
-	sku: string;
+	sku?: string;
 	status: ProductStatus;
 	condition: ProductCondition;
 	priceInPesewas: number;
@@ -74,7 +76,7 @@ export interface SaveStoreProductInput {
 	variants?: Array<{
 		id?: string;
 		name: string;
-		sku: string;
+		sku?: string;
 		priceInPesewas: number;
 		compareAtInPesewas?: number;
 		stockQuantity: number;
@@ -184,25 +186,7 @@ export async function getPublishedStoreProducts(
 			// actually beats the current price is checked after mapping, where
 			// both numbers are to hand.
 			compareAtInPesewas: filters.onSaleOnly ? { not: null } : undefined,
-			OR: filters.query
-				? [
-						{
-							name: {
-								contains: filters.query,
-							},
-						},
-						{
-							brand: {
-								contains: filters.query,
-							},
-						},
-						{
-							shortDescription: {
-								contains: filters.query,
-							},
-						},
-					]
-				: undefined,
+			...storefrontSearchWhere(filters.query),
 		},
 		include: {
 			category: true,
@@ -438,6 +422,8 @@ export interface AdminProductListQuery {
 	categoryId?: string;
 	sort?: AdminProductSort;
 	dir?: "asc" | "desc";
+	/** Product ids to leave out, e.g. ones a picker already shows as chosen. */
+	excludeIds?: string[];
 	/** 1-based. */
 	page?: number;
 	perPage?: number;
@@ -496,13 +482,13 @@ function adminProductOrderBy(
 ): Prisma.ProductOrderByWithRelationInput[] {
 	switch (sort) {
 		case "name":
-			return [{ name: dir }];
+			return [{ name: dir }, { id: "asc" }];
 		case "price":
-			return [{ priceInPesewas: dir }];
+			return [{ priceInPesewas: dir }, { id: "asc" }];
 		case "stock":
-			return [{ stockQuantity: dir }];
+			return [{ stockQuantity: dir }, { id: "asc" }];
 		default:
-			return [{ updatedAt: dir }];
+			return [{ updatedAt: dir }, { id: "asc" }];
 	}
 }
 
@@ -524,9 +510,12 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 		? { categoryId: query.categoryId }
 		: {};
 	const byStock = adminProductStockWhere(query.stock);
+	const byExclusion: Prisma.ProductWhereInput = query.excludeIds?.length
+		? { id: { notIn: query.excludeIds } }
+		: {};
 
 	const where: Prisma.ProductWhereInput = {
-		AND: [search, byStatus, byCategory, byStock],
+		AND: [search, byStatus, byCategory, byStock, byExclusion],
 	};
 
 	const total = await db.product.count({ where });
@@ -554,12 +543,12 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 		}),
 		db.product.groupBy({
 			by: ["status"],
-			where: { AND: [search, byCategory, byStock] },
+			where: { AND: [search, byCategory, byStock, byExclusion] },
 			_count: { _all: true },
 		}),
 		db.product.groupBy({
 			by: ["categoryId"],
-			where: { AND: [search, byStatus, byStock] },
+			where: { AND: [search, byStatus, byStock, byExclusion] },
 			_count: { _all: true },
 		}),
 		db.product.count({
@@ -568,6 +557,7 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 					search,
 					byStatus,
 					byCategory,
+					byExclusion,
 					adminProductStockWhere("OUT"),
 				],
 			},
@@ -578,6 +568,7 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 					search,
 					byStatus,
 					byCategory,
+					byExclusion,
 					adminProductStockWhere("LOW"),
 				],
 			},
@@ -588,6 +579,7 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 					search,
 					byStatus,
 					byCategory,
+					byExclusion,
 					adminProductStockWhere("OK"),
 				],
 			},
@@ -693,12 +685,13 @@ export async function getAdminStoreProductById(id: string) {
 
 function variantCreateData(
 	variants: NonNullable<SaveStoreProductInput["variants"]>,
+	parentSku: string,
 ) {
 	return variants.map((variant) => ({
 		name: variant.name,
-		sku: variant.sku,
+		sku: newVariantSku(parentSku, variant.attributes),
 		priceInPesewas: variant.priceInPesewas,
-		compareAtInPesewas: variant.compareAtInPesewas,
+		compareAtInPesewas: variant.compareAtInPesewas ?? null,
 		stockQuantity: variant.stockQuantity,
 		attributes: variant.attributes,
 		isActive: variant.isActive,
@@ -746,18 +739,31 @@ function optionMediaWriteData(
 	};
 }
 
+function productStockQuantity(input: SaveStoreProductInput): number {
+	return input.variants?.length
+		? input.variants.reduce(
+				(total, variant) =>
+					total + (variant.isActive ? variant.stockQuantity : 0),
+				0,
+			)
+		: input.stockQuantity;
+}
+
 export async function createStoreProduct(input: SaveStoreProductInput) {
+	const sku = newProductSku(input.name);
 	const { imageUrls, optionMedia = [], variants = [], ...product } = input;
 	const optionData = optionMediaWriteData(input.name, imageUrls, optionMedia);
 	return db.product.create({
 		data: {
 			...product,
+			sku,
+			stockQuantity: productStockQuantity(input),
 			optionStyles: optionData.optionStyles,
 			publishedAt: input.status === "ACTIVE" ? new Date() : null,
 			images: {
 				create: optionData.images,
 			},
-			variants: { create: variantCreateData(variants) },
+			variants: { create: variantCreateData(variants, sku) },
 		},
 		include: { category: { select: { slug: true } } },
 	});
@@ -773,6 +779,38 @@ export async function updateStoreProduct(
 		.filter((variantId): variantId is string => Boolean(variantId));
 
 	return db.$transaction(async (transaction) => {
+		const existing = await transaction.product.findUniqueOrThrow({
+			where: { id },
+			select: { sku: true },
+		});
+		const ownedVariants = await transaction.productVariant.findMany({
+			where: { productId: id },
+			select: {
+				id: true,
+				sku: true,
+				_count: { select: { orderItems: true } },
+			},
+		});
+		const ownedIds = new Set(ownedVariants.map((variant) => variant.id));
+		if (
+			new Set(existingVariantIds).size !== existingVariantIds.length ||
+			existingVariantIds.some((variantId) => !ownedIds.has(variantId))
+		) {
+			throw new StoreOperationError(
+				"A variant does not belong to this product or was submitted twice. Refresh and try again.",
+			);
+		}
+		if (
+			ownedVariants.some(
+				(variant) =>
+					!existingVariantIds.includes(variant.id) &&
+					variant._count.orderItems > 0,
+			)
+		) {
+			throw new StoreOperationError(
+				"An ordered variant cannot be removed. Deactivate it instead to preserve order history.",
+			);
+		}
 		await transaction.productVariant.deleteMany({
 			where: {
 				productId: id,
@@ -783,8 +821,13 @@ export async function updateStoreProduct(
 		for (const variant of variants) {
 			const data = {
 				name: variant.name,
-				sku: variant.sku,
+				sku:
+					ownedVariants.find((owned) => owned.id === variant.id)
+						?.sku ??
+					newVariantSku(existing.sku, variant.attributes),
 				priceInPesewas: variant.priceInPesewas,
+				// The admin editor does not expose variant compare-at prices yet.
+				// Omission preserves this independently stored value.
 				compareAtInPesewas: variant.compareAtInPesewas,
 				stockQuantity: variant.stockQuantity,
 				attributes: variant.attributes,
@@ -792,7 +835,7 @@ export async function updateStoreProduct(
 			};
 			if (variant.id) {
 				await transaction.productVariant.update({
-					where: { id: variant.id },
+					where: { id: variant.id, productId: id },
 					data,
 				});
 			} else {
@@ -811,6 +854,11 @@ export async function updateStoreProduct(
 			where: { id },
 			data: {
 				...product,
+				sku: existing.sku,
+				stockQuantity: productStockQuantity(input),
+				shortDescription: input.shortDescription ?? null,
+				compareAtInPesewas: input.compareAtInPesewas ?? null,
+				specifications: input.specifications ?? Prisma.DbNull,
 				optionStyles: optionData.optionStyles,
 				publishedAt: input.status === "ACTIVE" ? new Date() : null,
 				images: {
@@ -903,9 +951,20 @@ export async function updateStoreProductStock(
 			where: { id },
 			select: { stockQuantity: true },
 		});
-		const product = await transaction.product.update({
-			where: { id },
+		// The variant check rides inside the write itself: a concurrent
+		// updateStoreProduct that adds variants cannot slip between a separate
+		// count read and this update and leave the aggregate stale.
+		const updated = await transaction.product.updateMany({
+			where: { id, variants: { none: {} } },
 			data: { stockQuantity },
+		});
+		if (updated.count === 0) {
+			throw new StoreOperationError(
+				"Update stock on the individual variants in the product editor.",
+			);
+		}
+		const product = await transaction.product.findUniqueOrThrow({
+			where: { id },
 			include: { category: { select: { slug: true } } },
 		});
 		await transaction.inventoryEvent.create({
@@ -1058,10 +1117,16 @@ async function restockOrderItems(
 ) {
 	for (const item of items) {
 		if (item.variantId) {
-			await transaction.productVariant.update({
+			const variant = await transaction.productVariant.update({
 				where: { id: item.variantId },
 				data: { stockQuantity: { increment: item.quantity } },
 			});
+			if (variant.isActive) {
+				await transaction.product.update({
+					where: { id: item.productId },
+					data: { stockQuantity: { increment: item.quantity } },
+				});
+			}
 		} else {
 			await transaction.product.update({
 				where: { id: item.productId },
@@ -1129,6 +1194,7 @@ export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
 				totalInPesewas: subtotalInPesewas + deliveryInPesewas,
 				customerEmail: input.customer.email,
 				customerPhone: input.customer.phone,
+				recipientName: input.customer.name,
 				shippingAddress: {
 					...input.address,
 					recipientName: input.customer.name,
@@ -1220,6 +1286,7 @@ export async function createPendingStoreOrder(
 				totalInPesewas: subtotalInPesewas + deliveryInPesewas,
 				customerEmail: input.customer.email,
 				customerPhone: input.customer.phone,
+				recipientName: input.customer.name,
 				shippingAddress: {
 					...input.address,
 					recipientName: input.customer.name,
@@ -1548,14 +1615,15 @@ function adminOrderSearchWhere(q?: string): Prisma.OrderWhereInput {
 		return {};
 	}
 
-	// The delivery town is inside the `shippingAddress` JSON column, which
-	// SQLite cannot index or match through Prisma, so it is not searchable
-	// here — order number, email, phone and customer name are.
+	// `recipientName` is a denormalized column, so guest recipients filter
+	// inside the same paginated query as every other field — no JSON
+	// functions and no materialized id lists.
 	return {
 		OR: [
 			{ orderNumber: { contains: query } },
 			{ customerEmail: { contains: query } },
 			{ customerPhone: { contains: query } },
+			{ recipientName: { contains: query } },
 			{ user: { name: { contains: query } } },
 		],
 	};
@@ -1567,11 +1635,11 @@ function adminOrderOrderBy(
 ): Prisma.OrderOrderByWithRelationInput[] {
 	switch (sort) {
 		case "total":
-			return [{ totalInPesewas: dir }];
+			return [{ totalInPesewas: dir }, { id: "asc" }];
 		case "customer":
-			return [{ customerEmail: dir }];
+			return [{ customerEmail: dir }, { id: "asc" }];
 		default:
-			return [{ placedAt: dir }];
+			return [{ placedAt: dir }, { id: "asc" }];
 	}
 }
 
@@ -1766,8 +1834,8 @@ export async function getAdminTransactionList(
 			},
 			orderBy:
 				query.sort === "amount"
-					? [{ amountInPesewas: query.dir ?? "desc" }]
-					: [{ createdAt: query.dir ?? "desc" }],
+					? [{ amountInPesewas: query.dir ?? "desc" }, { id: "asc" }]
+					: [{ createdAt: query.dir ?? "desc" }, { id: "asc" }],
 			skip: (page - 1) * perPage,
 			take: perPage,
 		}),
