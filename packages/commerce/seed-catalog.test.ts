@@ -1,0 +1,106 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import manifest from "./catalogue-sources.json";
+import {
+	STORE_CATEGORIES,
+	STORE_COLLECTIONS,
+	STORE_PRODUCTS,
+} from "./seed-catalog";
+
+test("seed catalogue identities and taxonomy references are unique and complete", () => {
+	const ids = new Set<string>();
+	const skus = new Set<string>();
+	const slugs = new Set<string>();
+	const categories = new Set(
+		STORE_CATEGORIES.map((category) => category.slug),
+	);
+	const collections = new Set(
+		STORE_COLLECTIONS.map((collection) => collection.slug),
+	);
+	assert.equal(categories.size, STORE_CATEGORIES.length);
+	assert.equal(collections.size, STORE_COLLECTIONS.length);
+	for (const product of STORE_PRODUCTS) {
+		assert.ok(!ids.has(product.id));
+		ids.add(product.id);
+		assert.ok(!skus.has(product.sku));
+		skus.add(product.sku);
+		assert.ok(!slugs.has(product.slug));
+		slugs.add(product.slug);
+		assert.ok(categories.has(product.categorySlug), product.slug);
+		for (const slug of product.collectionSlugs ?? []) {
+			assert.ok(collections.has(slug));
+		}
+		for (const variant of product.variants ?? []) {
+			assert.ok(!ids.has(variant.id));
+			ids.add(variant.id);
+			assert.ok(!skus.has(variant.sku));
+			skus.add(variant.sku);
+			assert.ok(variant.name.length > 0);
+			assert.ok(Object.keys(variant.attributes).length > 0);
+			assert.ok(
+				Number.isSafeInteger(variant.priceInPesewas) &&
+					variant.priceInPesewas > 0,
+			);
+			assert.ok(
+				Number.isSafeInteger(variant.stockQuantity) &&
+					variant.stockQuantity >= 0,
+			);
+		}
+		if (product.variants?.length) {
+			assert.equal(
+				product.priceInPesewas,
+				Math.min(
+					...product.variants.map(
+						(variant) => variant.priceInPesewas,
+					),
+				),
+			);
+			assert.equal(
+				product.stockQuantity,
+				product.variants.reduce(
+					(sum, variant) => sum + variant.stockQuantity,
+					0,
+				),
+			);
+		}
+	}
+});
+
+test("seed images belong to their documented product and contain no stock photography", () => {
+	const imageOwners = new Map<string, string>();
+	assert.equal(manifest.products.length, STORE_PRODUCTS.length);
+	for (const product of STORE_PRODUCTS) {
+		const source = manifest.products.find(
+			(entry) => entry.key === product.slug,
+		);
+		assert.ok(source, `Missing provenance: ${product.slug}`);
+		assert.equal(source.categorySlug, product.categorySlug);
+		const documented = new Set(
+			source.images.flatMap((image) => [
+				image.path,
+				...("publicUrl" in image ? [image.publicUrl] : []),
+			]),
+		);
+		assert.ok(product.images.includes(product.imageUrl));
+		for (const url of new Set([
+			product.imageUrl,
+			...product.images,
+			...(product.optionMedia ?? []).flatMap((media) => media.images),
+		])) {
+			assert.ok(
+				documented.has(url),
+				`Undocumented image: ${product.slug}`,
+			);
+			assert.ok(!url.includes("unsplash"));
+			assert.ok(
+				!imageOwners.has(url),
+				`Image shared by ${product.slug} and ${imageOwners.get(url)}`,
+			);
+			imageOwners.set(url, product.slug);
+		}
+		assert.equal(product.unitsSold, 0);
+		assert.equal(product.reviewCount, 0);
+		assert.equal(product.rating, 0);
+		assert.equal(product.reviews?.length ?? 0, 0);
+	}
+});
