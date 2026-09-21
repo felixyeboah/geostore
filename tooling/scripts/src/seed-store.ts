@@ -26,6 +26,37 @@ const RETIRED_PRODUCT_SLUGS = [
 	"hisense-43-smart-tv",
 	"lg-65-qned-4k-tv",
 	"sandisk-ultra-128gb-microsd",
+	// 2026 catalogue refresh — last-generation models archived so their
+	// order lines keep resolving while the shelf carries current stock.
+	"airpods-pro-2",
+	"amazfit-gts-4",
+	"anker-nano-ii-65w",
+	"anker-powercore-20000",
+	"apple-watch-se",
+	"apple-watch-series-9",
+	"dell-inspiron-15",
+	"galaxy-a55",
+	"galaxy-s24-ultra",
+	"galaxy-tab-s9-fe",
+	"galaxy-watch-6",
+	"google-pixel-8a",
+	"hisense-a6-4k-tv",
+	"hp-pavilion-15",
+	"ipad-10th-generation",
+	"jbl-charge-5",
+	"jbl-tune-520bt",
+	"lenovo-ideapad-slim-3",
+	"lg-qned-4k-tv",
+	"lg-s40q-soundbar",
+	"macbook-air-13-m3",
+	"marshall-emberton-ii",
+	"nasco-350l-double-door-fridge",
+	"redmi-note-13",
+	"samsung-crystal-uhd-tv",
+	"sandisk-ultra-microsd",
+	"sony-wh-1000xm5",
+	"soundcore-p20i",
+	"xiaomi-smart-band-8",
 ];
 
 async function renameLegacyCategories() {
@@ -63,6 +94,14 @@ async function seedStore() {
 	await db.product.updateMany({
 		where: { slug: { in: RETIRED_PRODUCT_SLUGS } },
 		data: { status: "ARCHIVED" },
+	});
+	// Their options retire too — a live variant under an archived product is
+	// invisible to the shop but still counts in stock reports.
+	await db.productVariant.updateMany({
+		where: {
+			product: { slug: { in: RETIRED_PRODUCT_SLUGS } },
+		},
+		data: { isActive: false },
 	});
 
 	const categoryIds = new Map<string, string>();
@@ -214,7 +253,7 @@ async function seedStore() {
 		// Rewrite membership rather than merging it, so removing a product
 		// from a collection in the catalogue actually removes it here.
 		await db.productCollection.deleteMany({
-			where: { productId: product.id },
+			where: { productId: saved.id },
 		});
 
 		const memberships = (product.collectionSlugs ?? [])
@@ -230,7 +269,7 @@ async function seedStore() {
 		if (memberships.length > 0) {
 			await db.productCollection.createMany({
 				data: memberships.map((row) => ({
-					productId: product.id,
+					productId: saved.id,
 					collectionId: row.collectionId,
 					sortOrder: row.sortOrder,
 				})),
