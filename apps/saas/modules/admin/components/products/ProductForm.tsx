@@ -1,26 +1,29 @@
 "use client";
 
 import { saveStoreProductAction } from "@admin/actions/commerce";
-import { ProductImagesField } from "@admin/components/products/ProductImagesField";
+import { ProductOptionsEditor } from "@admin/components/products/ProductOptionsEditor";
+import { ProductPhotosField } from "@admin/components/products/ProductPhotosField";
+import { ProductPreview } from "@admin/components/products/ProductPreview";
+import { ProductSpecificationsField } from "@admin/components/products/ProductSpecificationsField";
+import {
+	isReadyToPublish,
+	productReadiness,
+	type SoldAs,
+} from "@admin/components/products/product-readiness";
 import {
 	AdminButton,
-	AdminCheckbox,
-	AdminCombobox,
 	AdminInput,
 	AdminSelect,
+	AdminSwitch,
 	AdminTextarea,
+	adminButtonClass,
 } from "@admin/components/ui";
+import { productSaveStatus } from "@admin/lib/product-save-intent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
-import {
-	COMMON_OPTION_AXES,
-	isColourAxis,
-	isHexColour,
-	OPTION_VALUE_SUGGESTIONS,
-} from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
 	Form,
@@ -31,26 +34,16 @@ import {
 	FormMessage,
 } from "@repo/ui/components/form";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
-import { ArrowLeftIcon, SaveIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { type ReactNode, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface ProductFormProps {
 	productId?: string;
 	categories: Array<{ id: string; name: string }>;
 	defaultValues: ProductFormValues;
-	/**
-	 * `page` keeps the two-column editor with its own heading. `sheet` stacks
-	 * the same sections into a scrolling column with the actions pinned to the
-	 * bottom, for the create-in-place drawer on the products screen.
-	 */
-	variant?: "page" | "sheet";
-	/** Runs after a successful save instead of navigating to the list. */
-	onSaved?: () => void;
-	/** Renders a cancel action beside Save. Only used by the sheet. */
-	onCancel?: () => void;
 }
 
 export const EMPTY_PRODUCT: ProductFormValues = {
@@ -74,723 +67,538 @@ export const EMPTY_PRODUCT: ProductFormValues = {
 	variants: [],
 };
 
-function specificationsToText(specifications: Record<string, string>): string {
-	return Object.entries(specifications)
-		.map(([label, value]) => `${label}: ${value}`)
-		.join("\n");
-}
-
-function textToSpecifications(value: string): Record<string, string> {
-	return Object.fromEntries(
-		value
-			.split("\n")
-			.map((line) => line.trim())
-			.filter(Boolean)
-			.map((line) => {
-				const separatorIndex = line.indexOf(":");
-				return separatorIndex > 0
-					? [
-							line.slice(0, separatorIndex).trim(),
-							line.slice(separatorIndex + 1).trim(),
-						]
-					: [line, ""];
-			}),
-	);
-}
-
-function FormSection({
-	title,
-	action,
+/**
+ * A field label with its required mark and hint beside it. The mark and hint
+ * sit outside the <label> element on purpose: a label whose text is "Name *"
+ * cannot be found as "Name", by a test or by a screen reader's form list.
+ */
+function Lbl({
+	required,
 	hint,
 	children,
 }: {
-	title: string;
-	action?: ReactNode;
+	required?: boolean;
 	hint?: string;
 	children: ReactNode;
 }) {
 	return (
-		<section className="border-border border-t pt-7 first:border-t-0 first:pt-0">
-			<div className="flex items-center justify-between gap-3">
-				<h2 className="eyebrow text-muted-foreground">{title}</h2>
-				{action}
-			</div>
-			{hint && (
-				<p className="mt-2 text-muted-foreground text-sm">{hint}</p>
+		<div className="flex h-4 flex-wrap items-center gap-2 leading-none">
+			<FormLabel className="font-medium text-[13px] text-foreground">
+				{children}
+			</FormLabel>
+			{required && (
+				<span
+					aria-hidden="true"
+					className="font-semibold text-[13px] text-[var(--ed-accent)] leading-none"
+				>
+					*
+				</span>
 			)}
-			<div className="mt-5 grid gap-5">{children}</div>
+			{hint && (
+				<span className="text-[12px] text-muted-foreground/80 leading-none">
+					{hint}
+				</span>
+			)}
+		</div>
+	);
+}
+
+/** `iPhone 18 Pro` → `iphone-18-pro` — the slug the field would type itself. */
+function slugify(name: string): string {
+	return name
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+}
+
+function Section({
+	id,
+	title,
+	lede,
+	children,
+}: {
+	id: string;
+	title: ReactNode;
+	lede?: ReactNode;
+	children: ReactNode;
+}) {
+	return (
+		<section
+			id={id}
+			className="scroll-mt-16 border-border border-b py-8 last:border-b-0"
+		>
+			<div className="mb-5">
+				<h2 className="font-semibold text-[17px] tracking-[-0.02em]">
+					{title}
+				</h2>
+				{lede && (
+					<p className="mt-1 max-w-[62ch] text-[13px] text-muted-foreground leading-[1.55]">
+						{lede}
+					</p>
+				)}
+			</div>
+			<div className="grid gap-5">{children}</div>
 		</section>
 	);
 }
 
-const LABEL = "eyebrow text-muted-foreground";
-
+/**
+ * The product workspace: the form on the left, the shopper's view on the
+ * right.
+ *
+ * Adding a product used to be a drawer over the list — six sections and a
+ * variant matrix in a 640px panel. It is a page now, laid out so the
+ * questions come in the order an admin can answer them: what it is, what it
+ * looks like, how it is sold, then the small print. The preview redraws on
+ * every keystroke and the readiness list says exactly what still stands
+ * between the product and the storefront.
+ */
 export function ProductForm({
 	productId,
 	categories,
 	defaultValues,
-	variant = "page",
-	onSaved,
-	onCancel,
 }: ProductFormProps) {
 	const router = useRouter();
-	const isSheet = variant === "sheet";
 	const form = useForm<ProductFormValues>({
 		resolver: zodResolver(productFormSchema),
 		defaultValues,
 	});
-	const specificationsText = specificationsToText(
-		form.watch("specifications"),
+	const [soldAs, setSoldAs] = useState<SoldAs>(
+		defaultValues.variants.length > 0 ? "options" : "single",
 	);
-	const watchedVariants = form.watch("variants");
-	const watchedOptionMedia = form.watch("optionMedia") ?? [];
+	const [editingSlug, setEditingSlug] = useState(false);
+	const featuredId = useId();
+	const values = form.watch();
+	const readiness = productReadiness(values, soldAs);
+	const ready = isReadyToPublish(values, soldAs);
+	const leftToDo = readiness.filter((rule) => !rule.ok).length;
+	const categoryName = categories.find(
+		(category) => category.id === values.categoryId,
+	)?.name;
+	const wasLive = defaultValues.status === "ACTIVE";
+	const activeStock = values.variants
+		.filter((variant) => variant.isActive)
+		.reduce((total, variant) => total + variant.stockQuantity, 0);
 
 	/**
-	 * The axes and values the variants actually use — the option-media
-	 * comboboxes offer them first so a gallery never drifts from a stray
-	 * retyping. Free text still works; save-time normalisation keys media
-	 * and attributes the same way.
+	 * The slug follows the name until the admin takes it over — edits only
+	 * autofill while the field still holds the last suggested value. Existing
+	 * products keep their slug stable.
 	 */
-	const axisSuggestions = [
-		...new Map(
-			[
-				...COMMON_OPTION_AXES,
-				...watchedVariants.flatMap((variant) =>
-					Object.keys(variant.attributes ?? {}),
-				),
-			]
-				.map((axis) => axis.trim())
-				.filter(Boolean)
-				.map((axis) => [axis.toLowerCase(), axis] as const),
-		).values(),
-	];
-	const optionValueSuggestions = (axis: string) => {
-		const lower = axis.trim().toLowerCase();
-		const used = watchedVariants.flatMap((variant) =>
-			Object.entries(variant.attributes ?? {})
-				.filter(([key]) => key.trim().toLowerCase() === lower)
-				.map(([, value]) => value.trim()),
-		);
-		return [
-			...new Set([...used, ...(OPTION_VALUE_SUGGESTIONS[lower] ?? [])]),
-		].filter(Boolean);
-	};
-
-	const setOptionMedia = (
-		index: number,
-		patch: Partial<ProductFormValues["optionMedia"][number]>,
-	) => {
-		const rows = [...(form.getValues("optionMedia") ?? [])];
-		rows[index] = { ...rows[index], ...patch };
-		form.setValue("optionMedia", rows, { shouldDirty: true });
-	};
-
-	const variantAttributesPath = (index: number) =>
-		`variants.${index}.attributes` as const;
-
-	/** Renames an option row or edits its value, keeping row order stable. */
-	const setVariantAttribute = (
-		variantIndex: number,
-		attributeKey: string,
-		nextKey: string,
-		nextValue: string,
-	) => {
-		const path = variantAttributesPath(variantIndex);
-		const next: Record<string, string> = {};
-		for (const [key, value] of Object.entries(form.getValues(path) ?? {})) {
-			next[key === attributeKey ? nextKey : key] =
-				key === attributeKey ? nextValue : value;
-		}
-		form.setValue(path, next, { shouldDirty: true });
-	};
-
-	const addVariantAttribute = (variantIndex: number) => {
-		const path = variantAttributesPath(variantIndex);
-		const current = form.getValues(path) ?? {};
-		// One blank row at a time — an empty key is the "new row" slot.
-		if ("" in current) {
+	const lastAutoSlug = useRef<string | null>(null);
+	const maybeAutoSlug = (name: string) => {
+		if (productId) {
 			return;
 		}
-		form.setValue(path, { ...current, "": "" }, { shouldDirty: true });
-	};
-
-	const removeVariantAttribute = (
-		variantIndex: number,
-		attributeKey: string,
-	) => {
-		const path = variantAttributesPath(variantIndex);
-		const next = { ...(form.getValues(path) ?? {}) };
-		delete next[attributeKey];
-		form.setValue(path, next, { shouldDirty: true });
-	};
-
-	const onSubmit = form.handleSubmit(async (values) => {
-		const result = await saveStoreProductAction(values, productId);
-
-		if (!result.success) {
-			toastError("Product not saved", result.message);
-			form.setError("root", { message: result.message });
+		const slug = form.getValues("slug");
+		if (slug && slug !== lastAutoSlug.current) {
 			return;
 		}
+		const next = slugify(name);
+		lastAutoSlug.current = next;
+		form.setValue("slug", next, { shouldDirty: true });
+	};
 
-		toastSuccess(productId ? "Product updated" : "Product created");
-
-		if (onSaved) {
-			form.reset(EMPTY_PRODUCT);
-			onSaved();
-			router.refresh();
-			return;
-		}
-
-		router.push("/admin/products");
-		router.refresh();
-	});
-
-	const detailsSection = (
-		<FormSection title="Product information">
-			<div className="grid gap-5 sm:grid-cols-2">
-				<FormField
-					control={form.control}
-					name="name"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>Name</FormLabel>
-							<FormControl>
-								<AdminInput
-									placeholder="iPhone 15 Pro"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="slug"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>URL slug</FormLabel>
-							<FormControl>
-								<AdminInput
-									placeholder="iphone-15-pro"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="brand"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>Brand</FormLabel>
-							<FormControl>
-								<AdminInput placeholder="Apple" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="sku"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>SKU</FormLabel>
-							<FormControl>
-								<AdminInput
-									placeholder="GST-APL-IP15P-256"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="condition"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>Condition</FormLabel>
-							<FormControl>
-								<AdminSelect
-									value={field.value}
-									onValueChange={field.onChange}
-									aria-label="Condition"
-									options={[
-										{ value: "NEW", label: "New" },
-										{ value: "USED", label: "Used" },
-										{
-											value: "REFURBISHED",
-											label: "Refurbished",
-										},
-									]}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="shortDescription"
-					render={({ field }) => (
-						<FormItem className="sm:col-span-2">
-							<FormLabel className={LABEL}>
-								Short description
-							</FormLabel>
-							<FormControl>
-								<AdminTextarea
-									rows={2}
-									placeholder="A concise summary for product cards."
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="description"
-					render={({ field }) => (
-						<FormItem className="sm:col-span-2">
-							<FormLabel className={LABEL}>
-								Full description
-							</FormLabel>
-							<FormControl>
-								<AdminTextarea
-									rows={6}
-									placeholder="What should a customer know before buying?"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
-		</FormSection>
-	);
-
-	const mediaSection = (
-		<FormSection title="Images and specifications">
-			<FormField
-				control={form.control}
-				name="imageUrls"
-				render={({ field }) => (
-					<FormItem>
-						{/*
-						 * A plain label rather than FormLabel: this field is a
-						 * drop area and a list, not one control, so an htmlFor
-						 * would point at nothing. The dropzone's own input
-						 * carries the accessible name.
-						 */}
-						<span className={LABEL}>Images</span>
-						<ProductImagesField
-							value={field.value}
-							onChange={field.onChange}
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
-				name="specifications"
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className={LABEL}>Specifications</FormLabel>
-						<FormControl>
-							<AdminTextarea
-								rows={6}
-								value={specificationsText}
-								onChange={(event) =>
-									field.onChange(
-										textToSpecifications(
-											event.target.value,
-										),
-									)
-								}
-								placeholder="Storage: 256 GB&#10;Warranty: 12 months"
-							/>
-						</FormControl>
-						<p className="text-muted-foreground text-xs">
-							Use one “Label: Value” specification per line.
-						</p>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-		</FormSection>
-	);
-
-	const variantsSection = (
-		<FormSection
-			title="Variants"
-			hint="One row per combination a shopper can pick — e.g. Colour: Black plus Size: 256 GB. The name can stay blank; the option values become the label."
-			action={
-				<AdminButton
-					size="sm"
-					onClick={() =>
-						form.setValue("variants", [
-							...form.getValues("variants"),
-							{
-								name: "",
-								sku: "",
-								priceInPesewas:
-									form.getValues("priceInPesewas") || 100,
-								stockQuantity: 0,
-								attributes: {},
-								isActive: true,
-							},
-						])
-					}
-				>
-					Add variant
-				</AdminButton>
-			}
-		>
-			{form.watch("variants").map((variant, index) => (
-				<div
-					key={variant.id ?? `new-${index}`}
-					data-testid={`variant-${index}`}
-					className="grid gap-5 border-border border-t pt-5 first:border-t-0 first:pt-0 sm:grid-cols-2"
-				>
-					<FormField
-						control={form.control}
-						name={`variants.${index}.name`}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className={LABEL}>
-									Name (optional)
-								</FormLabel>
-								<FormControl>
-									<AdminInput
-										placeholder="Uses the option values"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name={`variants.${index}.sku`}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className={LABEL}>SKU</FormLabel>
-								<FormControl>
-									<AdminInput {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name={`variants.${index}.priceInPesewas`}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className={LABEL}>
-									Price (GH₵)
-								</FormLabel>
-								<FormControl>
-									<AdminInput
-										type="number"
-										min="0"
-										step="0.01"
-										name={field.name}
-										value={field.value / 100}
-										onChange={(event) =>
-											field.onChange(
-												Math.round(
-													Number(event.target.value) *
-														100,
-												),
-											)
-										}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name={`variants.${index}.stockQuantity`}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className={LABEL}>Stock</FormLabel>
-								<FormControl>
-									<AdminInput
-										type="number"
-										min="0"
-										{...field}
-										onChange={(event) =>
-											field.onChange(
-												Number(event.target.value),
-											)
-										}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<div className="sm:col-span-2">
-						<p className={LABEL}>Options</p>
-						<ul className="mt-3 space-y-2">
-							{Object.entries(variant.attributes ?? {}).map(
-								([attributeKey, attributeValue], pairIndex) => {
-									const usedAxes = Object.keys(
-										variant.attributes ?? {},
-									);
-									return (
-										<li
-											key={pairIndex}
-											className="flex items-center gap-2"
-										>
-											<AdminCombobox
-												inputSize="sm"
-												aria-label="Option name"
-												placeholder="Colour"
-												className="w-40"
-												value={attributeKey}
-												suggestions={COMMON_OPTION_AXES.filter(
-													(axis) =>
-														!usedAxes.includes(
-															axis,
-														) ||
-														axis === attributeKey,
-												)}
-												onValueChange={(nextKey) =>
-													setVariantAttribute(
-														index,
-														attributeKey,
-														nextKey,
-														attributeValue,
-													)
-												}
-											/>
-											<AdminCombobox
-												inputSize="sm"
-												aria-label="Option value"
-												placeholder="Black"
-												value={attributeValue}
-												suggestions={
-													OPTION_VALUE_SUGGESTIONS[
-														attributeKey
-															.trim()
-															.toLowerCase()
-													] ?? []
-												}
-												onValueChange={(nextValue) =>
-													setVariantAttribute(
-														index,
-														attributeKey,
-														attributeKey,
-														nextValue,
-													)
-												}
-											/>
-											<button
-												type="button"
-												aria-label={`Remove ${attributeKey || "option"}`}
-												className="px-1 text-lg text-muted-foreground leading-none hover:text-destructive"
-												onClick={() =>
-													removeVariantAttribute(
-														index,
-														attributeKey,
-													)
-												}
-											>
-												×
-											</button>
-										</li>
-									);
-								},
-							)}
-						</ul>
-						<button
-							type="button"
-							className="mt-2 text-primary text-sm"
-							onClick={() => addVariantAttribute(index)}
-						>
-							+ Add option
-						</button>
-					</div>
-					<button
-						type="button"
-						className="text-left text-destructive text-sm sm:col-span-2"
-						onClick={() =>
-							form.setValue(
-								"variants",
-								form
-									.getValues("variants")
-									.filter(
-										(_, itemIndex) => itemIndex !== index,
+	/**
+	 * One save path for every button. A single-version product is stored
+	 * without combinations even if some were drafted; a product with options
+	 * carries the sum of its on-sale stock at product level, which is what
+	 * the list's filters and the low-stock triage read.
+	 */
+	const submitAs = (status: ProductFormValues["status"]) => {
+		form.setValue("status", status, { shouldDirty: true });
+		return form.handleSubmit(
+			async (raw) => {
+				const payload: ProductFormValues =
+					soldAs === "single"
+						? { ...raw, variants: [], optionMedia: [] }
+						: {
+								...raw,
+								stockQuantity: raw.variants
+									.filter((variant) => variant.isActive)
+									.reduce(
+										(total, variant) =>
+											total + variant.stockQuantity,
+										0,
 									),
-							)
-						}
-					>
-						Remove variant
-					</button>
-				</div>
-			))}
-		</FormSection>
-	);
+							};
+				const result = await saveStoreProductAction(payload, productId);
 
-	const optionMediaSection = (
-		<FormSection
-			title="Option media"
-			hint="Give an option value its own photos and swatch — pick a value the variants use, or enter a new one. Colour values can carry a hex; every value can carry its own image gallery."
-			action={
-				<AdminButton
-					size="sm"
-					onClick={() =>
-						form.setValue(
-							"optionMedia",
-							[
-								...watchedOptionMedia,
-								{ axis: "", value: "", hex: "", images: [] },
-							],
-							{ shouldDirty: true },
-						)
-					}
+				if (!result.success) {
+					toastError("Product not saved", result.message);
+					form.setError("root", { message: result.message });
+					return;
+				}
+
+				toastSuccess(
+					productId
+						? status === "ACTIVE"
+							? "Product updated"
+							: "Product updated — saved as a draft"
+						: status === "ACTIVE"
+							? "Product created — it is live on the shop"
+							: "Product created — saved as a draft",
+				);
+				router.push("/admin/products");
+				router.refresh();
+			},
+			() => {
+				toastError(
+					"Some fields need attention",
+					"The highlighted fields are required before the product can be saved.",
+				);
+			},
+		)();
+	};
+
+	const publishLabel = productId
+		? "Save changes"
+		: values.status === "ARCHIVED"
+			? "Save"
+			: "Publish";
+	const publishStatus = productSaveStatus(values.status, Boolean(productId));
+	const publishBlocked = publishStatus === "ACTIVE" && !ready;
+	const rootError = form.formState.errors.root?.message;
+	const isSubmitting = form.formState.isSubmitting;
+
+	return (
+		<Form {...form}>
+			<form onSubmit={(event) => event.preventDefault()} noValidate>
+				<Link
+					href="/admin/products"
+					className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground"
 				>
-					Add option media
-				</AdminButton>
-			}
-		>
-			{watchedOptionMedia.length === 0 ? (
-				<p className="text-muted-foreground text-sm">
-					No option media yet. Add variants first, then attach photos
-					or a swatch to a value like “Colour: Black”.
-				</p>
-			) : (
-				<ul className="grid gap-4">
-					{watchedOptionMedia.map((media, index) => (
-						<li
-							key={index}
-							data-testid={`option-media-${index}`}
-							className="grid gap-4 rounded-[2px] border border-border p-4"
+					<ArrowLeftIcon className="size-3.5" /> Products
+				</Link>
+
+				<div className="mt-3.5 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-foreground border-b pb-5">
+					<div className="min-w-0">
+						<p className="eyebrow mb-3 text-muted-foreground">
+							{productId
+								? wasLive
+									? "Product · Live on the shop"
+									: defaultValues.status === "ARCHIVED"
+										? "Product · Archived"
+										: "Product · Draft"
+								: "New product · Draft"}
+						</p>
+						<h1
+							className={cn(
+								"truncate font-semibold text-[clamp(26px,2.6vw,34px)] leading-[1.05] tracking-[-0.038em]",
+								!values.name && "text-muted-foreground/60",
+							)}
 						>
-							<div className="flex flex-wrap items-center gap-2">
-								<AdminCombobox
-									inputSize="sm"
-									aria-label="Option name"
-									placeholder="Colour"
-									className="w-40"
-									value={media.axis}
-									suggestions={axisSuggestions}
-									onValueChange={(axis) =>
-										setOptionMedia(index, { axis })
-									}
-								/>
-								<AdminCombobox
-									inputSize="sm"
-									aria-label="Option value"
-									placeholder="Black"
-									value={media.value}
-									suggestions={optionValueSuggestions(
-										media.axis,
-									)}
-									onValueChange={(value) =>
-										setOptionMedia(index, { value })
-									}
-								/>
-								{isColourAxis(media.axis) ? (
-									<FormField
-										control={form.control}
-										name={`optionMedia.${index}.hex`}
-										render={({ field }) => (
-											<FormItem className="flex items-center gap-2 space-y-0">
-												<span
-													aria-hidden
-													className="size-6 rounded-full border border-black/15"
-													style={{
-														backgroundColor:
-															field.value &&
-															isHexColour(
-																field.value,
-															)
-																? field.value
-																: "transparent",
-													}}
-												/>
+							{values.name ||
+								(productId
+									? "Untitled product"
+									: "Add product")}
+						</h1>
+					</div>
+					<div className="flex shrink-0 flex-wrap items-center gap-2">
+						<Link
+							href="/admin/products"
+							className={adminButtonClass("ghost")}
+						>
+							{productId ? "Discard changes" : "Discard"}
+						</Link>
+						{!wasLive && (
+							<AdminButton
+								onClick={() => submitAs("DRAFT")}
+								disabled={isSubmitting}
+							>
+								Save draft
+							</AdminButton>
+						)}
+						<AdminButton
+							variant="primary"
+							onClick={() => submitAs(publishStatus)}
+							disabled={isSubmitting || publishBlocked}
+							title={
+								publishBlocked
+									? `${leftToDo} thing${leftToDo === 1 ? "" : "s"} left before it can go live`
+									: undefined
+							}
+						>
+							{isSubmitting ? "Saving…" : publishLabel}
+						</AdminButton>
+					</div>
+				</div>
+
+				<div className="grid items-start gap-12 xl:grid-cols-[minmax(0,1fr)_22.5rem]">
+					<div className="min-w-0">
+						<nav
+							aria-label="Sections"
+							className="flex gap-6 border-border border-b"
+						>
+							{[
+								{
+									href: "#basics",
+									label: "Basics",
+									ok: ["basics", "copy"],
+								},
+								{
+									href: "#photos",
+									label: "Photos",
+									ok: ["photo"],
+								},
+								{
+									href: "#selling",
+									label: "Options & pricing",
+									ok: [
+										"price",
+										"stock",
+										"options",
+										"combos",
+										"swatch",
+									],
+								},
+								{
+									href: "#specs",
+									label: "Specifications",
+									ok: [],
+								},
+							].map((item) => {
+								const done = item.ok.every(
+									(id) =>
+										readiness.find((rule) => rule.id === id)
+											?.ok ?? true,
+								);
+								return (
+									<a
+										key={item.href}
+										href={item.href}
+										className="flex h-11 items-center gap-2 text-[13px] text-muted-foreground hover:text-foreground"
+									>
+										<span
+											aria-hidden
+											className={cn(
+												"size-1.5 rounded-full",
+												done
+													? "bg-[#1f7a4d]"
+													: "bg-muted-foreground/40",
+											)}
+										/>
+										{item.label}
+									</a>
+								);
+							})}
+						</nav>
+
+						<Section id="basics" title="Basics">
+							<FormField
+								control={form.control}
+								name="name"
+								render={({ field }) => (
+									<FormItem>
+										<Lbl required>Name</Lbl>
+										<FormControl>
+											<AdminInput
+												placeholder="e.g. Apple Watch Series 11"
+												{...field}
+												onChange={(event) => {
+													field.onChange(event);
+													maybeAutoSlug(
+														event.target.value,
+													);
+												}}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="slug"
+								render={({ field }) => (
+									<FormItem className="-mt-2">
+										{editingSlug ? (
+											<div className="flex flex-wrap items-center gap-2">
+												<FormLabel className="sr-only">
+													URL slug
+												</FormLabel>
+												<span className="text-[12.5px] text-muted-foreground">
+													/products/
+												</span>
 												<FormControl>
 													<AdminInput
 														inputSize="sm"
-														aria-label="Swatch hex"
-														placeholder="#1c1c1e"
-														className="w-28"
+														className="w-72 tabular-nums"
+														placeholder="apple-watch-series-11"
 														{...field}
-														value={
-															field.value ?? ""
-														}
 													/>
 												</FormControl>
-												<input
-													type="color"
-													aria-label="Pick swatch colour"
-													className="size-7 cursor-pointer rounded-[2px] border border-border bg-transparent p-0.5"
-													value={
-														field.value &&
-														isHexColour(field.value)
-															? field.value
-																	.length ===
-																4
-																? `#${field.value[1]}${field.value[1]}${field.value[2]}${field.value[2]}${field.value[3]}${field.value[3]}`
-																: field.value
-															: "#000000"
+												<AdminButton
+													size="sm"
+													onClick={() =>
+														setEditingSlug(false)
 													}
-													onChange={(event) =>
-														field.onChange(
-															event.target.value,
-														)
+												>
+													Done
+												</AdminButton>
+											</div>
+										) : (
+											<p className="text-[12.5px] text-muted-foreground">
+												Shop address: /products/
+												<b className="text-foreground tabular-nums">
+													{field.value || "…"}
+												</b>
+												{" · "}
+												<button
+													type="button"
+													onClick={() =>
+														setEditingSlug(true)
 													}
-												/>
-												<FormMessage />
-											</FormItem>
+													className="underline underline-offset-[3px] hover:text-foreground"
+												>
+													Change
+												</button>
+											</p>
 										)}
-									/>
-								) : null}
-								<button
-									type="button"
-									aria-label={`Remove option media ${index + 1}`}
-									className="ml-auto px-1 text-lg text-muted-foreground leading-none hover:text-destructive"
-									onClick={() =>
-										form.setValue(
-											"optionMedia",
-											watchedOptionMedia.filter(
-												(_, rowIndex) =>
-													rowIndex !== index,
-											),
-											{ shouldDirty: true },
-										)
-									}
-								>
-									×
-								</button>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<div className="grid gap-5 sm:grid-cols-3">
+								<FormField
+									control={form.control}
+									name="brand"
+									render={({ field }) => (
+										<FormItem>
+											<Lbl required>Brand</Lbl>
+											<FormControl>
+												<AdminInput
+													placeholder="Apple"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="categoryId"
+									render={({ field }) => (
+										<FormItem>
+											<Lbl required>Department</Lbl>
+											<FormControl>
+												<AdminSelect
+													value={field.value}
+													onValueChange={
+														field.onChange
+													}
+													placeholder="Choose…"
+													aria-label="Department"
+													options={categories.map(
+														(category) => ({
+															value: category.id,
+															label: category.name,
+														}),
+													)}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="condition"
+									render={({ field }) => (
+										<FormItem>
+											<Lbl>Condition</Lbl>
+											<FormControl>
+												<AdminSelect
+													value={field.value}
+													onValueChange={
+														field.onChange
+													}
+													aria-label="Condition"
+													options={[
+														{
+															value: "NEW",
+															label: "New",
+														},
+														{
+															value: "REFURBISHED",
+															label: "Refurbished",
+														},
+														{
+															value: "USED",
+															label: "Used",
+														},
+													]}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
 							</div>
 							<FormField
 								control={form.control}
-								name={`optionMedia.${index}.images`}
+								name="shortDescription"
 								render={({ field }) => (
 									<FormItem>
-										<span className={LABEL}>
-											{media.value
-												? `${media.value} photos`
-												: "Option photos"}
-										</span>
-										<ProductImagesField
-											coverable={false}
+										<Lbl
+											required
+											hint="one line, shown on product cards"
+										>
+											Summary
+										</Lbl>
+										<FormControl>
+											<AdminInput
+												placeholder="One sentence a shopper reads on the card"
+												maxLength={200}
+												{...field}
+											/>
+										</FormControl>
+										<p
+											className={cn(
+												"text-[12px] tabular-nums",
+												field.value.length > 180
+													? "text-destructive"
+													: "text-muted-foreground",
+											)}
+										>
+											{field.value.length} / 180
+										</p>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<Lbl required>Description</Lbl>
+										<FormControl>
+											<AdminTextarea
+												rows={6}
+												placeholder="What should a customer know before buying?"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</Section>
+
+						<Section
+							id="photos"
+							title="Photos"
+							lede="The first one is the cover — it's what shows on cards, in search and in the bag. Photos for a specific colour are set under Options, in “Photos for each colour”."
+						>
+							<FormField
+								control={form.control}
+								name="imageUrls"
+								render={({ field }) => (
+									<FormItem>
+										<ProductPhotosField
 											value={field.value}
 											onChange={field.onChange}
 										/>
@@ -798,304 +606,444 @@ export function ProductForm({
 									</FormItem>
 								)}
 							/>
-						</li>
-					))}
-				</ul>
-			)}
-		</FormSection>
-	);
+						</Section>
 
-	const publishingSection = (
-		<FormSection title="Publishing">
-			<div className={cn("grid gap-5", isSheet && "sm:grid-cols-2")}>
-				<FormField
-					control={form.control}
-					name="status"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>Status</FormLabel>
-							<FormControl>
-								<AdminSelect
-									value={field.value}
-									onValueChange={field.onChange}
-									aria-label="Status"
-									options={[
-										{ value: "DRAFT", label: "Draft" },
-										{ value: "ACTIVE", label: "Active" },
+						<Section
+							id="selling"
+							title="How is it sold?"
+							lede="Does a shopper have to choose anything — a colour, a size — before buying? You can change your mind without losing what you typed."
+						>
+							<div
+								role="radiogroup"
+								aria-label="How is it sold"
+								className="grid gap-3 sm:grid-cols-2"
+							>
+								{(
+									[
 										{
-											value: "ARCHIVED",
-											label: "Archived",
+											value: "single",
+											title: "One version",
+											detail: "A single price and a single stock count. Most accessories, cables and cases.",
 										},
-									]}
+										{
+											value: "options",
+											title: "Comes in options",
+											detail: "Colour, size, storage… Each combination gets its own price, stock and SKU.",
+										},
+									] as const
+								).map((choice) => {
+									const on = soldAs === choice.value;
+									return (
+										<label
+											key={choice.value}
+											className={cn(
+												"relative flex cursor-pointer items-start gap-3 rounded-[2px] border bg-white p-4 text-left transition-colors focus-within:ring-2 focus-within:ring-foreground focus-within:ring-offset-2 hover:border-foreground",
+												on
+													? "border-foreground ring-1 ring-foreground"
+													: "border-border",
+											)}
+										>
+											<input
+												type="radio"
+												name="soldAs"
+												value={choice.value}
+												checked={on}
+												onChange={() =>
+													setSoldAs(choice.value)
+												}
+												className="absolute inset-0 size-full cursor-pointer appearance-none opacity-0"
+											/>
+											<span
+												aria-hidden
+												className={cn(
+													"mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border",
+													on
+														? "border-foreground"
+														: "border-border",
+												)}
+											>
+												{on && (
+													<span className="size-2 rounded-full bg-foreground" />
+												)}
+											</span>
+											<span>
+												<span className="block font-semibold text-[13.5px]">
+													{choice.title}
+												</span>
+												<span className="mt-0.5 block text-[12.5px] text-muted-foreground leading-[1.5]">
+													{choice.detail}
+												</span>
+											</span>
+										</label>
+									);
+								})}
+							</div>
+
+							<div className="grid gap-5 sm:grid-cols-3">
+								<FormField
+									control={form.control}
+									name="priceInPesewas"
+									render={({ field }) => (
+										<FormItem>
+											<Lbl required>
+												{soldAs === "options"
+													? "Starting price (GH₵)"
+													: "Price (GH₵)"}
+											</Lbl>
+											<FormControl>
+												<AdminInput
+													type="number"
+													min="0"
+													step="0.01"
+													placeholder="0.00"
+													className="tabular-nums"
+													name={field.name}
+													value={
+														field.value
+															? field.value / 100
+															: ""
+													}
+													onChange={(event) =>
+														field.onChange(
+															Math.round(
+																Number(
+																	event.target
+																		.value,
+																) * 100,
+															),
+														)
+													}
+												/>
+											</FormControl>
+											{soldAs === "options" && (
+												<p className="text-[12px] text-muted-foreground">
+													Every combination begins
+													here.
+												</p>
+											)}
+											<FormMessage />
+										</FormItem>
+									)}
 								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="categoryId"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>Category</FormLabel>
-							<FormControl>
-								<AdminSelect
-									value={field.value}
-									onValueChange={field.onChange}
-									placeholder="Choose category"
-									aria-label="Category"
-									options={categories.map((category) => ({
-										value: category.id,
-										label: category.name,
-									}))}
+								{soldAs === "single" && (
+									<FormField
+										control={form.control}
+										name="compareAtInPesewas"
+										render={({ field }) => (
+											<FormItem>
+												<Lbl hint="optional">
+													Was price (GH₵)
+												</Lbl>
+												<FormControl>
+													<AdminInput
+														type="number"
+														min="0"
+														step="0.01"
+														placeholder="0.00"
+														className="tabular-nums"
+														name={field.name}
+														value={
+															field.value
+																? field.value /
+																	100
+																: ""
+														}
+														onChange={(event) =>
+															field.onChange(
+																event.target
+																	.value
+																	? Math.round(
+																			Number(
+																				event
+																					.target
+																					.value,
+																			) *
+																				100,
+																		)
+																	: undefined,
+															)
+														}
+													/>
+												</FormControl>
+												<p className="text-[12px] text-muted-foreground">
+													Shown struck through beside
+													the price.
+												</p>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								)}
+								<FormField
+									control={form.control}
+									name="sku"
+									render={({ field }) => (
+										<FormItem>
+											<Lbl required>
+												{soldAs === "options"
+													? "Base product code (SKU)"
+													: "Product code (SKU)"}
+											</Lbl>
+											<FormControl>
+												<AdminInput
+													placeholder="GST-APL-AWS11"
+													className="tabular-nums"
+													{...field}
+												/>
+											</FormControl>
+											{soldAs === "options" && (
+												<p className="text-[12px] text-muted-foreground">
+													Combinations add their own
+													suffix.
+												</p>
+											)}
+											<FormMessage />
+										</FormItem>
+									)}
 								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="isFeatured"
-					render={({ field }) => (
-						<FormItem className={cn(isSheet && "sm:col-span-2")}>
-							<label className="flex items-center gap-3 rounded-[2px] border border-border p-3 text-[13.5px]">
-								<AdminCheckbox
-									checked={field.value}
-									onChange={field.onChange}
+								{soldAs === "single" && (
+									<FormField
+										control={form.control}
+										name="stockQuantity"
+										render={({ field }) => (
+											<FormItem>
+												<Lbl required>In stock</Lbl>
+												<FormControl>
+													<AdminInput
+														type="number"
+														min="0"
+														step="1"
+														className="tabular-nums"
+														{...field}
+														onChange={(event) =>
+															field.onChange(
+																Number(
+																	event.target
+																		.value,
+																),
+															)
+														}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								)}
+								<FormField
+									control={form.control}
+									name="lowStockThreshold"
+									render={({ field }) => (
+										<FormItem>
+											<Lbl>Low-stock warning at</Lbl>
+											<FormControl>
+												<AdminInput
+													type="number"
+													min="0"
+													step="1"
+													className="tabular-nums"
+													{...field}
+													onChange={(event) =>
+														field.onChange(
+															Number(
+																event.target
+																	.value,
+															),
+														)
+													}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
 								/>
-								<span>
-									<strong className="block">
-										Featured product
-									</strong>
-									<span className="text-muted-foreground text-xs">
-										Prioritise this item in storefront
-										ordering.
+							</div>
+
+							{soldAs === "options" && (
+								<>
+									<ProductOptionsEditor form={form} />
+									{values.variants.length > 0 && (
+										<p className="text-[12px] text-muted-foreground tabular-nums">
+											Stock across combinations on sale:{" "}
+											<b className="text-foreground">
+												{activeStock}
+											</b>
+											. That is the figure the product
+											list and low-stock warnings use.
+										</p>
+									)}
+								</>
+							)}
+						</Section>
+
+						<Section
+							id="specs"
+							title={
+								<>
+									Specifications{" "}
+									<span className="font-normal text-[13px] text-muted-foreground/80">
+										optional
 									</span>
-								</span>
-							</label>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
-		</FormSection>
-	);
+								</>
+							}
+							lede="The comparison table on the product page. Add what a buyer would compare."
+						>
+							<FormField
+								control={form.control}
+								name="specifications"
+								render={({ field }) => (
+									<FormItem>
+										<ProductSpecificationsField
+											value={field.value}
+											onChange={field.onChange}
+										/>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</Section>
 
-	const pricingSection = (
-		<FormSection title="Price and stock">
-			<div className={cn("grid gap-5", isSheet && "sm:grid-cols-2")}>
-				<FormField
-					control={form.control}
-					name="priceInPesewas"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>Price (GH₵)</FormLabel>
-							<FormControl>
-								<AdminInput
-									type="number"
-									min="0"
-									step="0.01"
-									name={field.name}
-									value={field.value / 100}
-									onChange={(event) =>
-										field.onChange(
-											Math.round(
-												Number(event.target.value) *
-													100,
-											),
-										)
-									}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="compareAtInPesewas"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>
-								Compare-at price (GH₵)
-							</FormLabel>
-							<FormControl>
-								<AdminInput
-									type="number"
-									min="0"
-									step="0.01"
-									name={field.name}
-									value={field.value ? field.value / 100 : ""}
-									onChange={(event) =>
-										field.onChange(
-											event.target.value
-												? Math.round(
-														Number(
-															event.target.value,
-														) * 100,
-													)
-												: undefined,
-										)
-									}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="stockQuantity"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>
-								On-hand quantity
-							</FormLabel>
-							<FormControl>
-								<AdminInput
-									type="number"
-									min="0"
-									step="1"
-									{...field}
-									onChange={(event) =>
-										field.onChange(
-											Number(event.target.value),
-										)
-									}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="lowStockThreshold"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className={LABEL}>
-								Low-stock warning at
-							</FormLabel>
-							<FormControl>
-								<AdminInput
-									type="number"
-									min="0"
-									step="1"
-									{...field}
-									onChange={(event) =>
-										field.onChange(
-											Number(event.target.value),
-										)
-									}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
-		</FormSection>
-	);
-
-	const rootError = form.formState.errors.root?.message;
-
-	if (isSheet) {
-		return (
-			<Form {...form}>
-				<form
-					onSubmit={onSubmit}
-					className="flex min-h-0 flex-1 flex-col"
-					noValidate
-				>
-					<div className="min-h-0 flex-1 space-y-7 overflow-y-auto px-6 py-7">
-						{detailsSection}
-						{pricingSection}
-						{publishingSection}
-						{mediaSection}
-						{variantsSection}
-						{optionMediaSection}
-					</div>
-
-					<div className="shrink-0 border-border border-t px-6 py-4">
 						{rootError && (
 							<p
-								className="mb-3 text-destructive text-sm"
+								className="text-[13px] text-destructive"
 								role="alert"
 							>
 								{rootError}
 							</p>
 						)}
-						<div className="flex items-center justify-end gap-2">
-							{onCancel && (
-								<AdminButton type="button" onClick={onCancel}>
-									Cancel
-								</AdminButton>
-							)}
-							<AdminButton
-								type="submit"
-								variant="primary"
-								disabled={form.formState.isSubmitting}
-							>
-								<SaveIcon className="size-4" />
-								{form.formState.isSubmitting
-									? "Saving…"
-									: "Save product"}
-							</AdminButton>
+					</div>
+
+					<aside className="grid gap-7 pt-4 xl:sticky xl:top-6">
+						<div>
+							<p className="eyebrow mb-3 text-muted-foreground">
+								Shopper&apos;s view
+							</p>
+							<ProductPreview
+								values={values}
+								soldAs={soldAs}
+								categoryName={categoryName}
+							/>
 						</div>
-					</div>
-				</form>
-			</Form>
-		);
-	}
 
-	return (
-		<Form {...form}>
-			<form onSubmit={onSubmit} className="space-y-7" noValidate>
-				<div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<Link
-							href="/admin/products"
-							className="inline-flex items-center gap-1.5 text-muted-foreground text-sm hover:text-foreground"
-						>
-							<ArrowLeftIcon className="size-4" /> Products
-						</Link>
-						<h1 className="mt-3 font-semibold text-[clamp(24px,2.4vw,30px)] text-foreground leading-[1.05] tracking-[-0.035em]">
-							{productId ? "Edit product" : "Add product"}
-						</h1>
-					</div>
-					<AdminButton
-						type="submit"
-						variant="primary"
-						disabled={form.formState.isSubmitting}
-					>
-						<SaveIcon className="size-4" />{" "}
-						{form.formState.isSubmitting
-							? "Saving..."
-							: "Save product"}
-					</AdminButton>
-				</div>
+						<div>
+							<p className="eyebrow mb-3 flex items-baseline justify-between text-muted-foreground">
+								<span>Before it can go live</span>
+								<span className="text-foreground tabular-nums">
+									{readiness.length - leftToDo} /{" "}
+									{readiness.length}
+								</span>
+							</p>
+							<ul className="grid gap-2" aria-label="Readiness">
+								{readiness.map((rule) => (
+									<li
+										key={rule.id}
+										className={cn(
+											"flex items-center gap-2.5 text-[13px]",
+											rule.ok
+												? "text-foreground"
+												: "text-muted-foreground",
+										)}
+									>
+										<span
+											aria-hidden
+											className={cn(
+												"grid size-4 shrink-0 place-items-center rounded-full border",
+												rule.ok
+													? "border-foreground bg-foreground text-background"
+													: "border-border",
+											)}
+										>
+											{rule.ok && (
+												<CheckIcon className="size-2.5" />
+											)}
+										</span>
+										<span className="min-w-0 flex-1">
+											{rule.label}
+										</span>
+										{rule.ok ? (
+											rule.detail ? (
+												<span className="text-[12px] text-muted-foreground/70 tabular-nums">
+													{rule.detail}
+												</span>
+											) : null
+										) : (
+											<a
+												href={rule.anchor}
+												className="text-[12px] underline underline-offset-[3px] hover:text-foreground"
+											>
+												fix
+											</a>
+										)}
+									</li>
+								))}
+							</ul>
+							<p className="mt-3 text-[12px] text-muted-foreground leading-[1.55]">
+								{leftToDo
+									? `Publish unlocks when the list is complete — ${leftToDo} to go. Save a draft any time.`
+									: "Everything is in place. Publish when you are ready."}
+							</p>
+						</div>
 
-				<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-					<div className="space-y-7">
-						{detailsSection}
-						{mediaSection}
-						{variantsSection}
-						{optionMediaSection}
-					</div>
-
-					<aside className="space-y-7 xl:sticky xl:top-6">
-						{publishingSection}
-						{pricingSection}
+						<div className="grid gap-4">
+							<p className="eyebrow text-muted-foreground">
+								Visibility
+							</p>
+							<FormField
+								control={form.control}
+								name="status"
+								render={({ field }) => (
+									<FormItem>
+										<Lbl>Status</Lbl>
+										<FormControl>
+											<AdminSelect
+												value={field.value}
+												onValueChange={field.onChange}
+												aria-label="Status"
+												options={[
+													{
+														value: "DRAFT",
+														label: "Draft — hidden from shop",
+													},
+													{
+														value: "ACTIVE",
+														label: "Active — on the shop",
+													},
+													{
+														value: "ARCHIVED",
+														label: "Archived",
+													},
+												]}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="isFeatured"
+								render={({ field }) => (
+									<FormItem>
+										<div className="flex items-center gap-3 text-[13.5px]">
+											<AdminSwitch
+												id={featuredId}
+												checked={field.value}
+												onCheckedChange={field.onChange}
+											/>
+											<label
+												htmlFor={featuredId}
+												className="cursor-pointer"
+											>
+												Featured on the home page
+											</label>
+										</div>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
 					</aside>
 				</div>
-
-				{rootError && (
-					<p className="text-destructive text-sm" role="alert">
-						{rootError}
-					</p>
-				)}
 			</form>
 		</Form>
 	);

@@ -6,8 +6,8 @@ import {
 	updateStoreProductStockAction,
 } from "@admin/actions/commerce";
 import { ADMIN_TD, ADMIN_TH } from "@admin/components/AdminPage";
+import { AddProductButton } from "@admin/components/products/AddProductButton";
 import { ProductRowActions } from "@admin/components/products/ProductRowActions";
-import { AddProductButton } from "@admin/components/products/ProductSheet";
 import {
 	FacetField,
 	ResultCount,
