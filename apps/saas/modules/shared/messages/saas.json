@@ -39,6 +39,8 @@
 				"updateTitle": "Edit organization"
 			},
 			"loading": "Loading organizations...",
+			"loadError": "Organizations could not be loaded.",
+			"retry": "Try again",
 			"membersCount": "{count} {count, plural, one {member} other {members}}",
 			"search": "Search for an organization...",
 			"title": "Manage organizations"
