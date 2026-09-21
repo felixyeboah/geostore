@@ -21,6 +21,16 @@ async function restorePurchasedStock() {
 			url: process.env.DATABASE_URL ?? "",
 			authToken: process.env.DATABASE_AUTH_TOKEN,
 		});
+		// JBL Charge 5 sells in colours — checkout decrements the variant the
+		// order line recorded, plus the product's aggregate. Both come back.
+		await db.execute(
+			`UPDATE store_product_variant SET "stockQuantity" = "stockQuantity" + 1
+			 WHERE sku = (
+			   SELECT sku FROM store_order_item
+			   WHERE "productId" = (SELECT id FROM store_product WHERE slug = '${PURCHASED_SLUG}')
+			   ORDER BY rowid DESC LIMIT 1
+			 )`,
+		);
 		await db.execute(
 			`UPDATE store_product SET "stockQuantity" = "stockQuantity" + 1 WHERE slug = '${PURCHASED_SLUG}'`,
 		);
@@ -71,9 +81,14 @@ test.describe("storefront purchase journey", () => {
 		await expect(page.getByText("GH₵ 1,450").first()).toBeVisible();
 
 		await page.getByRole("link", { name: "Continue to checkout" }).click();
-		await page
-			.getByRole("textbox", { name: "Full name" })
-			.fill("E2E Customer");
+		// The form hydrates after the suspense fallback — filling before that
+		// writes into inputs React then resets, and submit reports the address
+		// as missing.
+		const nameField = page.getByRole("textbox", { name: "Full name" });
+		await expect(nameField).toBeVisible();
+		await expect(page.getByText("Loading checkout")).toHaveCount(0);
+		await nameField.fill("E2E Customer");
+		await expect(nameField).toHaveValue("E2E Customer");
 		await page
 			.getByRole("textbox", { name: "Email address" })
 			.fill("e2e@example.com");

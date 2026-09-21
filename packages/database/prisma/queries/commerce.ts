@@ -960,6 +960,12 @@ async function reserveOrderItems(
 					`${item.productName} no longer has enough stock.`,
 				);
 			}
+			// The product row carries the aggregate shown in the admin table
+			// and used by the in-stock filter — it has to follow the option.
+			await transaction.product.update({
+				where: { id: item.productId },
+				data: { stockQuantity: { decrement: item.quantity } },
+			});
 		} else {
 			const updateResult = await transaction.product.updateMany({
 				where: {
