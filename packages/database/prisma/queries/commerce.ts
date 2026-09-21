@@ -698,7 +698,7 @@ function variantCreateData(
 		name: variant.name,
 		sku: variant.sku,
 		priceInPesewas: variant.priceInPesewas,
-		compareAtInPesewas: variant.compareAtInPesewas,
+		compareAtInPesewas: variant.compareAtInPesewas ?? null,
 		stockQuantity: variant.stockQuantity,
 		attributes: variant.attributes,
 		isActive: variant.isActive,
@@ -746,12 +746,23 @@ function optionMediaWriteData(
 	};
 }
 
+function productStockQuantity(input: SaveStoreProductInput): number {
+	return input.variants?.length
+		? input.variants.reduce(
+				(total, variant) =>
+					total + (variant.isActive ? variant.stockQuantity : 0),
+				0,
+			)
+		: input.stockQuantity;
+}
+
 export async function createStoreProduct(input: SaveStoreProductInput) {
 	const { imageUrls, optionMedia = [], variants = [], ...product } = input;
 	const optionData = optionMediaWriteData(input.name, imageUrls, optionMedia);
 	return db.product.create({
 		data: {
 			...product,
+			stockQuantity: productStockQuantity(input),
 			optionStyles: optionData.optionStyles,
 			publishedAt: input.status === "ACTIVE" ? new Date() : null,
 			images: {
@@ -773,6 +784,30 @@ export async function updateStoreProduct(
 		.filter((variantId): variantId is string => Boolean(variantId));
 
 	return db.$transaction(async (transaction) => {
+		const ownedVariants = await transaction.productVariant.findMany({
+			where: { productId: id },
+			select: { id: true, _count: { select: { orderItems: true } } },
+		});
+		const ownedIds = new Set(ownedVariants.map((variant) => variant.id));
+		if (
+			new Set(existingVariantIds).size !== existingVariantIds.length ||
+			existingVariantIds.some((variantId) => !ownedIds.has(variantId))
+		) {
+			throw new StoreOperationError(
+				"A variant does not belong to this product or was submitted twice. Refresh and try again.",
+			);
+		}
+		if (
+			ownedVariants.some(
+				(variant) =>
+					!existingVariantIds.includes(variant.id) &&
+					variant._count.orderItems > 0,
+			)
+		) {
+			throw new StoreOperationError(
+				"An ordered variant cannot be removed. Deactivate it instead to preserve order history.",
+			);
+		}
 		await transaction.productVariant.deleteMany({
 			where: {
 				productId: id,
@@ -785,6 +820,8 @@ export async function updateStoreProduct(
 				name: variant.name,
 				sku: variant.sku,
 				priceInPesewas: variant.priceInPesewas,
+				// The admin editor does not expose variant compare-at prices yet.
+				// Omission preserves this independently stored value.
 				compareAtInPesewas: variant.compareAtInPesewas,
 				stockQuantity: variant.stockQuantity,
 				attributes: variant.attributes,
@@ -792,7 +829,7 @@ export async function updateStoreProduct(
 			};
 			if (variant.id) {
 				await transaction.productVariant.update({
-					where: { id: variant.id },
+					where: { id: variant.id, productId: id },
 					data,
 				});
 			} else {
@@ -811,6 +848,10 @@ export async function updateStoreProduct(
 			where: { id },
 			data: {
 				...product,
+				stockQuantity: productStockQuantity(input),
+				shortDescription: input.shortDescription ?? null,
+				compareAtInPesewas: input.compareAtInPesewas ?? null,
+				specifications: input.specifications ?? Prisma.DbNull,
 				optionStyles: optionData.optionStyles,
 				publishedAt: input.status === "ACTIVE" ? new Date() : null,
 				images: {
@@ -901,8 +942,16 @@ export async function updateStoreProductStock(
 	return db.$transaction(async (transaction) => {
 		const currentProduct = await transaction.product.findUniqueOrThrow({
 			where: { id },
-			select: { stockQuantity: true },
+			select: {
+				stockQuantity: true,
+				_count: { select: { variants: true } },
+			},
 		});
+		if (currentProduct._count.variants > 0) {
+			throw new StoreOperationError(
+				"Update stock on the individual variants in the product editor.",
+			);
+		}
 		const product = await transaction.product.update({
 			where: { id },
 			data: { stockQuantity },
@@ -1058,10 +1107,16 @@ async function restockOrderItems(
 ) {
 	for (const item of items) {
 		if (item.variantId) {
-			await transaction.productVariant.update({
+			const variant = await transaction.productVariant.update({
 				where: { id: item.variantId },
 				data: { stockQuantity: { increment: item.quantity } },
 			});
+			if (variant.isActive) {
+				await transaction.product.update({
+					where: { id: item.productId },
+					data: { stockQuantity: { increment: item.quantity } },
+				});
+			}
 		} else {
 			await transaction.product.update({
 				where: { id: item.productId },

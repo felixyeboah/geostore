@@ -30,6 +30,9 @@
 
 ### Fixed
 
+- Product updates validate variant ownership, clear removed product sale prices, and preserve variants referenced by orders.
+- Product stock totals follow active variants; variant order cancellations restore both variant and product stock.
+
 Full end-to-end QA pass over the buyer and admin journeys — see `QA-REPORT.md`
 for the complete list, reproductions, and verification.
 
