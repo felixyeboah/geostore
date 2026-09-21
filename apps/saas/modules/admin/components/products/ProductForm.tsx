@@ -92,13 +92,27 @@ export function ProductForm({
 	defaultValues,
 }: ProductFormProps) {
 	const router = useRouter();
-	const form = useForm<ProductFormValues>({
-		resolver: zodResolver(productFormSchema),
-		defaultValues,
-	});
 	const [soldAs, setSoldAs] = useState<SoldAs>(
 		defaultValues.variants.length > 0 ? "options" : "single",
 	);
+	/**
+	 * The resolver sees what will be saved, not what is on screen: drafted
+	 * combinations stay in state so "Comes in options" can restore them, but
+	 * they cannot block a "One version" save with errors on hidden fields.
+	 */
+	const soldAsRef = useRef(soldAs);
+	soldAsRef.current = soldAs;
+	const form = useForm<ProductFormValues>({
+		resolver: (values, context, options) =>
+			zodResolver(productFormSchema)(
+				soldAsRef.current === "single"
+					? { ...values, variants: [], optionMedia: [] }
+					: values,
+				context,
+				options,
+			),
+		defaultValues,
+	});
 	const featuredId = useId();
 	const values = form.watch();
 	const readiness = productReadiness(values, soldAs);
