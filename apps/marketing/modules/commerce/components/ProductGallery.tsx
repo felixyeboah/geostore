@@ -1,8 +1,9 @@
 "use client";
 
+import { useProductSelection } from "@commerce/components/ProductSelection";
 import { cn } from "@repo/ui";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ProductGalleryProps {
 	name: string;
@@ -22,15 +23,26 @@ interface ProductGalleryProps {
  * Left and right arrows still step through them.
  */
 export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
+	// On the PDP the picked option value decides the shown set — Colour
+	// "Black" swaps to Black's own shots. Elsewhere the prop wins.
+	const shared = useProductSelection();
+	const shown = shared?.galleryImages ?? images;
+
 	const [activeIndex, setActiveIndex] = useState(0);
 	const thumbRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
+	// A new selection set means a new first shot — the previous index could
+	// point at nothing or, worse, quietly show the last colour's photo.
+	useEffect(() => {
+		setActiveIndex(0);
+	}, [shown]);
+
 	// A product with a single image gets the frame and none of the machinery.
-	const hasChoice = images.length > 1;
-	const activeImage = images[activeIndex] ?? images[0];
+	const hasChoice = shown.length > 1;
+	const activeImage = shown[activeIndex] ?? shown[0];
 
 	function focusThumb(index: number) {
-		const next = (index + images.length) % images.length;
+		const next = (index + shown.length) % shown.length;
 		setActiveIndex(next);
 		thumbRefs.current[next]?.focus();
 	}
@@ -43,14 +55,14 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 				 * one `src`, so switching a thumbnail never shows the empty
 				 * frame while the next file downloads.
 				 */}
-				{images.map((image, index) => (
+				{shown.map((image, index) => (
 					<Image
 						key={image}
 						src={image}
 						alt={
 							index === 0
 								? name
-								: `${name}, view ${index + 1} of ${images.length}`
+								: `${name}, view ${index + 1} of ${shown.length}`
 						}
 						fill
 						priority={index === 0}
@@ -70,7 +82,7 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 					aria-label={`${name} images`}
 					className="no-scrollbar flex items-center gap-2 overflow-x-auto"
 				>
-					{images.map((image, index) => {
+					{shown.map((image, index) => {
 						const isActive = index === activeIndex;
 						return (
 							<li key={image}>
@@ -104,8 +116,7 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 									)}
 								>
 									<span className="sr-only">
-										View image {index + 1} of{" "}
-										{images.length}
+										View image {index + 1} of {shown.length}
 									</span>
 									<span
 										className={cn(

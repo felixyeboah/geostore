@@ -1,5 +1,6 @@
 import { ProductGallery } from "@commerce/components/ProductGallery";
 import { ProductGrid } from "@commerce/components/ProductGrid";
+import { ProductSelectionProvider } from "@commerce/components/ProductSelection";
 import { ReviewForm } from "@commerce/components/ReviewForm";
 import { VariantPicker } from "@commerce/components/VariantPicker";
 import {
@@ -147,100 +148,102 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				{/* The featured-product split from the mockup: image to the
 				    edge on the left, everything else in a narrower column. */}
 				<section className="mt-9 grid items-stretch gap-0 lg:grid-cols-[60fr_40fr]">
-					<ProductGallery
-						name={product.name}
-						images={
-							product.images.length > 0
-								? product.images
-								: [product.imageUrl]
-						}
-						badge={
-							product.isNew ? (
-								<span className="eyebrow absolute top-0 left-0 bg-white px-[13px] py-2.5 text-foreground">
-									Just landed
-								</span>
-							) : null
-						}
-					/>
-
-					<div className="flex flex-col justify-center pt-8 lg:pt-0 lg:pl-16">
-						<p className="eyebrow text-muted-foreground">
-							{product.brand} ·{" "}
-							{conditionLabel(product.condition)}
-						</p>
-						<h1 className="mt-4 font-semibold text-[clamp(28px,2.7vw,38px)] text-foreground leading-[1.05] tracking-[-0.04em]">
-							{product.name}
-						</h1>
-
-						<p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-muted-foreground">
-							{product.reviewCount > 0 && (
-								<a
-									href="#reviews"
-									className="inline-flex items-center gap-1.5 text-foreground"
-								>
-									<StarIcon className="size-3.5 fill-current" />
-									<span className="tabular-nums">
-										{product.rating.toFixed(1)}
+					<ProductSelectionProvider product={product}>
+						<ProductGallery
+							name={product.name}
+							images={
+								product.images.length > 0
+									? product.images
+									: [product.imageUrl]
+							}
+							badge={
+								product.isNew ? (
+									<span className="eyebrow absolute top-0 left-0 bg-white px-[13px] py-2.5 text-foreground">
+										Just landed
 									</span>
-									<span className="text-muted-foreground">
-										· {product.reviewCount} verified{" "}
-										{product.reviewCount === 1
-											? "review"
-											: "reviews"}
-									</span>
-								</a>
-							)}
-							<span className="tabular-nums">
-								SKU {product.sku}
-							</span>
-						</p>
+								) : null
+							}
+						/>
 
-						<p className="mt-6 text-[15.5px] text-muted-foreground leading-[1.65]">
-							{product.description}
-						</p>
+						<div className="flex flex-col justify-center pt-8 lg:pt-0 lg:pl-16">
+							<p className="eyebrow text-muted-foreground">
+								{product.brand} ·{" "}
+								{conditionLabel(product.condition)}
+							</p>
+							<h1 className="mt-4 font-semibold text-[clamp(28px,2.7vw,38px)] text-foreground leading-[1.05] tracking-[-0.04em]">
+								{product.name}
+							</h1>
 
-						<dl className="mt-8 mb-8 border-border border-t">
-							{Object.entries(product.specifications).map(
-								([label, value]) => (
-									<div
-										key={label}
-										className="flex items-baseline justify-between gap-5 border-border border-b py-[11px]"
+							<p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-muted-foreground">
+								{product.reviewCount > 0 && (
+									<a
+										href="#reviews"
+										className="inline-flex items-center gap-1.5 text-foreground"
 									>
-										<dt className="eyebrow text-muted-foreground">
-											{label}
-										</dt>
-										<dd className="m-0 text-right font-medium text-[13.5px] text-foreground">
-											{value}
-										</dd>
-									</div>
-								),
-							)}
-						</dl>
+										<StarIcon className="size-3.5 fill-current" />
+										<span className="tabular-nums">
+											{product.rating.toFixed(1)}
+										</span>
+										<span className="text-muted-foreground">
+											· {product.reviewCount} verified{" "}
+											{product.reviewCount === 1
+												? "review"
+												: "reviews"}
+										</span>
+									</a>
+								)}
+								<span className="tabular-nums">
+									SKU {product.sku}
+								</span>
+							</p>
 
-						<VariantPicker product={product} />
+							<p className="mt-6 text-[15.5px] text-muted-foreground leading-[1.65]">
+								{product.description}
+							</p>
 
-						<ul className="mt-9 border-border border-t">
-							{assurances.map((item) => (
-								<li
-									key={item.title}
-									className="flex gap-3 border-border border-b py-3.5"
-								>
-									<item.icon
-										className="mt-0.5 size-[15px] shrink-0 text-muted-foreground"
-										strokeWidth={1.6}
-									/>
-									<div>
-										<p className="eyebrow text-foreground">
-											{item.title}
-										</p>
-										<p className="mt-1.5 text-[13px] text-muted-foreground leading-[1.5]">
-											{item.text}
-										</p>
-									</div>
-								</li>
-							))}
-						</ul>
-					</div>
+							<dl className="mt-8 mb-8 border-border border-t">
+								{Object.entries(product.specifications).map(
+									([label, value]) => (
+										<div
+											key={label}
+											className="flex items-baseline justify-between gap-5 border-border border-b py-[11px]"
+										>
+											<dt className="eyebrow text-muted-foreground">
+												{label}
+											</dt>
+											<dd className="m-0 text-right font-medium text-[13.5px] text-foreground">
+												{value}
+											</dd>
+										</div>
+									),
+								)}
+							</dl>
+
+							<VariantPicker product={product} />
+
+							<ul className="mt-9 border-border border-t">
+								{assurances.map((item) => (
+									<li
+										key={item.title}
+										className="flex gap-3 border-border border-b py-3.5"
+									>
+										<item.icon
+											className="mt-0.5 size-[15px] shrink-0 text-muted-foreground"
+											strokeWidth={1.6}
+										/>
+										<div>
+											<p className="eyebrow text-foreground">
+												{item.title}
+											</p>
+											<p className="mt-1.5 text-[13px] text-muted-foreground leading-[1.5]">
+												{item.text}
+											</p>
+										</div>
+									</li>
+								))}
+							</ul>
+						</div>
+					</ProductSelectionProvider>
 				</section>
 
 				<section id="reviews" className="mt-20 scroll-mt-40">
