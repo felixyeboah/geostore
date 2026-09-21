@@ -184,3 +184,74 @@ export function colourHex(value: string): string | undefined {
 	}
 	return undefined;
 }
+
+/**
+ * Option names admins reach for most, offered as combobox suggestions in the
+ * product form. Free text still works — this is a shortcut, not a whitelist.
+ */
+export const COMMON_OPTION_AXES = [
+	"Colour",
+	"Size",
+	"Storage",
+	"Material",
+	"Capacity",
+	"Finish",
+	"RAM",
+	"Case",
+	"Strap",
+	"Voltage",
+];
+
+/**
+ * Suggestions for the value half of an option pair, keyed by the normalised
+ * axis name. A combobox shows these when the axis is a known one; unknown
+ * axes just get a plain input.
+ */
+export const OPTION_VALUE_SUGGESTIONS: Record<string, string[]> = {
+	colour: [
+		"Black",
+		"White",
+		"Silver",
+		"Graphite",
+		"Midnight",
+		"Starlight",
+		"Blue",
+		"Navy",
+		"Red",
+		"Green",
+		"Purple",
+		"Pink",
+		"Gold",
+		"Cream",
+		"Teal",
+	],
+	size: [
+		"XS",
+		"S",
+		"M",
+		"L",
+		"XL",
+		"XXL",
+		"40 mm",
+		"41 mm",
+		"44 mm",
+		"45 mm",
+		"46 mm",
+	],
+	storage: ["64 GB", "128 GB", "256 GB", "512 GB", "1 TB", "2 TB"],
+	capacity: ["64 GB", "128 GB", "256 GB", "512 GB", "1 TB", "2 TB"],
+	material: [
+		"Aluminium",
+		"Stainless steel",
+		"Titanium",
+		"Leather",
+		"Silicone",
+		"Fabric",
+		"Plastic",
+	],
+	finish: ["Matte", "Glossy", "Brushed", "Polished"],
+	ram: ["4 GB", "8 GB", "16 GB", "24 GB", "32 GB"],
+	case: ["40 mm", "41 mm", "42 mm", "44 mm", "45 mm", "46 mm"],
+	strap: ["Sport band", "Leather", "Milanese loop", "Braided solo loop"],
+	voltage: ["110 V", "220 V", "110–240 V"],
+};

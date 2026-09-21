@@ -5,6 +5,7 @@ import { ProductImagesField } from "@admin/components/products/ProductImagesFiel
 import {
 	AdminButton,
 	AdminCheckbox,
+	AdminCombobox,
 	AdminInput,
 	AdminSelect,
 	AdminTextarea,
@@ -14,6 +15,7 @@ import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
+import { COMMON_OPTION_AXES, OPTION_VALUE_SUGGESTIONS } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
 	Form,
@@ -405,14 +407,6 @@ export function ProductForm({
 				</AdminButton>
 			}
 		>
-			<datalist id="variant-option-names">
-				<option value="Colour" />
-				<option value="Size" />
-				<option value="Storage" />
-				<option value="Material" />
-				<option value="Capacity" />
-				<option value="Finish" />
-			</datalist>
 			{form.watch("variants").map((variant, index) => (
 				<div
 					key={variant.id ?? `new-${index}`}
@@ -505,56 +499,74 @@ export function ProductForm({
 						<p className={LABEL}>Options</p>
 						<ul className="mt-3 space-y-2">
 							{Object.entries(variant.attributes ?? {}).map(
-								([attributeKey, attributeValue], pairIndex) => (
-									<li
-										key={pairIndex}
-										className="flex items-center gap-2"
-									>
-										<AdminInput
-											inputSize="sm"
-											aria-label="Option name"
-											placeholder="Colour"
-											list="variant-option-names"
-											className="w-40"
-											value={attributeKey}
-											onChange={(event) =>
-												setVariantAttribute(
-													index,
-													attributeKey,
-													event.target.value,
-													attributeValue,
-												)
-											}
-										/>
-										<AdminInput
-											inputSize="sm"
-											aria-label="Option value"
-											placeholder="Black"
-											value={attributeValue}
-											onChange={(event) =>
-												setVariantAttribute(
-													index,
-													attributeKey,
-													attributeKey,
-													event.target.value,
-												)
-											}
-										/>
-										<button
-											type="button"
-											aria-label={`Remove ${attributeKey || "option"}`}
-											className="px-1 text-lg text-muted-foreground leading-none hover:text-destructive"
-											onClick={() =>
-												removeVariantAttribute(
-													index,
-													attributeKey,
-												)
-											}
+								([attributeKey, attributeValue], pairIndex) => {
+									const usedAxes = Object.keys(
+										variant.attributes ?? {},
+									);
+									return (
+										<li
+											key={pairIndex}
+											className="flex items-center gap-2"
 										>
-											×
-										</button>
-									</li>
-								),
+											<AdminCombobox
+												inputSize="sm"
+												aria-label="Option name"
+												placeholder="Colour"
+												className="w-40"
+												value={attributeKey}
+												suggestions={COMMON_OPTION_AXES.filter(
+													(axis) =>
+														!usedAxes.includes(
+															axis,
+														) ||
+														axis === attributeKey,
+												)}
+												onValueChange={(nextKey) =>
+													setVariantAttribute(
+														index,
+														attributeKey,
+														nextKey,
+														attributeValue,
+													)
+												}
+											/>
+											<AdminCombobox
+												inputSize="sm"
+												aria-label="Option value"
+												placeholder="Black"
+												value={attributeValue}
+												suggestions={
+													OPTION_VALUE_SUGGESTIONS[
+														attributeKey
+															.trim()
+															.toLowerCase()
+													] ?? []
+												}
+												onValueChange={(nextValue) =>
+													setVariantAttribute(
+														index,
+														attributeKey,
+														attributeKey,
+														nextValue,
+													)
+												}
+											/>
+											<button
+												type="button"
+												aria-label={`Remove ${attributeKey || "option"}`}
+												className="px-1 text-lg text-muted-foreground leading-none hover:text-destructive"
+												onClick={() =>
+													removeVariantAttribute(
+														index,
+														attributeKey,
+													)
+												}
+											>
+												×
+											</button>
+										</li>
+									);
+								},
 							)}
 						</ul>
 						<button
