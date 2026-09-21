@@ -48,6 +48,19 @@ const VARIANTS = [
 	},
 ];
 
+// Per-colour media: Black carries a swatch hex plus two shots, White carries
+// one shot and relies on the built-in swatch table.
+const BASE_IMAGE =
+	"https://images.unsplash.com/photo-1505740420928-5e560c06d30e";
+const BLACK_IMAGES = [
+	"https://images.unsplash.com/photo-1592286927505-1def25115558",
+	"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d",
+];
+const WHITE_IMAGES = [
+	"https://images.unsplash.com/photo-1561154464-82e9adf32764",
+];
+const BLACK_HEX = "#112233";
+
 const db = createClient({
 	url: process.env.DATABASE_URL ?? "",
 	authToken: process.env.DATABASE_AUTH_TOKEN,
@@ -110,11 +123,7 @@ test.describe("structured product variants", () => {
 			.fill(
 				"This product exists only so the automated QA suite can exercise variant options end to end.",
 			);
-		await main
-			.getByLabel("Product image URLs")
-			.fill(
-				"https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
-			);
+		await main.getByLabel("Product image URLs").first().fill(BASE_IMAGE);
 		await chooseAdminOption(page, main.getByLabel("Status"), "Active");
 		await chooseAdminOption(
 			page,
@@ -146,6 +155,25 @@ test.describe("structured product variants", () => {
 			await fillOption(row, "Storage", variant.storage);
 		}
 
+		// Option media: Black gets a swatch hex and a two-shot gallery, White
+		// gets a single shot and no hex (the name table supplies the swatch).
+		await page.getByRole("button", { name: "Add option media" }).click();
+		const blackMedia = page.getByTestId("option-media-0");
+		await blackMedia.getByLabel("Option name").fill("Colour");
+		await blackMedia.getByLabel("Option value").fill("Black");
+		await blackMedia.getByLabel("Swatch hex").fill(BLACK_HEX);
+		await blackMedia
+			.getByLabel("Product image URLs")
+			.fill(BLACK_IMAGES.join("\n"));
+
+		await page.getByRole("button", { name: "Add option media" }).click();
+		const whiteMedia = page.getByTestId("option-media-1");
+		await whiteMedia.getByLabel("Option name").fill("Colour");
+		await whiteMedia.getByLabel("Option value").fill("White");
+		await whiteMedia
+			.getByLabel("Product image URLs")
+			.fill(WHITE_IMAGES.join("\n"));
+
 		await page.getByRole("button", { name: "Save product" }).click();
 		await expect(
 			page.getByText(/Product created|created/i).first(),
@@ -176,16 +204,57 @@ test.describe("structured product variants", () => {
 			),
 		).toBe("Black · 256 GB");
 
-		// The edit form reads the stored condition back, and saving a change
-		// persists — it goes back to Used because the later tests expect it.
+		// The colour shots land tagged on the image rows, and the hex lands
+		// in the product's option styles — normalised to the lowercase axis.
+		expect(
+			await sql(
+				`SELECT "optionAxis", "optionValue", COUNT(*) FROM store_product_image
+				 WHERE "productId" = (SELECT id FROM store_product WHERE slug = '${PRODUCT_SLUG}')
+				   AND "optionAxis" IS NOT NULL
+				 GROUP BY "optionAxis", "optionValue" ORDER BY "optionValue"`,
+			),
+		).toBe("colour|Black|2\ncolour|White|1");
+		expect(
+			await sql(
+				`SELECT json_extract(optionStyles, '$[0].axis'),
+						json_extract(optionStyles, '$[0].value'),
+						json_extract(optionStyles, '$[0].hex')
+				 FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
+			),
+		).toBe(`colour|Black|${BLACK_HEX}`);
+	});
+
+	test("admin edit reads back media and persists condition changes", async ({
+		page,
+	}) => {
+		// Fresh context for the heavy editor page — the create journey's
+		// session ends here so the renderer starts clean.
+		await signIn(page, ADMIN);
 		const productId = await sql(
 			`SELECT id FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
 		);
-		await page.goto(`/admin/products/${productId}`);
+		await page.goto(`/admin/products/${productId.trim()}`);
 		const editForm = page.locator("form");
 		await expect(editForm.getByLabel("Condition")).toContainText("Used", {
 			timeout: 30_000,
 		});
+
+		// Option media survives the round trip: the Black row reads back its
+		// normalised axis, its value, the swatch hex and both shots.
+		const mediaRow = editForm.getByTestId("option-media-0");
+		await expect(mediaRow.getByLabel("Option name")).toHaveValue("colour");
+		await expect(mediaRow.getByLabel("Option value")).toHaveValue("Black");
+		await expect(mediaRow.getByLabel("Swatch hex")).toHaveValue(BLACK_HEX);
+		await expect(mediaRow.getByLabel("Product image URLs")).toHaveValue(
+			BLACK_IMAGES.join("\n"),
+		);
+		// White's row has its shot and no hex.
+		const whiteRow = editForm.getByTestId("option-media-1");
+		await expect(whiteRow.getByLabel("Option value")).toHaveValue("White");
+		await expect(whiteRow.getByLabel("Swatch hex")).toHaveValue("");
+
+		// The stored condition is read back too — and saving a change
+		// persists. It goes back to Used because the later tests expect it.
 		await chooseAdminOption(
 			page,
 			editForm.getByLabel("Condition"),
@@ -203,22 +272,11 @@ test.describe("structured product variants", () => {
 			)
 			.toBe("REFURBISHED");
 
-		// Saving from the dedicated page returns to the catalogue, so the
-		// flip back to Used starts by opening the editor again.
-		await page.goto(`/admin/products/${productId}`);
-		await chooseAdminOption(
-			page,
-			page.locator("form").getByLabel("Condition"),
-			"Used",
+		// The write path is proven; flipping back to Used is fixture hygiene
+		// for the storefront tests, not a second trip through the editor.
+		await sql(
+			`UPDATE store_product SET "condition" = 'USED' WHERE slug = '${PRODUCT_SLUG}'`,
 		);
-		await page.getByRole("button", { name: "Save product" }).click();
-		await expect
-			.poll(() =>
-				sql(
-					`SELECT "condition" FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
-				),
-			)
-			.toBe("USED");
 	});
 
 	test("the card shows options and the product page resolves combinations", async ({
@@ -256,6 +314,22 @@ test.describe("structured product variants", () => {
 		await expect(page.getByText("Storage — 128 GB")).toBeVisible();
 		await expect(page.getByText("GH₵ 900").first()).toBeVisible();
 
+		// The saved hex drives the swatch — #112233 renders as rgb(17,34,51) —
+		// and the gallery opens on Black's two shots plus the generic photo.
+		const blackSwatch = page
+			.getByRole("button", { name: "Black", exact: true })
+			.locator("span");
+		await expect(blackSwatch).toHaveCSS(
+			"background-color",
+			"rgb(17, 34, 51)",
+		);
+		const thumbs = page.locator(
+			`ul[aria-label="${PRODUCT_NAME} images"] li`,
+		);
+		await expect(thumbs).toHaveCount(3);
+		const mainImage = page.locator(`img[alt="${PRODUCT_NAME}"]`).first();
+		await expect(mainImage).toHaveAttribute("src", /1592286927505/);
+
 		// Black × 256 GB exists and reprices the buy box.
 		await page.getByRole("button", { name: "256 GB" }).click();
 		await expect(page.getByText("Storage — 256 GB")).toBeVisible();
@@ -270,6 +344,9 @@ test.describe("structured product variants", () => {
 		await white.click();
 		await expect(page.getByText("Colour — White")).toBeVisible();
 		await expect(page.getByText("Storage — 128 GB")).toBeVisible();
+		// White owns one shot — the gallery swaps to it plus the generic photo.
+		await expect(thumbs).toHaveCount(2);
+		await expect(mainImage).toHaveAttribute("src", /1561154464/);
 		await expect(page.getByText("Out of stock").first()).toBeVisible();
 		// .first() — related-product cards further down the page carry their
 		// own add-to-bag buttons.
@@ -277,10 +354,13 @@ test.describe("structured product variants", () => {
 			page.getByRole("button", { name: "Out of stock" }).first(),
 		).toBeDisabled();
 
-		// Back to a sellable combination before the journey ends.
+		// Back to a sellable combination before the journey ends — and back to
+		// Black's gallery.
 		await page.getByRole("button", { name: "Black" }).click();
 		await page.getByRole("button", { name: "256 GB" }).click();
 		await expect(page.getByText("GH₵ 1,100").first()).toBeVisible();
+		await expect(thumbs).toHaveCount(3);
+		await expect(mainImage).toHaveAttribute("src", /1592286927505/);
 		await expect(
 			page
 				.getByRole("button", { name: "Add to bag", exact: true })

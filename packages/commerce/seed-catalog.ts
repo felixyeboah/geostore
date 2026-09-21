@@ -263,6 +263,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Burgundy", Storage: "1 TB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Glacier",
+				hex: "#c5d9e8",
+				images: [
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Burgundy",
+				hex: "#6d1a36",
+				images: [
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_iphone_18_pro_max",
@@ -397,6 +437,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Burgundy", Storage: "1 TB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Glacier",
+				hex: "#c5d9e8",
+				images: [
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Burgundy",
+				hex: "#6d1a36",
+				images: [
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_iphone_duo",
@@ -481,6 +561,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 3_410_000,
 				stockQuantity: 1,
 				attributes: { Colour: "Star White", Storage: "1 TB" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Night Sky",
+				hex: "#1d2433",
+				images: [
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Star White",
+				hex: "#f4efe6",
+				images: [
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -583,6 +684,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Lavender", Storage: "512 GB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Mist Blue",
+				hex: "#9db8d2",
+				images: [
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Lavender",
+				hex: "#c9b6d9",
+				images: [
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_iphone_15_pro",
@@ -669,6 +810,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Blue Titanium", Storage: "512 GB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Natural Titanium",
+				hex: "#8f8a82",
+				images: [
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Black Titanium",
+				hex: "#3c3c3d",
+				images: [
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Blue Titanium",
+				hex: "#3d4d5c",
+				images: [
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_iphone_13",
@@ -753,6 +924,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 815_000,
 				stockQuantity: 2,
 				attributes: { Colour: "Blue", Storage: "256 GB" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Midnight",
+				hex: "#232a31",
+				images: [
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Starlight",
+				hex: "#f0e8d8",
+				images: [
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Blue",
+				hex: "#3b5f8a",
+				images: [
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -889,6 +1090,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Cobalt Violet", Storage: "1 TB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Sky Blue",
+				hex: "#a8c8e8",
+				images: [
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Cobalt Violet",
+				hex: "#3d3a6e",
+				images: [
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_galaxy_s26",
@@ -990,6 +1231,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Cobalt Violet", Storage: "512 GB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Sky Blue",
+				hex: "#a8c8e8",
+				images: [
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Cobalt Violet",
+				hex: "#3d3a6e",
+				images: [
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_galaxy_z_fold8",
@@ -1075,6 +1356,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Lavender", Storage: "512 GB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Graphite",
+				hex: "#4b4b4e",
+				images: [
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Cream",
+				hex: "#f1ead9",
+				images: [
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Lavender",
+				hex: "#c9b6d9",
+				images: [
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_galaxy_z_flip8",
@@ -1158,6 +1469,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 1_700_000,
 				stockQuantity: 2,
 				attributes: { Colour: "Pink", Storage: "512 GB" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Graphite",
+				hex: "#4b4b4e",
+				images: [
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Cream",
+				hex: "#f1ead9",
+				images: [
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Pink",
+				hex: "#f3d4dc",
+				images: [
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -1259,6 +1600,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 1_400_000,
 				stockQuantity: 2,
 				attributes: { Colour: "Hibiscus", Storage: "512 GB" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Obsidian",
+				hex: "#2a2a2e",
+				images: [
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Frost",
+				hex: "#eceff2",
+				images: [
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Pistachio",
+				hex: "#b7c4a3",
+				images: [
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Hibiscus",
+				hex: "#a43b5e",
+				images: [
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -1395,6 +1776,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Olive", Storage: "1 TB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Obsidian",
+				hex: "#2a2a2e",
+				images: [
+					"https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Fog",
+				hex: "#d5d8da",
+				images: [
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Canyon",
+				hex: "#c67b4e",
+				images: [
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Olive",
+				hex: "#6b6f42",
+				images: [
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_galaxy_a57",
@@ -1479,6 +1900,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 540_000,
 				stockQuantity: 3,
 				attributes: { Colour: "Awesome Lilac", Storage: "256 GB" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Awesome Navy",
+				hex: "#22304a",
+				images: [
+					"https://images.unsplash.com/photo-1615986200762-a1ed9610d3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Awesome Iceblue",
+				hex: "#bfe3ea",
+				images: [
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Awesome Lilac",
+				hex: "#d7c4e0",
+				images: [
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -1593,6 +2044,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Mint Green", Storage: "512 GB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Midnight Black",
+				hex: "#151518",
+				images: [
+					"https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Ice Blue",
+				hex: "#cfe5ee",
+				images: [
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Mint Green",
+				hex: "#b8dcc0",
+				images: [
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_ipad_air_m4",
@@ -1693,6 +2174,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Purple", Storage: "256 GB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Space Grey",
+				hex: "#76797e",
+				images: [
+					"https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Starlight",
+				hex: "#f0e8d8",
+				images: [
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Blue",
+				hex: "#3b5f8a",
+				images: [
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Purple",
+				hex: "#7a5aa6",
+				images: [
+					"https://images.unsplash.com/photo-1527698266440-12104e498b76?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_ipad_pro_m5",
@@ -1777,6 +2298,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Silver", Storage: "1 TB" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Space Black",
+				hex: "#26262a",
+				images: [
+					"https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1596207891316-23851be3cc20?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_galaxy_tab_s11",
@@ -1844,6 +2386,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 1_110_000,
 				stockQuantity: 2,
 				attributes: { Colour: "Silver", Storage: "256 GB" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Grey",
+				hex: "#8a8d91",
+				images: [
+					"https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -1996,6 +2559,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Midnight Blue" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Platinum Silver",
+				hex: "#d4d6da",
+				images: [
+					"https://images.unsplash.com/photo-1615210230840-69c07c13b4d1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542393545-10f5cde2c810?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Midnight Blue",
+				hex: "#1c2e4a",
+				images: [
+					"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_bose_qc_ultra_2",
@@ -2047,6 +2640,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 655_000,
 				stockQuantity: 2,
 				attributes: { Colour: "White Smoke" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White Smoke",
+				hex: "#eeede8",
+				images: [
+					"https://images.unsplash.com/photo-1542393545-10f5cde2c810?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -2118,6 +2732,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Purple" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615210230840-69c07c13b4d1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Blue",
+				hex: "#3b5f8a",
+				images: [
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Red",
+				hex: "#c8352e",
+				images: [
+					"https://images.unsplash.com/photo-1551816230-ef5deaed4a26?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Purple",
+				hex: "#7a5aa6",
+				images: [
+					"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615210230840-69c07c13b4d1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_jbl_tune_530bt",
@@ -2185,6 +2839,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Purple" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1615210230840-69c07c13b4d1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542393545-10f5cde2c810?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1551816230-ef5deaed4a26?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Blue",
+				hex: "#3b5f8a",
+				images: [
+					"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Purple",
+				hex: "#7a5aa6",
+				images: [
+					"https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615210230840-69c07c13b4d1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1542393545-10f5cde2c810?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_marshall_emberton_iii",
@@ -2236,6 +2930,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 215_000,
 				stockQuantity: 2,
 				attributes: { Colour: "Cream" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1542393545-10f5cde2c810?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Cream",
+				hex: "#f1ead9",
+				images: [
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1551816230-ef5deaed4a26?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -2300,6 +3015,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Blue" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1551816230-ef5deaed4a26?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Blue",
+				hex: "#3b5f8a",
+				images: [
+					"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_galaxy_buds4",
@@ -2359,6 +3104,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 195_000,
 				stockQuantity: 2,
 				attributes: { Colour: "Grey" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Grey",
+				hex: "#8a8d91",
+				images: [
+					"https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1615210230840-69c07c13b4d1?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -2447,6 +3222,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { "Case size": "46 mm", Colour: "Light Gold" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Dark Bronze",
+				hex: "#5c4a3a",
+				images: [
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Light Gold",
+				hex: "#e5d3a8",
+				images: [
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_apple_watch_ultra_4",
@@ -2461,7 +3266,7 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 		sku: "GST-APL-AWU4",
 		condition: "NEW",
 		priceInPesewas: 1_090_000,
-		stockQuantity: 4,
+		stockQuantity: 10,
 		imageUrl:
 			"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1200&q=90",
 		images: [
@@ -2480,25 +3285,105 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 		specifications: {
 			Case: "49 mm titanium",
 			Battery: "50 hours",
-			GPS: "Precision dual-frequency",
+			Strap: "Trail, Alpine or Ocean",
 			Warranty: "12 months",
 		},
 		variants: [
 			{
-				id: "prod_apple_watch_ultra_4_v_nti",
+				id: "prod_apple_watch_ultra_4_v_nti-trl",
 				name: "",
-				sku: "GST-APL-AWU4-NTI",
+				sku: "GST-APL-AWU4-NTI-TRL",
 				priceInPesewas: 1_090_000,
 				stockQuantity: 2,
-				attributes: { Colour: "Natural Titanium" },
+				attributes: { Colour: "Natural Titanium", Strap: "Trail Loop" },
 			},
 			{
-				id: "prod_apple_watch_ultra_4_v_bti",
+				id: "prod_apple_watch_ultra_4_v_nti-alp",
 				name: "",
-				sku: "GST-APL-AWU4-BTI",
+				sku: "GST-APL-AWU4-NTI-ALP",
+				priceInPesewas: 1_090_000,
+				stockQuantity: 1,
+				attributes: {
+					Colour: "Natural Titanium",
+					Strap: "Alpine Loop",
+				},
+			},
+			{
+				id: "prod_apple_watch_ultra_4_v_nti-ocb",
+				name: "",
+				sku: "GST-APL-AWU4-NTI-OCB",
 				priceInPesewas: 1_090_000,
 				stockQuantity: 2,
-				attributes: { Colour: "Black Titanium" },
+				attributes: { Colour: "Natural Titanium", Strap: "Ocean Band" },
+			},
+			{
+				id: "prod_apple_watch_ultra_4_v_bti-trl",
+				name: "",
+				sku: "GST-APL-AWU4-BTI-TRL",
+				priceInPesewas: 1_090_000,
+				stockQuantity: 2,
+				attributes: { Colour: "Black Titanium", Strap: "Trail Loop" },
+			},
+			{
+				id: "prod_apple_watch_ultra_4_v_bti-alp",
+				name: "",
+				sku: "GST-APL-AWU4-BTI-ALP",
+				priceInPesewas: 1_090_000,
+				stockQuantity: 1,
+				attributes: { Colour: "Black Titanium", Strap: "Alpine Loop" },
+			},
+			{
+				id: "prod_apple_watch_ultra_4_v_bti-ocb",
+				name: "",
+				sku: "GST-APL-AWU4-BTI-OCB",
+				priceInPesewas: 1_090_000,
+				stockQuantity: 2,
+				attributes: { Colour: "Black Titanium", Strap: "Ocean Band" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Natural Titanium",
+				hex: "#8f8a82",
+				images: [
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Black Titanium",
+				hex: "#3c3c3d",
+				images: [
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Strap",
+				value: "Trail Loop",
+				images: [
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Strap",
+				value: "Alpine Loop",
+				images: [
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Strap",
+				value: "Ocean Band",
+				images: [
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -2567,6 +3452,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 370_000,
 				stockQuantity: 3,
 				attributes: { "Case size": "44 mm", Colour: "Starlight" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Midnight",
+				hex: "#232a31",
+				images: [
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Starlight",
+				hex: "#f0e8d8",
+				images: [
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -2654,6 +3560,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { "Case size": "44 mm", Colour: "Pink Gold" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Graphite",
+				hex: "#4b4b4e",
+				images: [
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Pink Gold",
+				hex: "#ecc7bb",
+				images: [
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_xiaomi_band_10",
@@ -2715,6 +3651,36 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Pink" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Pink",
+				hex: "#f3d4dc",
+				images: [
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_amazfit_active_2",
@@ -2767,6 +3733,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 125_000,
 				stockQuantity: 3,
 				attributes: { Colour: "Red Sport" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Red Sport",
+				hex: "#d0342c",
+				images: [
+					"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -3237,6 +4224,46 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Size: "15-inch", Colour: "Silver" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Sky Blue",
+				hex: "#a8c8e8",
+				images: [
+					"https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Midnight",
+				hex: "#232a31",
+				images: [
+					"https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Starlight",
+				hex: "#f0e8d8",
+				images: [
+					"https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1592318348310-f31b61a931c8?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_macbook_pro_14_m5pro",
@@ -3290,6 +4317,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 3_050_000,
 				stockQuantity: 1,
 				attributes: { Colour: "Silver" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Space Black",
+				hex: "#26262a",
+				images: [
+					"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Silver",
+				hex: "#c8c9cc",
+				images: [
+					"https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -3592,6 +4640,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				attributes: { Colour: "Pale Grey" },
 			},
 		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Graphite",
+				hex: "#4b4b4e",
+				images: [
+					"https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1592318348310-f31b61a931c8?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "Pale Grey",
+				hex: "#d8d9db",
+				images: [
+					"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+		],
 	},
 	{
 		id: "prod_anker_powercore_20k_g2",
@@ -3643,6 +4712,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 42_000,
 				stockQuantity: 5,
 				attributes: { Colour: "White" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1618410320928-25228d811631?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1625723040792-44a4d5ddc2e0?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -3697,6 +4787,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 28_500,
 				stockQuantity: 6,
 				attributes: { Colour: "White" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1625723040792-44a4d5ddc2e0?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1618410320928-25228d811631?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
@@ -3878,6 +4989,27 @@ export const STORE_PRODUCTS: StoreProduct[] = [
 				priceInPesewas: 52_000,
 				stockQuantity: 3,
 				attributes: { Colour: "White" },
+			},
+		],
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "Black",
+				hex: "#1c1c1e",
+				images: [
+					"https://images.unsplash.com/photo-1625723040792-44a4d5ddc2e0?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1618410320928-25228d811631?auto=format&fit=crop&w=1400&q=90",
+				],
+			},
+			{
+				axis: "Colour",
+				value: "White",
+				hex: "#f5f5f4",
+				images: [
+					"https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=1400&q=90",
+					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=90",
+				],
 			},
 		],
 	},
