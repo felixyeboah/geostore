@@ -114,7 +114,7 @@ export type AddressScalarFieldEnum = z.infer<typeof AddressScalarFieldEnumSchema
 
 // File: OrderScalarFieldEnum.schema.ts
 
-export const OrderScalarFieldEnumSchema = z.enum(['id', 'orderNumber', 'idempotencyKey', 'userId', 'status', 'paymentStatus', 'paymentMethod', 'currency', 'subtotalInPesewas', 'deliveryInPesewas', 'discountInPesewas', 'totalInPesewas', 'customerEmail', 'customerPhone', 'shippingAddress', 'customerNote', 'placedAt', 'updatedAt'])
+export const OrderScalarFieldEnumSchema = z.enum(['id', 'orderNumber', 'idempotencyKey', 'userId', 'status', 'paymentStatus', 'paymentMethod', 'currency', 'subtotalInPesewas', 'deliveryInPesewas', 'discountInPesewas', 'totalInPesewas', 'customerEmail', 'customerPhone', 'recipientName', 'shippingAddress', 'customerNote', 'placedAt', 'updatedAt'])
 
 export type OrderScalarFieldEnum = z.infer<typeof OrderScalarFieldEnumSchema>;
 
@@ -579,6 +579,7 @@ export const OrderSchema = z.object({
   totalInPesewas: z.number().int(),
   customerEmail: z.string(),
   customerPhone: z.string(),
+  recipientName: z.string().nullish(),
   shippingAddress: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10"),
   customerNote: z.string().nullish(),
   placedAt: z.date(),

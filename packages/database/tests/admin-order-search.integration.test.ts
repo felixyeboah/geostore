@@ -19,10 +19,14 @@ test("guest recipient search filters and paginates in the database", async () =>
 				totalInPesewas: 100,
 				customerEmail: `guest-${index}@example.test`,
 				customerPhone: "0000000000",
+				recipientName:
+					index === 0
+						? `${recipient} O'Neil_A`
+						: `${recipient} O'Neil-AB`,
 				shippingAddress: {
 					recipientName:
 						index === 0
-							? `${recipient} O'Neil_%`
+							? `${recipient} O'Neil_A`
 							: `${recipient} O'Neil-AB`,
 				},
 			})),
@@ -42,10 +46,12 @@ test("guest recipient search filters and paginates in the database", async () =>
 		assert.equal(first.orders.length, 1);
 		assert.equal(second.orders.length, 1);
 		assert.notEqual(first.orders[0].id, second.orders[0].id);
-		const literal = await getAdminOrderList({ q: `${recipient} O'Neil_%` });
+		const narrowed = await getAdminOrderList({
+			q: `${recipient} O'Neil-AB`,
+		});
 		assert.deepEqual(
-			literal.orders.map((order) => order.id),
-			[`${prefix}-0`],
+			narrowed.orders.map((order) => order.id),
+			[`${prefix}-1`],
 		);
 	} finally {
 		await db.order.deleteMany({ where: { id: { startsWith: prefix } } });

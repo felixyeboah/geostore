@@ -449,6 +449,9 @@ model Order {
   totalInPesewas             Int
   customerEmail              String
   customerPhone              String
+  // Denormalized from shippingAddress so admin search can filter and paginate
+  // recipient names without JSON functions or materialized id lists.
+  recipientName              String?
   shippingAddress            Json
   customerNote               String?
   items                      OrderItem[]

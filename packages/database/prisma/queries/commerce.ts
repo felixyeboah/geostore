@@ -438,6 +438,8 @@ export interface AdminProductListQuery {
 	categoryId?: string;
 	sort?: AdminProductSort;
 	dir?: "asc" | "desc";
+	/** Product ids to leave out, e.g. ones a picker already shows as chosen. */
+	excludeIds?: string[];
 	/** 1-based. */
 	page?: number;
 	perPage?: number;
@@ -524,9 +526,12 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 		? { categoryId: query.categoryId }
 		: {};
 	const byStock = adminProductStockWhere(query.stock);
+	const byExclusion: Prisma.ProductWhereInput = query.excludeIds?.length
+		? { id: { notIn: query.excludeIds } }
+		: {};
 
 	const where: Prisma.ProductWhereInput = {
-		AND: [search, byStatus, byCategory, byStock],
+		AND: [search, byStatus, byCategory, byStock, byExclusion],
 	};
 
 	const total = await db.product.count({ where });
@@ -554,12 +559,12 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 		}),
 		db.product.groupBy({
 			by: ["status"],
-			where: { AND: [search, byCategory, byStock] },
+			where: { AND: [search, byCategory, byStock, byExclusion] },
 			_count: { _all: true },
 		}),
 		db.product.groupBy({
 			by: ["categoryId"],
-			where: { AND: [search, byStatus, byStock] },
+			where: { AND: [search, byStatus, byStock, byExclusion] },
 			_count: { _all: true },
 		}),
 		db.product.count({
@@ -568,6 +573,7 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 					search,
 					byStatus,
 					byCategory,
+					byExclusion,
 					adminProductStockWhere("OUT"),
 				],
 			},
@@ -578,6 +584,7 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 					search,
 					byStatus,
 					byCategory,
+					byExclusion,
 					adminProductStockWhere("LOW"),
 				],
 			},
@@ -588,6 +595,7 @@ export async function getAdminProductList(query: AdminProductListQuery = {}) {
 					search,
 					byStatus,
 					byCategory,
+					byExclusion,
 					adminProductStockWhere("OK"),
 				],
 			},
@@ -942,19 +950,22 @@ export async function updateStoreProductStock(
 	return db.$transaction(async (transaction) => {
 		const currentProduct = await transaction.product.findUniqueOrThrow({
 			where: { id },
-			select: {
-				stockQuantity: true,
-				_count: { select: { variants: true } },
-			},
+			select: { stockQuantity: true },
 		});
-		if (currentProduct._count.variants > 0) {
+		// The variant check rides inside the write itself: a concurrent
+		// updateStoreProduct that adds variants cannot slip between a separate
+		// count read and this update and leave the aggregate stale.
+		const updated = await transaction.product.updateMany({
+			where: { id, variants: { none: {} } },
+			data: { stockQuantity },
+		});
+		if (updated.count === 0) {
 			throw new StoreOperationError(
 				"Update stock on the individual variants in the product editor.",
 			);
 		}
-		const product = await transaction.product.update({
+		const product = await transaction.product.findUniqueOrThrow({
 			where: { id },
-			data: { stockQuantity },
 			include: { category: { select: { slug: true } } },
 		});
 		await transaction.inventoryEvent.create({
@@ -1184,6 +1195,7 @@ export async function createMockStoreOrder(input: CreateMockStoreOrderInput) {
 				totalInPesewas: subtotalInPesewas + deliveryInPesewas,
 				customerEmail: input.customer.email,
 				customerPhone: input.customer.phone,
+				recipientName: input.customer.name,
 				shippingAddress: {
 					...input.address,
 					recipientName: input.customer.name,
@@ -1275,6 +1287,7 @@ export async function createPendingStoreOrder(
 				totalInPesewas: subtotalInPesewas + deliveryInPesewas,
 				customerEmail: input.customer.email,
 				customerPhone: input.customer.phone,
+				recipientName: input.customer.name,
 				shippingAddress: {
 					...input.address,
 					recipientName: input.customer.name,
@@ -1596,31 +1609,23 @@ export interface AdminOrderListQuery {
 
 const ADMIN_ORDERS_PER_PAGE = 25;
 
-async function adminOrderSearchWhere(
-	q?: string,
-): Promise<Prisma.OrderWhereInput> {
+function adminOrderSearchWhere(q?: string): Prisma.OrderWhereInput {
 	const query = q?.trim();
 
 	if (!query) {
 		return {};
 	}
 
-	// Guest checkout stores the recipient in JSON, not in a user account.
-	// Resolve matching IDs in SQL so counts, facets and pagination still use
-	// the same server-side filter. Bind the input and escape LIKE wildcards.
-	const recipientPattern = `%${query.replace(/[!%_]/g, "!$&")}%`;
-	const recipients = await db.$queryRaw<Array<{ id: string }>>`
-		SELECT id FROM store_order
-		WHERE json_type("shippingAddress", '$.recipientName') = 'text'
-		AND json_extract("shippingAddress", '$.recipientName') LIKE ${recipientPattern} ESCAPE '!'
-	`;
+	// `recipientName` is a denormalized column, so guest recipients filter
+	// inside the same paginated query as every other field — no JSON
+	// functions and no materialized id lists.
 	return {
 		OR: [
 			{ orderNumber: { contains: query } },
 			{ customerEmail: { contains: query } },
 			{ customerPhone: { contains: query } },
+			{ recipientName: { contains: query } },
 			{ user: { name: { contains: query } } },
-			{ id: { in: recipients.map((order) => order.id) } },
 		],
 	};
 }
@@ -1647,7 +1652,7 @@ function adminOrderOrderBy(
  */
 export async function getAdminOrderList(query: AdminOrderListQuery = {}) {
 	const perPage = query.perPage ?? ADMIN_ORDERS_PER_PAGE;
-	const search = await adminOrderSearchWhere(query.q);
+	const search = adminOrderSearchWhere(query.q);
 	const byStatus: Prisma.OrderWhereInput = query.status
 		? { status: query.status }
 		: {};

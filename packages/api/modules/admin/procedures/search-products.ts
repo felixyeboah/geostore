@@ -34,6 +34,9 @@ export const searchProducts = adminProcedure
 				q: query,
 				sort: "name",
 				dir: "asc",
+				// Chosen products arrive through `chosen`; leaving them in the
+				// search would burn page slots and skew the page count.
+				excludeIds: ids,
 				perPage: limit,
 				page,
 			}),
