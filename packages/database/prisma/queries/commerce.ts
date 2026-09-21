@@ -14,6 +14,7 @@ import {
 } from "../generated/client";
 import { StoreOperationError } from "./errors";
 import { getDeliveryRule } from "./store-settings";
+import { storefrontSearchWhere } from "./storefront-search";
 
 /** How a smart collection ranks the catalogue to find its own members. */
 export type StoreSmartCollectionRule = "best-selling" | "newest";
@@ -184,25 +185,7 @@ export async function getPublishedStoreProducts(
 			// actually beats the current price is checked after mapping, where
 			// both numbers are to hand.
 			compareAtInPesewas: filters.onSaleOnly ? { not: null } : undefined,
-			OR: filters.query
-				? [
-						{
-							name: {
-								contains: filters.query,
-							},
-						},
-						{
-							brand: {
-								contains: filters.query,
-							},
-						},
-						{
-							shortDescription: {
-								contains: filters.query,
-							},
-						},
-					]
-				: undefined,
+			...storefrontSearchWhere(filters.query),
 		},
 		include: {
 			category: true,
