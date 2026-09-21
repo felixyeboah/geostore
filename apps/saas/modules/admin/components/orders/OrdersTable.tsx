@@ -172,7 +172,10 @@ export function OrdersTable({
 					label="Fulfilment"
 					value={params.status ?? ""}
 					onChange={(value) =>
-						void setParams({ status: value || null, page: 1 })
+						void setParams({
+							status: orderListParsers.status.parse(value),
+							page: 1,
+						})
 					}
 					options={Object.entries(ORDER_STATUS_LABELS).map(
 						([value, label]) => ({
@@ -187,7 +190,10 @@ export function OrdersTable({
 					label="Payment"
 					value={params.payment ?? ""}
 					onChange={(value) =>
-						void setParams({ payment: value || null, page: 1 })
+						void setParams({
+							payment: orderListParsers.payment.parse(value),
+							page: 1,
+						})
 					}
 					options={paymentValues.map((value) => ({
 						value,
