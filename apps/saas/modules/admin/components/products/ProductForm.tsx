@@ -134,6 +134,45 @@ export function ProductForm({
 		form.watch("specifications"),
 	);
 
+	const variantAttributesPath = (index: number) =>
+		`variants.${index}.attributes` as const;
+
+	/** Renames an option row or edits its value, keeping row order stable. */
+	const setVariantAttribute = (
+		variantIndex: number,
+		attributeKey: string,
+		nextKey: string,
+		nextValue: string,
+	) => {
+		const path = variantAttributesPath(variantIndex);
+		const next: Record<string, string> = {};
+		for (const [key, value] of Object.entries(form.getValues(path) ?? {})) {
+			next[key === attributeKey ? nextKey : key] =
+				key === attributeKey ? nextValue : value;
+		}
+		form.setValue(path, next, { shouldDirty: true });
+	};
+
+	const addVariantAttribute = (variantIndex: number) => {
+		const path = variantAttributesPath(variantIndex);
+		const current = form.getValues(path) ?? {};
+		// One blank row at a time — an empty key is the "new row" slot.
+		if ("" in current) {
+			return;
+		}
+		form.setValue(path, { ...current, "": "" }, { shouldDirty: true });
+	};
+
+	const removeVariantAttribute = (
+		variantIndex: number,
+		attributeKey: string,
+	) => {
+		const path = variantAttributesPath(variantIndex);
+		const next = { ...(form.getValues(path) ?? {}) };
+		delete next[attributeKey];
+		form.setValue(path, next, { shouldDirty: true });
+	};
+
 	const onSubmit = form.handleSubmit(async (values) => {
 		const result = await saveStoreProductAction(values, productId);
 
@@ -317,7 +356,7 @@ export function ProductForm({
 	const variantsSection = (
 		<FormSection
 			title="Variants"
-			hint="Use variants for storage, colour, or size. Leave empty to sell the product as a single SKU."
+			hint="One row per combination a shopper can pick — e.g. Colour: Black plus Size: 256 GB. The name can stay blank; the option values become the label."
 			action={
 				<AdminButton
 					size="sm"
@@ -336,13 +375,22 @@ export function ProductForm({
 						])
 					}
 				>
-					Add option
+					Add variant
 				</AdminButton>
 			}
 		>
+			<datalist id="variant-option-names">
+				<option value="Colour" />
+				<option value="Size" />
+				<option value="Storage" />
+				<option value="Material" />
+				<option value="Capacity" />
+				<option value="Finish" />
+			</datalist>
 			{form.watch("variants").map((variant, index) => (
 				<div
 					key={variant.id ?? `new-${index}`}
+					data-testid={`variant-${index}`}
 					className="grid gap-5 border-border border-t pt-5 first:border-t-0 first:pt-0 sm:grid-cols-2"
 				>
 					<FormField
@@ -350,10 +398,12 @@ export function ProductForm({
 						name={`variants.${index}.name`}
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel className={LABEL}>Name</FormLabel>
+								<FormLabel className={LABEL}>
+									Name (optional)
+								</FormLabel>
 								<FormControl>
 									<AdminInput
-										placeholder="256 GB"
+										placeholder="Uses the option values"
 										{...field}
 									/>
 								</FormControl>
@@ -425,6 +475,70 @@ export function ProductForm({
 							</FormItem>
 						)}
 					/>
+					<div className="sm:col-span-2">
+						<p className={LABEL}>Options</p>
+						<ul className="mt-3 space-y-2">
+							{Object.entries(variant.attributes ?? {}).map(
+								([attributeKey, attributeValue], pairIndex) => (
+									<li
+										key={pairIndex}
+										className="flex items-center gap-2"
+									>
+										<AdminInput
+											inputSize="sm"
+											aria-label="Option name"
+											placeholder="Colour"
+											list="variant-option-names"
+											className="w-40"
+											value={attributeKey}
+											onChange={(event) =>
+												setVariantAttribute(
+													index,
+													attributeKey,
+													event.target.value,
+													attributeValue,
+												)
+											}
+										/>
+										<AdminInput
+											inputSize="sm"
+											aria-label="Option value"
+											placeholder="Black"
+											value={attributeValue}
+											onChange={(event) =>
+												setVariantAttribute(
+													index,
+													attributeKey,
+													attributeKey,
+													event.target.value,
+												)
+											}
+										/>
+										<button
+											type="button"
+											aria-label={`Remove ${attributeKey || "option"}`}
+											className="px-1 text-lg text-muted-foreground leading-none hover:text-destructive"
+											onClick={() =>
+												removeVariantAttribute(
+													index,
+													attributeKey,
+												)
+											}
+										>
+											×
+										</button>
+									</li>
+								),
+							)}
+						</ul>
+						<button
+							type="button"
+							className="mt-2 text-primary text-sm"
+							onClick={() => addVariantAttribute(index)}
+						>
+							+ Add option
+						</button>
+					</div>
 					<button
 						type="button"
 						className="text-left text-destructive text-sm sm:col-span-2"
@@ -439,7 +553,7 @@ export function ProductForm({
 							)
 						}
 					>
-						Remove option
+						Remove variant
 					</button>
 				</div>
 			))}

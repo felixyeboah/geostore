@@ -44,7 +44,10 @@ export const productFormSchema = z.object({
 	variants: z.array(
 		z.object({
 			id: z.string().optional(),
-			name: z.string().trim().min(1),
+			// Optional: when it is blank the option values ("Black · 256 GB")
+			// become the name — that is what buyers read, so the values are the
+			// label anyway.
+			name: z.string().trim(),
 			sku: z.string().trim().min(3),
 			priceInPesewas: z.number().int().min(1),
 			stockQuantity: z.number().int().min(0),

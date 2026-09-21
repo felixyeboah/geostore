@@ -11,6 +11,7 @@ import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
+import { normalizeVariantAttributes, variantDisplayName } from "@repo/commerce";
 import {
 	createStoreCategory,
 	createStoreCollection,
@@ -130,6 +131,13 @@ export async function saveStoreProductAction(
 	try {
 		await requireAdmin();
 		const input = productFormSchema.parse(values);
+		// A variant with attributes but no typed name is labelled by its
+		// option values — "Black · 256 GB" — which is what the storefront
+		// picker, the cart line and the order record all show.
+		for (const variant of input.variants) {
+			variant.attributes = normalizeVariantAttributes(variant.attributes);
+			variant.name = variantDisplayName(variant);
+		}
 		// Captured before the write: renaming the slug or moving the product to
 		// another category would otherwise leave the previous URLs cached and
 		// serving stale data indefinitely.
