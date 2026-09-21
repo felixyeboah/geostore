@@ -153,7 +153,9 @@ test.describe("structured product variants", () => {
 
 		// It comes in options: the price and code become the starting values
 		// every combination inherits.
-		await main.getByText("Comes in options", { exact: true }).click();
+		await main
+			.getByRole("radio", { name: /Comes in options/ })
+			.check();
 		await main.getByLabel("Starting price (GH₵)").fill("900");
 		await expect(
 			main.getByLabel("Base product code (SKU)"),
