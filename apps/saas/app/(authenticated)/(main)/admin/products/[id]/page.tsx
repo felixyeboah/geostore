@@ -1,5 +1,6 @@
 import { ProductForm } from "@admin/components/products/ProductForm";
 import type { ProductFormValues } from "@repo/api/modules/commerce/types";
+import { optionMediaFromStorage } from "@repo/commerce";
 import { getAdminStoreProductById, getStoreCategories } from "@repo/database";
 import { notFound } from "next/navigation";
 
@@ -45,7 +46,15 @@ export default async function EditProductPage({
 		lowStockThreshold: product.lowStockThreshold,
 		isFeatured: product.isFeatured,
 		categoryId: product.categoryId,
-		imageUrls: product.images.map((image) => image.url),
+		// Untagged shots are the base gallery; tagged ones rebuild into the
+		// option media rows the editor shows per value.
+		imageUrls: product.images
+			.filter((image) => !image.optionAxis)
+			.map((image) => image.url),
+		optionMedia: optionMediaFromStorage(
+			product.images,
+			product.optionStyles,
+		),
 		specifications: parseSpecifications(product.specifications),
 		variants: product.variants.map((variant) => ({
 			id: variant.id,

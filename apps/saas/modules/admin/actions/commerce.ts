@@ -11,7 +11,11 @@ import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
-import { normalizeVariantAttributes, variantDisplayName } from "@repo/commerce";
+import {
+	normalizeOptionMedia,
+	normalizeVariantAttributes,
+	variantDisplayName,
+} from "@repo/commerce";
 import {
 	createStoreCategory,
 	createStoreCollection,
@@ -138,6 +142,9 @@ export async function saveStoreProductAction(
 			variant.attributes = normalizeVariantAttributes(variant.attributes);
 			variant.name = variantDisplayName(variant);
 		}
+		// Option media keys on the normalised axis ("colour") so a gallery
+		// always lines up with the attributes the variants carry.
+		input.optionMedia = normalizeOptionMedia(input.optionMedia);
 		// Captured before the write: renaming the slug or moving the product to
 		// another category would otherwise leave the previous URLs cached and
 		// serving stale data indefinitely.

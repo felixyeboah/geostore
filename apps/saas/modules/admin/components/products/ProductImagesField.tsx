@@ -9,6 +9,11 @@ import { useId } from "react";
 interface ProductImagesFieldProps {
 	value: string[];
 	onChange: (urls: string[]) => void;
+	/**
+	 * The first image doubles as the product cover. Option-value galleries
+	 * pass `false` — their first shot just leads that value's strip.
+	 */
+	coverable?: boolean;
 }
 
 /**
@@ -22,6 +27,7 @@ interface ProductImagesFieldProps {
 export function ProductImagesField({
 	value,
 	onChange,
+	coverable = true,
 }: ProductImagesFieldProps) {
 	const urlFieldId = useId();
 
@@ -40,7 +46,11 @@ export function ProductImagesField({
 			<AdminImageDropzone
 				multiple
 				onUploaded={(urls) => onChange([...value, ...urls])}
-				hint="JPG, PNG or WebP, up to 5 MB each. The first image is the one customers see first."
+				hint={
+					coverable
+						? "JPG, PNG or WebP, up to 5 MB each. The first image is the one customers see first."
+						: "JPG, PNG or WebP, up to 5 MB each."
+				}
 			/>
 
 			{value.length > 0 && (
@@ -60,7 +70,7 @@ export function ProductImagesField({
 								alt=""
 								className="size-full object-cover"
 							/>
-							{index === 0 && (
+							{coverable && index === 0 && (
 								<span className="absolute top-1.5 left-1.5 bg-foreground px-1.5 py-0.5 font-medium text-[10px] text-background uppercase tracking-[0.08em]">
 									Cover
 								</span>
@@ -71,7 +81,7 @@ export function ProductImagesField({
 									"opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100",
 								)}
 							>
-								{index > 0 && (
+								{coverable && index > 0 && (
 									<button
 										type="button"
 										onClick={() => makeCover(index)}
