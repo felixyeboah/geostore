@@ -15,7 +15,12 @@ import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
-import { COMMON_OPTION_AXES, OPTION_VALUE_SUGGESTIONS } from "@repo/commerce";
+import {
+	COMMON_OPTION_AXES,
+	isColourAxis,
+	isHexColour,
+	OPTION_VALUE_SUGGESTIONS,
+} from "@repo/commerce";
 import { cn } from "@repo/ui";
 import {
 	Form,
@@ -64,6 +69,7 @@ export const EMPTY_PRODUCT: ProductFormValues = {
 	isFeatured: false,
 	categoryId: "",
 	imageUrls: [],
+	optionMedia: [],
 	specifications: {},
 	variants: [],
 };
@@ -136,6 +142,48 @@ export function ProductForm({
 	const specificationsText = specificationsToText(
 		form.watch("specifications"),
 	);
+	const watchedVariants = form.watch("variants");
+	const watchedOptionMedia = form.watch("optionMedia") ?? [];
+
+	/**
+	 * The axes and values the variants actually use — the option-media
+	 * comboboxes offer them first so a gallery never drifts from a stray
+	 * retyping. Free text still works; save-time normalisation keys media
+	 * and attributes the same way.
+	 */
+	const axisSuggestions = [
+		...new Map(
+			[
+				...COMMON_OPTION_AXES,
+				...watchedVariants.flatMap((variant) =>
+					Object.keys(variant.attributes ?? {}),
+				),
+			]
+				.map((axis) => axis.trim())
+				.filter(Boolean)
+				.map((axis) => [axis.toLowerCase(), axis] as const),
+		).values(),
+	];
+	const optionValueSuggestions = (axis: string) => {
+		const lower = axis.trim().toLowerCase();
+		const used = watchedVariants.flatMap((variant) =>
+			Object.entries(variant.attributes ?? {})
+				.filter(([key]) => key.trim().toLowerCase() === lower)
+				.map(([, value]) => value.trim()),
+		);
+		return [
+			...new Set([...used, ...(OPTION_VALUE_SUGGESTIONS[lower] ?? [])]),
+		].filter(Boolean);
+	};
+
+	const setOptionMedia = (
+		index: number,
+		patch: Partial<ProductFormValues["optionMedia"][number]>,
+	) => {
+		const rows = [...(form.getValues("optionMedia") ?? [])];
+		rows[index] = { ...rows[index], ...patch };
+		form.setValue("optionMedia", rows, { shouldDirty: true });
+	};
 
 	const variantAttributesPath = (index: number) =>
 		`variants.${index}.attributes` as const;
@@ -598,6 +646,165 @@ export function ProductForm({
 		</FormSection>
 	);
 
+	const optionMediaSection = (
+		<FormSection
+			title="Option media"
+			hint="Give an option value its own photos and swatch — pick a value the variants use, or enter a new one. Colour values can carry a hex; every value can carry its own image gallery."
+			action={
+				<AdminButton
+					size="sm"
+					onClick={() =>
+						form.setValue(
+							"optionMedia",
+							[
+								...watchedOptionMedia,
+								{ axis: "", value: "", hex: "", images: [] },
+							],
+							{ shouldDirty: true },
+						)
+					}
+				>
+					Add option media
+				</AdminButton>
+			}
+		>
+			{watchedOptionMedia.length === 0 ? (
+				<p className="text-muted-foreground text-sm">
+					No option media yet. Add variants first, then attach photos
+					or a swatch to a value like “Colour: Black”.
+				</p>
+			) : (
+				<ul className="grid gap-4">
+					{watchedOptionMedia.map((media, index) => (
+						<li
+							key={index}
+							data-testid={`option-media-${index}`}
+							className="grid gap-4 rounded-[2px] border border-border p-4"
+						>
+							<div className="flex flex-wrap items-center gap-2">
+								<AdminCombobox
+									inputSize="sm"
+									aria-label="Option name"
+									placeholder="Colour"
+									className="w-40"
+									value={media.axis}
+									suggestions={axisSuggestions}
+									onValueChange={(axis) =>
+										setOptionMedia(index, { axis })
+									}
+								/>
+								<AdminCombobox
+									inputSize="sm"
+									aria-label="Option value"
+									placeholder="Black"
+									value={media.value}
+									suggestions={optionValueSuggestions(
+										media.axis,
+									)}
+									onValueChange={(value) =>
+										setOptionMedia(index, { value })
+									}
+								/>
+								{isColourAxis(media.axis) ? (
+									<FormField
+										control={form.control}
+										name={`optionMedia.${index}.hex`}
+										render={({ field }) => (
+											<FormItem className="flex items-center gap-2 space-y-0">
+												<span
+													aria-hidden
+													className="size-6 rounded-full border border-black/15"
+													style={{
+														backgroundColor:
+															field.value &&
+															isHexColour(
+																field.value,
+															)
+																? field.value
+																: "transparent",
+													}}
+												/>
+												<FormControl>
+													<AdminInput
+														inputSize="sm"
+														aria-label="Swatch hex"
+														placeholder="#1c1c1e"
+														className="w-28"
+														{...field}
+														value={
+															field.value ?? ""
+														}
+													/>
+												</FormControl>
+												<input
+													type="color"
+													aria-label="Pick swatch colour"
+													className="size-7 cursor-pointer rounded-[2px] border border-border bg-transparent p-0.5"
+													value={
+														field.value &&
+														isHexColour(field.value)
+															? field.value
+																	.length ===
+																4
+																? `#${field.value[1]}${field.value[1]}${field.value[2]}${field.value[2]}${field.value[3]}${field.value[3]}`
+																: field.value
+															: "#000000"
+													}
+													onChange={(event) =>
+														field.onChange(
+															event.target.value,
+														)
+													}
+												/>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								) : null}
+								<button
+									type="button"
+									aria-label={`Remove option media ${index + 1}`}
+									className="ml-auto px-1 text-lg text-muted-foreground leading-none hover:text-destructive"
+									onClick={() =>
+										form.setValue(
+											"optionMedia",
+											watchedOptionMedia.filter(
+												(_, rowIndex) =>
+													rowIndex !== index,
+											),
+											{ shouldDirty: true },
+										)
+									}
+								>
+									×
+								</button>
+							</div>
+							<FormField
+								control={form.control}
+								name={`optionMedia.${index}.images`}
+								render={({ field }) => (
+									<FormItem>
+										<span className={LABEL}>
+											{media.value
+												? `${media.value} photos`
+												: "Option photos"}
+										</span>
+										<ProductImagesField
+											coverable={false}
+											value={field.value}
+											onChange={field.onChange}
+										/>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</li>
+					))}
+				</ul>
+			)}
+		</FormSection>
+	);
+
 	const publishingSection = (
 		<FormSection title="Publishing">
 			<div className={cn("grid gap-5", isSheet && "sm:grid-cols-2")}>
@@ -808,6 +1015,7 @@ export function ProductForm({
 						{publishingSection}
 						{mediaSection}
 						{variantsSection}
+						{optionMediaSection}
 					</div>
 
 					<div className="shrink-0 border-border border-t px-6 py-4">
@@ -874,6 +1082,7 @@ export function ProductForm({
 						{detailsSection}
 						{mediaSection}
 						{variantsSection}
+						{optionMediaSection}
 					</div>
 
 					<aside className="space-y-7 xl:sticky xl:top-6">

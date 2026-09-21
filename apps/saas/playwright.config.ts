@@ -34,10 +34,14 @@ export default defineConfig({
 	use: {
 		baseURL,
 		trace: "on-first-retry",
-		video: {
-			mode: "retain-on-failure",
-			size: { width: 640, height: 480 },
-		},
+		// ffmpeg encodes per test — on memory-tight machines that extra
+		// process is what gets the browser killed mid-run.
+		video: process.env.PLAYWRIGHT_NO_VIDEO
+			? "off"
+			: {
+					mode: "retain-on-failure",
+					size: { width: 640, height: 480 },
+				},
 	},
 	projects: [
 		{ name: "setup", testMatch: /.*\.setup\.ts/ },

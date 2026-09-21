@@ -1,4 +1,4 @@
-import type { StoreProductVariant } from "./types";
+import type { StoreOptionMedia, StoreProductVariant } from "./types";
 
 /**
  * Variant options, shared between the admin editor and the storefront.
@@ -183,6 +183,206 @@ export function colourHex(value: string): string | undefined {
 		return key;
 	}
 	return undefined;
+}
+
+/**
+ * The stable identity of an option value across the catalogue — the media
+ * rows, the swatch map and the admin editor all key on the same string so a
+ * rename in one place does not strand styling in another.
+ */
+export function optionMediaKey(axis: string, value: string): string {
+	return `${axis.trim().toLowerCase()}:${value.trim().toLowerCase()}`;
+}
+
+/** Whether `hex` is a `#rgb`/`#rrggbb` string the browser can render. */
+export function isHexColour(hex: string): boolean {
+	return /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex.trim());
+}
+
+/**
+ * The swatch for one option value. An explicit hex saved with the value
+ * wins; colour axes still fall back to the built-in name table so a value
+ * like "Navy" is swatchable before an admin assigns it media.
+ */
+export function optionValueHex(
+	optionMedia:
+		| ReadonlyArray<Pick<StoreOptionMedia, "axis" | "value" | "hex">>
+		| undefined,
+	axis: string,
+	value: string,
+): string | undefined {
+	const key = optionMediaKey(axis, value);
+	const saved = optionMedia?.find(
+		(media) => optionMediaKey(media.axis, media.value) === key,
+	)?.hex;
+	if (saved && isHexColour(saved)) {
+		return saved;
+	}
+	return isColourAxis(axis) ? colourHex(value) : undefined;
+}
+
+/**
+ * Clean option-media rows before storage: axis keys lowercase to match
+ * normalised variant attributes, values and hexes are trimmed, entries with
+ * no name are dropped, and the first entry wins when two rows point at the
+ * same value.
+ */
+export function normalizeOptionMedia(
+	entries: ReadonlyArray<{
+		axis: string;
+		value: string;
+		hex?: string;
+		images: string[];
+	}>,
+): StoreOptionMedia[] {
+	const seen = new Set<string>();
+	const normalized: StoreOptionMedia[] = [];
+	for (const entry of entries) {
+		const axis = entry.axis.trim().toLowerCase();
+		const value = entry.value.trim();
+		const hex = entry.hex?.trim();
+		const images = entry.images.map((url) => url.trim()).filter(Boolean);
+		const key = optionMediaKey(axis, value);
+		if (!axis || !value || seen.has(key)) {
+			continue;
+		}
+		seen.add(key);
+		normalized.push({
+			axis,
+			value,
+			hex: hex && isHexColour(hex) ? hex : undefined,
+			images: [...new Set(images)],
+		});
+	}
+	return normalized;
+}
+
+/**
+ * Rebuilds a product's option media from the two places it is stored:
+ * tagged image rows carry the galleries, and the `optionStyles` JSON list
+ * (`[{axis, value, hex}]`) carries swatches — including for values that own
+ * no images. Entries appear in first-seen order, which is the image sort
+ * order the admin arranged.
+ */
+export function optionMediaFromStorage(
+	images: ReadonlyArray<{
+		url: string;
+		optionAxis?: string | null;
+		optionValue?: string | null;
+	}>,
+	optionStyles: unknown,
+): StoreOptionMedia[] {
+	const entries = new Map<string, StoreOptionMedia>();
+	const entryFor = (axis: string, value: string) => {
+		const key = optionMediaKey(axis, value);
+		let entry = entries.get(key);
+		if (!entry) {
+			entry = {
+				axis: axis.trim().toLowerCase(),
+				value: value.trim(),
+				images: [],
+			};
+			entries.set(key, entry);
+		}
+		return entry;
+	};
+
+	for (const image of images) {
+		if (image.optionAxis?.trim() && image.optionValue?.trim()) {
+			entryFor(image.optionAxis, image.optionValue).images.push(
+				image.url,
+			);
+		}
+	}
+
+	if (Array.isArray(optionStyles)) {
+		for (const style of optionStyles as Array<{
+			axis?: unknown;
+			value?: unknown;
+			hex?: unknown;
+		}>) {
+			if (
+				typeof style?.axis !== "string" ||
+				typeof style?.value !== "string" ||
+				!style.axis.trim() ||
+				!style.value.trim()
+			) {
+				continue;
+			}
+			const entry = entryFor(style.axis, style.value);
+			if (typeof style.hex === "string" && isHexColour(style.hex)) {
+				entry.hex = style.hex.trim();
+			}
+		}
+	}
+
+	return [...entries.values()];
+}
+
+/**
+ * The photographs shown while `selection` is picked.
+ *
+ * A shot belongs to a value when that value is currently selected — picking
+ * Colour "Black" shows every shot Black owns, and picking Storage "1 TB"
+ * shows its shots the same way; media is not colour-only. Untagged product
+ * images trail the matched set so generic shots (packaging, size guide)
+ * stay visible for every choice.
+ *
+ * When the selection touches an axis that owns media but the picked value
+ * has none of its own, only the untagged shots show — displaying another
+ * value's photos would show the buyer the wrong thing. With no option media
+ * at all the product gallery is exactly `images`.
+ */
+export function resolveOptionGallery(
+	product: {
+		images: string[];
+		optionMedia?: ReadonlyArray<
+			Pick<StoreOptionMedia, "axis" | "value" | "images">
+		>;
+	},
+	selection: Record<string, string>,
+): string[] {
+	const media = product.optionMedia ?? [];
+	if (media.length === 0) {
+		return product.images;
+	}
+
+	const picks = new Map(
+		Object.entries(selection)
+			.map(
+				([axis, value]) =>
+					[
+						axis.trim().toLowerCase(),
+						value.trim().toLowerCase(),
+					] as const,
+			)
+			.filter(([, value]) => value !== ""),
+	);
+	const matches = (mediaEntry: { axis: string; value: string }) =>
+		picks.get(mediaEntry.axis.trim().toLowerCase()) ===
+		mediaEntry.value.trim().toLowerCase();
+	const tagged = media
+		.filter(matches)
+		.flatMap((mediaEntry) => mediaEntry.images);
+
+	if (tagged.length > 0) {
+		return [...new Set([...tagged, ...product.images])];
+	}
+	// The picked value owns nothing but its axis does — keep the honest
+	// generic shots rather than another value's photos.
+	if (
+		media.some((mediaEntry) =>
+			picks.has(mediaEntry.axis.trim().toLowerCase()),
+		)
+	) {
+		return product.images;
+	}
+	return [
+		...new Set([
+			...product.images,
+			...media.flatMap((entry) => entry.images),
+		]),
+	];
 }
 
 /**

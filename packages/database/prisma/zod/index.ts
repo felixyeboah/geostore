@@ -90,13 +90,13 @@ export type ProductCollectionScalarFieldEnum = z.infer<typeof ProductCollectionS
 
 // File: ProductScalarFieldEnum.schema.ts
 
-export const ProductScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'shortDescription', 'description', 'brand', 'sku', 'status', 'condition', 'priceInPesewas', 'compareAtInPesewas', 'stockQuantity', 'lowStockThreshold', 'isFeatured', 'unitsSold', 'specifications', 'categoryId', 'publishedAt', 'createdAt', 'updatedAt'])
+export const ProductScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'shortDescription', 'description', 'brand', 'sku', 'status', 'condition', 'priceInPesewas', 'compareAtInPesewas', 'stockQuantity', 'lowStockThreshold', 'isFeatured', 'unitsSold', 'specifications', 'optionStyles', 'categoryId', 'publishedAt', 'createdAt', 'updatedAt'])
 
 export type ProductScalarFieldEnum = z.infer<typeof ProductScalarFieldEnumSchema>;
 
 // File: ProductImageScalarFieldEnum.schema.ts
 
-export const ProductImageScalarFieldEnumSchema = z.enum(['id', 'productId', 'url', 'alt', 'sortOrder', 'createdAt'])
+export const ProductImageScalarFieldEnumSchema = z.enum(['id', 'productId', 'url', 'alt', 'sortOrder', 'optionAxis', 'optionValue', 'createdAt'])
 
 export type ProductImageScalarFieldEnum = z.infer<typeof ProductImageScalarFieldEnumSchema>;
 
@@ -495,6 +495,7 @@ export const ProductSchema = z.object({
   isFeatured: z.boolean(),
   unitsSold: z.number().int(),
   specifications: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
+  optionStyles: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").nullish(),
   categoryId: z.string(),
   publishedAt: z.date().nullish(),
   createdAt: z.date(),
@@ -512,6 +513,8 @@ export const ProductImageSchema = z.object({
   url: z.string(),
   alt: z.string(),
   sortOrder: z.number().int(),
+  optionAxis: z.string().nullish(),
+  optionValue: z.string().nullish(),
   createdAt: z.date(),
 });
 

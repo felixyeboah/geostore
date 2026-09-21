@@ -41,6 +41,35 @@ export const productFormSchema = z.object({
 				}),
 		)
 		.min(1, "Add at least one product image."),
+	/**
+	 * Per-option-value extras: a swatch hex plus the shots that make up that
+	 * value's gallery on the storefront. Any axis can carry media, not just
+	 * Colour — a leather strap's photos work the same way.
+	 */
+	optionMedia: z.array(
+		z.object({
+			axis: z.string().trim().min(1, "Pick the option name."),
+			value: z.string().trim().min(1, "Pick the option value."),
+			hex: z
+				.string()
+				.trim()
+				.regex(
+					/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i,
+					"Use a hex colour like #1c1c1e.",
+				)
+				.optional()
+				.or(z.literal("")),
+			images: z.array(
+				z
+					.string()
+					.url("Use a complete image URL.")
+					.refine(isAllowedImageUrl, {
+						message:
+							"That image host is not allowed. Upload the image instead, or use an approved host.",
+					}),
+			),
+		}),
+	),
 	specifications: z.record(z.string(), z.string()),
 	variants: z.array(
 		z.object({

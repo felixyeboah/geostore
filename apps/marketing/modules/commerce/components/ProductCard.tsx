@@ -2,10 +2,10 @@ import { AddToCartButton } from "@commerce/components/AddToCartButton";
 import { storeLinks } from "@commerce/lib/store-links";
 import type { StoreProduct } from "@repo/commerce";
 import {
-	colourHex,
 	conditionLabel,
 	formatMoney,
 	isColourAxis,
+	optionValueHex,
 	variantAxes,
 } from "@repo/commerce";
 import Image from "next/image";
@@ -39,8 +39,8 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 	const isLowStock = stock > 0 && stock <= 3;
 
 	const axes = hasVariants ? variantAxes(variants) : [];
-	const colourValues =
-		axes.find((axis) => isColourAxis(axis.key))?.values ?? [];
+	const colourAxis = axes.find((axis) => isColourAxis(axis.key));
+	const colourValues = colourAxis?.values ?? [];
 	const optionSummary = axes
 		.map(
 			(axis) =>
@@ -92,7 +92,11 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 				{hasVariants ? (
 					<div className="mt-2 flex items-center gap-2">
 						{colourValues.slice(0, MAX_SWATCHES).map((value) => {
-							const hex = colourHex(value);
+							const hex = optionValueHex(
+								product.optionMedia,
+								colourAxis?.key ?? "colour",
+								value,
+							);
 							return hex ? (
 								<span
 									key={value}

@@ -1,4 +1,8 @@
-import { normalizeVariantAttributes, variantDisplayName } from "@repo/commerce";
+import {
+	normalizeOptionMedia,
+	normalizeVariantAttributes,
+	variantDisplayName,
+} from "@repo/commerce";
 import {
 	STORE_CATEGORIES,
 	STORE_COLLECTIONS,
@@ -187,11 +191,40 @@ async function seedStore() {
 			publishedAt: new Date(product.addedAt),
 		};
 
-		const images = product.images.map((url, sortOrder) => ({
-			url,
-			alt: product.name,
-			sortOrder,
-		}));
+		const optionMedia = normalizeOptionMedia(product.optionMedia ?? []);
+		const images = [
+			...product.images.map((url, sortOrder) => ({
+				url,
+				alt: product.name,
+				sortOrder,
+				optionAxis: null as string | null,
+				optionValue: null as string | null,
+			})),
+			// Each option value's own shots sit behind the base set, tagged so
+			// the storefront can swap the gallery when the value is picked.
+			...optionMedia.flatMap((media, mediaIndex) =>
+				media.images.map((url, index) => ({
+					url,
+					alt: `${product.name} — ${media.value}`,
+					sortOrder:
+						product.images.length +
+						optionMedia
+							.slice(0, mediaIndex)
+							.reduce((sum, m) => sum + m.images.length, 0) +
+						index,
+					optionAxis: media.axis,
+					optionValue: media.value,
+				})),
+			),
+		];
+
+		const optionStyles = optionMedia
+			.filter((media) => media.hex)
+			.map((media) => ({
+				axis: media.axis,
+				value: media.value,
+				hex: media.hex as string,
+			}));
 
 		const variants = (product.variants ?? []).map((variant) => ({
 			id: variant.id,
@@ -217,12 +250,14 @@ async function seedStore() {
 				slug: product.slug,
 				...shared,
 				stockQuantity,
+				optionStyles,
 				images: { create: images },
 				variants: { create: variants },
 			},
 			update: {
 				...shared,
 				stockQuantity,
+				optionStyles,
 				images: { deleteMany: {}, create: images },
 			},
 		});

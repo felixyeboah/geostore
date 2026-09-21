@@ -1,13 +1,14 @@
 "use client";
 
 import { AddToCartButton } from "@commerce/components/AddToCartButton";
+import { useProductSelection } from "@commerce/components/ProductSelection";
 import { storeLinks } from "@commerce/lib/store-links";
 import type { StoreProduct } from "@repo/commerce";
 import {
-	colourHex,
 	defaultVariantSelection,
 	formatMoney,
 	isColourAxis,
+	optionValueHex,
 	resolveVariant,
 	variantAxes,
 	variantDisplayName,
@@ -46,6 +47,22 @@ export function VariantPicker({ product }: { product: StoreProduct }) {
 	const [selection, setSelection] = useState<Record<string, string>>(() =>
 		defaultVariantSelection(variants),
 	);
+	// The PDP gallery listens on the shared selection so picking a value can
+	// swap the photography without a prop drill through the layout.
+	const shared = useProductSelection();
+
+	const applySelection = (next: Record<string, string>) => {
+		setSelection(next);
+		shared?.setSelection(next);
+	};
+
+	const pickVariant = (id: string) => {
+		setVariantId(id);
+		const picked = variants.find((variant) => variant.id === id);
+		if (picked?.attributes) {
+			shared?.setSelection({ ...picked.attributes });
+		}
+	};
 
 	/**
 	 * Picking one axis re-resolves the rest: if Colour "White" only exists
@@ -55,7 +72,7 @@ export function VariantPicker({ product }: { product: StoreProduct }) {
 	const pickAxisValue = (axisKey: string, value: string) => {
 		const next = { ...selection, [axisKey]: value };
 		if (resolveVariant(variants, next)) {
-			setSelection(next);
+			applySelection(next);
 			return;
 		}
 		const corrected: Record<string, string> = { [axisKey]: value };
@@ -71,7 +88,7 @@ export function VariantPicker({ product }: { product: StoreProduct }) {
 					}),
 				) ?? "";
 		}
-		setSelection(corrected);
+		applySelection(corrected);
 	};
 
 	const selected = useAxes
@@ -104,7 +121,11 @@ export function VariantPicker({ product }: { product: StoreProduct }) {
 										const isSelected =
 											selection[axis.key] === value;
 										const hex = isColourAxis(axis.key)
-											? colourHex(value)
+											? optionValueHex(
+													product.optionMedia,
+													axis.key,
+													value,
+												)
 											: undefined;
 										// Struck through when every variant
 										// carrying this value is sold out —
@@ -170,7 +191,7 @@ export function VariantPicker({ product }: { product: StoreProduct }) {
 								<button
 									key={variant.id}
 									type="button"
-									onClick={() => setVariantId(variant.id)}
+									onClick={() => pickVariant(variant.id)}
 									aria-pressed={variant.id === variantId}
 									className={cn(
 										OPTION_BUTTON,

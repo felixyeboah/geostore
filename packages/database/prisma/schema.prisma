@@ -349,6 +349,10 @@ model Product {
   isFeatured           Boolean          @default(false)
   unitsSold            Int              @default(0)
   specifications       Json?
+  // Swatch styling per option value — [{"axis":"colour","value":"Black",
+  // "hex":"#1c1c1e"}]. Lives on the product because a value can carry a
+  // swatch without having any images of its own.
+  optionStyles         Json?
   categoryId           String
   category             Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   collections          ProductCollection[]
@@ -376,6 +380,10 @@ model ProductImage {
   url       String
   alt       String
   sortOrder Int      @default(0)
+  // When set, the shot belongs to one option value — e.g. axis "colour",
+  // value "Black" — so the gallery can swap to it when a buyer picks it.
+  optionAxis  String?
+  optionValue String?
   createdAt DateTime @default(now())
 
   @@index([productId, sortOrder])

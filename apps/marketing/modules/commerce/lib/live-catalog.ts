@@ -6,7 +6,11 @@ import type {
 	StoreProductCondition,
 	StoreReview,
 } from "@repo/commerce";
-import { getSmartCollection, SMART_COLLECTIONS } from "@repo/commerce";
+import {
+	getSmartCollection,
+	optionMediaFromStorage,
+	SMART_COLLECTIONS,
+} from "@repo/commerce";
 import {
 	getPublishedStoreProductBySlug,
 	getPublishedStoreProducts,
@@ -75,7 +79,12 @@ function mapProduct(product: {
 	createdAt: Date;
 	specifications: unknown;
 	category: { slug: string };
-	images: Array<{ url: string }>;
+	optionStyles?: unknown;
+	images: Array<{
+		url: string;
+		optionAxis?: string | null;
+		optionValue?: string | null;
+	}>;
 	reviews: Array<{
 		rating: number;
 		title?: string | null;
@@ -96,7 +105,16 @@ function mapProduct(product: {
 		attributes: unknown;
 	}>;
 }): StoreProduct {
-	const images = product.images.map((image) => image.url);
+	// `images` stays the untagged base set — the cover, the SEO photo, the
+	// shots that show for every option. Tagged shots are rebuilt into
+	// `optionMedia` so the PDP gallery can swap when a value is picked.
+	const optionMedia = optionMediaFromStorage(
+		product.images,
+		product.optionStyles,
+	);
+	const images = product.images
+		.filter((image) => !image.optionAxis)
+		.map((image) => image.url);
 	const detailedReviews = product.reviews.flatMap((review) =>
 		// A review no longer needs an account behind it — this shop has no
 		// customer sign-up, so requiring `user` here dropped every guest
@@ -130,6 +148,7 @@ function mapProduct(product: {
 		stockQuantity: product.stockQuantity,
 		imageUrl: images[0] ?? "/images/product-placeholder.svg",
 		images,
+		optionMedia: optionMedia.length ? optionMedia : undefined,
 		rating: calculateRating(product.reviews),
 		reviewCount: product.reviews.length,
 		isFeatured: product.isFeatured,
