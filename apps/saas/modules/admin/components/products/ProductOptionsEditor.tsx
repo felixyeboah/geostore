@@ -489,6 +489,7 @@ function OptionRow({
 	onJumpToColour,
 }: OptionRowProps) {
 	const [pending, setPending] = useState("");
+	const valuesInput = useRef<HTMLInputElement>(null);
 	const isColour = option.name.trim() !== "" && isColourAxis(option.name);
 	const isDuplicate =
 		option.name.trim() !== "" &&
@@ -535,13 +536,7 @@ function OptionRow({
 					onKeyDown={(event) => {
 						if (event.key === "Enter") {
 							event.preventDefault();
-							(
-								event.currentTarget
-									.closest("[data-testid]")
-									?.querySelector(
-										'input[aria-label="Option values"]',
-									) as HTMLInputElement | null
-							)?.focus();
+							valuesInput.current?.focus();
 						}
 					}}
 				/>
@@ -634,6 +629,7 @@ function OptionRow({
 						);
 					})}
 					<input
+						ref={valuesInput}
 						aria-label="Option values"
 						className="h-[30px] min-w-36 flex-1 bg-transparent px-1.5 text-[13px] outline-none placeholder:text-muted-foreground/60"
 						placeholder={
