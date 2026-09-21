@@ -99,9 +99,8 @@
 		"userMenu": {
 			"accountSettings": "Account settings",
 			"colorMode": "Color mode",
-			"documentation": "Documentation",
-			"home": "Home",
-			"logout": "Logout"
+			"security": "Password & security",
+			"logout": "Log out"
 		}
 	},
 	"auth": {
