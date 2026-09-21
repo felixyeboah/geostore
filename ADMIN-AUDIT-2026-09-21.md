@@ -72,7 +72,8 @@ the eight revisions created by the test were removed.
 
 The private full SQL backup is at
 `~/.local/share/geostore-backups/geostore-dev-before-admin-audit-20260921.sql`.
-It is not committed. Production credentials were not used.
+It is not committed. Production access was used only in the separately authorized
+release described below.
 
 See [README catalog maintenance](README.md) for the guarded reset and image
 verification commands. Manufacturer sources, image ownership, checksums, and
@@ -91,4 +92,38 @@ artwork is not misrepresented as an individual color variant photograph.
 - `/tmp/geostore-admin-audit-visual-polish/`
 - `/tmp/geostore-admin-audit-payment-rereview.txt`
 
-The branch is committed locally; it has not been pushed, merged, or deployed.
+## Production release
+
+The user subsequently authorized deployment and seeding production. The release
+retains the already deployed Cloudflare request-scoped database client fix.
+Storefront-only auth initialization now accepts the configured marketing origin
+when no SaaS origin exists; three focused regressions cover precedence, fallback,
+and the production missing-origin guard.
+
+The production Turso catalog was atomically replaced after a verified private SQL
+backup. It contains 24 products, 8 categories, 4 collections, 26 variants, and 24
+model-specific images. There were no orders or transactions before replacement.
+A fresh production dump confirms zero foreign-key violations and identical rows
+in every noncatalog table. No QA accounts were created in production.
+
+Private backups:
+- `~/.local/share/geostore-backups/geostore-prod-before-catalog-release-20260921.sql`
+- `~/.local/share/geostore-backups/catalog-1790034327221.json`
+- `~/.local/share/geostore-backups/geostore-prod-after-catalog-release-20260921.sql`
+
+Cloudflare OpenNext build passed. Candidate version
+`f1008d06-cf36-4a67-98dc-4cff30a161cb` is uploaded at
+<https://f1008d06-geostoresgh.reevitinc.workers.dev>. All 30 repeated HTML/search
+probes passed against this real preview using the production database. Existing
+runtime secrets were preserved; local mock-payment and localhost settings were
+not uploaded. Production traffic has not yet been promoted to this candidate.
+The previous live version is `e6ef4982-8b4b-43f6-b7da-fe9c31a69a62`.
+
+The branch is pushed in [PR #12](https://github.com/felixyeboah/geostore/pull/12).
+The GitGuardian integration flags the existing QA admin/buyer fixture credentials;
+its dashboard classification is pending with the user. The checked-in ggshield
+allowlist does not classify incidents in the GitHub integration. No security
+check was overridden. The separate SaaS/admin hosting target also remains pending.
+
+Release logs and screenshots are under `/tmp/geostore-release-*` and
+`/tmp/geostore-production-browser/` on the operator machine.
