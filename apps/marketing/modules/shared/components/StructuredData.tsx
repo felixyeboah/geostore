@@ -1,6 +1,7 @@
 import { PHONE_NUMBER } from "@commerce/lib/store-links";
 import { config } from "@config";
 import type { StoreProduct } from "@repo/commerce";
+import { conditionLabel } from "@repo/commerce";
 import { OG_IMAGE, SITE_DESCRIPTION, siteUrl } from "@shared/lib/seo";
 
 /**
@@ -106,7 +107,7 @@ export function productSchema(product: StoreProduct) {
 				product.stockQuantity > 0
 					? "https://schema.org/InStock"
 					: "https://schema.org/OutOfStock",
-			itemCondition: "https://schema.org/NewCondition",
+			itemCondition: `https://schema.org/${conditionLabel(product.condition)}Condition`,
 			seller: { "@type": "Organization", name: config.appName },
 		},
 		...(product.reviewCount > 0 && product.rating > 0

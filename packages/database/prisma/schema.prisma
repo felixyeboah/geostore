@@ -231,6 +231,14 @@ enum ProductStatus {
   ARCHIVED
 }
 
+// Whether the listing is for a new, used or refurbished unit — independent
+// of variants, which describe the options *within* one listing.
+enum ProductCondition {
+  NEW
+  USED
+  REFURBISHED
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -333,6 +341,7 @@ model Product {
   brand                String
   sku                  String           @unique
   status               ProductStatus    @default(DRAFT)
+  condition            ProductCondition @default(NEW)
   priceInPesewas       Int
   compareAtInPesewas   Int?
   stockQuantity        Int              @default(0)

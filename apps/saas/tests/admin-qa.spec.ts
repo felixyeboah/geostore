@@ -118,7 +118,7 @@ test.describe("admin product management", () => {
 		// Add a variant — closes the "zero variants ever created" coverage gap.
 		// Located by field name rather than by the row's styling, which has
 		// changed twice and silently took this assertion with it.
-		await page.getByRole("button", { name: "Add option" }).click();
+		await page.getByRole("button", { name: "Add variant" }).click();
 		await main.locator('input[name="variants.0.name"]').fill("256 GB");
 		await main
 			.locator('input[name="variants.0.sku"]')

@@ -7,6 +7,7 @@ import {
 	DEFAULT_DELIVERY_RULE,
 	type DeliveryRule,
 	type StoreProduct,
+	variantDisplayName,
 } from "@repo/commerce";
 import {
 	createContext,
@@ -213,7 +214,9 @@ export function CartProvider({
 				{
 					productId: product.id,
 					variantId,
-					variantName: variant?.name,
+					variantName: variant
+						? variantDisplayName(variant)
+						: undefined,
 					name: product.name,
 					slug: product.slug,
 					imageUrl: product.imageUrl,

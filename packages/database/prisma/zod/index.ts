@@ -90,7 +90,7 @@ export type ProductCollectionScalarFieldEnum = z.infer<typeof ProductCollectionS
 
 // File: ProductScalarFieldEnum.schema.ts
 
-export const ProductScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'shortDescription', 'description', 'brand', 'sku', 'status', 'priceInPesewas', 'compareAtInPesewas', 'stockQuantity', 'lowStockThreshold', 'isFeatured', 'unitsSold', 'specifications', 'categoryId', 'publishedAt', 'createdAt', 'updatedAt'])
+export const ProductScalarFieldEnumSchema = z.enum(['id', 'name', 'slug', 'shortDescription', 'description', 'brand', 'sku', 'status', 'condition', 'priceInPesewas', 'compareAtInPesewas', 'stockQuantity', 'lowStockThreshold', 'isFeatured', 'unitsSold', 'specifications', 'categoryId', 'publishedAt', 'createdAt', 'updatedAt'])
 
 export type ProductScalarFieldEnum = z.infer<typeof ProductScalarFieldEnumSchema>;
 
@@ -225,6 +225,12 @@ export type PurchaseType = z.infer<typeof PurchaseTypeSchema>;
 export const ProductStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'ARCHIVED'])
 
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
+
+// File: ProductCondition.schema.ts
+
+export const ProductConditionSchema = z.enum(['NEW', 'USED', 'REFURBISHED'])
+
+export type ProductCondition = z.infer<typeof ProductConditionSchema>;
 
 // File: OrderStatus.schema.ts
 
@@ -481,6 +487,7 @@ export const ProductSchema = z.object({
   brand: z.string(),
   sku: z.string(),
   status: ProductStatusSchema.default("DRAFT"),
+  condition: ProductConditionSchema.default("NEW"),
   priceInPesewas: z.number().int(),
   compareAtInPesewas: z.number().int().nullish(),
   stockQuantity: z.number().int(),

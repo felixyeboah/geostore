@@ -7,6 +7,7 @@ import { db } from "../client";
 import {
 	type OrderStatus,
 	Prisma,
+	type ProductCondition,
 	type ProductStatus,
 	type StorePaymentMethod,
 	type StorePaymentStatus,
@@ -50,6 +51,7 @@ export interface SaveStoreProductInput {
 	brand: string;
 	sku: string;
 	status: ProductStatus;
+	condition: ProductCondition;
 	priceInPesewas: number;
 	compareAtInPesewas?: number;
 	stockQuantity: number;
@@ -958,6 +960,12 @@ async function reserveOrderItems(
 					`${item.productName} no longer has enough stock.`,
 				);
 			}
+			// The product row carries the aggregate shown in the admin table
+			// and used by the in-stock filter — it has to follow the option.
+			await transaction.product.update({
+				where: { id: item.productId },
+				data: { stockQuantity: { decrement: item.quantity } },
+			});
 		} else {
 			const updateResult = await transaction.product.updateMany({
 				where: {

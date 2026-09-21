@@ -8,6 +8,7 @@ import {
 	getLiveProducts,
 } from "@commerce/lib/live-catalog";
 import { storeLinks } from "@commerce/lib/store-links";
+import { conditionLabel } from "@repo/commerce";
 import {
 	breadcrumbSchema,
 	productSchema,
@@ -164,7 +165,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
 					<div className="flex flex-col justify-center pt-8 lg:pt-0 lg:pl-16">
 						<p className="eyebrow text-muted-foreground">
-							{product.brand}
+							{product.brand} ·{" "}
+							{conditionLabel(product.condition)}
 						</p>
 						<h1 className="mt-4 font-semibold text-[clamp(28px,2.7vw,38px)] text-foreground leading-[1.05] tracking-[-0.04em]">
 							{product.name}

@@ -1,3 +1,4 @@
+import { normalizeVariantAttributes, variantDisplayName } from "@repo/commerce";
 import {
 	STORE_CATEGORIES,
 	STORE_COLLECTIONS,
@@ -13,6 +14,49 @@ import { db } from "@repo/database";
 const RENAMED_CATEGORY_SLUGS: Array<{ from: string; to: string }> = [
 	{ from: "wearables", to: "watches-wearables" },
 	{ from: "home-tech", to: "home-tv" },
+];
+
+/**
+ * Products whose slug carried a now-variant dimension — "…-55-tv" made no
+ * sense once the listing gained a size axis. The old rows are archived rather
+ * than deleted so any order lines pointing at them keep their product.
+ */
+const RETIRED_PRODUCT_SLUGS = [
+	"samsung-55-crystal-uhd-tv",
+	"hisense-43-smart-tv",
+	"lg-65-qned-4k-tv",
+	"sandisk-ultra-128gb-microsd",
+	// 2026 catalogue refresh — last-generation models archived so their
+	// order lines keep resolving while the shelf carries current stock.
+	"airpods-pro-2",
+	"amazfit-gts-4",
+	"anker-nano-ii-65w",
+	"anker-powercore-20000",
+	"apple-watch-se",
+	"apple-watch-series-9",
+	"dell-inspiron-15",
+	"galaxy-a55",
+	"galaxy-s24-ultra",
+	"galaxy-tab-s9-fe",
+	"galaxy-watch-6",
+	"google-pixel-8a",
+	"hisense-a6-4k-tv",
+	"hp-pavilion-15",
+	"ipad-10th-generation",
+	"jbl-charge-5",
+	"jbl-tune-520bt",
+	"lenovo-ideapad-slim-3",
+	"lg-qned-4k-tv",
+	"lg-s40q-soundbar",
+	"macbook-air-13-m3",
+	"marshall-emberton-ii",
+	"nasco-350l-double-door-fridge",
+	"redmi-note-13",
+	"samsung-crystal-uhd-tv",
+	"sandisk-ultra-microsd",
+	"sony-wh-1000xm5",
+	"soundcore-p20i",
+	"xiaomi-smart-band-8",
 ];
 
 async function renameLegacyCategories() {
@@ -47,6 +91,18 @@ async function renameLegacyCategories() {
 
 async function seedStore() {
 	await renameLegacyCategories();
+	await db.product.updateMany({
+		where: { slug: { in: RETIRED_PRODUCT_SLUGS } },
+		data: { status: "ARCHIVED" },
+	});
+	// Their options retire too — a live variant under an archived product is
+	// invisible to the shop but still counts in stock reports.
+	await db.productVariant.updateMany({
+		where: {
+			product: { slug: { in: RETIRED_PRODUCT_SLUGS } },
+		},
+		data: { isActive: false },
+	});
 
 	const categoryIds = new Map<string, string>();
 
@@ -120,6 +176,7 @@ async function seedStore() {
 			brand: product.brand,
 			sku: product.sku,
 			status: "ACTIVE" as const,
+			condition: product.condition,
 			priceInPesewas: product.priceInPesewas,
 			compareAtInPesewas: product.compareAtInPesewas ?? null,
 			stockQuantity: product.stockQuantity,
@@ -136,47 +193,67 @@ async function seedStore() {
 			sortOrder,
 		}));
 
-		await db.product.upsert({
+		const variants = (product.variants ?? []).map((variant) => ({
+			id: variant.id,
+			name: variantDisplayName(variant),
+			sku: variant.sku,
+			priceInPesewas: variant.priceInPesewas,
+			compareAtInPesewas: variant.compareAtInPesewas ?? null,
+			stockQuantity: variant.stockQuantity,
+			attributes: normalizeVariantAttributes(variant.attributes),
+			isActive: true,
+		}));
+
+		// With variants the row-level stock is only a fallback — the real count
+		// lives on the options, so keep it as their sum for the admin table.
+		const stockQuantity = variants.length
+			? variants.reduce((sum, variant) => sum + variant.stockQuantity, 0)
+			: shared.stockQuantity;
+
+		const saved = await db.product.upsert({
 			where: { slug: product.slug },
 			create: {
 				id: product.id,
 				slug: product.slug,
 				...shared,
+				stockQuantity,
 				images: { create: images },
-				variants:
-					product.slug === "iphone-15-pro"
-						? {
-								create: [
-									{
-										name: "128 GB",
-										sku: "GST-APL-IP15P-128",
-										priceInPesewas: 1_190_000,
-										stockQuantity: 4,
-										attributes: { Storage: "128 GB" },
-										isActive: true,
-									},
-									{
-										name: "256 GB",
-										sku: "GST-APL-IP15P-256V",
-										priceInPesewas: 1_290_000,
-										stockQuantity: 6,
-										attributes: { Storage: "256 GB" },
-										isActive: true,
-									},
-								],
-							}
-						: undefined,
+				variants: { create: variants },
 			},
 			update: {
 				...shared,
+				stockQuantity,
 				images: { deleteMany: {}, create: images },
 			},
 		});
 
+		// Reseeds converge options too: skus in the catalogue are upserted, and
+		// ones that left the catalogue are retired rather than deleted, since an
+		// order line may still point at them.
+		const keepSkus = variants.map((variant) => variant.sku);
+		await db.productVariant.updateMany({
+			where: { productId: saved.id, sku: { notIn: keepSkus } },
+			data: { isActive: false },
+		});
+		for (const variant of variants) {
+			await db.productVariant.upsert({
+				where: { sku: variant.sku },
+				create: { ...variant, productId: saved.id },
+				update: {
+					name: variant.name,
+					priceInPesewas: variant.priceInPesewas,
+					compareAtInPesewas: variant.compareAtInPesewas,
+					stockQuantity: variant.stockQuantity,
+					attributes: variant.attributes,
+					isActive: true,
+				},
+			});
+		}
+
 		// Rewrite membership rather than merging it, so removing a product
 		// from a collection in the catalogue actually removes it here.
 		await db.productCollection.deleteMany({
-			where: { productId: product.id },
+			where: { productId: saved.id },
 		});
 
 		const memberships = (product.collectionSlugs ?? [])
@@ -192,7 +269,7 @@ async function seedStore() {
 		if (memberships.length > 0) {
 			await db.productCollection.createMany({
 				data: memberships.map((row) => ({
-					productId: product.id,
+					productId: saved.id,
 					collectionId: row.collectionId,
 					sortOrder: row.sortOrder,
 				})),

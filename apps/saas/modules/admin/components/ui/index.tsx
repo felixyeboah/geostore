@@ -1,12 +1,21 @@
 import { cn } from "@repo/ui";
 
 export {
+	AdminCombobox,
+	type AdminComboboxProps,
+} from "./AdminCombobox";
+export {
 	AdminSelect,
 	type AdminSelectOption,
 	type AdminSelectProps,
 } from "./AdminSelect";
 
 import type * as React from "react";
+import {
+	CONTROL_BASE,
+	CONTROL_SIZES,
+	type ControlSize,
+} from "./control-styles";
 
 /**
  * The admin's form controls, in the editorial language: 2px corners, hairline
@@ -20,7 +29,6 @@ import type * as React from "react";
  */
 
 type ButtonVariant = "primary" | "quiet" | "danger" | "ghost";
-type ControlSize = "sm" | "md" | "lg";
 
 const BUTTON_BASE =
 	"inline-flex w-fit shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[2px] font-medium tracking-[-0.01em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50";
@@ -82,15 +90,6 @@ export function adminButtonClass(
 		className,
 	);
 }
-
-const CONTROL_BASE =
-	"w-full rounded-[2px] border border-border bg-transparent text-foreground shadow-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive";
-
-const CONTROL_SIZES: Record<ControlSize, string> = {
-	sm: "h-9 px-2.5 text-[12.5px]",
-	md: "h-11 px-3.5 text-[14px]",
-	lg: "h-12 px-3.5 text-[15px]",
-};
 
 export interface AdminInputProps extends React.ComponentProps<"input"> {
 	inputSize?: ControlSize;

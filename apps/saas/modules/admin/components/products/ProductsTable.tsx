@@ -24,7 +24,11 @@ import {
 } from "@admin/components/ui";
 import { type PRODUCT_SORTS, productListParsers } from "@admin/lib/list-params";
 import { formatRelativeTime } from "@admin/lib/overview";
-import { formatMoney } from "@repo/commerce";
+import {
+	conditionLabel,
+	formatMoney,
+	type StoreProductCondition,
+} from "@repo/commerce";
 import { cn } from "@repo/ui";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { XIcon } from "lucide-react";
@@ -53,6 +57,7 @@ export interface ProductRow {
 	stockQuantity: number;
 	lowStockThreshold: number;
 	status: ProductStatus;
+	condition: StoreProductCondition;
 	isFeatured: boolean;
 	updatedAt: string;
 	stockState: StockState;
@@ -402,6 +407,14 @@ export function ProductsTable({
 													{product.isFeatured && (
 														<span className="ml-2 font-medium text-[var(--ed-accent)]">
 															Featured
+														</span>
+													)}
+													{product.condition !==
+														"NEW" && (
+														<span className="ml-2">
+															{conditionLabel(
+																product.condition,
+															)}
 														</span>
 													)}
 												</span>

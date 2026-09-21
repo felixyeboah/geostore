@@ -23,6 +23,7 @@ export const productFormSchema = z.object({
 	brand: z.string().trim().min(2, "Enter the brand."),
 	sku: z.string().trim().min(3, "Enter a SKU."),
 	status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
+	condition: z.enum(["NEW", "USED", "REFURBISHED"]),
 	priceInPesewas: z.number().int().min(1, "Enter a price greater than zero."),
 	compareAtInPesewas: z.number().int().positive().optional(),
 	stockQuantity: z.number().int().min(0),
@@ -44,7 +45,10 @@ export const productFormSchema = z.object({
 	variants: z.array(
 		z.object({
 			id: z.string().optional(),
-			name: z.string().trim().min(1),
+			// Optional: when it is blank the option values ("Black · 256 GB")
+			// become the name — that is what buyers read, so the values are the
+			// label anyway.
+			name: z.string().trim(),
 			sku: z.string().trim().min(3),
 			priceInPesewas: z.number().int().min(1),
 			stockQuantity: z.number().int().min(0),

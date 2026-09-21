@@ -65,6 +65,7 @@ export default async function AdminProductsPage({
 		stockQuantity: product.stockQuantity,
 		lowStockThreshold: product.lowStockThreshold,
 		status: product.status as ProductStatus,
+		condition: product.condition,
 		isFeatured: product.isFeatured,
 		updatedAt: product.updatedAt.toISOString(),
 		stockState: getStockState(

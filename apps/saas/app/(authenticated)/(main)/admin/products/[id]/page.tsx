@@ -38,6 +38,7 @@ export default async function EditProductPage({
 		brand: product.brand,
 		sku: product.sku,
 		status: product.status,
+		condition: product.condition,
 		priceInPesewas: product.priceInPesewas,
 		compareAtInPesewas: product.compareAtInPesewas ?? undefined,
 		stockQuantity: product.stockQuantity,
