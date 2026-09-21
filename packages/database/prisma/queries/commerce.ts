@@ -1596,22 +1596,31 @@ export interface AdminOrderListQuery {
 
 const ADMIN_ORDERS_PER_PAGE = 25;
 
-function adminOrderSearchWhere(q?: string): Prisma.OrderWhereInput {
+async function adminOrderSearchWhere(
+	q?: string,
+): Promise<Prisma.OrderWhereInput> {
 	const query = q?.trim();
 
 	if (!query) {
 		return {};
 	}
 
-	// The delivery town is inside the `shippingAddress` JSON column, which
-	// SQLite cannot index or match through Prisma, so it is not searchable
-	// here — order number, email, phone and customer name are.
+	// Guest checkout stores the recipient in JSON, not in a user account.
+	// Resolve matching IDs in SQL so counts, facets and pagination still use
+	// the same server-side filter. Bind the input and escape LIKE wildcards.
+	const recipientPattern = `%${query.replace(/[!%_]/g, "!$&")}%`;
+	const recipients = await db.$queryRaw<Array<{ id: string }>>`
+		SELECT id FROM store_order
+		WHERE json_type("shippingAddress", '$.recipientName') = 'text'
+		AND json_extract("shippingAddress", '$.recipientName') LIKE ${recipientPattern} ESCAPE '!'
+	`;
 	return {
 		OR: [
 			{ orderNumber: { contains: query } },
 			{ customerEmail: { contains: query } },
 			{ customerPhone: { contains: query } },
 			{ user: { name: { contains: query } } },
+			{ id: { in: recipients.map((order) => order.id) } },
 		],
 	};
 }
@@ -1638,7 +1647,7 @@ function adminOrderOrderBy(
  */
 export async function getAdminOrderList(query: AdminOrderListQuery = {}) {
 	const perPage = query.perPage ?? ADMIN_ORDERS_PER_PAGE;
-	const search = adminOrderSearchWhere(query.q);
+	const search = await adminOrderSearchWhere(query.q);
 	const byStatus: Prisma.OrderWhereInput = query.status
 		? { status: query.status }
 		: {};
