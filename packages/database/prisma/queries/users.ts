@@ -195,7 +195,10 @@ function userStatusWhere(status?: AdminUserStatus): Prisma.UserWhereInput {
 		case "unverified":
 			return { emailVerified: false };
 		case "active":
-			return { emailVerified: true, NOT: { banned: true } };
+			return {
+				emailVerified: true,
+				OR: [{ banned: false }, { banned: null }],
+			};
 		default:
 			return {};
 	}
