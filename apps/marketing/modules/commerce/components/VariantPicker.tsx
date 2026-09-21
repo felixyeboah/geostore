@@ -138,7 +138,8 @@ export function VariantPicker({ product }: { product: StoreProduct }) {
 													isSelected
 														? "border-foreground font-medium text-foreground"
 														: "border-border text-muted-foreground hover:border-foreground hover:text-foreground",
-													allSoldOut && "line-through",
+													allSoldOut &&
+														"line-through",
 												)}
 											>
 												{hex ? (
