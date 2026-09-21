@@ -241,3 +241,71 @@ test("single products update stock; variant additions and removals persist atomi
 	);
 	assert.deepEqual(await getAdminStoreProductById(product.id), updated);
 });
+
+test("SKUs are automatic, parent-linked, unique, and immutable on edits", async () => {
+	const values = input("automatic-sku");
+	const first = await createStoreProduct({
+		...values,
+		name: "Apple iPhone",
+		sku: undefined,
+		variants: values.variants?.map((variant) => ({
+			...variant,
+			sku: undefined,
+		})),
+	});
+	const second = await createStoreProduct({
+		...values,
+		name: "Apple iPhone",
+		slug: `${values.slug}-second`,
+		sku: "MANUAL",
+		variants: [],
+	});
+	assert.match(first.sku, /^GST-APPLE-IPHONE-[A-F0-9]{32}$/);
+	assert.notEqual(first.sku, second.sku);
+	assert.notEqual(second.sku, "MANUAL");
+	const saved = await getAdminStoreProductById(first.id);
+	assert.ok(saved);
+	assert.equal(new Set(saved.variants.map((v) => v.sku)).size, 2);
+	for (const variant of saved.variants) {
+		assert.ok(
+			variant.sku.startsWith(
+				`${first.sku}-${variant.name.toUpperCase()}-`,
+			),
+		);
+	}
+	const variants = saved.variants.map((variant) => ({
+		...variant,
+		sku: "TAMPERED",
+		attributes: { colour: variant.name },
+		compareAtInPesewas: undefined,
+	}));
+	await updateStoreProduct(first.id, {
+		...values,
+		name: "Renamed phone",
+		sku: "TAMPERED",
+		variants: [
+			...variants,
+			{
+				name: "Blue",
+				priceInPesewas: 10000,
+				stockQuantity: 1,
+				attributes: { colour: "Blue" },
+				isActive: true,
+			},
+		],
+	});
+	const updated = await getAdminStoreProductById(first.id);
+	assert.ok(updated);
+	assert.equal(updated.sku, first.sku);
+	for (const original of saved.variants) {
+		assert.equal(
+			updated.variants.find((v) => v.id === original.id)?.sku,
+			original.sku,
+		);
+	}
+	assert.ok(
+		updated.variants
+			.find((v) => v.name === "Blue")
+			?.sku.startsWith(`${first.sku}-BLUE-`),
+	);
+});

@@ -19,28 +19,24 @@ const RUN_ID = (process.env.QA_VARIANTS_RUN_ID ?? Date.now().toString(36))
 
 const PRODUCT_NAME = `QA Variant Phone ${RUN_ID}`;
 const PRODUCT_SLUG = `qa-variant-phone-${RUN_ID}`;
-const SKU_PREFIX = `QA-VP-${RUN_ID}`.toUpperCase();
 
 // Black 128 GB (GH₵ 900, in stock), Black 256 GB (GH₵ 1,100, low stock),
 // White 128 GB (out of stock). White × 256 GB deliberately does not exist —
 // it is the unavailable combination the picker must disable.
 const VARIANTS = [
 	{
-		sku: `${SKU_PREFIX}-B128`,
 		price: "900",
 		stock: "5",
 		colour: "Black",
 		storage: "128 GB",
 	},
 	{
-		sku: `${SKU_PREFIX}-B256`,
 		price: "1100",
 		stock: "3",
 		colour: "Black",
 		storage: "256 GB",
 	},
 	{
-		sku: `${SKU_PREFIX}-W128`,
 		price: "900",
 		stock: "0",
 		colour: "White",
@@ -159,7 +155,9 @@ test.describe("structured product variants", () => {
 		// every combination inherits.
 		await main.getByText("Comes in options", { exact: true }).click();
 		await main.getByLabel("Starting price (GH₵)").fill("900");
-		await main.getByLabel("Base product code (SKU)").fill(SKU_PREFIX);
+		await expect(
+			main.getByLabel("Base product code (SKU)"),
+		).toHaveAttribute("readonly", "");
 
 		// Options-first: Colour × Storage generates the table itself. The
 		// combinations come out ordered Black × sizes, then White × sizes.
@@ -170,9 +168,9 @@ test.describe("structured product variants", () => {
 			const row = page.getByTestId(`variant-${index}`);
 			// The name stays blank on purpose — the option values should
 			// become the variant's label everywhere downstream.
-			await row
-				.locator(`input[name="variants.${index}.sku"]`)
-				.fill(variant.sku);
+			await expect(
+				row.locator(`input[name="variants.${index}.sku"]`),
+			).toHaveAttribute("readonly", "");
 			await row
 				.locator(`input[name="variants.${index}.priceInPesewas"]`)
 				.fill(variant.price);
@@ -464,13 +462,13 @@ test.describe("structured product variants", () => {
 
 		// Only the bought combination lost stock — Black · 128 GB is untouched.
 		const stockRows = await sql(
-			`SELECT sku, "stockQuantity" FROM store_product_variant
+			`SELECT json_extract(attributes, '$.Colour'), json_extract(attributes, '$.Storage'), "stockQuantity" FROM store_product_variant
 			 WHERE "productId" = (SELECT id FROM store_product WHERE slug = '${PRODUCT_SLUG}')
 			 ORDER BY sku`,
 		);
-		expect(stockRows).toContain(`${SKU_PREFIX}-B128|5`);
-		expect(stockRows).toContain(`${SKU_PREFIX}-B256|2`);
-		expect(stockRows).toContain(`${SKU_PREFIX}-W128|0`);
+		expect(stockRows).toContain("Black|128 GB|5");
+		expect(stockRows).toContain("Black|256 GB|2");
+		expect(stockRows).toContain("White|128 GB|0");
 
 		// And the back office can see which option the customer bought.
 		await signIn(page, ADMIN);

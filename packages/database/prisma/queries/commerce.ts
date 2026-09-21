@@ -13,6 +13,7 @@ import {
 	type StorePaymentStatus,
 } from "../generated/client";
 import { StoreOperationError } from "./errors";
+import { newProductSku, newVariantSku } from "./product-sku";
 import { getDeliveryRule } from "./store-settings";
 import { storefrontSearchWhere } from "./storefront-search";
 
@@ -50,7 +51,7 @@ export interface SaveStoreProductInput {
 	shortDescription?: string;
 	description: string;
 	brand: string;
-	sku: string;
+	sku?: string;
 	status: ProductStatus;
 	condition: ProductCondition;
 	priceInPesewas: number;
@@ -75,7 +76,7 @@ export interface SaveStoreProductInput {
 	variants?: Array<{
 		id?: string;
 		name: string;
-		sku: string;
+		sku?: string;
 		priceInPesewas: number;
 		compareAtInPesewas?: number;
 		stockQuantity: number;
@@ -684,10 +685,11 @@ export async function getAdminStoreProductById(id: string) {
 
 function variantCreateData(
 	variants: NonNullable<SaveStoreProductInput["variants"]>,
+	parentSku: string,
 ) {
 	return variants.map((variant) => ({
 		name: variant.name,
-		sku: variant.sku,
+		sku: newVariantSku(parentSku, variant.attributes),
 		priceInPesewas: variant.priceInPesewas,
 		compareAtInPesewas: variant.compareAtInPesewas ?? null,
 		stockQuantity: variant.stockQuantity,
@@ -748,18 +750,20 @@ function productStockQuantity(input: SaveStoreProductInput): number {
 }
 
 export async function createStoreProduct(input: SaveStoreProductInput) {
+	const sku = newProductSku(input.name);
 	const { imageUrls, optionMedia = [], variants = [], ...product } = input;
 	const optionData = optionMediaWriteData(input.name, imageUrls, optionMedia);
 	return db.product.create({
 		data: {
 			...product,
+			sku,
 			stockQuantity: productStockQuantity(input),
 			optionStyles: optionData.optionStyles,
 			publishedAt: input.status === "ACTIVE" ? new Date() : null,
 			images: {
 				create: optionData.images,
 			},
-			variants: { create: variantCreateData(variants) },
+			variants: { create: variantCreateData(variants, sku) },
 		},
 		include: { category: { select: { slug: true } } },
 	});
@@ -775,9 +779,17 @@ export async function updateStoreProduct(
 		.filter((variantId): variantId is string => Boolean(variantId));
 
 	return db.$transaction(async (transaction) => {
+		const existing = await transaction.product.findUniqueOrThrow({
+			where: { id },
+			select: { sku: true },
+		});
 		const ownedVariants = await transaction.productVariant.findMany({
 			where: { productId: id },
-			select: { id: true, _count: { select: { orderItems: true } } },
+			select: {
+				id: true,
+				sku: true,
+				_count: { select: { orderItems: true } },
+			},
 		});
 		const ownedIds = new Set(ownedVariants.map((variant) => variant.id));
 		if (
@@ -809,7 +821,10 @@ export async function updateStoreProduct(
 		for (const variant of variants) {
 			const data = {
 				name: variant.name,
-				sku: variant.sku,
+				sku:
+					ownedVariants.find((owned) => owned.id === variant.id)
+						?.sku ??
+					newVariantSku(existing.sku, variant.attributes),
 				priceInPesewas: variant.priceInPesewas,
 				// The admin editor does not expose variant compare-at prices yet.
 				// Omission preserves this independently stored value.
@@ -839,6 +854,7 @@ export async function updateStoreProduct(
 			where: { id },
 			data: {
 				...product,
+				sku: existing.sku,
 				stockQuantity: productStockQuantity(input),
 				shortDescription: input.shortDescription ?? null,
 				compareAtInPesewas: input.compareAtInPesewas ?? null,

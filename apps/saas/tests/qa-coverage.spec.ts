@@ -37,7 +37,6 @@ const CATEGORY_SLUG = `qa-coverage-category-${RUN_ID}`;
 const CATEGORY_RENAMED = `${CATEGORY_NAME} Edited`;
 
 const REJECTED_SLUG = `qa-coverage-rejected-${RUN_ID}`;
-const REJECTED_SKU = `QA-REJ-${RUN_ID}`.toUpperCase();
 const DISALLOWED_IMAGE_URL = "https://images.evil-example.com/x.png";
 
 const BASE_PRICE_IN_PESEWAS = 50_000; // GH₵ 500
@@ -606,7 +605,10 @@ test.describe("admin catalogue and fulfilment", () => {
 			.getByRole("button", { name: "Paste image URLs instead" })
 			.click();
 		await form.getByLabel("Product image URLs").fill(DISALLOWED_IMAGE_URL);
-		await form.getByLabel("Product code (SKU)").fill(REJECTED_SKU);
+		await expect(form.getByLabel("Product code (SKU)")).toHaveAttribute(
+			"readonly",
+			"",
+		);
 		await form.getByLabel("Price (GH₵)", { exact: true }).fill("250");
 		await form.getByLabel("In stock").fill("4");
 
@@ -618,7 +620,7 @@ test.describe("admin catalogue and fulfilment", () => {
 		await expect(page).toHaveURL(/\/admin\/products\/new/);
 		expect(
 			await sql(
-				`SELECT COUNT(*) FROM store_product WHERE slug = '${REJECTED_SLUG}' OR sku = '${REJECTED_SKU}'`,
+				`SELECT COUNT(*) FROM store_product WHERE slug = '${REJECTED_SLUG}'`,
 			),
 			"no product row was created",
 		).toBe("0");

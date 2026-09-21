@@ -18,6 +18,8 @@
 
 ### Changed
 
+- Product and variant SKUs are generated on the server when created; variant codes share their product's prefix and saved codes remain stable when edited.
+- Storefront search matches individual words across product names, brands, categories, and active variant SKUs, with bounded database results and a retry state for failed requests.
 - Storefront catalogue now reads the same live database records managed by administrators.
 - Mail providers load lazily so local console mail does not require third-party API credentials.
 - Local Docker services use GeoStore-specific container names and PostgreSQL port `55432` to avoid common local conflicts.

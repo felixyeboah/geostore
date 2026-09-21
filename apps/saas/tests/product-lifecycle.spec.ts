@@ -87,12 +87,15 @@ test("admin creates, publishes, updates variants, pauses and deletes a product",
 		.fill("https://images.unsplash.com/photo-1505740420928-5e560c06d30e");
 	await form.getByLabel("Price (GH₵)", { exact: true }).fill("125.50");
 	await form.getByLabel("Was price (GH₵)").fill("150");
-	await form.getByLabel("Product code (SKU)", { exact: true }).fill(slug);
+	await expect(
+		form.getByLabel("Product code (SKU)", { exact: true }),
+	).toHaveAttribute("readonly", "");
 	await form.getByLabel("In stock", { exact: true }).fill("0");
 	await page.getByRole("button", { name: "Save draft", exact: true }).click();
 	await page.waitForURL("**/admin/products");
 	const product = await readProduct();
 	expect(product).toBeDefined();
+	expect(String(product.sku)).not.toBe("");
 	expect(product.status).toBe("DRAFT");
 	expect(product.publishedAt).toBeNull();
 	expect((await request.get(`${storefront}/products/${slug}`)).status()).toBe(
@@ -137,6 +140,10 @@ test("admin creates, publishes, updates variants, pauses and deletes a product",
 		args: [product.id],
 	});
 	expect(before.rows).toHaveLength(2);
+	for (const variant of before.rows) {
+		expect(String(variant.sku).startsWith(`${product.sku}-`)).toBe(true);
+	}
+	expect(new Set(before.rows.map((row) => row.sku)).size).toBe(2);
 	expect((await readProduct()).stockQuantity).toBe(5);
 
 	await page.goto(`/admin/products/${product.id}`);
@@ -160,6 +167,12 @@ test("admin creates, publishes, updates variants, pauses and deletes a product",
 		args: [product.id],
 	});
 	expect(after.rows).toHaveLength(3);
+	expect((await readProduct()).sku).toBe(product.sku);
+	for (const original of before.rows) {
+		expect(after.rows.find((row) => row.id === original.id)?.sku).toBe(
+			original.sku,
+		);
+	}
 	expect(after.rows.slice(0, 2).map((row) => row.id)).toEqual(
 		before.rows.map((row) => row.id),
 	);

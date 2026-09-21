@@ -123,17 +123,6 @@ function donorRank(
 	return 1;
 }
 
-/** `256 GB` → `256GB`, `Sky Blue` → `SKYBLUE` — the SKU suffix per value. */
-function valueCode(value: string): string {
-	return value.toUpperCase().replace(/[^A-Z0-9]+/g, "");
-}
-
-function suggestedSku(baseSku: string, combo: Record<string, string>): string {
-	return [baseSku.trim(), ...Object.values(combo).map(valueCode)]
-		.filter(Boolean)
-		.join("-");
-}
-
 /**
  * Rebuild the variant list from the option grid. Identical combinations keep
  * the whole stored row; near matches donate their price, stock and
@@ -143,7 +132,6 @@ function suggestedSku(baseSku: string, combo: Record<string, string>): string {
 function regenerateVariants(
 	options: OptionDraft[],
 	current: VariantRow[],
-	baseSku: string,
 	basePrice: number,
 ): VariantRow[] {
 	const normalized = current.map((variant) =>
@@ -171,7 +159,7 @@ function regenerateVariants(
 		});
 		return {
 			name: "",
-			sku: suggestedSku(baseSku, combo),
+			sku: "",
 			priceInPesewas: donor?.priceInPesewas ?? basePrice,
 			stockQuantity: donor?.stockQuantity ?? 0,
 			attributes: combo,
@@ -193,7 +181,7 @@ interface ProductOptionsEditorProps {
  * Options-first variant editing: the admin describes the choices a shopper
  * gets ("Colour: Black, White"), every colour gets a row in "Photos for each
  * colour", and every sellable combination materialises in the table below
- * with a suggested SKU and the starting price already filled.
+ * with the starting price filled. The server assigns SKUs on first save.
  */
 export function ProductOptionsEditor({ form }: ProductOptionsEditorProps) {
 	const [options, setOptions] = useState<OptionDraft[]>(() => {
@@ -210,7 +198,6 @@ export function ProductOptionsEditor({ form }: ProductOptionsEditorProps) {
 	} | null>(null);
 	const watchedVariants = form.watch("variants");
 	const watchedMedia = form.watch("optionMedia") ?? [];
-	const baseSku = form.watch("sku");
 	const basePrice = form.watch("priceInPesewas");
 
 	// A successful save resets the form — rebuild the editor from whatever
@@ -237,12 +224,7 @@ export function ProductOptionsEditor({ form }: ProductOptionsEditorProps) {
 		setOptions(next);
 		form.setValue(
 			"variants",
-			regenerateVariants(
-				next,
-				form.getValues("variants"),
-				baseSku,
-				basePrice,
-			),
+			regenerateVariants(next, form.getValues("variants"), basePrice),
 			{ shouldDirty: true },
 		);
 	};

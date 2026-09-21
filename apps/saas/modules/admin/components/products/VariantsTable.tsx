@@ -33,10 +33,7 @@ export function VariantsTable({ form }: VariantsTableProps) {
 	}
 
 	const active = variants.filter((variant) => variant.isActive);
-	const incomplete = active.filter(
-		(variant) =>
-			variant.priceInPesewas <= 0 || variant.sku.trim().length < 3,
-	);
+	const incomplete = active.filter((variant) => variant.priceInPesewas <= 0);
 	const soldOut = active.filter((variant) => variant.stockQuantity <= 0);
 
 	const applyBulk = () => {
@@ -68,7 +65,7 @@ export function VariantsTable({ form }: VariantsTableProps) {
 					· {active.length} on sale
 					{variants.length - active.length > 0 &&
 						` · ${variants.length - active.length} switched off`}
-					. Edit any cell.
+					. Edit prices, stock and availability.
 				</p>
 				{bulk ? (
 					<div className="flex items-center gap-2">
@@ -198,6 +195,8 @@ export function VariantsTable({ form }: VariantsTableProps) {
 									<AdminInput
 										inputSize="sm"
 										aria-label="Variant SKU"
+										readOnly
+										placeholder="Generated on save"
 										{...field}
 									/>
 								)}
@@ -274,11 +273,7 @@ export function VariantsTable({ form }: VariantsTableProps) {
 							.map((variant) => variantDisplayName(variant))
 							.join(
 								", ",
-							)} ${incomplete.length === 1 ? "is" : "are"} on sale without a ${
-							incomplete.some((v) => v.priceInPesewas <= 0)
-								? "price"
-								: "SKU"
-						}. Fill it in or switch it off.`
+							)} ${incomplete.length === 1 ? "is" : "are"} on sale without a price. Fill it in or switch it off.`
 					: soldOut.length
 						? `${
 								soldOut.length > 3

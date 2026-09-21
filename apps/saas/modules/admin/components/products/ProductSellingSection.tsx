@@ -187,21 +187,23 @@ export function ProductSellingSection({
 					name="sku"
 					render={({ field }) => (
 						<FormItem>
-							<Lbl required>
+							<Lbl>
 								{soldAs === "options"
 									? "Base product code (SKU)"
 									: "Product code (SKU)"}
 							</Lbl>
 							<FormControl>
 								<AdminInput
-									placeholder="GST-APL-AWS11"
+									readOnly
+									placeholder="Generated on save"
 									className="tabular-nums"
 									{...field}
 								/>
 							</FormControl>
 							{soldAs === "options" && (
 								<p className="text-[12px] text-muted-foreground">
-									Combinations add their own suffix.
+									Generated automatically. Combinations use
+									this code as their prefix.
 								</p>
 							)}
 							<FormMessage />

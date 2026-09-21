@@ -108,16 +108,16 @@ test.describe("admin product management", () => {
 		// this assertion with it.
 		await main.getByText("Comes in options", { exact: true }).click();
 		await main.getByLabel("Starting price (GH₵)").fill("250");
-		await main
-			.getByLabel("Base product code (SKU)")
-			.fill(`QA-SKU-${SUFFIX}`);
+		await expect(
+			main.getByLabel("Base product code (SKU)"),
+		).toHaveAttribute("readonly", "");
 		const option = page.getByTestId("option-0");
 		await option.getByLabel("Option name").fill("Storage");
 		await option.getByLabel("Option values").fill("256 GB");
 		await option.getByLabel("Option values").press("Enter");
-		await main
-			.locator('input[name="variants.0.sku"]')
-			.fill(`QA-VAR-${SUFFIX}`);
+		await expect(
+			main.locator('input[name="variants.0.sku"]'),
+		).toHaveAttribute("readonly", "");
 		await main
 			.locator('input[name="variants.0.priceInPesewas"]')
 			.fill("300");

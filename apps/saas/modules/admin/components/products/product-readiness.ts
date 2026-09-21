@@ -56,12 +56,9 @@ export function productReadiness(
 		},
 		{
 			id: "price",
-			label:
-				soldAs === "options"
-					? "Starting price and product code"
-					: "Price and product code",
+			label: soldAs === "options" ? "Starting price" : "Price",
 			anchor: "#selling",
-			ok: values.priceInPesewas > 0 && values.sku.trim().length >= 3,
+			ok: values.priceInPesewas > 0,
 		},
 	];
 
@@ -86,13 +83,10 @@ export function productReadiness(
 	});
 	// Stock is deliberately not part of this: a sold-out colour on a live
 	// product is normal, and the shop shows it as out of stock.
-	const complete = active.filter(
-		(variant) =>
-			variant.priceInPesewas > 0 && variant.sku.trim().length >= 3,
-	);
+	const complete = active.filter((variant) => variant.priceInPesewas > 0);
 	rules.push({
 		id: "combos",
-		label: "Every combination on sale has a price and SKU",
+		label: "Every combination on sale has a price",
 		anchor: "#selling",
 		ok: active.length > 0 && complete.length === active.length,
 		detail: values.variants.length
