@@ -31,6 +31,20 @@ export interface StoreCollection {
 	limit?: number;
 }
 
+/** Whether the listing is for a new, used or refurbished unit. */
+export type StoreProductCondition = "NEW" | "USED" | "REFURBISHED";
+
+const CONDITION_LABELS: Record<StoreProductCondition, string> = {
+	NEW: "New",
+	USED: "Used",
+	REFURBISHED: "Refurbished",
+};
+
+/** The customer-facing label for a product's condition. */
+export function conditionLabel(condition: StoreProductCondition): string {
+	return CONDITION_LABELS[condition] ?? condition;
+}
+
 export interface StoreProduct {
 	id: string;
 	name: string;
@@ -40,6 +54,7 @@ export interface StoreProduct {
 	shortDescription: string;
 	description: string;
 	sku: string;
+	condition: StoreProductCondition;
 	priceInPesewas: number;
 	compareAtInPesewas?: number;
 	stockQuantity: number;

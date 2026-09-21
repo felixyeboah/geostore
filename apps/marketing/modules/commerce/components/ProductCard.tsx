@@ -3,6 +3,7 @@ import { storeLinks } from "@commerce/lib/store-links";
 import type { StoreProduct } from "@repo/commerce";
 import {
 	colourHex,
+	conditionLabel,
 	formatMoney,
 	isColourAxis,
 	variantAxes,
@@ -122,6 +123,9 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 							: `In stock · ${stock}`}
 					{" · "}
 					{categoryName ?? product.brand}
+					{product.condition !== "NEW"
+						? ` · ${conditionLabel(product.condition)}`
+						: null}
 				</p>
 
 				<div className="mt-[13px] flex items-center gap-2.5">

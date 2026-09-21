@@ -121,6 +121,7 @@ test.describe("structured product variants", () => {
 			main.getByLabel("Category"),
 			"Phones & tablets",
 		);
+		await chooseAdminOption(page, main.getByLabel("Condition"), "Used");
 		await main
 			.getByLabel("Price (GH₵)", { exact: true })
 			.first()
@@ -150,6 +151,13 @@ test.describe("structured product variants", () => {
 			page.getByText(/Product created|created/i).first(),
 		).toBeVisible({ timeout: 15_000 });
 
+		// The product row records its condition too.
+		expect(
+			await sql(
+				`SELECT "condition" FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
+			),
+		).toBe("USED");
+
 		// Derived names and structured attributes both landed on the rows.
 		const stored = await sql(
 			`SELECT name, attributes, "stockQuantity" FROM store_product_variant
@@ -167,6 +175,50 @@ test.describe("structured product variants", () => {
 				   AND json_extract(attributes, '$.storage') = '256 GB'`,
 			),
 		).toBe("Black · 256 GB");
+
+		// The edit form reads the stored condition back, and saving a change
+		// persists — it goes back to Used because the later tests expect it.
+		const productId = await sql(
+			`SELECT id FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
+		);
+		await page.goto(`/admin/products/${productId}`);
+		const editForm = page.locator("form");
+		await expect(editForm.getByLabel("Condition")).toContainText("Used", {
+			timeout: 30_000,
+		});
+		await chooseAdminOption(
+			page,
+			editForm.getByLabel("Condition"),
+			"Refurbished",
+		);
+		await page.getByRole("button", { name: "Save product" }).click();
+		await expect(
+			page.getByText(/Product updated|updated/i).first(),
+		).toBeVisible({ timeout: 15_000 });
+		await expect
+			.poll(() =>
+				sql(
+					`SELECT "condition" FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
+				),
+			)
+			.toBe("REFURBISHED");
+
+		// Saving from the dedicated page returns to the catalogue, so the
+		// flip back to Used starts by opening the editor again.
+		await page.goto(`/admin/products/${productId}`);
+		await chooseAdminOption(
+			page,
+			page.locator("form").getByLabel("Condition"),
+			"Used",
+		);
+		await page.getByRole("button", { name: "Save product" }).click();
+		await expect
+			.poll(() =>
+				sql(
+					`SELECT "condition" FROM store_product WHERE slug = '${PRODUCT_SLUG}'`,
+				),
+			)
+			.toBe("USED");
 	});
 
 	test("the card shows options and the product page resolves combinations", async ({
@@ -182,6 +234,7 @@ test.describe("structured product variants", () => {
 			card.getByRole("link", { name: "Choose options" }),
 		).toBeVisible();
 		await expect(card.getByText("2 colours · 2 storages")).toBeVisible();
+		await expect(card.getByText(/· Used/)).toBeVisible();
 		// Quick-add would have to guess the combination, so it is gone.
 		await expect(
 			card.getByRole("button", { name: "Add to bag" }),
@@ -194,6 +247,9 @@ test.describe("structured product variants", () => {
 		await expect(
 			page.getByRole("heading", { name: PRODUCT_NAME, level: 1 }),
 		).toBeVisible({ timeout: 30_000 });
+
+		// The listing announces its condition beside the brand.
+		await expect(page.getByText("QA Labs · Used")).toBeVisible();
 
 		// Default pick is the first in-stock combination: Black · 128 GB.
 		await expect(page.getByText("Colour — Black")).toBeVisible();

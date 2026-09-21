@@ -7,6 +7,7 @@ import { db } from "../client";
 import {
 	type OrderStatus,
 	Prisma,
+	type ProductCondition,
 	type ProductStatus,
 	type StorePaymentMethod,
 	type StorePaymentStatus,
@@ -50,6 +51,7 @@ export interface SaveStoreProductInput {
 	brand: string;
 	sku: string;
 	status: ProductStatus;
+	condition: ProductCondition;
 	priceInPesewas: number;
 	compareAtInPesewas?: number;
 	stockQuantity: number;

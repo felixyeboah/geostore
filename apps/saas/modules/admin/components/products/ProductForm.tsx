@@ -54,6 +54,7 @@ export const EMPTY_PRODUCT: ProductFormValues = {
 	brand: "",
 	sku: "",
 	status: "DRAFT",
+	condition: "NEW",
 	priceInPesewas: 0,
 	compareAtInPesewas: undefined,
 	stockQuantity: 0,
@@ -253,6 +254,31 @@ export function ProductForm({
 								<AdminInput
 									placeholder="GST-APL-IP15P-256"
 									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="condition"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel className={LABEL}>Condition</FormLabel>
+							<FormControl>
+								<AdminSelect
+									value={field.value}
+									onValueChange={field.onChange}
+									aria-label="Condition"
+									options={[
+										{ value: "NEW", label: "New" },
+										{ value: "USED", label: "Used" },
+										{
+											value: "REFURBISHED",
+											label: "Refurbished",
+										},
+									]}
 								/>
 							</FormControl>
 							<FormMessage />

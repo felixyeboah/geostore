@@ -23,6 +23,7 @@ export const productFormSchema = z.object({
 	brand: z.string().trim().min(2, "Enter the brand."),
 	sku: z.string().trim().min(3, "Enter a SKU."),
 	status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
+	condition: z.enum(["NEW", "USED", "REFURBISHED"]),
 	priceInPesewas: z.number().int().min(1, "Enter a price greater than zero."),
 	compareAtInPesewas: z.number().int().positive().optional(),
 	stockQuantity: z.number().int().min(0),

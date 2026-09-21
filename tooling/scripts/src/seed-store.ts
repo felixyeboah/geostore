@@ -120,6 +120,7 @@ async function seedStore() {
 			brand: product.brand,
 			sku: product.sku,
 			status: "ACTIVE" as const,
+			condition: product.condition,
 			priceInPesewas: product.priceInPesewas,
 			compareAtInPesewas: product.compareAtInPesewas ?? null,
 			stockQuantity: product.stockQuantity,

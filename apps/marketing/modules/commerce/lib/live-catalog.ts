@@ -3,6 +3,7 @@ import type {
 	StoreCategory,
 	StoreCollection,
 	StoreProduct,
+	StoreProductCondition,
 	StoreReview,
 } from "@repo/commerce";
 import { getSmartCollection, SMART_COLLECTIONS } from "@repo/commerce";
@@ -64,6 +65,7 @@ function mapProduct(product: {
 	shortDescription: string | null;
 	description: string;
 	sku: string;
+	condition: StoreProductCondition;
 	priceInPesewas: number;
 	compareAtInPesewas: number | null;
 	stockQuantity: number;
@@ -122,6 +124,7 @@ function mapProduct(product: {
 		shortDescription: product.shortDescription ?? product.description,
 		description: product.description,
 		sku: product.sku,
+		condition: product.condition,
 		priceInPesewas: product.priceInPesewas,
 		compareAtInPesewas: product.compareAtInPesewas ?? undefined,
 		stockQuantity: product.stockQuantity,
