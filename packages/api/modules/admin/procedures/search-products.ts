@@ -24,16 +24,18 @@ export const searchProducts = adminProcedure
 		z.object({
 			query: z.string().trim().optional(),
 			ids: z.array(z.string().min(1)).max(200).optional(),
-			limit: z.number().min(1).max(100).default(20),
+			limit: z.number().int().min(1).max(100).default(20),
+			page: z.number().int().min(1).default(1),
 		}),
 	)
-	.handler(async ({ input: { query, ids, limit } }) => {
+	.handler(async ({ input: { query, ids, limit, page } }) => {
 		const [matches, chosen] = await Promise.all([
 			getAdminProductList({
 				q: query,
 				sort: "name",
 				dir: "asc",
 				perPage: limit,
+				page,
 			}),
 			ids?.length ? getAdminStoreProductsByIds(ids) : Promise.resolve([]),
 		]);
@@ -60,5 +62,7 @@ export const searchProducts = adminProcedure
 			products: matches.products.map(toSummary),
 			chosen: chosen.map(toSummary),
 			total: matches.total,
+			page: matches.page,
+			pageCount: matches.pageCount,
 		};
 	});

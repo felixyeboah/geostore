@@ -1,5 +1,12 @@
 {
 	"admin": {
+		"collectionPicker": {
+			"noUnselected": "No unselected products on this page.",
+			"pages": "Catalogue search pages",
+			"previous": "Previous",
+			"next": "Next",
+			"summary": "Page {page} of {pages} · {total} matches"
+		},
 		"menu": {
 			"analytics": "Analytics",
 			"categories": "Departments",

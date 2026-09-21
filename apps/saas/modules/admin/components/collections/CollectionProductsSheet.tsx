@@ -13,6 +13,7 @@ import {
 } from "@repo/ui/components/sheet";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
 import { orpc } from "@shared/lib/orpc-query-utils";
+import { useTranslations } from "@shared/lib/translations";
 import { useQuery } from "@tanstack/react-query";
 import {
 	ArrowDownIcon,
@@ -89,13 +90,15 @@ function PickerBody({
 	onClose: () => void;
 }) {
 	const router = useRouter();
+	const t = useTranslations();
 	const [search, setSearch] = useState("");
+	const [page, setPage] = useState(1);
 	const [chosenIds, setChosenIds] = useState<string[]>(collection.productIds);
 	const [isSaving, startSaving] = useTransition();
 
 	const { data, isFetching } = useQuery(
 		orpc.admin.products.search.queryOptions({
-			input: { query: search.trim() || undefined, ids: chosenIds },
+			input: { query: search.trim() || undefined, ids: chosenIds, page },
 			// Keeps the previous page on screen while the next one loads, so
 			// the list does not blink on every keystroke.
 			placeholderData: (previous) => previous,
@@ -237,7 +240,10 @@ function PickerBody({
 						<AdminInput
 							type="search"
 							value={search}
-							onChange={(event) => setSearch(event.target.value)}
+							onChange={(event) => {
+								setSearch(event.target.value);
+								setPage(1);
+							}}
 							placeholder="Search by name, brand, SKU or department"
 							className="h-10 pl-9"
 						/>
@@ -245,9 +251,7 @@ function PickerBody({
 
 					{results.length === 0 ? (
 						<p className="mt-4 text-[13.5px] text-muted-foreground">
-							{search.trim()
-								? "No products match that search."
-								: "Every product is already in this collection."}
+							{t("admin.collectionPicker.noUnselected")}
 						</p>
 					) : (
 						<ul className="mt-4 border-border border-t">
@@ -270,11 +274,35 @@ function PickerBody({
 							))}
 						</ul>
 					)}
-					{data && data.total > results.length + chosenIds.length && (
-						<p className="mt-3 text-[12px] text-muted-foreground">
-							Showing the first {results.length} of {data.total}{" "}
-							matches. Narrow the search to see others.
-						</p>
+					{data && data.pageCount > 1 && (
+						<nav
+							aria-label={t("admin.collectionPicker.pages")}
+							className="mt-4 flex items-center justify-between gap-3"
+						>
+							<AdminButton
+								type="button"
+								disabled={isFetching || data.page <= 1}
+								onClick={() => setPage(data.page - 1)}
+							>
+								{t("admin.collectionPicker.previous")}
+							</AdminButton>
+							<span className="text-[12px] text-muted-foreground">
+								{t("admin.collectionPicker.summary", {
+									page: data.page,
+									pages: data.pageCount,
+									total: data.total,
+								})}
+							</span>
+							<AdminButton
+								type="button"
+								disabled={
+									isFetching || data.page >= data.pageCount
+								}
+								onClick={() => setPage(data.page + 1)}
+							>
+								{t("admin.collectionPicker.next")}
+							</AdminButton>
+						</nav>
 					)}
 				</section>
 			</div>
