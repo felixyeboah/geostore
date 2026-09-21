@@ -40,6 +40,9 @@
 - Admin filters retain recovery controls for empty results and display retry states for failed requests; extreme organization page values no longer overflow API offsets.
 - Site administrators can manage organization metadata without organization membership; subscribed organizations retain their billing deletion guard.
 - Late captures remain recorded for reconciliation, duplicate-charge refunds affect only their matching attempt, and webhook replays preserve fulfillment and inventory.
+- Cloudflare storefront database clients are scoped to each request instead of sharing pending initialization across requests.
+
+- Upgraded the production catalogue schema with product condition and option-image fields required by the deployed storefront and search.
 - Product updates validate variant ownership, clear removed product sale prices, and preserve variants referenced by orders.
 - Product stock totals follow active variants; variant order cancellations restore both variant and product stock.
 
