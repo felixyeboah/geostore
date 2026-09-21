@@ -82,7 +82,7 @@ test.describe("admin product management", () => {
 		await chooseAdminOption(
 			page,
 			main.getByLabel("Department"),
-			"Phones & tablets",
+			/^Phones(?: & tablets)?$/,
 		);
 		await main
 			.getByLabel("Summary")

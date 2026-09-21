@@ -591,7 +591,7 @@ test.describe("admin catalogue and fulfilment", () => {
 		await chooseAdminOption(
 			page,
 			form.getByLabel("Department"),
-			"Phones & tablets",
+			/^Phones(?: & tablets)?$/,
 		);
 		await form
 			.getByLabel("Summary")

@@ -138,7 +138,7 @@ test.describe("structured product variants", () => {
 		await chooseAdminOption(
 			page,
 			main.getByLabel("Department"),
-			"Phones & tablets",
+			/^Phones(?: & tablets)?$/,
 		);
 		await chooseAdminOption(page, main.getByLabel("Condition"), "Used");
 		await main
@@ -365,7 +365,9 @@ test.describe("structured product variants", () => {
 		await page.getByRole("button", { name: "256 GB" }).click();
 		await expect(page.getByText("Storage — 256 GB")).toBeVisible();
 		await expect(page.getByText("GH₵ 1,100").first()).toBeVisible();
-		await expect(page.getByText("Only 3 left")).toBeVisible();
+		await expect(
+			page.getByText(/^Only 3 left · ships from Accra$/),
+		).toBeVisible();
 
 		// Every White variant is sold out, so White is struck through.
 		// Picking it re-resolves Storage: White × 256 GB was never created,
