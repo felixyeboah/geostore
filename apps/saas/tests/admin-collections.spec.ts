@@ -96,7 +96,9 @@ test.describe("admin collections", () => {
 		await picker
 			.getByPlaceholder("Search by name, brand, SKU or department")
 			.fill("MacBook Air");
-		const add = picker.getByRole("button", { name: /^Add MacBook Air/ });
+		const add = picker.getByRole("button", {
+			name: /^Add MacBook Air.*M5/,
+		});
 		await expect(add).toBeVisible({ timeout: 30_000 });
 		await add.click();
 

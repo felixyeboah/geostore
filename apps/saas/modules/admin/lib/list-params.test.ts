@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
 	loadOrderListParams,
+	loadTaxonomyListParams,
 	ORDER_STATUSES,
 	PAYMENT_STATUSES,
 } from "./list-params.ts";
@@ -42,5 +43,23 @@ describe("order list URL validation", () => {
 			sort: "total",
 			dir: "asc",
 		});
+	});
+});
+
+describe("taxonomy list URL validation", () => {
+	it("discards unsupported visibility and preserves search and page", () => {
+		assert.deepEqual(
+			loadTaxonomyListParams({
+				status: "__proto__",
+				q: "phones",
+				page: "2",
+			}),
+			{ status: null, q: "phones", page: 2 },
+		);
+	});
+	it("preserves each visibility filter", () => {
+		for (const status of ["visible", "hidden"]) {
+			assert.equal(loadTaxonomyListParams({ status }).status, status);
+		}
 	});
 });

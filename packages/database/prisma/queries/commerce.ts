@@ -285,11 +285,29 @@ export async function deleteStoreCollection(id: string) {
  * two equal values changes nothing.
  */
 export async function reorderStoreCollections(ids: string[]) {
-	return db.$transaction(
-		ids.map((id, index) =>
-			db.collection.update({ where: { id }, data: { sortOrder: index } }),
-		),
-	);
+	return db.$transaction(async (transaction) => {
+		const current = await transaction.collection.findMany({
+			select: { id: true },
+		});
+		const supplied = new Set(ids);
+		if (
+			supplied.size !== ids.length ||
+			current.length !== ids.length ||
+			current.some((row) => !supplied.has(row.id))
+		) {
+			throw new StoreOperationError(
+				"The list changed. Refresh before reordering.",
+			);
+		}
+		return Promise.all(
+			ids.map((id, index) =>
+				transaction.collection.update({
+					where: { id },
+					data: { sortOrder: index },
+				}),
+			),
+		);
+	});
 }
 
 /**
@@ -2470,11 +2488,29 @@ export async function deleteStoreCategory(
  * leaves the sequence well-formed whatever it was before.
  */
 export async function reorderStoreCategories(ids: string[]) {
-	return db.$transaction(
-		ids.map((id, index) =>
-			db.category.update({ where: { id }, data: { sortOrder: index } }),
-		),
-	);
+	return db.$transaction(async (transaction) => {
+		const current = await transaction.category.findMany({
+			select: { id: true },
+		});
+		const supplied = new Set(ids);
+		if (
+			supplied.size !== ids.length ||
+			current.length !== ids.length ||
+			current.some((row) => !supplied.has(row.id))
+		) {
+			throw new StoreOperationError(
+				"The list changed. Refresh before reordering.",
+			);
+		}
+		return Promise.all(
+			ids.map((id, index) =>
+				transaction.category.update({
+					where: { id },
+					data: { sortOrder: index },
+				}),
+			),
+		);
+	});
 }
 
 /** Slugs of the storefront pages an order's inventory movement affects. */

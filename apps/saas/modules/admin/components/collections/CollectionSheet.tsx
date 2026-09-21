@@ -61,8 +61,10 @@ export function useCollectionSheet() {
 
 export function CollectionSheet({
 	collections,
+	nextSortOrder,
 }: {
 	collections: EditableCollection[];
+	nextSortOrder: number;
 }) {
 	const [params, setParams] = useQueryStates(SHEET_PARAMS, SHEET_OPTIONS);
 
@@ -110,7 +112,7 @@ export function CollectionSheet({
 					<CollectionForm
 						key={editing?.id ?? "new"}
 						collection={editing}
-						nextSortOrder={collections.length}
+						nextSortOrder={nextSortOrder}
 						onSaved={close}
 						onCancel={close}
 					/>

@@ -12,6 +12,7 @@ import {
 	SheetTitle,
 } from "@repo/ui/components/sheet";
 import { toastError, toastSuccess } from "@repo/ui/components/toast";
+import { orpcClient } from "@shared/lib/orpc-client";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { useTranslations } from "@shared/lib/translations";
 import { useQuery } from "@tanstack/react-query";
@@ -44,15 +45,14 @@ interface ProductSummary {
  * are a list you arrange, not a set of ticked boxes.
  *
  * The search runs in the database rather than over a catalogue loaded into the
- * browser, so this keeps working at any size. What is already chosen is
- * fetched by id alongside the search, which is what keeps a chosen product
- * visible when the current query does not match it.
+ * browser. Existing membership loads in bounded pages when the editor opens;
+ * its summaries stay with the draft while catalogue search excludes those IDs.
  */
 export function CollectionProductsSheet({
 	collection,
 	onClose,
 }: {
-	collection: { id: string; name: string; productIds: string[] } | null;
+	collection: { id: string; name: string } | null;
 	onClose: () => void;
 }) {
 	return (
@@ -86,19 +86,88 @@ function PickerBody({
 	collection,
 	onClose,
 }: {
-	collection: { id: string; name: string; productIds: string[] };
+	collection: { id: string; name: string };
+	onClose: () => void;
+}) {
+	const t = useTranslations();
+	const membership = useQuery({
+		queryKey: ["admin", "collection-membership", collection.id],
+		queryFn: async ({ signal }) => {
+			const products: ProductSummary[] = [];
+			let page = 1;
+			let pageCount = 1;
+			do {
+				const result = await orpcClient.admin.collections.products(
+					{ collectionId: collection.id, page },
+					{ signal },
+				);
+				products.push(...result.products);
+				pageCount = result.pageCount;
+				page += 1;
+			} while (page <= pageCount);
+			return products;
+		},
+		// Reopening an editor must read current membership, never an old draft.
+		gcTime: 0,
+	});
+	if (membership.data) {
+		return (
+			<LoadedPickerBody
+				collection={collection}
+				onClose={onClose}
+				initialProducts={membership.data}
+			/>
+		);
+	}
+	return (
+		<div className="p-6">
+			<SheetHeader>
+				<SheetTitle>Products in {collection.name}</SheetTitle>
+				<SheetDescription>
+					{t("admin.collectionPicker.loading")}
+				</SheetDescription>
+			</SheetHeader>
+			{membership.isError && (
+				<div className="mt-4">
+					<p role="alert">{t("admin.collectionPicker.loadError")}</p>
+					<AdminButton
+						disabled={membership.isFetching}
+						onClick={() => void membership.refetch()}
+					>
+						{t("admin.organizations.retry")}
+					</AdminButton>
+				</div>
+			)}
+		</div>
+	);
+}
+
+function LoadedPickerBody({
+	initialProducts,
+	collection,
+	onClose,
+}: {
+	initialProducts: ProductSummary[];
+	collection: { id: string; name: string };
 	onClose: () => void;
 }) {
 	const router = useRouter();
 	const t = useTranslations();
 	const [search, setSearch] = useState("");
 	const [page, setPage] = useState(1);
-	const [chosenIds, setChosenIds] = useState<string[]>(collection.productIds);
+	const [chosenIds, setChosenIds] = useState<string[]>(
+		initialProducts.map((product) => product.id),
+	);
+	const [knownProducts, setKnownProducts] = useState(initialProducts);
 	const [isSaving, startSaving] = useTransition();
 
-	const { data, isFetching } = useQuery(
+	const { data, isFetching, isPending, isError, refetch } = useQuery(
 		orpc.admin.products.search.queryOptions({
-			input: { query: search.trim() || undefined, ids: chosenIds, page },
+			input: {
+				query: search.trim() || undefined,
+				excludeIds: chosenIds,
+				page,
+			},
 			// Keeps the previous page on screen while the next one loads, so
 			// the list does not blink on every keystroke.
 			placeholderData: (previous) => previous,
@@ -106,7 +175,7 @@ function PickerBody({
 	);
 
 	const chosenById = new Map<string, ProductSummary>(
-		(data?.chosen ?? []).map((product) => [product.id, product]),
+		knownProducts.map((product) => [product.id, product]),
 	);
 	// The stored order is the merchandising order, so the chosen list is built
 	// from `chosenIds`, not from whatever order the server returned.
@@ -119,7 +188,17 @@ function PickerBody({
 	);
 
 	function add(id: string) {
-		setChosenIds([...chosenIds, id]);
+		const product = data?.products.find((item) => item.id === id);
+		if (!product) {
+			return;
+		}
+		setKnownProducts((previous) => [
+			...previous.filter((item) => item.id !== id),
+			product,
+		]);
+		setChosenIds((previous) =>
+			previous.includes(id) ? previous : [...previous, id],
+		);
 	}
 
 	function remove(id: string) {
@@ -153,8 +232,8 @@ function PickerBody({
 	}
 
 	const isDirty =
-		chosenIds.length !== collection.productIds.length ||
-		chosenIds.some((id, index) => collection.productIds[index] !== id);
+		chosenIds.length !== initialProducts.length ||
+		chosenIds.some((id, index) => initialProducts[index]?.id !== id);
 
 	return (
 		<>
@@ -249,7 +328,23 @@ function PickerBody({
 						/>
 					</label>
 
-					{results.length === 0 ? (
+					{isError ? (
+						<div className="mt-4">
+							<p role="alert">
+								{t("admin.collectionPicker.loadError")}
+							</p>
+							<AdminButton
+								disabled={isFetching}
+								onClick={() => void refetch()}
+							>
+								{t("admin.organizations.retry")}
+							</AdminButton>
+						</div>
+					) : isPending ? (
+						<p role="status" className="mt-4">
+							{t("admin.collectionPicker.loading")}
+						</p>
+					) : results.length === 0 ? (
 						<p className="mt-4 text-[13.5px] text-muted-foreground">
 							{t("admin.collectionPicker.noUnselected")}
 						</p>
@@ -264,6 +359,7 @@ function PickerBody({
 									<button
 										type="button"
 										onClick={() => add(product.id)}
+										disabled={isFetching}
 										aria-label={`Add ${product.name}`}
 										className="inline-flex shrink-0 items-center gap-1 border border-border px-2 py-1 text-[12px] text-foreground transition-colors hover:border-foreground"
 									>

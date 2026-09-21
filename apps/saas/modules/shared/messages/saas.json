@@ -1,6 +1,8 @@
 {
 	"admin": {
 		"collectionPicker": {
+			"loadError": "Could not load products. Please try again.",
+			"loading": "Loading products…",
 			"noUnselected": "No unselected products on this page.",
 			"pages": "Catalogue search pages",
 			"previous": "Previous",

@@ -2,12 +2,14 @@ import { createProductImageUploadUrl } from "./procedures/create-product-image-u
 import { deleteOrganization } from "./procedures/delete-organization";
 import { findOrganization } from "./procedures/find-organization";
 import { listAdminUsers } from "./procedures/list-admin-users";
+import { listCollectionProducts } from "./procedures/list-collection-products";
 import { listOrganizations } from "./procedures/list-organizations";
 import { listUsers } from "./procedures/list-users";
 import { searchProducts } from "./procedures/search-products";
 import { updateAdminOrganization } from "./procedures/update-organization";
 
 export const adminRouter = {
+	collections: { products: listCollectionProducts },
 	products: {
 		imageUploadUrl: createProductImageUploadUrl,
 		search: searchProducts,

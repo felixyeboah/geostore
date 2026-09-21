@@ -67,8 +67,10 @@ export function useCategorySheet() {
 
 export function CategorySheet({
 	categories,
+	nextSortOrder,
 }: {
 	categories: EditableCategory[];
+	nextSortOrder: number;
 }) {
 	const [params, setParams] = useQueryStates(SHEET_PARAMS, SHEET_OPTIONS);
 
@@ -82,8 +84,6 @@ export function CategorySheet({
 	function close() {
 		void setParams({ new: null, edit: null });
 	}
-
-	const nextSortOrder = categories.length;
 
 	return (
 		<Sheet
