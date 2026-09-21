@@ -21,7 +21,9 @@
 		"create:user": "dotenv -c -e ../../.env -- tsx ./src/create-user.ts",
 		"seed:store": "dotenv -c -e ../../.env -- tsx ./src/seed-store.ts",
 		"type-check": "tsc --noEmit",
-		"push:schema": "dotenv -c -e ../../.env -- tsx ./src/push-schema.ts"
+		"push:schema": "dotenv -c -e ../../.env -- tsx ./src/push-schema.ts",
+		"catalog:reset": "dotenv -c -e ../../.env -- tsx ./src/reset-store-catalog.ts",
+		"catalog:verify-images": "tsx ./src/verify-catalog-images.ts"
 	},
 	"version": "0.0.0"
 }
