@@ -39,3 +39,24 @@ HTTP status: a Next.js streaming response can report HTTP 200 even when its
 catalogue query fails. Check `/`, `/shop`, a real product URL, `/cart`, `/contact`,
 `/api/search?q=iphone`, a no-match search, and referenced static assets. Repeat
 page requests to exercise reused Workers. Browser checks remain a separate step.
+
+## Worker request isolation
+
+The Prisma singleton used by Node must not be reused across Worker requests.
+Cloudflare request handlers own their I/O and initialization promises. The
+storefront now obtains a Prisma client from a WeakMap keyed by OpenNext's
+AsyncLocalStorage request context, so concurrent requests cannot reuse another
+request's pending client initialization. Calls within one request share a client;
+the Node admin retains its existing singleton.
+
+Run the browser-header/concurrency smoke test against a version preview before
+promoting it, and repeat it against the live origin:
+
+```sh
+node tooling/deploy/smoke.mjs https://html-fix-geostoresgh.reevitinc.workers.dev
+node tooling/deploy/smoke.mjs https://geostoresgh.reevitinc.workers.dev
+```
+
+This checks five rounds of concurrent HTML pages and search responses, including
+streamed rendering errors that can accompany an HTTP 200. It does not replace
+interactive browser testing.

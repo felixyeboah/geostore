@@ -1,6 +1,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "geostoresgh",
+	"preview_urls": true,
 	// Reevitinc's account: the Projects account is on the free Workers plan,
 	// whose 10ms CPU ceiling cannot run Next.js server rendering.
 	"account_id": "dfed33ea3d6cce574a4f6d446d5f1e8b",
