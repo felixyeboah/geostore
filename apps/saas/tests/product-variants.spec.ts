@@ -1,5 +1,5 @@
 import { createClient } from "@libsql/client";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { chooseAdminOption } from "./helpers";
 
 /**
@@ -83,16 +83,42 @@ async function signIn(page: Page, user: { email: string; password: string }) {
 	});
 }
 
-/** Fills one option pair (e.g. Colour → Black) on a variant row. */
-async function fillOption(
-	row: ReturnType<Page["getByTestId"]>,
+/**
+ * Defines one option on the editor — a name plus its values, entered as
+ * chips. The editor opens with one blank option row, so only the second and
+ * later options need the "Add another option" click. The combinations table
+ * underneath regenerates itself.
+ */
+async function addOption(
+	page: Page,
+	index: number,
 	name: string,
-	value: string,
+	values: string[],
 ) {
-	await row.getByRole("button", { name: "+ Add option" }).click();
-	const pair = row.locator("li").last();
-	await pair.getByLabel("Option name").fill(name);
-	await pair.getByLabel("Option value").fill(value);
+	if (index > 0) {
+		await page
+			.getByRole("button", { name: /Add (another|an) option/ })
+			.click();
+	}
+	const card = page.getByTestId(`option-${index}`);
+	await card.getByLabel("Option name").fill(name);
+	for (const value of values) {
+		await card.getByLabel("Option values").fill(value);
+		await card.getByLabel("Option values").press("Enter");
+	}
+	return card;
+}
+
+/**
+ * Photos are dropped onto the form in normal use; the seeded URLs the suite
+ * relies on go through the "Paste image URLs instead" disclosure, which
+ * exists on the main gallery and on every colour's row.
+ */
+async function pasteImageUrls(scope: Locator, urls: string[]) {
+	await scope
+		.getByRole("button", { name: "Paste image URLs instead" })
+		.click();
+	await scope.getByLabel("Product image URLs").fill(urls.join("\n"));
 }
 
 test.describe.configure({ mode: "serial" });
@@ -102,43 +128,45 @@ test.describe("structured product variants", () => {
 		page,
 	}) => {
 		await signIn(page, ADMIN);
-		await page.goto("/admin/products?new=true");
+		await page.goto("/admin/products/new");
 		await expect(
 			page.getByRole("heading", { name: "Add product" }),
 		).toBeVisible({ timeout: 30_000 });
 
 		const main = page.locator("form");
-		await main
-			.getByLabel("Name", { exact: true })
-			.first()
-			.fill(PRODUCT_NAME);
+		await main.getByLabel("Name", { exact: true }).fill(PRODUCT_NAME);
+		// The slug follows the name; "Change" opens it for editing.
+		await main.getByRole("button", { name: "Change" }).click();
 		await main.getByLabel("URL slug").fill(PRODUCT_SLUG);
 		await main.getByLabel("Brand").fill("QA Labs");
-		await main.getByLabel("SKU", { exact: true }).first().fill(SKU_PREFIX);
-		await main
-			.getByLabel("Short description")
-			.fill("A QA fixture phone with colour and storage options.");
-		await main
-			.getByLabel("Full description")
-			.fill(
-				"This product exists only so the automated QA suite can exercise variant options end to end.",
-			);
-		await main.getByLabel("Product image URLs").first().fill(BASE_IMAGE);
-		await chooseAdminOption(page, main.getByLabel("Status"), "Active");
 		await chooseAdminOption(
 			page,
-			main.getByLabel("Category"),
+			main.getByLabel("Department"),
 			"Phones & tablets",
 		);
 		await chooseAdminOption(page, main.getByLabel("Condition"), "Used");
 		await main
-			.getByLabel("Price (GH₵)", { exact: true })
-			.first()
-			.fill("900");
-		await main.getByLabel("On-hand quantity").fill("5");
+			.getByLabel("Summary")
+			.fill("A QA fixture phone with colour and storage options.");
+		await main
+			.getByLabel("Description", { exact: true })
+			.fill(
+				"This product exists only so the automated QA suite can exercise variant options end to end.",
+			);
+		await pasteImageUrls(main.locator("#photos"), [BASE_IMAGE]);
+
+		// It comes in options: the price and code become the starting values
+		// every combination inherits.
+		await main.getByText("Comes in options", { exact: true }).click();
+		await main.getByLabel("Starting price (GH₵)").fill("900");
+		await main.getByLabel("Base product code (SKU)").fill(SKU_PREFIX);
+
+		// Options-first: Colour × Storage generates the table itself. The
+		// combinations come out ordered Black × sizes, then White × sizes.
+		await addOption(page, 0, "Colour", ["Black", "White"]);
+		await addOption(page, 1, "Storage", ["128 GB", "256 GB"]);
 
 		for (const [index, variant] of VARIANTS.entries()) {
-			await page.getByRole("button", { name: "Add variant" }).click();
 			const row = page.getByTestId(`variant-${index}`);
 			// The name stays blank on purpose — the option values should
 			// become the variant's label everywhere downstream.
@@ -151,30 +179,22 @@ test.describe("structured product variants", () => {
 			await row
 				.locator(`input[name="variants.${index}.stockQuantity"]`)
 				.fill(variant.stock);
-			await fillOption(row, "Colour", variant.colour);
-			await fillOption(row, "Storage", variant.storage);
 		}
+		// White × 256 GB is the combination the picker must not offer — it
+		// stays in the table but is switched off.
+		await page.getByTestId("variant-3").getByRole("switch").click();
 
-		// Option media: Black gets a swatch hex and a two-shot gallery, White
-		// gets a single shot and no hex (the name table supplies the swatch).
-		await page.getByRole("button", { name: "Add option media" }).click();
-		const blackMedia = page.getByTestId("option-media-0");
-		await blackMedia.getByLabel("Option name").fill("Colour");
-		await blackMedia.getByLabel("Option value").fill("Black");
+		// "Photos for each colour" lists every colour with its swatch and its
+		// own gallery: Black takes a swatch hex plus two shots, White gets one
+		// shot and relies on the built-in swatch table.
+		const blackMedia = page.getByTestId("option-0-value-0-media");
 		await blackMedia.getByLabel("Swatch hex").fill(BLACK_HEX);
-		await blackMedia
-			.getByLabel("Product image URLs")
-			.fill(BLACK_IMAGES.join("\n"));
+		await pasteImageUrls(blackMedia, BLACK_IMAGES);
+		const whiteMedia = page.getByTestId("option-0-value-1-media");
+		await pasteImageUrls(whiteMedia, WHITE_IMAGES);
 
-		await page.getByRole("button", { name: "Add option media" }).click();
-		const whiteMedia = page.getByTestId("option-media-1");
-		await whiteMedia.getByLabel("Option name").fill("Colour");
-		await whiteMedia.getByLabel("Option value").fill("White");
-		await whiteMedia
-			.getByLabel("Product image URLs")
-			.fill(WHITE_IMAGES.join("\n"));
-
-		await page.getByRole("button", { name: "Save product" }).click();
+		// Publish saves it as Active in one step.
+		await page.getByRole("button", { name: "Publish" }).click();
 		await expect(
 			page.getByText(/Product created|created/i).first(),
 		).toBeVisible({ timeout: 15_000 });
@@ -239,19 +259,32 @@ test.describe("structured product variants", () => {
 			timeout: 30_000,
 		});
 
-		// Option media survives the round trip: the Black row reads back its
-		// normalised axis, its value, the swatch hex and both shots.
-		const mediaRow = editForm.getByTestId("option-media-0");
-		await expect(mediaRow.getByLabel("Option name")).toHaveValue("colour");
-		await expect(mediaRow.getByLabel("Option value")).toHaveValue("Black");
-		await expect(mediaRow.getByLabel("Swatch hex")).toHaveValue(BLACK_HEX);
-		await expect(mediaRow.getByLabel("Product image URLs")).toHaveValue(
+		// Option media survives the round trip: the Colour option reads back
+		// both values, and Black's row shows its swatch hex and shots.
+		const colourCard = editForm.getByTestId("option-0");
+		await expect(colourCard.getByLabel("Option name")).toHaveValue(
+			"Colour",
+		);
+		const blackMedia = editForm.getByTestId("option-0-value-0-media");
+		await expect(blackMedia.getByLabel("Swatch hex")).toHaveValue(
+			BLACK_HEX,
+		);
+		await blackMedia
+			.getByRole("button", { name: "Paste image URLs instead" })
+			.click();
+		await expect(blackMedia.getByLabel("Product image URLs")).toHaveValue(
 			BLACK_IMAGES.join("\n"),
 		);
-		// White's row has its shot and no hex.
-		const whiteRow = editForm.getByTestId("option-media-1");
-		await expect(whiteRow.getByLabel("Option value")).toHaveValue("White");
-		await expect(whiteRow.getByLabel("Swatch hex")).toHaveValue("");
+		// White reads back its shot and no hex — the name table supplies
+		// the swatch.
+		const whiteMedia = editForm.getByTestId("option-0-value-1-media");
+		await expect(whiteMedia.getByLabel("Swatch hex")).toHaveValue("");
+		await whiteMedia
+			.getByRole("button", { name: "Paste image URLs instead" })
+			.click();
+		await expect(whiteMedia.getByLabel("Product image URLs")).toHaveValue(
+			WHITE_IMAGES.join("\n"),
+		);
 
 		// The stored condition is read back too — and saving a change
 		// persists. It goes back to Used because the later tests expect it.
@@ -260,7 +293,7 @@ test.describe("structured product variants", () => {
 			editForm.getByLabel("Condition"),
 			"Refurbished",
 		);
-		await page.getByRole("button", { name: "Save product" }).click();
+		await page.getByRole("button", { name: "Save changes" }).click();
 		await expect(
 			page.getByText(/Product updated|updated/i).first(),
 		).toBeVisible({ timeout: 15_000 });
