@@ -121,9 +121,7 @@ test("admin creates, publishes, updates variants, pauses and deletes a product",
 	);
 
 	await page.goto(`/admin/products/${product.id}`);
-	await form
-		.getByRole("radio", { name: /Comes in options/ })
-		.check();
+	await form.getByRole("radio", { name: /Comes in options/ }).check();
 	const option = form.getByTestId("option-0");
 	await option.getByLabel("Option name").fill("Storage");
 	for (const value of ["128 GB", "256 GB"]) {

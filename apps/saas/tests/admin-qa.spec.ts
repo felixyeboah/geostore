@@ -106,9 +106,7 @@ test.describe("admin product management", () => {
 		// the product still carries a variant row. Located by field name rather
 		// than by the row's styling, which has changed twice and silently took
 		// this assertion with it.
-		await main
-			.getByRole("radio", { name: /Comes in options/ })
-			.check();
+		await main.getByRole("radio", { name: /Comes in options/ }).check();
 		await main.getByLabel("Starting price (GH₵)").fill("250");
 		await expect(
 			main.getByLabel("Base product code (SKU)"),
