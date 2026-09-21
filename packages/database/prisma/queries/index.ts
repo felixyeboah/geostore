@@ -4,5 +4,6 @@ export * from "./landing";
 export * from "./organizations";
 export * from "./purchases";
 export * from "./store-settings";
+export * from "./storefront-search";
 export * from "./storefront-settings";
 export * from "./users";
