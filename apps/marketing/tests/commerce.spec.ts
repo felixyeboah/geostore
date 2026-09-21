@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client";
 import { expect, test } from "@playwright/test";
 
-const PURCHASED_SLUG = "jbl-charge-5";
+const PURCHASED_SLUG = "jbl-charge-6";
 
 /**
  * This suite buys a real seeded product, so every run permanently decrements
@@ -21,7 +21,7 @@ async function restorePurchasedStock() {
 			url: process.env.DATABASE_URL ?? "",
 			authToken: process.env.DATABASE_AUTH_TOKEN,
 		});
-		// JBL Charge 5 sells in colours — checkout decrements the variant the
+		// JBL Charge 6 sells in colours — checkout decrements the variant the
 		// order line recorded, plus the product's aggregate. Both come back.
 		await db.execute(
 			`UPDATE store_product_variant SET "stockQuantity" = "stockQuantity" + 1
@@ -54,21 +54,21 @@ test.describe("storefront purchase journey", () => {
 
 		// The editorial catalogue has no inline search box — search lives in
 		// the nav dialog, and arrives here as a ?q= that shows as a chip.
-		await page.goto("/shop?q=JBL+Charge+5");
+		await page.goto("/shop?q=JBL+Charge+6");
 		await expect(
 			page.getByRole("heading", { name: /Results for/ }),
 		).toBeVisible();
 		await page
-			.getByRole("link", { name: "JBL Charge 5", exact: true })
+			.getByRole("link", { name: "JBL Charge 6", exact: true })
 			.first()
 			.click();
 
 		// Wait for the navigation before asserting: on the results page the
-		// h1 ("Results for “JBL Charge 5”") also contains the product name, so
+		// h1 ("Results for “JBL Charge 6”") also contains the product name, so
 		// an un-levelled heading match there is a strict-mode violation.
-		await page.waitForURL("**/products/jbl-charge-5");
+		await page.waitForURL("**/products/jbl-charge-6");
 		await expect(
-			page.getByRole("heading", { name: "JBL Charge 5", level: 1 }),
+			page.getByRole("heading", { name: "JBL Charge 6", level: 1 }),
 		).toBeVisible();
 		await page
 			.getByRole("button", { name: "Add to bag", exact: true })
@@ -78,7 +78,7 @@ test.describe("storefront purchase journey", () => {
 		await expect(
 			page.getByRole("heading", { name: "Your bag" }),
 		).toBeVisible();
-		await expect(page.getByText("GH₵ 1,450").first()).toBeVisible();
+		await expect(page.getByText("GH₵ 1,850").first()).toBeVisible();
 
 		await page.getByRole("link", { name: "Continue to checkout" }).click();
 		// The form hydrates after the suspense fallback — filling before that
@@ -104,9 +104,11 @@ test.describe("storefront purchase journey", () => {
 			.fill("Greater Accra");
 		await page.getByRole("button", { name: /Place order/ }).click();
 
+		// The success page compiles on first hit under next dev — the order
+		// itself already cleared the bag by the time it renders.
 		await expect(
 			page.getByRole("heading", { name: "Thanks, E2E." }),
-		).toBeVisible();
+		).toBeVisible({ timeout: 30_000 });
 		await expect(page.getByText(/Order GST-/)).toBeVisible();
 		await expect(
 			page.getByText("No card, mobile money", { exact: false }),
