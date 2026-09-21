@@ -34,6 +34,6 @@ pnpm exec wrangler r2 bucket cors list geostore-products
 
 On 2026-09-21 both buckets were created and CORS applied. All 12 reviewed catalogue images were uploaded and downloaded from the public product endpoint; SHA-256 hashes match `packages/commerce/catalogue-sources.json`. A PUT preflight from `http://localhost:3000` returned 204 with the expected allowed origin, methods and content-type header.
 
-The URL/host regression suite passes 15 tests. Storage, API and SaaS type checks pass. Signed application upload verification, production custom-domain delivery and production deployment remain pending R2 signing credentials, connection of the future image domain, and production deployment configuration. Existing database image URLs were not migrated by this setup.
+The URL/host regression suite passes 15 tests. Storage, API and SaaS type checks pass. With the configured R2 credentials, the application storage helpers passed signed PUT, CORS and signed GET checks for both buckets; public product GET bytes also matched. Disposable verification objects were deleted. Authenticated browser uploads, production custom-domain delivery and production deployment remain pending browser verification, connection of the future image domain, and production deployment configuration. Existing database image URLs were not migrated by this setup.
 
 References: https://developers.cloudflare.com/r2/api/tokens/ and https://developers.cloudflare.com/r2/buckets/public-buckets/.
