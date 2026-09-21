@@ -13,7 +13,7 @@ const storefront =
 
 async function readProduct() {
 	const { rows } = await db.execute({
-		sql: 'SELECT id, status, "publishedAt", "compareAtInPesewas", "stockQuantity" FROM store_product WHERE slug = ?',
+		sql: 'SELECT id, sku, status, "publishedAt", "compareAtInPesewas", "stockQuantity" FROM store_product WHERE slug = ?',
 		args: [slug],
 	});
 	return rows[0];

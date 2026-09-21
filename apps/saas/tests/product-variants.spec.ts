@@ -462,7 +462,7 @@ test.describe("structured product variants", () => {
 
 		// Only the bought combination lost stock — Black · 128 GB is untouched.
 		const stockRows = await sql(
-			`SELECT json_extract(attributes, '$.Colour'), json_extract(attributes, '$.Storage'), "stockQuantity" FROM store_product_variant
+			`SELECT json_extract(attributes, '$.colour'), json_extract(attributes, '$.storage'), "stockQuantity" FROM store_product_variant
 			 WHERE "productId" = (SELECT id FROM store_product WHERE slug = '${PRODUCT_SLUG}')
 			 ORDER BY sku`,
 		);
