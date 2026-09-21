@@ -30,6 +30,7 @@ import {
 	getRecipientName,
 	getStoreCategoryById,
 	getStoreCollectionById,
+	getStoreOrderRefundPaymentId,
 	getStorePagesForOrder,
 	isStoreOperationError,
 	markCashOnDeliveryPaid,
@@ -357,13 +358,9 @@ export async function updateStoreOrderStatusAction(
 				order.paymentMethod !== "WHATSAPP" &&
 				order.paymentMethod !== "MOCK"
 			) {
-				const paymentId = order.transactions[0]?.providerPaymentId;
-				if (!paymentId) {
-					return {
-						success: false,
-						message: "No Reevit payment id on this order.",
-					};
-				}
+				const paymentId = getStoreOrderRefundPaymentId(
+					order.transactions,
+				);
 				await refundStorePayment(
 					paymentId,
 					order.totalInPesewas,

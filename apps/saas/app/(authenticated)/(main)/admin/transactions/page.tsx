@@ -52,7 +52,12 @@ export default async function AdminTransactionsPage({
 		customerEmail: transaction.order.customerEmail,
 	}));
 
-	const hasLedger = summary.settledCount > 0 || list.total > 0;
+	const hasLedger =
+		summary.settledCount +
+			summary.refundedCount +
+			summary.failedCount +
+			summary.pendingCount >
+		0;
 
 	// The position of the book, in the order an accountant reads it: what came
 	// in, what went back out, and what is left.
@@ -112,39 +117,27 @@ export default async function AdminTransactionsPage({
 			/>
 
 			{hasLedger ? (
-				<>
-					<section className="mt-9 grid gap-x-10 gap-y-7 border-border border-b pb-7 sm:grid-cols-2 lg:grid-cols-4">
-						{position.map((item) => (
-							<div key={item.key}>
-								<p className="eyebrow text-muted-foreground">
-									{item.label}
-								</p>
-								<p
-									className={
-										item.urgent
-											? "mt-3 font-semibold text-[22px] text-[var(--ed-accent)] tabular-nums tracking-[-0.02em]"
-											: "mt-3 font-semibold text-[22px] text-foreground tabular-nums tracking-[-0.02em]"
-									}
-								>
-									{item.value}
-								</p>
-								<p className="mt-1.5 text-[12px] text-muted-foreground">
-									{item.detail}
-								</p>
-							</div>
-						))}
-					</section>
-
-					<div className="mt-2">
-						<TransactionsTable
-							transactions={rows}
-							facets={list.facets}
-							total={list.total}
-							page={list.page}
-							pageCount={list.pageCount}
-						/>
-					</div>
-				</>
+				<section className="mt-9 grid gap-x-10 gap-y-7 border-border border-b pb-7 sm:grid-cols-2 lg:grid-cols-4">
+					{position.map((item) => (
+						<div key={item.key}>
+							<p className="eyebrow text-muted-foreground">
+								{item.label}
+							</p>
+							<p
+								className={
+									item.urgent
+										? "mt-3 font-semibold text-[22px] text-[var(--ed-accent)] tabular-nums tracking-[-0.02em]"
+										: "mt-3 font-semibold text-[22px] text-foreground tabular-nums tracking-[-0.02em]"
+								}
+							>
+								{item.value}
+							</p>
+							<p className="mt-1.5 text-[12px] text-muted-foreground">
+								{item.detail}
+							</p>
+						</div>
+					))}
+				</section>
 			) : (
 				<div className="mt-9 py-16 text-center">
 					<p className="font-medium text-[15px] text-foreground">
@@ -157,6 +150,15 @@ export default async function AdminTransactionsPage({
 					</p>
 				</div>
 			)}
+			<div className="mt-2">
+				<TransactionsTable
+					transactions={rows}
+					facets={list.facets}
+					total={list.total}
+					page={list.page}
+					pageCount={list.pageCount}
+				/>
+			</div>
 		</div>
 	);
 }

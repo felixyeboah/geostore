@@ -1332,17 +1332,95 @@ export async function createPendingStoreOrder(
 	});
 }
 
+/** Resolve an event to one attempt; never borrow a retry when its predecessor is terminal. */
+async function findPendingPaymentAttempt(
+	transaction: Prisma.TransactionClient,
+	orderId: string,
+	providerPaymentId?: string,
+	allowUnassigned = true,
+) {
+	if (providerPaymentId) {
+		const assigned = await transaction.storeTransaction.findMany({
+			where: { orderId, providerPaymentId },
+			take: 2,
+		});
+		if (assigned.length) {
+			return assigned.length === 1 && assigned[0].status === "PENDING"
+				? assigned[0]
+				: undefined;
+		}
+	}
+	if (!allowUnassigned) {
+		return undefined;
+	}
+	const unassigned = await transaction.storeTransaction.findMany({
+		where: { orderId, providerPaymentId: null, status: "PENDING" },
+		take: 2,
+	});
+	return unassigned.length === 1 ? unassigned[0] : undefined;
+}
+
 export async function attachStorePaymentIntent(input: {
 	orderId: string;
 	providerPaymentId: string;
 }) {
-	return db.storeTransaction.updateMany({
-		where: { orderId: input.orderId },
-		data: {
-			providerPaymentId: input.providerPaymentId,
-			reference: input.providerPaymentId,
-		},
+	return db.$transaction(async (transaction) => {
+		const assigned = await transaction.storeTransaction.findMany({
+			where: {
+				orderId: input.orderId,
+				providerPaymentId: input.providerPaymentId,
+			},
+			take: 2,
+		});
+		// Includes a success webhook that arrived before createIntent returned.
+		if (assigned.length === 1) {
+			return { count: 0 };
+		}
+		if (assigned.length > 1) {
+			throw new StoreOperationError("Ambiguous payment attempt.");
+		}
+		const attempt = await findPendingPaymentAttempt(
+			transaction,
+			input.orderId,
+		);
+		if (!attempt) {
+			throw new StoreOperationError(
+				"No unique unassigned payment attempt.",
+			);
+		}
+		await transaction.storeTransaction.update({
+			where: { id: attempt.id },
+			data: {
+				providerPaymentId: input.providerPaymentId,
+				reference: input.providerPaymentId,
+			},
+		});
+		return { count: 1 };
 	});
+}
+
+/** A refund must target the settled Reevit attempt, not the latest retry. */
+export function getStoreOrderRefundPaymentId(
+	transactions: Array<{
+		status: StorePaymentStatus;
+		provider: string;
+		providerPaymentId: string | null;
+	}>,
+) {
+	const settled = transactions.filter(
+		(attempt) => attempt.status === "PAID" && attempt.provider === "reevit",
+	);
+	if (settled.length > 1) {
+		throw new StoreOperationError(
+			"Multiple captured payments require reconciliation. Refund duplicate payments in Reevit before requesting the order refund.",
+		);
+	}
+	if (settled.length !== 1 || !settled[0].providerPaymentId) {
+		throw new StoreOperationError(
+			"No unique settled Reevit payment on this order.",
+		);
+	}
+	return settled[0].providerPaymentId;
 }
 
 export async function markStoreOrderPaid(input: {
@@ -1357,23 +1435,55 @@ export async function markStoreOrderPaid(input: {
 		if (!order) {
 			throw new StoreOperationError("Order not found.");
 		}
-		if (order.paymentStatus === "PAID") {
-			return transaction.order.findUniqueOrThrow({
+
+		const assigned = await transaction.storeTransaction.findMany({
+			where: {
+				orderId: order.id,
+				providerPaymentId: input.providerPaymentId,
+			},
+			take: 2,
+		});
+		if (assigned.length > 1) {
+			throw new StoreOperationError("Ambiguous payment attempt.");
+		}
+		const identified = assigned[0];
+		// A refunded capture remains refunded when its older success event arrives.
+		if (
+			identified?.status === "PAID" ||
+			identified?.status === "REFUNDED"
+		) {
+			return { ...order, paymentTransition: "already-paid" as const };
+		}
+		const preserveFulfillment =
+			order.status === "CANCELLED" ||
+			order.status === "REFUNDED" ||
+			order.paymentStatus === "REFUNDED";
+		const alreadyPaid = order.paymentStatus === "PAID";
+		// A provider can resolve an earlier failure as captured. Update that exact
+		// attempt; never consume the pending retry beside it.
+		const attempt =
+			identified ??
+			(await findPendingPaymentAttempt(
+				transaction,
+				order.id,
+				input.providerPaymentId,
+				!preserveFulfillment && !alreadyPaid,
+			));
+		if (!attempt) {
+			throw new StoreOperationError("No matching payment attempt.");
+		}
+		if (!alreadyPaid) {
+			await transaction.order.update({
 				where: { id: order.id },
+				data: {
+					paymentStatus: "PAID",
+					status: preserveFulfillment ? order.status : "CONFIRMED",
+				},
 			});
 		}
-		if (order.status === "CANCELLED" || order.status === "REFUNDED") {
-			throw new StoreOperationError(
-				"Cannot mark a cancelled or refunded order as paid.",
-			);
-		}
 
-		await transaction.order.update({
-			where: { id: order.id },
-			data: { paymentStatus: "PAID", status: "CONFIRMED" },
-		});
-		await transaction.storeTransaction.updateMany({
-			where: { orderId: order.id },
+		await transaction.storeTransaction.update({
+			where: { id: attempt.id },
 			data: {
 				status: "PAID",
 				providerPaymentId: input.providerPaymentId,
@@ -1381,21 +1491,37 @@ export async function markStoreOrderPaid(input: {
 				processedAt: new Date(),
 			},
 		});
+
+		const reconciliation = preserveFulfillment || alreadyPaid;
 		await transaction.orderStatusEvent.create({
 			data: {
 				orderId: order.id,
-				status: "CONFIRMED",
-				note: "Payment confirmed",
+				status: reconciliation ? order.status : "CONFIRMED",
+				note: reconciliation
+					? `Payment ${input.providerPaymentId} captured${attempt.status === "FAILED" ? " after an earlier failure" : ""}; reconciliation required`
+					: attempt.status === "FAILED"
+						? `Payment ${input.providerPaymentId} confirmed after an earlier failure`
+						: "Payment confirmed",
 			},
 		});
-
-		return transaction.order.findUniqueOrThrow({
+		const result = await transaction.order.findUniqueOrThrow({
 			where: { id: order.id },
 		});
+		return {
+			...result,
+			paymentTransition: preserveFulfillment
+				? ("reconciliation" as const)
+				: alreadyPaid
+					? ("additional" as const)
+					: ("confirmed" as const),
+		};
 	});
 }
 
-export async function markStoreOrderPaymentFailed(orderId: string) {
+export async function markStoreOrderPaymentFailed(
+	orderId: string,
+	providerPaymentId?: string,
+) {
 	return db.$transaction(async (transaction) => {
 		const order = await transaction.order.findUnique({
 			where: { id: orderId },
@@ -1404,8 +1530,42 @@ export async function markStoreOrderPaymentFailed(orderId: string) {
 		if (!order) {
 			throw new StoreOperationError("Order not found.");
 		}
-		if (order.paymentStatus === "PAID" || order.status === "CANCELLED") {
-			return order;
+
+		const preserveOrder =
+			order.paymentStatus === "PAID" ||
+			order.paymentStatus === "REFUNDED" ||
+			order.status === "CANCELLED" ||
+			order.status === "REFUNDED";
+		if (preserveOrder && !providerPaymentId) {
+			return { ...order, failureTransition: "ignored" as const };
+		}
+
+		const attempt = await findPendingPaymentAttempt(
+			transaction,
+			orderId,
+			providerPaymentId,
+			!preserveOrder,
+		);
+		// Unknown or already resolved events cannot fail a different retry.
+		if (!attempt) {
+			return { ...order, failureTransition: "ignored" as const };
+		}
+		await transaction.storeTransaction.update({
+			where: { id: attempt.id },
+			data: {
+				status: "FAILED",
+				processedAt: new Date(),
+				...(providerPaymentId ? { providerPaymentId } : {}),
+			},
+		});
+		if (preserveOrder) {
+			return { ...order, failureTransition: "attempt-failed" as const };
+		}
+		const remaining = await transaction.storeTransaction.count({
+			where: { orderId, status: { in: ["PENDING", "PAID"] } },
+		});
+		if (remaining > 0) {
+			return { ...order, failureTransition: "attempt-failed" as const };
 		}
 
 		await restockOrderItems(
@@ -1417,19 +1577,21 @@ export async function markStoreOrderPaymentFailed(orderId: string) {
 			where: { id: orderId },
 			data: { paymentStatus: "FAILED", status: "CANCELLED" },
 		});
-		await transaction.storeTransaction.updateMany({
-			where: { orderId },
-			data: { status: "FAILED", processedAt: new Date() },
-		});
 		await transaction.orderStatusEvent.create({
 			data: { orderId, status: "CANCELLED", note: "Payment failed" },
 		});
 
-		return transaction.order.findUniqueOrThrow({ where: { id: orderId } });
+		const failed = await transaction.order.findUniqueOrThrow({
+			where: { id: orderId },
+		});
+		return { ...failed, failureTransition: "failed" as const };
 	});
 }
 
-export async function markStoreOrderRefunded(orderId: string) {
+export async function markStoreOrderRefunded(
+	orderId: string,
+	providerPaymentId?: string,
+) {
 	return db.$transaction(async (transaction) => {
 		const order = await transaction.order.findUnique({
 			where: { id: orderId },
@@ -1438,45 +1600,92 @@ export async function markStoreOrderRefunded(orderId: string) {
 		if (!order) {
 			throw new StoreOperationError("Order not found.");
 		}
-		if (order.status === "REFUNDED") {
-			return order;
+		if (!providerPaymentId && order.paymentStatus === "REFUNDED") {
+			return { ...order, refundTransition: "already-refunded" as const };
 		}
-
-		if (order.status !== "CANCELLED") {
+		const attempts = await transaction.storeTransaction.findMany({
+			where: {
+				orderId,
+				...(providerPaymentId
+					? {
+							providerPaymentId,
+							status: { in: ["PAID", "REFUNDED"] },
+						}
+					: { status: "PAID" }),
+			},
+			take: 2,
+		});
+		if (attempts.length !== 1) {
+			throw new StoreOperationError(
+				providerPaymentId
+					? "Refund does not match a unique settled payment attempt."
+					: "Only uniquely paid orders can be refunded.",
+			);
+		}
+		const attempt = attempts[0];
+		if (attempt.status === "REFUNDED") {
+			return { ...order, refundTransition: "already-refunded" as const };
+		}
+		if (!providerPaymentId && order.paymentStatus !== "PAID") {
+			throw new StoreOperationError("Only paid orders can be refunded.");
+		}
+		await transaction.storeTransaction.update({
+			where: { id: attempt.id },
+			data: { status: "REFUNDED", processedAt: new Date() },
+		});
+		const retained = await transaction.storeTransaction.count({
+			where: { orderId, status: "PAID" },
+		});
+		if (retained > 0) {
+			// Refunding a duplicate charge does not cancel the customer's paid order.
+			await transaction.orderStatusEvent.create({
+				data: {
+					orderId,
+					status: order.status,
+					note: `Payment ${attempt.providerPaymentId ?? attempt.reference} refunded; another settled payment remains`,
+				},
+			});
+			return { ...order, refundTransition: "partial" as const };
+		}
+		if (order.status !== "CANCELLED" && order.status !== "REFUNDED") {
 			await restockOrderItems(
 				transaction,
 				order.items,
 				`Refund ${order.orderNumber}`,
 			);
 		}
-
-		await transaction.order.update({
+		const refunded = await transaction.order.update({
 			where: { id: orderId },
 			data: { paymentStatus: "REFUNDED", status: "REFUNDED" },
-		});
-		await transaction.storeTransaction.updateMany({
-			where: { orderId },
-			data: { status: "REFUNDED", processedAt: new Date() },
 		});
 		await transaction.orderStatusEvent.create({
 			data: { orderId, status: "REFUNDED", note: "Refund confirmed" },
 		});
-
-		return transaction.order.findUniqueOrThrow({ where: { id: orderId } });
+		return { ...refunded, refundTransition: "full" as const };
 	});
+}
+
+/** A marker means the payment mutation completed, never merely started. */
+export async function hasProcessedWebhookEvent(id: string): Promise<boolean> {
+	return (
+		(await db.webhookEvent.findUnique({
+			where: { id },
+			select: { id: true },
+		})) !== null
+	);
 }
 
 export async function recordWebhookEvent(
 	id: string,
 	type: string,
-	payload: unknown,
+	payload: Prisma.InputJsonValue,
 ) {
 	try {
 		await db.webhookEvent.create({
 			data: {
 				id,
 				type,
-				payload: payload as Prisma.InputJsonValue,
+				payload,
 			},
 		});
 		return { duplicate: false };
@@ -1489,14 +1698,6 @@ export async function recordWebhookEvent(
 		}
 		throw error;
 	}
-}
-
-/**
- * Releases a webhook claim so the provider's retry is processed instead of
- * being dropped as a duplicate. Called when handling the event threw.
- */
-export async function releaseWebhookEvent(id: string) {
-	await db.webhookEvent.deleteMany({ where: { id } });
 }
 
 export async function getStoreOrderById(id: string) {
@@ -1721,24 +1922,17 @@ export type AdminOrderList = Awaited<ReturnType<typeof getAdminOrderList>>;
  */
 export async function getAdminOrderSummary(dispatchWindowHours: number) {
 	const cutoff = new Date(Date.now() - dispatchWindowHours * 60 * 60 * 1000);
-	const undispatched: OrderStatus[] = [
-		"PENDING",
-		"CONFIRMED",
-		"PROCESSING",
-		"READY_FOR_DELIVERY",
-	];
 
 	const [total, late, awaitingDispatch, unpaid] = await Promise.all([
 		db.order.count(),
 		db.order.count({
 			where: {
-				paymentStatus: "PAID",
-				status: { in: undispatched },
+				...AWAITING_DISPATCH_WHERE,
 				placedAt: { lt: cutoff },
 			},
 		}),
 		db.order.count({
-			where: { paymentStatus: "PAID", status: { in: undispatched } },
+			where: AWAITING_DISPATCH_WHERE,
 		}),
 		db.order.aggregate({
 			where: {
@@ -1897,16 +2091,18 @@ export async function getAdminTransactionSummary() {
 		db.storeTransaction.count({ where: { status: "PENDING" } }),
 	]);
 
-	const settledInPesewas = settled._sum.amountInPesewas ?? 0;
+	const retainedInPesewas = settled._sum.amountInPesewas ?? 0;
 	const refundedInPesewas = refunded._sum.amountInPesewas ?? 0;
+	// A refund changes the original payment row, rather than adding a debit.
+	const settledInPesewas = retainedInPesewas + refundedInPesewas;
 
 	return {
-		settledCount: settled._count._all,
+		settledCount: settled._count._all + refunded._count._all,
 		settledInPesewas,
 		refundedCount: refunded._count._all,
 		refundedInPesewas,
 		/** What the shop actually kept. */
-		netInPesewas: settledInPesewas - refundedInPesewas,
+		netInPesewas: retainedInPesewas,
 		failedCount: failed,
 		pendingCount: pending,
 	};
@@ -2139,12 +2335,20 @@ export async function updateStoreOrderStatus(
 		});
 
 		if (
-			(current.status === "REFUNDED" || current.status === "CANCELLED") &&
+			(current.status === "REFUNDED" ||
+				(current.status === "CANCELLED" && status !== "REFUNDED")) &&
 			status !== current.status
 		) {
 			throw new StoreOperationError(
 				"A cancelled or refunded order cannot be reopened.",
 			);
+		}
+
+		if (status === current.status) {
+			return current;
+		}
+		if (status === "REFUNDED" && current.paymentStatus !== "PAID") {
+			throw new StoreOperationError("Only paid orders can be refunded.");
 		}
 
 		const shouldRestock =
@@ -2168,6 +2372,12 @@ export async function updateStoreOrderStatus(
 				paymentStatus: status === "REFUNDED" ? "REFUNDED" : undefined,
 			},
 		});
+		if (status === "REFUNDED") {
+			await transaction.storeTransaction.updateMany({
+				where: { orderId: id, status: "PAID" },
+				data: { status: "REFUNDED", processedAt: new Date() },
+			});
+		}
 		await transaction.orderStatusEvent.create({
 			data: { orderId: id, status, actorId },
 		});
@@ -2371,7 +2581,7 @@ export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
 	const start = new Date(end);
 	start.setUTCDate(end.getUTCDate() - days);
 
-	const [orders, statusGroups] = await Promise.all([
+	const [orders, statusGroups, paymentGroups] = await Promise.all([
 		db.order.findMany({
 			where: { placedAt: { gte: start, lt: end } },
 			include: { items: true },
@@ -2379,6 +2589,15 @@ export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
 		}),
 		db.order.groupBy({
 			by: ["status"],
+			_count: { _all: true },
+		}),
+		db.storeTransaction.groupBy({
+			by: ["status"],
+			where: {
+				createdAt: { gte: start, lt: end },
+				paymentMethod: { notIn: ["CASH_ON_DELIVERY", "WHATSAPP"] },
+				status: { in: ["PAID", "FAILED", "REFUNDED"] },
+			},
 			_count: { _all: true },
 		}),
 	]);
@@ -2433,27 +2652,23 @@ export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
 		0,
 	);
 
-	// Cash on delivery never goes through a payment provider, so including it
-	// would score every undelivered COD order as a failed payment. Likewise a
-	// refunded order is a *successful* payment that was later reversed.
-	const settledPaymentOrders = orders.filter(
-		(order) =>
-			order.paymentMethod !== "CASH_ON_DELIVERY" &&
-			order.paymentMethod !== "WHATSAPP" &&
-			(order.paymentStatus === "PAID" ||
-				order.paymentStatus === "FAILED" ||
-				order.paymentStatus === "REFUNDED"),
+	// Count resolved payment attempts, including successful payments later refunded.
+	const attemptedPaymentCount = paymentGroups.reduce(
+		(total, group) => total + group._count._all,
+		0,
 	);
-	const succeededPaymentCount = settledPaymentOrders.filter(
-		(order) => order.paymentStatus !== "FAILED",
-	).length;
+	const succeededPaymentCount = paymentGroups.reduce(
+		(total, group) =>
+			total + (group.status === "FAILED" ? 0 : group._count._all),
+		0,
+	);
 
 	return {
 		days,
 		daily,
 		orderCount: orders.length,
 		paidOrderCount: paidOrders.length,
-		attemptedPaymentCount: settledPaymentOrders.length,
+		attemptedPaymentCount,
 		succeededPaymentCount,
 		revenueInPesewas,
 		averageOrderValueInPesewas:
@@ -2477,7 +2692,9 @@ export async function getStoreSalesAnalytics(days = 30, periodsBack = 0) {
 // paid online, or chosen cash on delivery / WhatsApp checkout, both of which
 // are only ever paid at the door.
 const AWAITING_DISPATCH_WHERE: Prisma.OrderWhereInput = {
-	status: { in: ["PENDING", "CONFIRMED", "PROCESSING"] },
+	status: {
+		in: ["PENDING", "CONFIRMED", "PROCESSING", "READY_FOR_DELIVERY"],
+	},
 	OR: [
 		{ paymentStatus: "PAID" },
 		{ paymentMethod: "CASH_ON_DELIVERY" },
