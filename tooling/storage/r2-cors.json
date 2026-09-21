@@ -5,7 +5,8 @@
 				"origins": [
 					"http://localhost:3000",
 					"http://localhost:3001",
-					"https://geostoresgh.reevitinc.workers.dev"
+					"https://geostoresgh.reevitinc.workers.dev",
+					"https://geostoresgh.com"
 				],
 				"methods": ["GET", "HEAD", "PUT"],
 				"headers": ["Content-Type"]
