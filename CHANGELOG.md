@@ -32,6 +32,7 @@
 
 ### Fixed
 
+- Upgraded the production catalogue schema with product condition and option-image fields required by the deployed storefront and search.
 - Product updates validate variant ownership, clear removed product sale prices, and preserve variants referenced by orders.
 - Product stock totals follow active variants; variant order cancellations restore both variant and product stock.
 
