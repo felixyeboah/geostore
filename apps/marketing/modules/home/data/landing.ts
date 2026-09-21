@@ -14,7 +14,7 @@ const CATEGORY_TARGETS = {
 	phones: { department: "phones" },
 	laptops: { department: "computing" },
 	gaming: { query: "gaming" },
-	appliances: { department: "home-tv" },
+	appliances: { department: "appliances" },
 	monitors: { query: "monitor" },
 	accessories: { department: "accessories-power" },
 	office: { department: "computing" },
@@ -50,36 +50,7 @@ export const CATEGORY_TILES: { key: CategoryKey; image: string }[] = [
 	{ key: "accessories", image: "/images/landing/cat-accessories.jpg" },
 ];
 
-export const FEATURED_PRODUCTS: {
-	name: string;
-	category: CategoryKey;
-	image: string;
-}[] = [
-	{
-		name: "Microsoft Surface Laptop Studio 2",
-		category: "laptops",
-		image: "/images/landing/product-surface.jpg",
-	},
-	{
-		name: "Samsung Odyssey G9",
-		category: "monitors",
-		image: "/images/landing/product-odyssey.jpg",
-	},
-	{
-		name: "Apple iPhones",
-		category: "phones",
-		image: "/images/landing/product-iphones.jpg",
-	},
-];
-
-export const COMPUTING_DEVICES: { brand: string; name: string }[] = [
-	{ brand: "HP", name: "OmniBook X Flip" },
-	{ brand: "Lenovo", name: "IdeaPad Slim 3" },
-	{ brand: "Microsoft", name: "Surface Laptop" },
-];
-
 export const IMAGES = {
-	surfaceLaptop: "/images/landing/surface-laptop-studio-2.png",
 	gaming: "/images/landing/gaming-odyssey.jpg",
 	appliances: "/images/landing/appliances-kitchen.jpg",
 } as const;
@@ -156,98 +127,6 @@ export const CATEGORY_RAIL: { key: string; image: string; href: string }[] = [
 		key: "office",
 		image: "/images/landing/cat-office.jpg",
 		href: links.searchFor("printer"),
-	},
-];
-
-export interface RailProduct {
-	slug: string;
-	name: string;
-	brand: string;
-	priceInPesewas: number;
-	compareAtInPesewas?: number;
-	rating: number;
-	reviewCount: number;
-	isNew?: boolean;
-	image: string;
-}
-
-/** Mirrors `apps/saas/modules/commerce/data/catalog.ts` (the seeded store). */
-export const RAIL_PRODUCTS: RailProduct[] = [
-	{
-		slug: "iphone-15-pro",
-		name: "iPhone 15 Pro",
-		brand: "Apple",
-		priceInPesewas: 1_290_000,
-		compareAtInPesewas: 1_365_000,
-		rating: 4.8,
-		reviewCount: 34,
-		image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "galaxy-s24-ultra",
-		name: "Galaxy S24 Ultra",
-		brand: "Samsung",
-		priceInPesewas: 1_140_000,
-		rating: 4.7,
-		reviewCount: 27,
-		isNew: true,
-		image: "https://images.unsplash.com/photo-1709744722656-9b850470293f?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "google-pixel-8a",
-		name: "Google Pixel 8a",
-		brand: "Google",
-		priceInPesewas: 625_000,
-		rating: 4.5,
-		reviewCount: 18,
-		isNew: true,
-		image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "airpods-pro-2",
-		name: "AirPods Pro (2nd generation)",
-		brand: "Apple",
-		priceInPesewas: 235_000,
-		compareAtInPesewas: 260_000,
-		rating: 4.9,
-		reviewCount: 52,
-		image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "samsung-55-crystal-uhd-tv",
-		name: "Samsung 55-inch Crystal UHD TV",
-		brand: "Samsung",
-		priceInPesewas: 470_000,
-		rating: 4.5,
-		reviewCount: 9,
-		image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "apple-watch-series-9",
-		name: "Apple Watch Series 9",
-		brand: "Apple",
-		priceInPesewas: 475_000,
-		rating: 4.7,
-		reviewCount: 16,
-		image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "galaxy-watch-6",
-		name: "Galaxy Watch6",
-		brand: "Samsung",
-		priceInPesewas: 285_000,
-		rating: 4.4,
-		reviewCount: 12,
-		image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=800&q=85",
-	},
-	{
-		slug: "jbl-charge-5",
-		name: "JBL Charge 5",
-		brand: "JBL",
-		priceInPesewas: 145_000,
-		rating: 4.6,
-		reviewCount: 21,
-		image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=85",
 	},
 ];
 

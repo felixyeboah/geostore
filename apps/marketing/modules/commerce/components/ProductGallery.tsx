@@ -68,7 +68,7 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 						priority={index === 0}
 						sizes="(min-width: 1024px) 58vw, 100vw"
 						className={cn(
-							"object-cover transition-opacity duration-300",
+							"object-contain transition-opacity duration-300",
 							image === activeImage ? "opacity-100" : "opacity-0",
 						)}
 						aria-hidden={image === activeImage ? undefined : true}
@@ -131,7 +131,7 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 											alt=""
 											fill
 											sizes="80px"
-											className="object-cover"
+											className="object-contain"
 										/>
 									</span>
 								</button>

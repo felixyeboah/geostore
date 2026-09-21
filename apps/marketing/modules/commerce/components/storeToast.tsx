@@ -39,7 +39,7 @@ export function storeToast({
 						alt=""
 						width={40}
 						height={40}
-						className="size-10 shrink-0 rounded-[2px] bg-white object-cover"
+						className="size-10 shrink-0 rounded-[2px] bg-white object-contain"
 					/>
 				)}
 				<div className="min-w-0 flex-1">

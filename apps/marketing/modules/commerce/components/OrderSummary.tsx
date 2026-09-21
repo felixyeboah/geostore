@@ -48,7 +48,7 @@ export function OrderSummary({
 									alt=""
 									fill
 									sizes="56px"
-									className="object-cover"
+									className="object-contain"
 								/>
 							</span>
 							<span className="min-w-0 flex-1">

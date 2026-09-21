@@ -252,11 +252,15 @@ export const LANDING_SECTIONS: LandingSectionDefinition[] = [
 	},
 	{
 		key: "gaming",
-		name: "Gaming feature",
-		description: "The full-width gaming band with its own image.",
+		name: "Entertainment feature",
+		description: "A featured entertainment product from the catalogue.",
 		defaultSortOrder: 6,
 		fields: [
-			image("image", "Band image"),
+			product(
+				"productId",
+				"Featured product",
+				"The photograph and link follow this published product.",
+			),
 			text("eyebrow", "Eyebrow"),
 			text("title1", "Headline, first line"),
 			text("title2", "Headline, second line"),

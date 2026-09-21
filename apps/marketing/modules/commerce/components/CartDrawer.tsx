@@ -126,7 +126,7 @@ export function CartDrawer() {
 										alt=""
 										fill
 										sizes="88px"
-										className="object-cover"
+										className="object-contain"
 									/>
 								</Link>
 

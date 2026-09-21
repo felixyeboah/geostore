@@ -222,7 +222,7 @@ export function SearchDialog({ label }: { label: string }) {
 												alt=""
 												fill
 												sizes="48px"
-												className="object-cover"
+												className="object-contain"
 											/>
 										</span>
 										<span className="min-w-0 flex-1">
