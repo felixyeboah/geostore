@@ -100,6 +100,26 @@ describe("axisValueVariant", () => {
 });
 
 describe("defaultVariantSelection", () => {
+	it("ignores name ordering and sold-out bargains when choosing the entry price", () => {
+		const variants = [
+			variant({ storage: "1 TB" }, { priceInPesewas: 300 }),
+			variant(
+				{ storage: "128 GB" },
+				{ priceInPesewas: 100, stockQuantity: 0 },
+			),
+			variant({ storage: "256 GB" }, { priceInPesewas: 200 }),
+		];
+		assert.deepEqual(defaultVariantSelection(variants), {
+			storage: "256 GB",
+		});
+		assert.deepEqual(
+			defaultVariantSelection(
+				variants.map((row) => ({ ...row, stockQuantity: 0 })),
+			),
+			{ storage: "128 GB" },
+		);
+		assert.deepEqual(defaultVariantSelection([]), {});
+	});
 	it("opens on the first in-stock variant's attributes", () => {
 		assert.deepEqual(defaultVariantSelection(PHONE_VARIANTS), {
 			colour: "Black",

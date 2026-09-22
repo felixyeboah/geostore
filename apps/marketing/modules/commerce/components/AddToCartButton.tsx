@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "@commerce/components/CartProvider";
+import { getCartItemImage, useCart } from "@commerce/components/CartProvider";
 import { storeToast } from "@commerce/components/storeToast";
 import type { StoreProduct } from "@repo/commerce";
 import { cn } from "@repo/ui";
@@ -60,7 +60,7 @@ export function AddToCartButton({
 		// a toast would only sit on top of the checkout button.
 		if (!isDrawerOpen) {
 			storeToast({
-				imageUrl: product.imageUrl,
+				imageUrl: getCartItemImage(product, variantId),
 				title: "Added to bag",
 				description: product.name,
 				action: { label: "View bag", onClick: openDrawer },

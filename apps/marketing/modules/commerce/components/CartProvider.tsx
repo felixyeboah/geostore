@@ -6,6 +6,7 @@ import {
 	calculateCart,
 	DEFAULT_DELIVERY_RULE,
 	type DeliveryRule,
+	resolveOptionGallery,
 	type StoreProduct,
 	variantDisplayName,
 } from "@repo/commerce";
@@ -20,6 +21,24 @@ import {
 } from "react";
 
 const CART_STORAGE_KEY = "geostoresgh-cart-v1";
+
+/** Cart and confirmation photos follow the exact purchased variant. */
+export function getCartItemImage(
+	product: Pick<
+		StoreProduct,
+		"imageUrl" | "images" | "optionMedia" | "variants"
+	>,
+	variantId?: string,
+): string {
+	const variant = product.variants?.find((item) => item.id === variantId);
+	if (!variant || !product.optionMedia?.length) {
+		return product.imageUrl;
+	}
+	return (
+		resolveOptionGallery(product, variant.attributes)[0] ??
+		"/images/product-placeholder.svg"
+	);
+}
 
 export type { CartLine };
 
@@ -181,6 +200,7 @@ export function CartProvider({
 				variant?.stockQuantity ?? product.stockQuantity;
 			const priceInPesewas =
 				variant?.priceInPesewas ?? product.priceInPesewas;
+			const imageUrl = getCartItemImage(product, variantId);
 			const existingItem = currentItems.find(
 				(item) =>
 					item.productId === product.id &&
@@ -194,6 +214,7 @@ export function CartProvider({
 					item.variantId === variantId
 						? {
 								...item,
+								imageUrl,
 								quantity: Math.min(
 									item.quantity + requestedQuantity,
 									stockQuantity,
@@ -219,7 +240,7 @@ export function CartProvider({
 						: undefined,
 					name: product.name,
 					slug: product.slug,
-					imageUrl: product.imageUrl,
+					imageUrl,
 					priceInPesewas,
 					quantity: Math.min(requestedQuantity, stockQuantity),
 					stockQuantity,
