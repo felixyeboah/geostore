@@ -612,9 +612,12 @@ test.describe("admin catalogue and fulfilment", () => {
 		await form.getByLabel("Price (GH₵)", { exact: true }).fill("250");
 		await form.getByLabel("In stock").fill("4");
 
-		await form.getByRole("button", { name: "Publish" }).click();
+		await expect(
+			form.getByRole("button", { name: "Publish" }),
+		).toBeDisabled();
+		await form.getByRole("button", { name: "Save draft" }).click();
 
-		// The submission is refused: the form stays put and nothing is written.
+		// Invalid photos block publishing and cannot bypass validation as a draft.
 		const inlineMessages = form.locator("p.text-destructive");
 		await expect(inlineMessages.first()).toBeVisible({ timeout: 20_000 });
 		await expect(page).toHaveURL(/\/admin\/products\/new/);
