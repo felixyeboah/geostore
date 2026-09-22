@@ -19,6 +19,9 @@ env:
   # localhost, and the e2e job runs a production build.
   NEXT_PUBLIC_SAAS_URL: "http://localhost:3000"
   NEXT_PUBLIC_MARKETING_URL: "http://localhost:3001"
+  # Seeded option photos use this public bucket. Both builds and running
+  # image optimizers must allow the same exact host as production.
+  NEXT_PUBLIC_PRODUCTS_STORAGE_URL: "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev"
   # Order access tokens are signed with their own key now, and instrumentation
   # refuses to boot if it matches BETTER_AUTH_SECRET.
   ORDER_TOKEN_SECRET: "order-token-e2e-secret-0987654321"

@@ -20,7 +20,7 @@ Color-specific photos are never general fallback photos. Selecting an option upd
 - Actual reset CLI integration passed: commerce history blocks mutation; empty-history replacement preserves unrelated tables, writes a private backup and passes foreign-key checks.
 - Both applications built successfully; affected typechecks and Biome passed (one existing unrelated suppression warning).
 
-Production replacement uses `--require-empty-commerce-history` under the transaction write lock. The pre-update production dump is privately backed up at `~/.local/share/geostore-backups/geostore-prod-before-variant-catalog-20260922.sql`. It contains zero orders and inventory events. Release completion is tracked in PR #12; the separate admin hosting target is still unspecified.
+Production replacement uses `--require-empty-commerce-history` under the transaction write lock. The pre-update production dump is privately backed up at `~/.local/share/geostore-backups/geostore-prod-before-variant-catalog-20260922.sql`. It contains zero orders and inventory events. Release completion is tracked in PR #14; the separate admin hosting target is still unspecified.
 
 ## Offered configurations
 
