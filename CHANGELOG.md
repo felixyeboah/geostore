@@ -18,6 +18,8 @@
 
 ### Changed
 
+- Catalog variants now include verified colors and model-specific configuration attributes, with 68 option photos and exact case/band imagery.
+
 - Departments and collections use server-side pagination, search and visibility filters; collection membership loads on demand in bounded requests.
 - Development catalog now has 24 manufacturer-identified products across eight departments, with verified product-specific R2 images and documented variants.
 - Homepage product features resolve published database records, including their current prices and images; product photography fits its frame without cropping devices.
@@ -34,6 +36,9 @@
 - Unit tests and a dependency audit now run in CI, and Biome skips the scratch design mockups and generated Prisma output.
 
 ### Fixed
+
+- Selected option photos follow the product into the bag, confirmation toast and saved order; checkout rejects missing required variant choices.
+- Products with only option-tagged photos can be saved in admin without adding a misleading generic gallery photo.
 
 - Refunds preserve payment-attempt history, reconcile gross/refunded/net totals, and update manual-payment transactions. Late failure events cannot reopen refunded orders or restock them twice.
 - Payment analytics counts resolved transaction attempts; dispatch counts include cash orders ready for delivery.
