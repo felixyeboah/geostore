@@ -14,8 +14,10 @@
 		"check": "biome check --write",
 		"clean": "turbo clean",
 		"format": "biome format --write",
-		"test:commerce": "tsx --test packages/commerce/cart.test.ts packages/commerce/order.test.ts packages/commerce/types.test.ts packages/commerce/variants.test.ts packages/payments/lib/store-payments.test.ts packages/payments/lib/reevit-webhook.test.ts apps/marketing/modules/commerce/lib/order-token.test.ts packages/utils/lib/image-hosts.test.ts apps/saas/modules/admin/lib/overview.test.ts",
-		"dev:mail": "dotenv -c -- turbo dev --filter=mail-preview"
+		"test:commerce": "tsx --test packages/auth/lib/base-url.test.ts packages/commerce/seed-catalog.test.ts packages/commerce/cart.test.ts packages/commerce/order.test.ts packages/commerce/types.test.ts packages/commerce/variants.test.ts packages/payments/lib/store-payments.test.ts packages/payments/lib/reevit-webhook.test.ts apps/marketing/modules/commerce/lib/order-token.test.ts packages/utils/lib/image-hosts.test.ts apps/saas/modules/admin/lib/overview.test.ts",
+		"dev:mail": "dotenv -c -- turbo dev --filter=mail-preview",
+		"test:database": "dotenv -c -- tsx --test --test-concurrency=1 packages/database/tests/*.test.ts",
+		"db:catalog:preview": "pnpm --filter @repo/scripts catalog:reset"
 	},
 	"engines": {
 		"node": ">=20"

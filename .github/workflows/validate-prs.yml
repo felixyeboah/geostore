@@ -22,6 +22,8 @@ env:
   # Order access tokens are signed with their own key now, and instrumentation
   # refuses to boot if it matches BETTER_AUTH_SECRET.
   ORDER_TOKEN_SECRET: "order-token-e2e-secret-0987654321"
+  # Fixed test-only signing key for the signed webhook HTTP regressions.
+  REEVIT_WEBHOOK_SECRET: "reevit-webhook-e2e-secret-1234567890"
   # The e2e suite signs in nine times against a 3-per-10s default, so the
   # limiter has to be off for it. Switched off explicitly rather than relying on
   # it no-opping because nothing sets a trusted IP header locally.
@@ -36,7 +38,7 @@ jobs:
       - name: Setup Biome
         uses: biomejs/setup-biome@v2
         with:
-          version: 2.3.13
+          version: 2.4.7
       - name: Run Biome
         run: biome ci .
   unit:

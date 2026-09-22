@@ -7,14 +7,23 @@ import {
 	type CollectionRow,
 	CollectionsList,
 } from "@admin/components/collections/CollectionsList";
+import { TaxonomyListControls } from "@admin/components/TaxonomyListControls";
+import { loadTaxonomyListParams } from "@admin/lib/list-params";
 import { SMART_COLLECTIONS } from "@repo/commerce";
-import { getAdminStoreCollections } from "@repo/database";
+import { getAdminCollectionList } from "@repo/database";
 import type { Metadata } from "next";
+import type { SearchParams } from "nuqs/server";
 
 export const metadata: Metadata = { title: "Collections" };
 
-export default async function AdminCollectionsPage() {
-	const collections = await getAdminStoreCollections();
+export default async function AdminCollectionsPage({
+	searchParams,
+}: {
+	searchParams: Promise<SearchParams>;
+}) {
+	const params = await loadTaxonomyListParams(searchParams);
+	const result = await getAdminCollectionList(params);
+	const collections = result.rows;
 
 	const rows: CollectionRow[] = collections.map((collection) => ({
 		id: collection.id,
@@ -26,35 +35,32 @@ export default async function AdminCollectionsPage() {
 		onLanding: collection.onLanding,
 		sortOrder: collection.sortOrder,
 		productCount: collection._count.products,
-		productIds: collection.products.map((entry) => entry.productId),
 	}));
-
-	const hidden = rows.filter((row) => !row.isActive);
-	const empty = rows.filter((row) => row.productCount === 0);
-	const onLanding = rows.filter((row) => row.onLanding && row.isActive);
-
-	const headline = [
-		hidden.length ? `${hidden.length} hidden` : null,
-		empty.length ? `${empty.length} empty` : null,
-		onLanding.length ? `${onLanding.length} on the landing page` : null,
-	].filter(Boolean);
 
 	return (
 		<div>
 			<AdminHeader
 				eyebrow="Catalogue"
 				title="Collections"
-				description={
-					rows.length === 0
-						? "Groups that cut across departments — what a product is for, rather than what it is."
-						: headline.length > 0
-							? `${rows.length} collections · ${headline.join(" · ")}.`
-							: `${rows.length} collections, all visible and stocked.`
-				}
-				actions={rows.length > 0 ? <AddCollectionButton /> : undefined}
+				description={`${result.total} collections matching the current view.`}
+				actions={<AddCollectionButton />}
 			/>
 
-			<CollectionsList collections={rows} />
+			<TaxonomyListControls
+				total={result.total}
+				shown={rows.length}
+				page={result.page}
+				pageCount={result.pageCount}
+				noun="collections"
+				canReorder={result.canReorder}
+			>
+				<CollectionsList
+					collections={rows}
+					page={result.page}
+					pageCount={result.pageCount}
+					canReorder={result.canReorder}
+				/>
+			</TaxonomyListControls>
 
 			{/*
 			 * Smart collections are rules in code, not rows, so they cannot be
@@ -100,7 +106,10 @@ export default async function AdminCollectionsPage() {
 				</ul>
 			</section>
 
-			<CollectionSheet collections={rows} />
+			<CollectionSheet
+				collections={rows}
+				nextSortOrder={result.nextSortOrder}
+			/>
 		</div>
 	);
 }

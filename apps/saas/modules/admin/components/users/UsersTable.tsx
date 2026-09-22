@@ -24,9 +24,10 @@ import { useSession } from "@auth/hooks/use-session";
 import { cn, Spinner } from "@repo/ui";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import { orpc } from "@shared/lib/orpc-query-utils";
+import { useTranslations } from "@shared/lib/translations";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { debounce, useQueryStates } from "nuqs";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 
 const ROLE_LABELS = { admin: "Admin", user: "User" } as const;
 const STATUS_LABELS = {
@@ -46,6 +47,7 @@ const SEARCH_DEBOUNCE = debounce(400);
  */
 export function UsersTable() {
 	const { user: signedInUser } = useSession();
+	const t = useTranslations();
 	const queryClient = useQueryClient();
 	const [isNavigating, startNavigation] = useTransition();
 
@@ -53,19 +55,31 @@ export function UsersTable() {
 		startTransition: startNavigation,
 	});
 
-	const { data, isPending, isFetching } = useQuery(
-		orpc.admin.users.adminList.queryOptions({
-			input: {
-				query: params.q.trim() || undefined,
-				role: params.role ?? undefined,
-				status: params.status ?? undefined,
-				sort: params.sort,
-				dir: params.dir,
-				page: params.page,
-			},
-			placeholderData: (previous) => previous,
-		}),
-	);
+	const { data, isPending, isFetching, isError, isPlaceholderData, refetch } =
+		useQuery(
+			orpc.admin.users.adminList.queryOptions({
+				input: {
+					query: params.q.trim() || undefined,
+					role: params.role ?? undefined,
+					status: params.status ?? undefined,
+					sort: params.sort,
+					dir: params.dir,
+					page: Math.min(
+						Number.MAX_SAFE_INTEGER,
+						Math.max(1, params.page),
+					),
+				},
+				placeholderData: (previous) => previous,
+			}),
+		);
+
+	useEffect(() => {
+		const page =
+			!isPlaceholderData && data ? data.page : Math.max(1, params.page);
+		if (page !== params.page) {
+			void setParams({ page });
+		}
+	}, [data, isPlaceholderData, params.page, setParams]);
 
 	function refresh() {
 		void queryClient.invalidateQueries({
@@ -79,7 +93,7 @@ export function UsersTable() {
 		void setParams({ sort, dir, page: 1 });
 	}
 
-	const users = (data?.users ?? []) as UserRow[];
+	const users: UserRow[] = data?.users ?? [];
 	const facets = data?.facets;
 	const busy = isFetching || isNavigating;
 
@@ -151,7 +165,17 @@ export function UsersTable() {
 				/>
 			</TableToolbar>
 
-			{isPending ? (
+			{isError ? (
+				<div className="py-16 text-center">
+					<p role="alert">{t("admin.users.loadError")}</p>
+					<AdminButton
+						onClick={() => void refetch()}
+						disabled={isFetching}
+					>
+						{t("admin.organizations.retry")}
+					</AdminButton>
+				</div>
+			) : isPending ? (
 				<div className="flex justify-center py-16">
 					<Spinner className="size-5 text-muted-foreground" />
 				</div>

@@ -117,3 +117,10 @@ export const userListParsers = {
 };
 
 export const loadUserListParams = createLoader(userListParsers);
+
+export const taxonomyListParsers = {
+	q: parseAsString.withDefault(""),
+	status: parseAsStringLiteral(["visible", "hidden"] as const),
+	page: parseAsInteger.withDefault(1),
+};
+export const loadTaxonomyListParams = createLoader(taxonomyListParsers);

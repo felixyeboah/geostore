@@ -67,7 +67,7 @@ test("admin creates, publishes, updates variants, pauses and deletes a product",
 	await chooseAdminOption(
 		page,
 		form.getByLabel("Department"),
-		"Phones & tablets",
+		/^Phones(?: & tablets)?$/,
 	);
 	await form
 		.getByLabel("Summary")

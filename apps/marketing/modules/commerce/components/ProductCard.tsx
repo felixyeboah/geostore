@@ -61,7 +61,7 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 					alt={product.name}
 					fill
 					sizes="(min-width: 1280px) 360px, (min-width: 640px) 33vw, 50vw"
-					className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+					className="object-contain transition-transform duration-500 group-hover:scale-[1.035]"
 				/>
 			</Link>
 

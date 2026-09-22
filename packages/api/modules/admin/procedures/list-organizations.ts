@@ -1,9 +1,4 @@
-import { ORPCError } from "@orpc/client";
-import {
-	countAllOrganizations,
-	getOrganizationById as getOrganizationByIdFn,
-	getOrganizations,
-} from "@repo/database";
+import { countAllOrganizations, getOrganizations } from "@repo/database";
 import { z } from "zod";
 import { adminProcedure } from "../../../orpc/procedures";
 
@@ -22,34 +17,13 @@ export const listOrganizations = adminProcedure
 		}),
 	)
 	.handler(async ({ input: { query, limit, offset } }) => {
+		const total = await countAllOrganizations({ query });
+		const lastOffset = Math.max(0, Math.floor((total - 1) / limit) * limit);
 		const organizations = await getOrganizations({
 			limit,
-			offset,
+			offset: Math.min(offset, lastOffset),
 			query,
 		});
 
-		const total = await countAllOrganizations({ query });
-
 		return { organizations, total };
-	});
-
-export const getOrganizationById = adminProcedure
-	.route({
-		method: "GET",
-		path: "/admin/organizations/{id}",
-		tags: ["Administration"],
-	})
-	.input(
-		z.object({
-			id: z.string(),
-		}),
-	)
-	.handler(async ({ input: { id } }) => {
-		const organization = await getOrganizationByIdFn(id);
-
-		if (!organization) {
-			throw new ORPCError("NOT_FOUND");
-		}
-
-		return organization;
 	});

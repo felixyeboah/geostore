@@ -2,9 +2,9 @@
 
 import {
 	deleteStoreCategoryAction,
-	reorderStoreCategoriesAction,
 	setStoreCategoryActiveAction,
 } from "@admin/actions/commerce";
+import { moveTaxonomyAction } from "@admin/actions/taxonomy";
 import type { EditableCategory } from "@admin/components/categories/CategoryForm";
 import {
 	AddCategoryButton,
@@ -60,23 +60,37 @@ export interface CategoryRow extends EditableCategory {
  * editable here, where the consequence is visible, rather than as a number
  * buried in a form.
  */
-export function CategoriesList({ categories }: { categories: CategoryRow[] }) {
+export function CategoriesList({
+	categories,
+	canReorder,
+	page,
+	pageCount,
+}: {
+	categories: CategoryRow[];
+	canReorder: boolean;
+	page: number;
+	pageCount: number;
+}) {
 	const router = useRouter();
 	const sheet = useCategorySheet();
 	const [isPending, startTransition] = useTransition();
 	const [deleting, setDeleting] = useState<CategoryRow | null>(null);
 
 	function move(index: number, direction: -1 | 1) {
-		const target = index + direction;
-		if (target < 0 || target >= categories.length) {
+		if (!canReorder) {
+			return;
+		}
+		const item = categories[index];
+		if (!item) {
 			return;
 		}
 
-		const ids = categories.map((category) => category.id);
-		[ids[index], ids[target]] = [ids[target], ids[index]];
-
 		startTransition(async () => {
-			const result = await reorderStoreCategoriesAction(ids);
+			const result = await moveTaxonomyAction({
+				kind: "category",
+				id: item.id,
+				direction,
+			});
 			if (result.success) {
 				router.refresh();
 			} else {
@@ -120,15 +134,13 @@ export function CategoriesList({ categories }: { categories: CategoryRow[] }) {
 		return (
 			<div className="mt-9 py-16 text-center">
 				<p className="font-medium text-[15px] text-foreground">
-					No departments yet
+					No departments in this view
 				</p>
 				<p className="mx-auto mt-2 max-w-sm text-[13.5px] text-muted-foreground">
-					Departments are the top level of the shop — the tabs on
-					/shop and the columns in the menu. Every product belongs to
-					one, so add the first before adding stock.
+					Change the search or visibility filter, or add a department.
 				</p>
 				<div className="mt-6 flex justify-center">
-					<AddCategoryButton label="Add the first department" />
+					<AddCategoryButton label="Add department" />
 				</div>
 			</div>
 		);
@@ -157,7 +169,11 @@ export function CategoriesList({ categories }: { categories: CategoryRow[] }) {
 							<button
 								type="button"
 								onClick={() => move(index, -1)}
-								disabled={index === 0 || isPending}
+								disabled={
+									!canReorder ||
+									(index === 0 && page === 1) ||
+									isPending
+								}
 								aria-label={`Move ${category.name} up`}
 								className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"
 							>
@@ -167,7 +183,10 @@ export function CategoriesList({ categories }: { categories: CategoryRow[] }) {
 								type="button"
 								onClick={() => move(index, 1)}
 								disabled={
-									index === categories.length - 1 || isPending
+									!canReorder ||
+									(index === categories.length - 1 &&
+										page === pageCount) ||
+									isPending
 								}
 								aria-label={`Move ${category.name} down`}
 								className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"

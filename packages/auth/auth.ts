@@ -10,7 +10,6 @@ import {
 import { logger } from "@repo/logs";
 import { sendEmail } from "@repo/mail";
 import { cancelSubscription } from "@repo/payments";
-import { getBaseUrl } from "@repo/utils";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { createAuthMiddleware } from "better-auth/api";
@@ -23,10 +22,14 @@ import {
 	username,
 } from "better-auth/plugins";
 import { config } from "./config";
+import { getAuthBaseUrl } from "./lib/base-url";
 import { updateSeatsInOrganizationSubscription } from "./lib/organization";
 import { invitationOnlyPlugin } from "./plugins/invitation-only";
 
-const appUrl = getBaseUrl(process.env.NEXT_PUBLIC_SAAS_URL, 3000);
+const appUrl = getAuthBaseUrl(
+	process.env.NEXT_PUBLIC_SAAS_URL,
+	process.env.NEXT_PUBLIC_MARKETING_URL,
+);
 
 /**
  * Headers trusted to carry the real client IP.
@@ -309,7 +312,7 @@ export const auth = betterAuth({
 
 				const url = new URL(
 					existingUser ? "/login" : "/signup",
-					getBaseUrl(process.env.NEXT_PUBLIC_SAAS_URL, 3000),
+					appUrl,
 				);
 
 				url.searchParams.set("invitationId", id);

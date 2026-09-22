@@ -33,7 +33,7 @@ export default defineConfig({
 	reporter: [["html"]],
 	use: {
 		baseURL,
-		trace: "on-first-retry",
+		trace: "retain-on-failure",
 		// ffmpeg encodes per test — on memory-tight machines that extra
 		// process is what gets the browser killed mid-run.
 		video: process.env.PLAYWRIGHT_NO_VIDEO
@@ -49,6 +49,9 @@ export default defineConfig({
 			name: "chromium",
 			use: {
 				...devices["Desktop Chrome"],
+				channel: process.env.PLAYWRIGHT_FULL_CHROMIUM
+					? "chromium"
+					: undefined,
 			},
 		},
 	],

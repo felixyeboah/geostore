@@ -120,7 +120,7 @@ export function UserRowActions({
 										userId: user.id,
 									});
 								if (!result.error) {
-									window.location.href = "/";
+									window.location.href = "/dashboard";
 								}
 								return result;
 							})

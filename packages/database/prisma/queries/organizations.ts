@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import { db } from "../client";
 import type { OrganizationSchema } from "../zod";
+import { StoreOperationError } from "./errors";
 
 export async function getOrganizations({
 	limit,
@@ -143,5 +144,19 @@ export async function updateOrganization(
 			id: organization.id,
 		},
 		data: organization,
+	});
+}
+
+export async function deleteAdminOrganization(id: string) {
+	return db.$transaction(async (tx) => {
+		const subscriptions = await tx.purchase.count({
+			where: { organizationId: id, subscriptionId: { not: null } },
+		});
+		if (subscriptions > 0) {
+			throw new StoreOperationError(
+				"Cancel and remove linked subscriptions before deleting this organization.",
+			);
+		}
+		return tx.organization.deleteMany({ where: { id } });
 	});
 }

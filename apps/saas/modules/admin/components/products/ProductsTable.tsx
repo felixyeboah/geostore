@@ -294,7 +294,7 @@ export function ProductsTable({
 
 			<div
 				className={cn(
-					"overflow-x-auto transition-opacity",
+					"relative overflow-x-auto transition-opacity",
 					isNavigating && "opacity-60",
 				)}
 			>

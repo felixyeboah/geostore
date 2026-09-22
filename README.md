@@ -40,6 +40,7 @@ Choose the admin role when prompted. Never commit the generated password or loca
 
 ```bash
 pnpm test:commerce
+pnpm test:database # serial integration tests against configured DATABASE_URL
 pnpm type-check
 pnpm lint
 pnpm build
@@ -95,3 +96,32 @@ For Reevit test mode:
 6. `reevit doctor --webhook-url http://localhost:3000/api/webhooks/reevit`
 
 Live launch requires a Reevit live key plus a connected Ghana provider (Paystack or Hubtel) in the Reevit dashboard. The store only marks an order paid after a signature-verified webhook.
+
+## Catalog maintenance
+
+The seed contains 24 manufacturer-identified products across eight departments.
+Prices and stock are development fixtures, not supplier quotations or confirmed
+inventory. Product image provenance and SHA-256 checksums live in
+`packages/commerce/catalogue-sources.json`; matching source images are kept in
+`apps/marketing/public/images/catalogue`. The seed uses immutable R2 object URLs,
+with no generic stock photos or shared images between different product models.
+Product family photos are not labelled as colour-specific variant photos.
+
+Run `pnpm --filter @repo/scripts catalog:verify-images` to check local and public
+image bytes against the reviewed checksums.
+
+`pnpm db:seed` converges the configured database without clearing order history.
+`pnpm db:catalog:preview` reports the target host and replacement counts without
+writing. A complete replacement is a separate destructive command:
+
+```bash
+CATALOG_BACKUP_DIR=/absolute/private/backup/directory pnpm --filter @repo/scripts catalog:reset --apply --database-host=EXACT_DATABASE_HOST --clear-commerce-history
+```
+
+This clears products, variants, images, categories, collections and their commerce
+history (orders, transactions, payment webhook events, reviews and inventory events). Accounts, addresses,
+store settings and landing-page configuration remain. The command requires the
+exact target hostname and an explicit history-clear flag, writes a private backup,
+and commits deletion plus replacement in one transaction after a foreign-key check.
+Run browser/integration checks before the final reset so test orders do not become
+part of the replacement catalog's history.

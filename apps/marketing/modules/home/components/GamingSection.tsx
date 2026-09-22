@@ -1,4 +1,4 @@
-import { IMAGES, links } from "@home/data/landing";
+import { links, productHref } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { ArrowLink, Container, Eyebrow } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
@@ -6,12 +6,14 @@ import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function GamingSection({ copy }: SectionCopyProps) {
+export function GamingSection({ copy, products }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.gaming");
 
-	// An uploaded picture replaces the shipped one; empty keeps it.
-	const bandImage = copy?.image?.trim() || IMAGES.gaming;
+	const product = products?.productId;
+	if (!product) {
+		return null;
+	}
 
 	return (
 		<section className="bg-[#212121] text-white">
@@ -31,7 +33,7 @@ export function GamingSection({ copy }: SectionCopyProps) {
 						{c("subtitle2")}
 					</p>
 					<Link
-						href={links.category("gaming")}
+						href={productHref(product.slug)}
 						className="mt-8 inline-flex h-[52px] items-center gap-6 rounded-[4px] bg-white px-6 font-medium text-[#1d1c1c] text-[13.5px] transition-colors hover:bg-white/90"
 					>
 						{c("cta")}
@@ -39,7 +41,7 @@ export function GamingSection({ copy }: SectionCopyProps) {
 					</Link>
 					<div className="mt-9">
 						<ArrowLink
-							href={links.category("monitors")}
+							href={links.department("home-tv")}
 							className="text-[11.5px] text-white"
 						>
 							{c("link")}
@@ -49,13 +51,19 @@ export function GamingSection({ copy }: SectionCopyProps) {
 
 				<div>
 					<div className="relative aspect-[706/342] overflow-hidden rounded-[4px] bg-[#2a2a2a]">
-						<Image
-							src={bandImage}
-							alt="Samsung Odyssey G9 on a desk"
-							fill
-							sizes="(min-width: 1024px) 706px, 100vw"
-							className="object-cover"
-						/>
+						{product.imageUrl ? (
+							<Image
+								src={product.imageUrl}
+								alt={product.name}
+								fill
+								sizes="(min-width: 1024px) 706px, 100vw"
+								className="object-contain"
+							/>
+						) : (
+							<span className="absolute inset-0 flex items-center justify-center text-sm text-white/70">
+								Image unavailable
+							</span>
+						)}
 					</div>
 					<p className="mt-10 text-center text-[9.5px] text-white/50 uppercase tracking-[0.2em]">
 						{c("caption")}

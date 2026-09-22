@@ -2,9 +2,9 @@
 
 import {
 	deleteStoreCollectionAction,
-	reorderStoreCollectionsAction,
 	setStoreCollectionActiveAction,
 } from "@admin/actions/commerce";
+import { moveTaxonomyAction } from "@admin/actions/taxonomy";
 import type { EditableCollection } from "@admin/components/collections/CollectionForm";
 import { CollectionProductsSheet } from "@admin/components/collections/CollectionProductsSheet";
 import {
@@ -48,7 +48,6 @@ import { useState, useTransition } from "react";
 
 export interface CollectionRow extends EditableCollection {
 	productCount: number;
-	productIds: string[];
 }
 
 /**
@@ -62,8 +61,14 @@ export interface CollectionRow extends EditableCollection {
  */
 export function CollectionsList({
 	collections,
+	canReorder,
+	page,
+	pageCount,
 }: {
 	collections: CollectionRow[];
+	canReorder: boolean;
+	page: number;
+	pageCount: number;
 }) {
 	const router = useRouter();
 	const sheet = useCollectionSheet();
@@ -72,16 +77,20 @@ export function CollectionsList({
 	const [picking, setPicking] = useState<CollectionRow | null>(null);
 
 	function move(index: number, direction: -1 | 1) {
-		const target = index + direction;
-		if (target < 0 || target >= collections.length) {
+		if (!canReorder) {
+			return;
+		}
+		const item = collections[index];
+		if (!item) {
 			return;
 		}
 
-		const ids = collections.map((collection) => collection.id);
-		[ids[index], ids[target]] = [ids[target], ids[index]];
-
 		startTransition(async () => {
-			const result = await reorderStoreCollectionsAction(ids);
+			const result = await moveTaxonomyAction({
+				kind: "collection",
+				id: item.id,
+				direction,
+			});
 			if (result.success) {
 				router.refresh();
 			} else {
@@ -123,15 +132,13 @@ export function CollectionsList({
 		return (
 			<div className="mt-9 py-16 text-center">
 				<p className="font-medium text-[15px] text-foreground">
-					No collections yet
+					No collections in this view
 				</p>
 				<p className="mx-auto mt-2 max-w-md text-[13.5px] text-muted-foreground">
-					A collection groups products around a need rather than a
-					kind — “Working from home”, “Back to school”. A product can
-					be in as many as you like, or none.
+					Change the search or visibility filter, or add a collection.
 				</p>
 				<div className="mt-6 flex justify-center">
-					<AddCollectionButton label="Add the first collection" />
+					<AddCollectionButton label="Add collection" />
 				</div>
 			</div>
 		);
@@ -154,7 +161,11 @@ export function CollectionsList({
 							<button
 								type="button"
 								onClick={() => move(index, -1)}
-								disabled={index === 0 || isPending}
+								disabled={
+									!canReorder ||
+									(index === 0 && page === 1) ||
+									isPending
+								}
 								aria-label={`Move ${collection.name} up`}
 								className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"
 							>
@@ -164,7 +175,9 @@ export function CollectionsList({
 								type="button"
 								onClick={() => move(index, 1)}
 								disabled={
-									index === collections.length - 1 ||
+									!canReorder ||
+									(index === collections.length - 1 &&
+										page === pageCount) ||
 									isPending
 								}
 								aria-label={`Move ${collection.name} down`}

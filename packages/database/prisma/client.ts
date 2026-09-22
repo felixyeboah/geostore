@@ -39,7 +39,9 @@ const prismaClientSingleton = (): NodePrismaClient => {
 	}
 
 	const adapter = new PrismaLibSql({
-		url: process.env.DATABASE_URL,
+		url: isWorkerd()
+			? process.env.DATABASE_URL.replace(/^libsql:/, "https:")
+			: process.env.DATABASE_URL,
 		// Absent for a local file, required for a hosted Turso database.
 		authToken: process.env.DATABASE_AUTH_TOKEN,
 	});
@@ -56,11 +58,40 @@ declare global {
 	var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-// biome-ignore lint/suspicious/noRedeclare: This is a singleton
-const prisma = globalThis.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== "production") {
-	globalThis.prisma = prisma;
+// OpenNext installs this request-local context through AsyncLocalStorage.
+// A Worker-wide Prisma client can retain initialization promises and I/O owned
+// by an earlier request. Node processes keep their normal singleton instead.
+const workerClients = new WeakMap<object, NodePrismaClient>();
+function requestClient(): NodePrismaClient {
+	const context: unknown = Reflect.get(
+		globalThis,
+		Symbol.for("__cloudflare-context__"),
+	);
+	if (!context || typeof context !== "object") {
+		throw new Error(
+			"Database access requires a Cloudflare request context",
+		);
+	}
+	let client = workerClients.get(context);
+	if (!client) {
+		client = prismaClientSingleton();
+		workerClients.set(context, client);
+	}
+	return client;
 }
 
-export { prisma as db };
+const db: NodePrismaClient = isWorkerd()
+	? new Proxy({} as NodePrismaClient, {
+			get(_target, property) {
+				const client = requestClient();
+				const value = Reflect.get(client, property);
+				return typeof value === "function" ? value.bind(client) : value;
+			},
+		})
+	: (globalThis.prisma ?? prismaClientSingleton());
+
+if (!isWorkerd() && process.env.NODE_ENV !== "production") {
+	globalThis.prisma = db;
+}
+
+export { db };

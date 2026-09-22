@@ -1,4 +1,4 @@
-import { IMAGES, links, productHref } from "@home/data/landing";
+import { links, productHref } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import { Container, Eyebrow } from "@shared/components/primitives";
 import { useTranslations } from "@shared/lib/translations";
@@ -13,15 +13,12 @@ export function HeroSection({ copy, products }: SectionCopyProps) {
 	/*
 	 * The spotlight card. A chosen product supplies its own name, photograph
 	 * and link, so the front page follows the catalogue instead of freezing a
-	 * copy of it. Everything falls back to the shipped card: an id that no
-	 * longer resolves leaves the band intact rather than blank.
+	 * copy of it. An unavailable product leaves a neutral department card.
 	 */
 	const spotlight = products?.["card.productId"];
 	const imageOverride = copy?.["card.image"]?.trim();
-	const cardProductName =
-		spotlight?.name ?? c("card.product") ?? t("home.hero.card.product");
-	const cardImage =
-		imageOverride || spotlight?.imageUrl || IMAGES.surfaceLaptop;
+	const cardProductName = spotlight?.name ?? t("home.computing.link");
+	const cardImage = spotlight ? spotlight.imageUrl : imageOverride || null;
 	const cardHref = spotlight
 		? productHref(spotlight.slug)
 		: links.category("laptops");
@@ -87,14 +84,20 @@ export function HeroSection({ copy, products }: SectionCopyProps) {
 					<Eyebrow className="absolute top-8 left-8 text-[10px] text-white/90">
 						{c("card.eyebrow")}
 					</Eyebrow>
-					<Image
-						src={cardImage}
-						alt={cardProductName}
-						fill
-						priority
-						sizes="(min-width: 1024px) 632px, 100vw"
-						className="object-contain p-[14%_4%_12%_2%]"
-					/>
+					{cardImage ? (
+						<Image
+							src={cardImage}
+							alt={cardProductName}
+							fill
+							priority
+							sizes="(min-width: 1024px) 632px, 100vw"
+							className="object-contain p-[14%_4%_12%_2%]"
+						/>
+					) : (
+						<span className="absolute inset-0 flex items-center justify-center text-sm">
+							Image unavailable
+						</span>
+					)}
 					<div className="absolute bottom-8 left-8">
 						<Eyebrow className="text-[9.5px] text-white/80">
 							{c("card.spotlight")}

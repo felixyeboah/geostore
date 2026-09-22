@@ -1,9 +1,4 @@
-import {
-	COMPUTING_DEVICES,
-	IMAGES,
-	links,
-	productHref,
-} from "@home/data/landing";
+import { links, productHref } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	ArrowLink,
@@ -20,22 +15,14 @@ export function ComputingSection({ copy, productLists }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.computing");
 
-	const bandImage = copy?.image?.trim() || IMAGES.surfaceLaptop;
-
 	const chosen = productLists?.productIds;
-	const devices = chosen?.length
-		? chosen.map((product) => ({
-				key: product.id,
-				brand: product.brand,
-				name: product.name,
-				href: productHref(product.slug),
-			}))
-		: COMPUTING_DEVICES.map((device) => ({
-				key: device.name,
-				brand: device.brand,
-				name: device.name,
-				href: links.category("laptops"),
-			}));
+	const bandImage = copy?.image?.trim() || chosen?.[0]?.imageUrl;
+	const devices = (chosen ?? []).map((product) => ({
+		key: product.id,
+		brand: product.brand,
+		name: product.name,
+		href: productHref(product.slug),
+	}));
 
 	return (
 		<section className="pt-16 lg:pt-[88px]">
@@ -67,14 +54,20 @@ export function ComputingSection({ copy, productLists }: SectionCopyProps) {
 								{t("home.computing.card.link")}
 							</ArrowLink>
 						</div>
-						<Image
-							src={bandImage}
-							alt=""
-							width={425}
-							height={309}
-							sizes="(min-width: 1024px) 470px, 80vw"
-							className="absolute right-[9%] bottom-[2%] w-[65%] object-contain"
-						/>
+						{bandImage ? (
+							<Image
+								src={bandImage}
+								alt=""
+								width={425}
+								height={309}
+								sizes="(min-width: 1024px) 470px, 80vw"
+								className="absolute right-[9%] bottom-[2%] w-[65%] object-contain"
+							/>
+						) : (
+							<span className="absolute inset-0 flex items-center justify-center text-sm">
+								Image unavailable
+							</span>
+						)}
 					</div>
 
 					<div className="flex flex-col">

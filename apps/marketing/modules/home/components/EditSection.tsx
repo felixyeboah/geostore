@@ -1,12 +1,5 @@
-import {
-	FEATURED_PRODUCTS,
-	formatCedis,
-	IMAGES,
-	links,
-	productHref,
-} from "@home/data/landing";
+import { formatCedis, links, productHref } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
-import { STOREFRONT_CHROME_DEFAULTS, whatsAppLink } from "@repo/commerce";
 import {
 	Container,
 	Eyebrow,
@@ -17,43 +10,20 @@ import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function EditSection({ copy, productLists, chrome }: SectionCopyProps) {
+export function EditSection({ copy, productLists }: SectionCopyProps) {
 	const t = useTranslations();
 	const c = sectionCopy(copy, t, "home.edit");
 
-	// A card with no catalogue product behind it has no price to show, so it
-	// says "Contact for price" — and that has to actually do something. It
-	// opens WhatsApp with the model already named, which is how this shop
-	// sells anyway. The number is editable under Storefront.
-	const whatsappNumber =
-		chrome?.whatsapp ?? STOREFRONT_CHROME_DEFAULTS.whatsapp;
-	const askAbout = (name: string) =>
-		whatsAppLink(
-			whatsappNumber,
-			`Hi GeoStoresGH — what's the price on the ${name}?`,
-		);
-
 	const chosen = productLists?.productIds;
-	const cards = chosen?.length
-		? chosen.map((product) => ({
-				key: product.id,
-				href: productHref(product.slug),
-				image: product.imageUrl ?? IMAGES.surfaceLaptop,
-				category: product.brand,
-				name: product.name,
-				price: formatCedis(product.priceInPesewas),
-				// A real product has a real price; nothing to ask about.
-				priceHref: null,
-			}))
-		: FEATURED_PRODUCTS.map((product) => ({
-				key: product.name,
-				href: links.category(product.category),
-				image: product.image,
-				category: t(`home.categories.items.${product.category}`),
-				name: product.name,
-				price: c("price"),
-				priceHref: askAbout(product.name),
-			}));
+	const cards = (chosen ?? []).map((product) => ({
+		key: product.id,
+		href: productHref(product.slug),
+		image: product.imageUrl,
+		category: product.brand,
+		name: product.name,
+		price: formatCedis(product.priceInPesewas),
+		priceHref: null,
+	}));
 
 	return (
 		<section className="pb-20 lg:pb-[88px]">
@@ -92,7 +62,7 @@ export function EditSection({ copy, productLists, chrome }: SectionCopyProps) {
 
 interface ProductCardProps {
 	href: string;
-	image: string;
+	image: string | null;
 	category: string;
 	name: string;
 	price: string;
@@ -118,13 +88,19 @@ function ProductCard({
 		<div className="group">
 			<Link href={href} className="block">
 				<div className="relative aspect-[294/270] overflow-hidden rounded-[4px] bg-[#f2f0ee]">
-					<Image
-						src={image}
-						alt={name}
-						fill
-						sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
-						className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-					/>
+					{image ? (
+						<Image
+							src={image}
+							alt={name}
+							fill
+							sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+							className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+						/>
+					) : (
+						<span className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+							Image unavailable
+						</span>
+					)}
 				</div>
 				<Eyebrow className="mt-6 text-[9.5px] text-muted-foreground">
 					{category}

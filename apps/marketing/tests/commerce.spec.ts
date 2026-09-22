@@ -1,7 +1,16 @@
 import { createClient } from "@libsql/client";
 import { expect, test } from "@playwright/test";
+import { formatMoney } from "@repo/commerce/money";
+import { STORE_PRODUCTS } from "@repo/commerce/seed-catalog";
 
 const PURCHASED_SLUG = "jbl-charge-6";
+const purchasedProduct = STORE_PRODUCTS.find(
+	(product) => product.slug === PURCHASED_SLUG,
+);
+if (!purchasedProduct) {
+	throw new Error(`Missing checkout fixture: ${PURCHASED_SLUG}`);
+}
+const PURCHASED_PRICE = formatMoney(purchasedProduct.priceInPesewas);
 
 /**
  * This suite buys a real seeded product, so every run permanently decrements
@@ -21,8 +30,8 @@ async function restorePurchasedStock() {
 			url: process.env.DATABASE_URL ?? "",
 			authToken: process.env.DATABASE_AUTH_TOKEN,
 		});
-		// JBL Charge 6 sells in colours — checkout decrements the variant the
-		// order line recorded, plus the product's aggregate. Both come back.
+		// Restore a variant when the purchased fixture has one, as well as
+		// the product aggregate. A product without variants matches no SKU.
 		await db.execute(
 			`UPDATE store_product_variant SET "stockQuantity" = "stockQuantity" + 1
 			 WHERE sku = (
@@ -78,7 +87,9 @@ test.describe("storefront purchase journey", () => {
 		await expect(
 			page.getByRole("heading", { name: "Your bag" }),
 		).toBeVisible();
-		await expect(page.getByText("GH₵ 1,850").first()).toBeVisible();
+		await expect(
+			page.getByText(PURCHASED_PRICE, { exact: true }).first(),
+		).toBeVisible();
 
 		await page.getByRole("link", { name: "Continue to checkout" }).click();
 		// The form hydrates after the suspense fallback — filling before that

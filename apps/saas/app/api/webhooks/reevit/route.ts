@@ -1,35 +1,38 @@
 import { formatMoney } from "@repo/commerce";
 import {
 	getRecipientName,
+	hasProcessedWebhookEvent,
 	markStoreOrderPaid,
 	markStoreOrderPaymentFailed,
 	markStoreOrderRefunded,
 	recordWebhookEvent,
-	releaseWebhookEvent,
 } from "@repo/database";
 import { logger } from "@repo/logs";
 import { sendEmail } from "@repo/mail";
 import { verifyReevitWebhook } from "@repo/payments";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
-interface ReevitWebhookEvent {
-	id: string;
-	type: string;
-	data?: {
-		id?: string;
-		metadata?: {
-			order_id?: string;
-		};
-	};
-}
+const eventSchema = z.object({
+	id: z.string().min(1),
+	type: z.string().min(1),
+});
+const paymentDataSchema = z.object({
+	id: z.string().min(1),
+	metadata: z.object({ order_id: z.string().min(1).optional() }).optional(),
+});
+const handledEvents = new Set([
+	"payment.succeeded",
+	"payment.failed",
+	"payment.canceled",
+	"payment.refunded",
+]);
 
 /**
  * `sendEmail` swallows provider failures, but it renders the template *before*
  * its own try block, so a bad context or a missing translation throws out of it.
- * Letting that escape would release the webhook claim and re-run the payment
- * handler on the provider's retry — undoing a correct database write because a
- * receipt could not be typeset. The ledger is authoritative; the receipt is a
- * side effect.
+ * Completion is already recorded when this runs. Receipts are best-effort
+ * side effects and cannot roll back the authoritative payment ledger.
  */
 async function notifyCustomer(send: () => Promise<unknown>, context: object) {
 	try {
@@ -57,91 +60,129 @@ export async function POST(request: Request) {
 		);
 	}
 
-	const event = JSON.parse(rawBody) as ReevitWebhookEvent;
-
-	if (!event.id) {
+	let body: unknown;
+	try {
+		body = JSON.parse(rawBody);
+	} catch {
+		return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+	}
+	const payload = z.record(z.string(), z.json()).safeParse(body);
+	const envelope = eventSchema.safeParse(body);
+	if (!payload.success || !envelope.success) {
+		return NextResponse.json({ error: "Invalid event" }, { status: 400 });
+	}
+	const event = envelope.data;
+	const payment = paymentDataSchema.safeParse(payload.data.data);
+	if (handledEvents.has(event.type) && !payment.success) {
 		return NextResponse.json(
-			{ error: "Missing event id" },
+			{ error: "Invalid payment event" },
 			{ status: 400 },
 		);
 	}
 
-	// Claim the event first so two simultaneous deliveries can't both process
-	// it. The claim is released again if handling throws — otherwise the
-	// provider's retry would be dropped as a duplicate and a customer who was
-	// charged would be left sitting on an unpaid order.
-	const recorded = await recordWebhookEvent(
-		event.id,
-		event.type,
-		JSON.parse(rawBody) as Record<string, unknown>,
-	);
-	if (recorded.duplicate) {
-		return NextResponse.json({ received: true, duplicate: true });
-	}
-
-	const orderId = event.data?.metadata?.order_id;
-	if (!orderId) {
-		return NextResponse.json({ received: true, ignored: true });
-	}
-
+	const orderId = payment.success
+		? payment.data.metadata?.order_id
+		: undefined;
 	try {
-		if (event.type === "payment.succeeded") {
-			const order = await markStoreOrderPaid({
+		if (await hasProcessedWebhookEvent(event.id)) {
+			return NextResponse.json({ received: true, duplicate: true });
+		}
+
+		let notification: (() => Promise<unknown>) | undefined;
+		let notificationTemplate: string | undefined;
+		let ignored =
+			!orderId || !payment.success || !handledEvents.has(event.type);
+		let reconciliationRequired = false;
+
+		if (orderId && payment.success) {
+			if (event.type === "payment.succeeded") {
+				const order = await markStoreOrderPaid({
+					orderId,
+					providerPaymentId: payment.data.id,
+					providerPayload: payload.data,
+				});
+				reconciliationRequired =
+					order.paymentTransition === "additional" ||
+					order.paymentTransition === "reconciliation";
+				if (order.paymentTransition === "confirmed") {
+					notificationTemplate = "orderConfirmation";
+					notification = () =>
+						sendEmail({
+							to: order.customerEmail,
+							templateId: "orderConfirmation",
+							context: {
+								name: getRecipientName(order.shippingAddress),
+								orderNumber: order.orderNumber,
+								totalLabel: formatMoney(order.totalInPesewas),
+							},
+						});
+				}
+			} else if (
+				event.type === "payment.failed" ||
+				event.type === "payment.canceled"
+			) {
+				const order = await markStoreOrderPaymentFailed(
+					orderId,
+					payment.data.id,
+				);
+				ignored = order.failureTransition !== "failed";
+				if (!ignored) {
+					notificationTemplate = "orderFailed";
+					notification = () =>
+						sendEmail({
+							to: order.customerEmail,
+							templateId: "orderFailed",
+							context: {
+								name: getRecipientName(order.shippingAddress),
+								orderNumber: order.orderNumber,
+							},
+						});
+				}
+			} else if (event.type === "payment.refunded") {
+				const order = await markStoreOrderRefunded(
+					orderId,
+					payment.data.id,
+				);
+				ignored = order.refundTransition === "already-refunded";
+				if (order.refundTransition === "full") {
+					notificationTemplate = "orderRefunded";
+					notification = () =>
+						sendEmail({
+							to: order.customerEmail,
+							templateId: "orderRefunded",
+							context: {
+								name: getRecipientName(order.shippingAddress),
+								orderNumber: order.orderNumber,
+							},
+						});
+				}
+			}
+		}
+
+		// Only completed database work suppresses a retry. A process crash before
+		// this write safely replays the idempotent payment handler. Concurrent
+		// deliveries may both reach the handler; only the completion winner notifies.
+		const recorded = await recordWebhookEvent(
+			event.id,
+			event.type,
+			payload.data,
+		);
+		if (recorded.duplicate) {
+			return NextResponse.json({ received: true, duplicate: true });
+		}
+		if (notification) {
+			await notifyCustomer(notification, {
+				eventId: event.id,
 				orderId,
-				providerPaymentId: event.data?.id ?? orderId,
-				providerPayload: JSON.parse(rawBody),
+				template: notificationTemplate,
 			});
-			await notifyCustomer(
-				() =>
-					sendEmail({
-						to: order.customerEmail,
-						templateId: "orderConfirmation",
-						context: {
-							name: getRecipientName(order.shippingAddress),
-							orderNumber: order.orderNumber,
-							totalLabel: formatMoney(order.totalInPesewas),
-						},
-					}),
-				{ eventId: event.id, orderId, template: "orderConfirmation" },
-			);
 		}
-
-		if (
-			event.type === "payment.failed" ||
-			event.type === "payment.canceled"
-		) {
-			const order = await markStoreOrderPaymentFailed(orderId);
-			await notifyCustomer(
-				() =>
-					sendEmail({
-						to: order.customerEmail,
-						templateId: "orderFailed",
-						context: {
-							name: getRecipientName(order.shippingAddress),
-							orderNumber: order.orderNumber,
-						},
-					}),
-				{ eventId: event.id, orderId, template: "orderFailed" },
-			);
-		}
-
-		if (event.type === "payment.refunded") {
-			const order = await markStoreOrderRefunded(orderId);
-			await notifyCustomer(
-				() =>
-					sendEmail({
-						to: order.customerEmail,
-						templateId: "orderRefunded",
-						context: {
-							name: getRecipientName(order.shippingAddress),
-							orderNumber: order.orderNumber,
-						},
-					}),
-				{ eventId: event.id, orderId, template: "orderRefunded" },
-			);
-		}
+		return NextResponse.json({
+			received: true,
+			...(ignored ? { ignored: true } : {}),
+			...(reconciliationRequired ? { reconciliationRequired: true } : {}),
+		});
 	} catch (error) {
-		await releaseWebhookEvent(event.id);
 		logger.error("Failed to process Reevit webhook", {
 			eventId: event.id,
 			eventType: event.type,
@@ -153,6 +194,4 @@ export async function POST(request: Request) {
 			{ status: 500 },
 		);
 	}
-
-	return NextResponse.json({ received: true });
 }

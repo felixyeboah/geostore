@@ -1,10 +1,4 @@
-import {
-	formatCedis,
-	IMAGES,
-	links,
-	productHref,
-	RAIL_PRODUCTS,
-} from "@home/data/landing";
+import { formatCedis, links, productHref } from "@home/data/landing";
 import { type SectionCopyProps, sectionCopy } from "@home/lib/section-copy";
 import {
 	Container,
@@ -26,29 +20,17 @@ export function ProductRail({ copy, productLists }: SectionCopyProps) {
 	 * front page advertising a figure the shop no longer charged.
 	 */
 	const chosen = productLists?.productIds;
-	const items = chosen?.length
-		? chosen.map((product) => ({
-				slug: product.slug,
-				name: product.name,
-				brand: product.brand,
-				image: product.imageUrl ?? IMAGES.surfaceLaptop,
-				priceInPesewas: product.priceInPesewas,
-				compareAtInPesewas: product.compareAtInPesewas ?? undefined,
-				rating: product.rating,
-				reviewCount: product.reviewCount,
-				isNew: false,
-			}))
-		: RAIL_PRODUCTS.map((product) => ({
-				slug: product.slug,
-				name: product.name,
-				brand: product.brand,
-				image: product.image,
-				priceInPesewas: product.priceInPesewas,
-				compareAtInPesewas: product.compareAtInPesewas,
-				rating: product.rating as number | null,
-				reviewCount: product.reviewCount,
-				isNew: product.isNew ?? false,
-			}));
+	const items = (chosen ?? []).map((product) => ({
+		slug: product.slug,
+		name: product.name,
+		brand: product.brand,
+		image: product.imageUrl,
+		priceInPesewas: product.priceInPesewas,
+		compareAtInPesewas: product.compareAtInPesewas ?? undefined,
+		rating: product.rating,
+		reviewCount: product.reviewCount,
+		isNew: false,
+	}));
 
 	return (
 		<section className="border-border border-t pt-16 pb-20 lg:pt-[88px] lg:pb-[88px]">
@@ -72,13 +54,19 @@ export function ProductRail({ copy, productLists }: SectionCopyProps) {
 								className="group block"
 							>
 								<div className="relative aspect-[294/270] overflow-hidden rounded-[4px] bg-[#f2f0ee]">
-									<Image
-										src={product.image}
-										alt={product.name}
-										fill
-										sizes="300px"
-										className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-									/>
+									{product.image ? (
+										<Image
+											src={product.image}
+											alt={product.name}
+											fill
+											sizes="300px"
+											className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+										/>
+									) : (
+										<span className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+											Image unavailable
+										</span>
+									)}
 									{product.isNew && (
 										<Eyebrow className="absolute top-3 left-3 rounded-[2px] bg-primary px-2 py-1.5 text-[8.5px] text-white">
 											{t("home.products.new")}

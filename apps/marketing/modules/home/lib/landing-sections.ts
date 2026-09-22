@@ -9,6 +9,7 @@ import {
 	parseIdList,
 	parseLandingSettings,
 } from "@repo/commerce";
+import { STORE_PRODUCTS } from "@repo/commerce/seed-catalog";
 import {
 	getLandingSections,
 	getPublishedStoreProductsByIds,
@@ -102,9 +103,46 @@ export async function getRenderableSections(options?: {
 			),
 		}));
 
+	// Defaults select models only: names, images and prices always come from
+	// published database rows. Removed or archived products never become seed cards.
+	const defaultSlugs: Record<string, string[]> = {
+		hero: ["macbook-air-m5"],
+		edit: ["macbook-air-m5", "galaxy-s26-ultra", "iphone-18-pro"],
+		products: [
+			"iphone-18-pro",
+			"galaxy-s26-ultra",
+			"ipad-air-m4",
+			"airpods-pro-3",
+			"lg-oled55c6pua",
+			"apple-watch-series-12",
+			"macbook-air-m5",
+			"jbl-charge-6",
+		],
+		computing: ["macbook-air-m5", "mac-mini", "logitech-mx-keys-s"],
+		gaming: ["lg-oled55c6pua"],
+	};
+	for (const { section, copy } of visible) {
+		const field =
+			section.key === "hero"
+				? "card.productId"
+				: section.key === "gaming"
+					? "productId"
+					: "productIds";
+		if (!copy[field]?.trim() && defaultSlugs[section.key]) {
+			const ids = defaultSlugs[section.key].flatMap((slug) => {
+				const product = STORE_PRODUCTS.find(
+					(entry) => entry.slug === slug,
+				);
+				return product ? [product.id] : [];
+			});
+			copy[field] =
+				field !== "productIds" ? (ids[0] ?? "") : JSON.stringify(ids);
+		}
+	}
+
 	// Every product referenced anywhere on the page, fetched once. An id that
 	// no longer resolves — withdrawn, archived, deleted — simply drops out,
-	// and the band falls back to its shipped content.
+	// without advertising a removed product.
 	const references = visible.flatMap(({ section, copy }) =>
 		section.fields
 			.filter((field) => field.type === "product")
