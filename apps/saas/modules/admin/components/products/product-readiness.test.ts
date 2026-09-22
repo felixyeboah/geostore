@@ -80,6 +80,38 @@ function photoReady(values: ProductFormValues) {
 	)?.ok;
 }
 
+test("invalid photo URLs retain their specific error without a masking missing-photo error", () => {
+	for (const values of [
+		{ ...product, imageUrls: ["https://unapproved.example/photo.jpg"] },
+		{
+			...optionProduct,
+			optionMedia: [
+				{
+					axis: "Colour",
+					value: "White",
+					images: ["https://unapproved.example/photo.jpg"],
+				},
+			],
+		},
+	]) {
+		const result = productFormSchema.safeParse(values);
+		assert.equal(result.success, false);
+		if (result.success) {
+			throw new Error("Invalid host must be rejected");
+		}
+		assert.ok(
+			result.error.issues.some((issue) =>
+				issue.message.includes("image host is not allowed"),
+			),
+		);
+		assert.ok(
+			!result.error.issues.some((issue) =>
+				issue.message.includes("Add a product image"),
+			),
+		);
+	}
+});
+
 test("option-only photos support saving and publishing a matching active variant", () => {
 	assert.equal(productFormSchema.safeParse(optionProduct).success, true);
 	assert.equal(photoReady(optionProduct), true);

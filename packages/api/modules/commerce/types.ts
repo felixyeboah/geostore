@@ -90,6 +90,15 @@ export const productFormSchema = z
 		),
 	})
 	.superRefine((values, context) => {
+		// Keep the specific URL/host error: an array-level missing-photo issue
+		// would mask it in the form resolver even though a photo was supplied.
+		if (
+			context.issues.some((issue) =>
+				["imageUrls", "optionMedia"].includes(String(issue.path?.[0])),
+			)
+		) {
+			return;
+		}
 		if (productPhotoCount(values) === 0) {
 			context.addIssue({
 				code: "custom",
