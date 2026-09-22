@@ -4,7 +4,7 @@ import {
 	type ProductFormValues,
 	productFormSchema,
 } from "@repo/api/modules/commerce/types";
-import { isReadyToPublish } from "./product-readiness";
+import { isReadyToPublish, productReadiness } from "./product-readiness";
 
 const product: ProductFormValues = {
 	name: "Test phone",
@@ -55,4 +55,107 @@ test("new combinations can publish before the server assigns their SKUs", () => 
 		),
 		false,
 	);
+});
+
+const optionProduct: ProductFormValues = {
+	...product,
+	imageUrls: [],
+	variants: [
+		{
+			name: "White",
+			sku: "",
+			priceInPesewas: 10000,
+			stockQuantity: 3,
+			attributes: { Colour: "White" },
+			isActive: true,
+		},
+	],
+	optionMedia: [
+		{ axis: " colour ", value: " WHITE ", images: product.imageUrls },
+	],
+};
+function photoReady(values: ProductFormValues) {
+	return productReadiness(values, "options").find(
+		(rule) => rule.id === "photo",
+	)?.ok;
+}
+
+test("option-only photos support saving and publishing a matching active variant", () => {
+	assert.equal(productFormSchema.safeParse(optionProduct).success, true);
+	assert.equal(photoReady(optionProduct), true);
+	assert.equal(isReadyToPublish(optionProduct, "options"), true);
+	assert.equal(
+		productReadiness(optionProduct, "options").find(
+			(rule) => rule.id === "photo",
+		)?.detail,
+		"1",
+	);
+});
+
+test("missing, empty, orphaned and inactive-only option galleries cannot replace a product photo", () => {
+	const invalid: ProductFormValues[] = [
+		{ ...optionProduct, optionMedia: [] },
+		{
+			...optionProduct,
+			optionMedia: [{ axis: "Colour", value: "White", images: [] }],
+		},
+		{
+			...optionProduct,
+			optionMedia: [
+				{ axis: "Colour", value: "Black", images: product.imageUrls },
+			],
+		},
+		{
+			...optionProduct,
+			optionMedia: [
+				{ axis: "Storage", value: "White", images: product.imageUrls },
+			],
+		},
+		{ ...optionProduct, variants: [] },
+		{
+			...optionProduct,
+			variants: optionProduct.variants.map((variant) => ({
+				...variant,
+				isActive: false,
+			})),
+		},
+	];
+	for (const values of invalid) {
+		const parsed = productFormSchema.safeParse(values);
+		assert.equal(parsed.success, false);
+		if (!parsed.success) {
+			assert.ok(
+				parsed.error.issues.some(
+					(issue) => issue.path[0] === "imageUrls",
+				),
+			);
+		}
+		assert.equal(photoReady(values), false);
+	}
+});
+
+test("unapproved option image hosts still reject even beside an allowed photo", () => {
+	const values: ProductFormValues = {
+		...optionProduct,
+		imageUrls: product.imageUrls,
+		optionMedia: [
+			{
+				axis: "Colour",
+				value: "White",
+				images: ["https://unapproved.example/image.png"],
+			},
+		],
+	};
+	assert.equal(productFormSchema.safeParse(values).success, false);
+	assert.equal(photoReady(values), false);
+});
+
+test("general photos remain sufficient for a single product or unmatched option media", () => {
+	const values: ProductFormValues = {
+		...optionProduct,
+		imageUrls: product.imageUrls,
+		variants: [],
+	};
+	assert.equal(productFormSchema.safeParse(values).success, true);
+	assert.equal(photoReady(values), true);
 });

@@ -10,6 +10,7 @@ import {
 } from "@repo/commerce";
 import { cn } from "@repo/ui";
 import { useState } from "react";
+import { previewVariantSelection } from "./product-preview-selection";
 import type { SoldAs } from "./product-readiness";
 
 interface ProductPreviewProps {
@@ -34,13 +35,10 @@ export function ProductPreview({
 	const [picks, setPicks] = useState<Record<string, string>>({});
 	const axes = soldAs === "options" ? variantAxes(values.variants) : [];
 
-	// The current pick per axis: whatever was clicked, else the first value.
-	const pick: Record<string, string> = {};
-	for (const axis of axes) {
-		const chosen = picks[axis.key];
-		pick[axis.key] =
-			chosen && axis.values.includes(chosen) ? chosen : axis.values[0];
-	}
+	const pick =
+		soldAs === "options"
+			? previewVariantSelection(values.variants, picks)
+			: {};
 	const variant = values.variants.find((row) =>
 		axes.every((axis) => {
 			const entry = Object.entries(row.attributes ?? {}).find(
@@ -187,10 +185,10 @@ export function ProductPreview({
 													: value
 											}
 											onClick={() =>
-												setPicks((current) => ({
-													...current,
+												setPicks({
+													...pick,
 													[axis.key]: value,
-												}))
+												})
 											}
 											className={cn(
 												isColour
