@@ -147,7 +147,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
 				{/* The featured-product split from the mockup: image to the
 				    edge on the left, everything else in a narrower column. */}
-				<section className="mt-9 grid items-stretch gap-0 lg:grid-cols-[60fr_40fr]">
+				<section className="mt-9 grid items-start gap-0 lg:grid-cols-[55fr_45fr]">
 					<ProductSelectionProvider product={product}>
 						<ProductGallery
 							name={product.name}
@@ -165,7 +165,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 							}
 						/>
 
-						<div className="flex flex-col justify-center pt-8 lg:pt-0 lg:pl-16">
+						<div className="flex min-w-0 flex-col pt-8 lg:pt-0 lg:pl-12">
 							<p className="eyebrow text-muted-foreground">
 								{product.brand} ·{" "}
 								{conditionLabel(product.condition)}

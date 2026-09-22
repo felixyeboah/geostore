@@ -48,8 +48,8 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 	}
 
 	return (
-		<div className="flex flex-col gap-3">
-			<div className="relative min-h-[420px] flex-1 overflow-hidden bg-muted lg:min-h-[640px]">
+		<div className="flex min-w-0 flex-col gap-3 self-start lg:sticky lg:top-32">
+			<div className="relative h-80 overflow-hidden bg-muted sm:h-96 lg:h-[min(65svh,36rem)]">
 				{/*
 				 * Every image is mounted and cross-faded rather than swapping
 				 * one `src`, so switching a thumbnail never shows the empty
@@ -68,7 +68,7 @@ export function ProductGallery({ name, images, badge }: ProductGalleryProps) {
 						priority={index === 0}
 						sizes="(min-width: 1024px) 58vw, 100vw"
 						className={cn(
-							"object-contain transition-opacity duration-300",
+							"object-contain p-6 transition-opacity duration-300 lg:p-8",
 							image === activeImage ? "opacity-100" : "opacity-0",
 						)}
 						aria-hidden={image === activeImage ? undefined : true}
