@@ -310,7 +310,7 @@ export function ProductForm({
 						<Section
 							id="photos"
 							title="Photos"
-							lede="The first one is the cover — it's what shows on cards, in search and in the bag. Photos for a specific colour are set under Options, in “Photos for each colour”."
+							lede="Add general product photos here, or set photos for each active colour under Options. The selected option’s photos appear in the bag and order; general photos are the fallback."
 						>
 							<FormField
 								control={form.control}

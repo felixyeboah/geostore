@@ -95,14 +95,22 @@ export function axisValueVariant(
 }
 
 /**
- * The pick the picker opens on: the first in-stock variant's attributes, so
- * the default state is always something a buyer can actually add to the bag.
+ * Open on the lowest-priced available configuration. Database name ordering
+ * puts "1 TB" before "256 GB", so the first row is not the advertised entry
+ * price. Keep source order for ties; sold-out products use their lowest price.
  */
 export function defaultVariantSelection(
 	variants: StoreProductVariant[],
 ): Record<string, string> {
-	const first =
-		variants.find((variant) => variant.stockQuantity > 0) ?? variants[0];
+	const available = variants.filter((variant) => variant.stockQuantity > 0);
+	const candidates = available.length ? available : variants;
+	const first = candidates.reduce<StoreProductVariant | undefined>(
+		(lowest, variant) =>
+			!lowest || variant.priceInPesewas < lowest.priceInPesewas
+				? variant
+				: lowest,
+		undefined,
+	);
 	return { ...(first?.attributes ?? {}) };
 }
 

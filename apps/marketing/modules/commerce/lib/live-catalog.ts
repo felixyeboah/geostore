@@ -7,8 +7,10 @@ import type {
 	StoreReview,
 } from "@repo/commerce";
 import {
+	defaultVariantSelection,
 	getSmartCollection,
 	optionMediaFromStorage,
+	resolveOptionGallery,
 	SMART_COLLECTIONS,
 } from "@repo/commerce";
 import {
@@ -61,7 +63,7 @@ function mapReview(review: {
 	};
 }
 
-function mapProduct(product: {
+export function mapProduct(product: {
 	id: string;
 	name: string;
 	slug: string;
@@ -105,8 +107,8 @@ function mapProduct(product: {
 		attributes: unknown;
 	}>;
 }): StoreProduct {
-	// `images` stays the untagged base set — the cover, the SEO photo, the
-	// shots that show for every option. Tagged shots are rebuilt into
+	// `images` contains only generic shots safe to show for every option.
+	// Tagged shots are rebuilt into
 	// `optionMedia` so the PDP gallery can swap when a value is picked.
 	const optionMedia = optionMediaFromStorage(
 		product.images,
@@ -115,6 +117,22 @@ function mapProduct(product: {
 	const images = product.images
 		.filter((image) => !image.optionAxis)
 		.map((image) => image.url);
+	const variants = (product.variants ?? []).map((variant) => ({
+		id: variant.id,
+		name: variant.name,
+		sku: variant.sku,
+		priceInPesewas: variant.priceInPesewas,
+		compareAtInPesewas: variant.compareAtInPesewas ?? undefined,
+		stockQuantity: variant.stockQuantity,
+		attributes: parseSpecifications(variant.attributes),
+	}));
+	const imageUrl =
+		resolveOptionGallery(
+			{ images, optionMedia },
+			defaultVariantSelection(variants),
+		)[0] ??
+		product.images[0]?.url ??
+		"/images/product-placeholder.svg";
 	const detailedReviews = product.reviews.flatMap((review) =>
 		// A review no longer needs an account behind it — this shop has no
 		// customer sign-up, so requiring `user` here dropped every guest
@@ -146,7 +164,7 @@ function mapProduct(product: {
 		priceInPesewas: product.priceInPesewas,
 		compareAtInPesewas: product.compareAtInPesewas ?? undefined,
 		stockQuantity: product.stockQuantity,
-		imageUrl: images[0] ?? "/images/product-placeholder.svg",
+		imageUrl,
 		images,
 		optionMedia: optionMedia.length ? optionMedia : undefined,
 		rating: calculateRating(product.reviews),
@@ -159,15 +177,7 @@ function mapProduct(product: {
 		addedAt: (product.publishedAt ?? product.createdAt).toISOString(),
 		specifications: parseSpecifications(product.specifications),
 		reviews: detailedReviews,
-		variants: (product.variants ?? []).map((variant) => ({
-			id: variant.id,
-			name: variant.name,
-			sku: variant.sku,
-			priceInPesewas: variant.priceInPesewas,
-			compareAtInPesewas: variant.compareAtInPesewas ?? undefined,
-			stockQuantity: variant.stockQuantity,
-			attributes: parseSpecifications(variant.attributes),
-		})),
+		variants,
 	};
 }
 

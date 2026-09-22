@@ -15,7 +15,7 @@ import {
 
 // A destructive reset is separate from the convergent, non-destructive seed command.
 // Default invocation only reports counts. The host must be explicitly repeated.
-const TABLES = [
+const HISTORY_TABLES = [
 	"store_webhook_event",
 	"store_inventory_event",
 	"store_review",
@@ -23,6 +23,10 @@ const TABLES = [
 	"store_transaction",
 	"store_order_status_event",
 	"store_order",
+] as const;
+
+const TABLES = [
+	...HISTORY_TABLES,
 	"store_product_collection",
 	"store_product_image",
 	"store_product_variant",
@@ -124,7 +128,7 @@ function catalogStatements(): InStatement[] {
 						.map(({ axis, value, hex }) => ({ axis, value, hex })),
 				),
 				categoryId,
-				publishedAt: now,
+				publishedAt: new Date(product.addedAt).toISOString(),
 				createdAt: now,
 				updatedAt: now,
 			}),
@@ -260,6 +264,19 @@ async function main() {
 			const rows = await transaction.batch(
 				TABLES.map((table) => `SELECT * FROM "${table}"`),
 			);
+			const snapshot = Object.fromEntries(
+				TABLES.map((table, index) => [table, rows[index].rows]),
+			);
+			// Re-enriching the production seed must not erase commerce that
+			// arrived since the previous seed. Check under the same write lock.
+			if (
+				process.argv.includes("--require-empty-commerce-history") &&
+				HISTORY_TABLES.some((table) => snapshot[table].length > 0)
+			) {
+				throw new Error(
+					"Commerce history exists; refusing catalog replacement. Use a preserving migration instead.",
+				);
+			}
 			const backupPath = path.join(
 				backupDir,
 				`catalog-${Date.now()}.json`,
@@ -269,12 +286,7 @@ async function main() {
 				JSON.stringify(
 					{
 						host,
-						tables: Object.fromEntries(
-							TABLES.map((table, index) => [
-								table,
-								rows[index].rows,
-							]),
-						),
+						tables: snapshot,
 					},
 					null,
 					2,

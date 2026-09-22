@@ -1010,6 +1010,42 @@ interface ReservedOrderItem {
 	lineTotalInPesewas: number;
 }
 
+function orderItemImage(
+	images: Array<{
+		url: string;
+		optionAxis: string | null;
+		optionValue: string | null;
+	}>,
+	attributes: Prisma.JsonValue | undefined,
+): string | undefined {
+	const selections =
+		attributes &&
+		typeof attributes === "object" &&
+		!Array.isArray(attributes)
+			? Object.entries(attributes).filter(
+					(entry): entry is [string, string] =>
+						typeof entry[1] === "string",
+				)
+			: [];
+	const matching = images.find(
+		(image) =>
+			image.optionAxis &&
+			image.optionValue &&
+			selections.some(
+				([axis, value]) =>
+					axis.trim().toLowerCase() ===
+						image.optionAxis?.trim().toLowerCase() &&
+					value.trim().toLowerCase() ===
+						image.optionValue?.trim().toLowerCase(),
+			),
+	);
+	// A different option's photograph is never a safe fallback for an order.
+	return (
+		matching?.url ??
+		images.find((image) => !image.optionAxis && !image.optionValue)?.url
+	);
+}
+
 async function reserveOrderItems(
 	transaction: Prisma.TransactionClient,
 	items: CreateMockStoreOrderInput["items"],
@@ -1020,7 +1056,7 @@ async function reserveOrderItems(
 			status: "ACTIVE",
 		},
 		include: {
-			images: { orderBy: { sortOrder: "asc" }, take: 1 },
+			images: { orderBy: { sortOrder: "asc" } },
 			variants: true,
 		},
 	});
@@ -1038,6 +1074,15 @@ async function reserveOrderItems(
 		if (!Number.isInteger(item.quantity) || item.quantity < 1) {
 			throw new StoreOperationError(
 				`Choose a valid quantity for ${product.name}.`,
+			);
+		}
+
+		if (
+			!item.variantId &&
+			product.variants.some((candidate) => candidate.isActive)
+		) {
+			throw new StoreOperationError(
+				`Choose an option for ${product.name}.`,
 			);
 		}
 
@@ -1068,7 +1113,7 @@ async function reserveOrderItems(
 			productName: product.name,
 			variantName: variant?.name,
 			sku: variant?.sku ?? product.sku,
-			imageUrl: product.images[0]?.url,
+			imageUrl: orderItemImage(product.images, variant?.attributes),
 			unitPriceInPesewas,
 			quantity: item.quantity,
 			lineTotalInPesewas: unitPriceInPesewas * item.quantity,

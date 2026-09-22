@@ -1,4 +1,8 @@
-import type { ProductFormValues } from "@repo/api/modules/commerce/types";
+import {
+	type ProductFormValues,
+	productFormSchema,
+	productPhotoCount,
+} from "@repo/api/modules/commerce/types";
 import { isColourAxis, optionValueHex, variantAxes } from "@repo/commerce";
 
 /** Whether the product sells as one item or as a set of combinations. */
@@ -26,6 +30,11 @@ export function productReadiness(
 	soldAs: SoldAs,
 ): ReadinessRule[] {
 	const active = values.variants.filter((variant) => variant.isActive);
+	const photoCount = productPhotoCount(values);
+	const validImages =
+		productFormSchema.shape.imageUrls.safeParse(values.imageUrls).success &&
+		productFormSchema.shape.optionMedia.safeParse(values.optionMedia)
+			.success;
 	const rules: ReadinessRule[] = [
 		{
 			id: "basics",
@@ -49,10 +58,8 @@ export function productReadiness(
 			id: "photo",
 			label: "At least one photo",
 			anchor: "#photos",
-			ok: values.imageUrls.length > 0,
-			detail: values.imageUrls.length
-				? String(values.imageUrls.length)
-				: "",
+			ok: validImages && photoCount > 0,
+			detail: photoCount ? String(photoCount) : "",
 		},
 		{
 			id: "price",

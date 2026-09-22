@@ -1,38 +1,41 @@
 import { isAllowedImageUrl } from "@repo/utils";
 import { z } from "zod";
 
-export const productFormSchema = z.object({
-	name: z.string().trim().min(2, "Enter a product name."),
-	slug: z
-		.string()
-		.trim()
-		.min(2, "Enter a product URL slug.")
-		.regex(
-			/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-			"Use lowercase words separated by hyphens.",
-		),
-	shortDescription: z
-		.string()
-		.trim()
-		.min(10, "Add a short description.")
-		.max(180),
-	description: z
-		.string()
-		.trim()
-		.min(30, "Add a more complete product description."),
-	brand: z.string().trim().min(2, "Enter the brand."),
-	// Assigned by the server on first save; retained for displaying saved codes.
-	sku: z.string().trim(),
-	status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
-	condition: z.enum(["NEW", "USED", "REFURBISHED"]),
-	priceInPesewas: z.number().int().min(1, "Enter a price greater than zero."),
-	compareAtInPesewas: z.number().int().positive().optional(),
-	stockQuantity: z.number().int().min(0),
-	lowStockThreshold: z.number().int().min(0),
-	isFeatured: z.boolean(),
-	categoryId: z.string().min(1, "Choose a category."),
-	imageUrls: z
-		.array(
+export const productFormSchema = z
+	.object({
+		name: z.string().trim().min(2, "Enter a product name."),
+		slug: z
+			.string()
+			.trim()
+			.min(2, "Enter a product URL slug.")
+			.regex(
+				/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+				"Use lowercase words separated by hyphens.",
+			),
+		shortDescription: z
+			.string()
+			.trim()
+			.min(10, "Add a short description.")
+			.max(180),
+		description: z
+			.string()
+			.trim()
+			.min(30, "Add a more complete product description."),
+		brand: z.string().trim().min(2, "Enter the brand."),
+		// Assigned by the server on first save; retained for displaying saved codes.
+		sku: z.string().trim(),
+		status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
+		condition: z.enum(["NEW", "USED", "REFURBISHED"]),
+		priceInPesewas: z
+			.number()
+			.int()
+			.min(1, "Enter a price greater than zero."),
+		compareAtInPesewas: z.number().int().positive().optional(),
+		stockQuantity: z.number().int().min(0),
+		lowStockThreshold: z.number().int().min(0),
+		isFeatured: z.boolean(),
+		categoryId: z.string().min(1, "Choose a category."),
+		imageUrls: z.array(
 			z
 				.string()
 				.url("Use a complete image URL.")
@@ -40,52 +43,96 @@ export const productFormSchema = z.object({
 					message:
 						"That image host is not allowed. Upload the image instead, or use an approved host.",
 				}),
-		)
-		.min(1, "Add at least one product image."),
-	/**
-	 * Per-option-value extras: a swatch hex plus the shots that make up that
-	 * value's gallery on the storefront. Any axis can carry media, not just
-	 * Colour — a leather strap's photos work the same way.
-	 */
-	optionMedia: z.array(
-		z.object({
-			axis: z.string().trim().min(1, "Pick the option name."),
-			value: z.string().trim().min(1, "Pick the option value."),
-			hex: z
-				.string()
-				.trim()
-				.regex(
-					/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i,
-					"Use a hex colour like #1c1c1e.",
-				)
-				.optional()
-				.or(z.literal("")),
-			images: z.array(
-				z
+		),
+		/**
+		 * Per-option-value extras: a swatch hex plus the shots that make up that
+		 * value's gallery on the storefront. Any axis can carry media, not just
+		 * Colour — a leather strap's photos work the same way.
+		 */
+		optionMedia: z.array(
+			z.object({
+				axis: z.string().trim().min(1, "Pick the option name."),
+				value: z.string().trim().min(1, "Pick the option value."),
+				hex: z
 					.string()
-					.url("Use a complete image URL.")
-					.refine(isAllowedImageUrl, {
-						message:
-							"That image host is not allowed. Upload the image instead, or use an approved host.",
-					}),
+					.trim()
+					.regex(
+						/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i,
+						"Use a hex colour like #1c1c1e.",
+					)
+					.optional()
+					.or(z.literal("")),
+				images: z.array(
+					z
+						.string()
+						.url("Use a complete image URL.")
+						.refine(isAllowedImageUrl, {
+							message:
+								"That image host is not allowed. Upload the image instead, or use an approved host.",
+						}),
+				),
+			}),
+		),
+		specifications: z.record(z.string(), z.string()),
+		variants: z.array(
+			z.object({
+				id: z.string().optional(),
+				// Optional: when it is blank the option values ("Black · 256 GB")
+				// become the name — that is what buyers read, so the values are the
+				// label anyway.
+				name: z.string().trim(),
+				sku: z.string().trim(),
+				priceInPesewas: z.number().int().min(1),
+				stockQuantity: z.number().int().min(0),
+				attributes: z.record(z.string(), z.string()),
+				isActive: z.boolean(),
+			}),
+		),
+	})
+	.superRefine((values, context) => {
+		// Keep the specific URL/host error: an array-level missing-photo issue
+		// would mask it in the form resolver even though a photo was supplied.
+		if (
+			context.issues.some((issue) =>
+				["imageUrls", "optionMedia"].includes(String(issue.path?.[0])),
+			)
+		) {
+			return;
+		}
+		if (productPhotoCount(values) === 0) {
+			context.addIssue({
+				code: "custom",
+				path: ["imageUrls"],
+				message:
+					"Add a product image or a photo matching an active option.",
+			});
+		}
+	});
+
+interface ProductPhotoValues {
+	imageUrls: string[];
+	optionMedia: Array<{ axis: string; value: string; images: string[] }>;
+	variants: Array<{ isActive: boolean; attributes: Record<string, string> }>;
+}
+
+/** Orphaned and inactive-option galleries cannot supply the storefront cover. */
+export function productPhotoCount(values: ProductPhotoValues): number {
+	const active = values.variants.filter((variant) => variant.isActive);
+	const matchingMedia = values.optionMedia.filter((media) =>
+		active.some((variant) =>
+			Object.entries(variant.attributes).some(
+				([axis, value]) =>
+					axis.trim().toLowerCase() ===
+						media.axis.trim().toLowerCase() &&
+					value.trim().toLowerCase() ===
+						media.value.trim().toLowerCase(),
 			),
-		}),
-	),
-	specifications: z.record(z.string(), z.string()),
-	variants: z.array(
-		z.object({
-			id: z.string().optional(),
-			// Optional: when it is blank the option values ("Black · 256 GB")
-			// become the name — that is what buyers read, so the values are the
-			// label anyway.
-			name: z.string().trim(),
-			sku: z.string().trim(),
-			priceInPesewas: z.number().int().min(1),
-			stockQuantity: z.number().int().min(0),
-			attributes: z.record(z.string(), z.string()),
-			isActive: z.boolean(),
-		}),
-	),
-});
+		),
+	);
+	return [
+		...values.imageUrls,
+		...matchingMedia.flatMap((media) => media.images),
+	].filter(isAllowedImageUrl).length;
+}
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;

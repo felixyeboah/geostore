@@ -1,5 +1,5 @@
 {
-	"verifiedAt": "2026-09-21",
+	"verifiedAt": "2026-09-22",
 	"purpose": "Manufacturer-specific catalogue. Assets visually reviewed in a labeled contact sheet. Prices and inventory are development fixtures; ratings, reviews and sales start at zero.",
 	"products": [
 		{
@@ -8,7 +8,8 @@
 			"categorySlug": "phones",
 			"sourceUrls": [
 				"https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/",
-				"https://www.apple.com/iphone-18-pro/specs/"
+				"https://www.apple.com/iphone-18-pro/specs/",
+				"https://www.apple.com/shop/buy-iphone/iphone-18-pro"
 			],
 			"specifications": {
 				"Chip": "A20 Pro",
@@ -28,16 +29,260 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Four-color lineup, suitable only for the base gallery; not a single-color variant image.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/iphone-18-pro-0a3860ee2f48.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/iphone-18-pro-black-1beddf16a23b.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-18-pro-finish-select-black-202609?wid=940&hei=1112&fmt=png-alpha&.v=ODB3TEdtbk8ybkd3clM3dWVML3VCWEQvUEQ2K0RlZDNJelh6T1hiakdBdytYcDJJakhmeWdzWGE3eWZweldlbU01ZlZDa0xRSGNsZGN2cGtrRCtsV0tMSEdWSm02WG9JS0VxaEpJQnZwSFF4aU04bVBaVGpXenUzcE1tZ0JTTWk",
+					"sha256": "1beddf16a23bd78bd8bbe2b583d0ff399bf78f0a3de4deb6570d94213e832c95",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-18-pro-black-1beddf16a23b.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"Color": "Black"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-18-pro-silver-8b93eb7a7deb.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-18-pro-finish-select-silver-202609?wid=940&hei=1112&fmt=png-alpha&.v=ODB3TEdtbk8ybkd3clM3dWVML3VCVGJOdEdsYjE3KzExOGFjT0NXdW5CRXlFVTNWQ2NHZnVQZ1ZHVERRSkREclQ5NVJ4OStiQklybHZqYkJwOUI0UWdxbzNTY3U5ODZDSkhYT1hNS1JHaWNmOVR5UGFsc2xtOXNhVml5ZmhaTkg",
+					"sha256": "8b93eb7a7debcee81a847d6dcf98c71022abc313641558db85819f61bec26118",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-18-pro-silver-8b93eb7a7deb.png",
+					"optionAxis": "colour",
+					"optionValue": "Silver",
+					"scope": {
+						"Color": "Silver"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-18-pro-glacier-05b8c5657cfc.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-18-pro-finish-select-glacier-202609?wid=940&hei=1112&fmt=png-alpha&.v=ODB3TEdtbk8ybkd3clM3dWVML3VCZFJQQXM4NUJneHhVVGhBeWh4RFRuMmd4MlArR3d3Tzc0cVhQN3J0NEdPb1gyaWxBVG1PRTU2YzhCN2c2emhzWHZ5ZTZTY3RKM0U0VzN2UzRGTGtzQ3BSTWlHRk01TzQ3QWhsMHdBb0NQZkk",
+					"sha256": "05b8c5657cfc2cb24bc78c79a973907bc0267bcd760438942aa8ec28732dc35c",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-18-pro-glacier-05b8c5657cfc.png",
+					"optionAxis": "colour",
+					"optionValue": "Glacier",
+					"scope": {
+						"Color": "Glacier"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-18-pro-burgundy-d89d9d822f28.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-18-pro-finish-select-burgundy-202609?wid=940&hei=1112&fmt=png-alpha&.v=ODB3TEdtbk8ybkd3clM3dWVML3VCVmtqbnQyNWMvcld5Yy9DTnQyVUlQYWlwUGhxdXZuRTRGejlubW1oYWpjbUJ2MUJtQ2VhYWlBc1UxbHhMSzFTQjhlcC9qYU9xUXZmS1NmbGxtTVBCNVAvWncyUEszSEVwdS9nWVBDSFpPZmY",
+					"sha256": "d89d9d822f280d77cee8de49654d2c5b041c35dcb4cf842632478ffd3f9c0163",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-18-pro-burgundy-d89d9d822f28.png",
+					"optionAxis": "colour",
+					"optionValue": "Burgundy",
+					"scope": {
+						"Color": "Burgundy"
+					}
 				}
 			],
-			"seedVariantAxes": {
-				"Storage": ["256 GB", "512 GB", "1 TB", "2 TB"]
-			}
+			"seedVariantAxes": ["colour", "connectivity", "display", "storage"],
+			"variantNotes": [
+				"Color hex values are approximate UI swatches, not manufacturer colorimetric measurements. US manufacturer configurations; local inventory must be entered separately."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Black",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Silver",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Glacier",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Burgundy",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Black",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Silver",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Glacier",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Burgundy",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Black",
+					"storage": "1 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Silver",
+					"storage": "1 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Glacier",
+					"storage": "1 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Burgundy",
+					"storage": "1 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Black",
+					"storage": "2 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Silver",
+					"storage": "2 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Glacier",
+					"storage": "2 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Burgundy",
+					"storage": "2 TB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Black",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Glacier",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Burgundy",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Glacier",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Burgundy",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Glacier",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Burgundy",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Glacier",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Burgundy",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "2 TB"
+				}
+			]
 		},
 		{
 			"key": "iphone-17",
 			"name": "iPhone 17",
-			"sourceUrls": ["https://www.apple.com/iphone-17/specs/"],
+			"sourceUrls": [
+				"https://www.apple.com/iphone-17/specs/",
+				"https://www.apple.com/shop/buy-iphone/iphone-17"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/iphone-17.png",
@@ -47,16 +292,196 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/iphone-17-d4a5370ad1e2.png"
+				},
+				{
+					"path": "/images/catalogue/options/iphone-17-lavender-25faba6f2c22.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-finish-select-lavender-202509_GEO_US?wid=940&hei=1112&fmt=png-alpha&.v=WGdCRlQ0YVlqbTdXTEkxRnVQb0oxcUlHcmZkMUl0cGRrS2JXMzRCZWNFbUI4cld1RkdIdHMyNWllZ2FiU0E0cmV5ZElERWRzQWhyQ0Rwckl6Y1pkWnBzc0VHaDlyWnc3WFg1a2VpT21xTVZGd1JkQWliZXh2bjRqdHJoK3VMeHI",
+					"sha256": "25faba6f2c22b119c8e969fcbd15f4a5f715659afedec4c47603a2ffd0bd43a9",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-17-lavender-25faba6f2c22.png",
+					"optionAxis": "colour",
+					"optionValue": "Lavender",
+					"scope": {
+						"Color": "Lavender"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-17-sage-06459109e8a4.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-finish-select-sage-202509_GEO_US?wid=940&hei=1112&fmt=png-alpha&.v=WGdCRlQ0YVlqbTdXTEkxRnVQb0oxcldEenhQbG0wTEZiekdTaVhUYlUxMXhJV2h0US8ySHN2RmhuRFJ1YUNRYVgyaWxBVG1PRTU2YzhCN2c2emhzWG1EbG02UTA1WVduVEpGbUMyTTJuNVdwWVl1dEhwWTVGYkdzL0Q1STdwek8",
+					"sha256": "06459109e8a49326a56b83bc9cb6d15abbb4d5648abf25e3d129f324bcfe136e",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-17-sage-06459109e8a4.png",
+					"optionAxis": "colour",
+					"optionValue": "Sage",
+					"scope": {
+						"Color": "Sage"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-17-mist-blue-1d074981a589.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-finish-select-mistblue-202509_GEO_US?wid=940&hei=1112&fmt=png-alpha&.v=WGdCRlQ0YVlqbTdXTEkxRnVQb0oxaFUrdlByZTJvbHVPZlZpd2VmTDUrYUI4cld1RkdIdHMyNWllZ2FiU0E0cmV5ZElERWRzQWhyQ0Rwckl6Y1pkWnBzc0VHaDlyWnc3WFg1a2VpT21xTVhDVFJORzRhUXllTlNFT2dXSlJuOXk",
+					"sha256": "1d074981a589b05cd0face411ab3e0ee424093338b82fdc7fd8dad9424a2d87b",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-17-mist-blue-1d074981a589.png",
+					"optionAxis": "colour",
+					"optionValue": "Mist Blue",
+					"scope": {
+						"Color": "Mist Blue"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-17-white-628d18a1896f.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-finish-select-white-202509_GEO_US?wid=940&hei=1112&fmt=png-alpha&.v=WGdCRlQ0YVlqbTdXTEkxRnVQb0oxcXFXRXVNZU9PTnQ3OTN2dlJVVVVMMEVyaXF0TldtdDhjcGxKNXJZR2lFTEJ2MUJtQ2VhYWlBc1UxbHhMSzFTQjhlcC9qYU9xUXZmS1NmbGxtTVBCNU5oVDYyWWRoL2M2UTFJdS93cERHbzQ",
+					"sha256": "628d18a1896f713ab118f036c0b3f75ee54e9657162659b8691ae9d79575379b",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-17-white-628d18a1896f.png",
+					"optionAxis": "colour",
+					"optionValue": "White",
+					"scope": {
+						"Color": "White"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/iphone-17-black-ca7c3c883165.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-17-finish-select-black-202509_GEO_US?wid=940&hei=1112&fmt=png-alpha&.v=WGdCRlQ0YVlqbTdXTEkxRnVQb0oxb2VRRjNicDE2eUYxNWtxdDZEUE9tUUVyaXF0TldtdDhjcGxKNXJZR2lFTEJ2MUJtQ2VhYWlBc1UxbHhMSzFTQjhlcC9qYU9xUXZmS1NmbGxtTVBCNVBoMFVxUFkrM3owcHRmSXlsUk5xSzU",
+					"sha256": "ca7c3c88316583e85ce66cfd99f2e39767155c4f991aed4bffb56bbdbeafa471",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/iphone-17-black-ca7c3c883165.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"Color": "Black"
+					}
 				}
 			],
 			"categorySlug": "phones",
 			"specifications": {
 				"Chip": "A19"
 			},
-			"seedVariantAxes": {
-				"Storage": ["256 GB", "512 GB"]
-			},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": ["colour", "connectivity", "display", "storage"],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Color hex values are approximate UI swatches, not manufacturer colorimetric measurements. US manufacturer configurations; local inventory must be entered separately."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Lavender",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Sage",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Mist Blue",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "White",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Black",
+					"storage": "256 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Lavender",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Sage",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Mist Blue",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "White",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				},
+				{
+					"colour": "Black",
+					"storage": "512 GB",
+					"display": "6.3-inch",
+					"connectivity": "5G (eSIM)"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Lavender",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Sage",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Mist Blue",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "White",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Lavender",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Sage",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Mist Blue",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "White",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "5G (eSIM)",
+					"display": "6.3-inch",
+					"storage": "512 GB"
+				}
+			]
 		},
 		{
 			"key": "galaxy-s26-ultra",
@@ -64,7 +489,8 @@
 			"categorySlug": "phones",
 			"sourceUrls": [
 				"https://www.samsung.com/us/smartphones/galaxy-s26-ultra/",
-				"https://www.samsung.com/us/smartphones/galaxy-s26-ultra/buy/galaxy-s26-ultra-256gb-unlocked-sku-sm-s948uzvaxaa/"
+				"https://www.samsung.com/us/smartphones/galaxy-s26-ultra/buy/galaxy-s26-ultra-256gb-unlocked-sku-sm-s948uzvaxaa/",
+				"https://news.samsung.com/us/samsung-unveils-galaxy-s26-series-most-intuitive-galaxy-ai-phone-yet/"
 			],
 			"specifications": {
 				"Colour": "Cobalt Violet",
@@ -84,6 +510,72 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Full-size exact model packshot, downloaded unchanged from official purchase page and visually inspected. Front, rear, and S Pen in Cobalt Violet; unlocked SM-S948UZVAXAA.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/galaxy-s26-ultra-e153127475f2.png"
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-s26-ultra-sky-blue-ba22696c2bf9.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948ulbaxaa-550992914",
+					"sha256": "ba22696c2bf93f952e3524bb82134b689054fd0c408126144c7b66f7c31cc094",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-s26-ultra-sky-blue-ba22696c2bf9.png",
+					"optionAxis": "colour",
+					"optionValue": "Sky Blue",
+					"scope": {
+						"colour": "Sky Blue"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-s26-ultra-pink-gold-84ee7050b74d.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948uzdaxaa-550993174",
+					"sha256": "84ee7050b74db1f312a12d188dc33e9c419f1dd3aff8e28802708d2cd992bf19",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-s26-ultra-pink-gold-84ee7050b74d.png",
+					"optionAxis": "colour",
+					"optionValue": "Pink Gold",
+					"scope": {
+						"colour": "Pink Gold"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-s26-ultra-black-cf9fbf245bdd.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948uzkaxaa-550993359",
+					"sha256": "cf9fbf245bddbf85408a1472aa89978f5053f6ae9afa239b4f26021be000dfaa",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-s26-ultra-black-cf9fbf245bdd.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"colour": "Black"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-s26-ultra-silver-shadow-2bba1af4dc5a.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948uzsaxaa-550993729",
+					"sha256": "2bba1af4dc5ae747ff30395000ecaafc452d722c9867052ae7c2b796a8d773b0",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-s26-ultra-silver-shadow-2bba1af4dc5a.png",
+					"optionAxis": "colour",
+					"optionValue": "Silver Shadow",
+					"scope": {
+						"colour": "Silver Shadow"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-s26-ultra-cobalt-violet-e153127475f2.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948uzvaxaa-550993934",
+					"sha256": "e153127475f2d2ba7f86b45b5a445603184478f0a5044824c206336ac0ce3277",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-s26-ultra-cobalt-violet-e153127475f2.png",
+					"optionAxis": "colour",
+					"optionValue": "Cobalt Violet",
+					"scope": {
+						"colour": "Cobalt Violet"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-s26-ultra-white-1e46b6cef8f4.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/us/s2602/gallery/us-galaxy-s26-ultra-s948-sm-s948uzwaxaa-550994268",
+					"sha256": "1e46b6cef8f4110e0de31f5c2a8e46606ecbfdacf8d39a5b31dea58042f10ade",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-s26-ultra-white-1e46b6cef8f4.png",
+					"optionAxis": "colour",
+					"optionValue": "White",
+					"scope": {
+						"colour": "White"
+					}
 				}
 			],
 			"verifiedVariantCombinations": [
@@ -93,16 +585,338 @@
 					"Model": "SM-S948UZVAXAA"
 				}
 			],
-			"seedVariantAxes": {
-				"Storage": ["256 GB"]
-			}
+			"seedVariantAxes": [
+				"colour",
+				"carrier",
+				"connectivity",
+				"memory",
+				"region",
+				"storage"
+			],
+			"variantNotes": [
+				"All18 unlocked US color/storage SKUs enumerated in official buy-page productData. 256/512 GB pair with12 GB RAM;1 TB pairs with16 GB RAM.",
+				"Pink Gold and Silver Shadow are Samsung direct exclusives. US regional SKU compatibility must not be silently presented as Ghana local stock.",
+				"Existing seed only includes Cobalt Violet256GB and omits Colour from variant attributes."
+			],
+			"verifiedConfigurations": [
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Sky Blue",
+					"model": "SM-S948ULBAXAA"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Sky Blue",
+					"model": "SM-S948ULBEXAA"
+				},
+				{
+					"storage": "1 TB",
+					"memory": "16 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Sky Blue",
+					"model": "SM-S948ULBFXAA"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Pink Gold",
+					"model": "SM-S948UZDAXAA"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Pink Gold",
+					"model": "SM-S948UZDEXAA"
+				},
+				{
+					"storage": "1 TB",
+					"memory": "16 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Pink Gold",
+					"model": "SM-S948UZDFXAA"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Black",
+					"model": "SM-S948UZKAXAA"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Black",
+					"model": "SM-S948UZKEXAA"
+				},
+				{
+					"storage": "1 TB",
+					"memory": "16 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Black",
+					"model": "SM-S948UZKFXAA"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Silver Shadow",
+					"model": "SM-S948UZSAXAA"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Silver Shadow",
+					"model": "SM-S948UZSEXAA"
+				},
+				{
+					"storage": "1 TB",
+					"memory": "16 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Silver Shadow",
+					"model": "SM-S948UZSFXAA"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Cobalt Violet",
+					"model": "SM-S948UZVAXAA"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Cobalt Violet",
+					"model": "SM-S948UZVEXAA"
+				},
+				{
+					"storage": "1 TB",
+					"memory": "16 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "Cobalt Violet",
+					"model": "SM-S948UZVFXAA"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "White",
+					"model": "SM-S948UZWAXAA"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "White",
+					"model": "SM-S948UZWEXAA"
+				},
+				{
+					"storage": "1 TB",
+					"memory": "16 GB",
+					"connectivity": "5G",
+					"carrier": "Unlocked",
+					"region": "US",
+					"colour": "White",
+					"model": "SM-S948UZWFXAA"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Sky Blue",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Sky Blue",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Sky Blue",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "16 GB",
+					"region": "US",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Pink Gold",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Pink Gold",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Pink Gold",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "16 GB",
+					"region": "US",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Black",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Black",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Black",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "16 GB",
+					"region": "US",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver Shadow",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver Shadow",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver Shadow",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "16 GB",
+					"region": "US",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Cobalt Violet",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Cobalt Violet",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Cobalt Violet",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "16 GB",
+					"region": "US",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "White",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "White",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "US",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "White",
+					"carrier": "Unlocked",
+					"connectivity": "5G",
+					"memory": "16 GB",
+					"region": "US",
+					"storage": "1 TB"
+				}
+			]
 		},
 		{
 			"key": "ipad-air-m4",
 			"name": "iPad Air (M4)",
 			"categorySlug": "tablets",
 			"sourceUrls": [
-				"https://www.apple.com/newsroom/2026/03/apple-introduces-the-new-ipad-air-powered-by-m4/"
+				"https://www.apple.com/newsroom/2026/03/apple-introduces-the-new-ipad-air-powered-by-m4/",
+				"https://www.apple.com/ipad-air/specs/",
+				"https://www.apple.com/shop/buy-ipad/ipad-air"
 			],
 			"specifications": {
 				"Chip": "M4",
@@ -123,16 +937,315 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Front view; finish and size are not established by the image caption. Base gallery only.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/ipad-air-m4-fa0bd3efd62f.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/ipad-air-m4-blue-9eb5b0162a03.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-air-select-11in-wifi-blue-202405?wid=940&hei=1112&fmt=p-jpg&qlt=95&.v=MHJ3M044Wm5ySDVTUVJHY090MTFQWFU0N1RjeHdyenY5U1BnMmlCT2FwYitPWGFLNk1GaGFmR2E1bUR3TXNrOXhxZ1ZZWHcyTUFGTS9hRk5FME1JTXNRUkRub2x2S3QvTjZFa2ZmMXdrcXFNYjZVY05Sc1ZqSisyN3UwNWhSalc",
+					"sha256": "9eb5b0162a03f8ce3551ce1aa480309a399cf7a44bdbfff88d1ebb3c8c2f53a1",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/ipad-air-m4-blue-9eb5b0162a03.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Blue",
+					"scope": {
+						"Color": "Blue",
+						"Display": "11-inch",
+						"Connectivity": "Wi-Fi"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/ipad-air-m4-purple-c560364fd8c2.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-air-select-11in-wifi-purple-202405?wid=940&hei=1112&fmt=p-jpg&qlt=95&.v=MHJ3M044Wm5ySDVTUVJHY090MTFQWE5FL0E2Tm1WYVRteWtXVjllTmQrMWFaMFBZMkZoYzhVTVpkZy9HOEpPLzdyTk5qSUFqOTJRNDRNazdIYVVHNksvWkJ5TW5IdW9XMHpwcXViQ1ArRkFZcm9JV2JsNE00L2VEL1djZXhjZVQ",
+					"sha256": "c560364fd8c2dcc0f025bde5b08a1df33a76965b2e347d32c54c678b9ca04b67",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/ipad-air-m4-purple-c560364fd8c2.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Purple",
+					"scope": {
+						"Color": "Purple",
+						"Display": "11-inch",
+						"Connectivity": "Wi-Fi"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/ipad-air-m4-starlight-a1df292325f7.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-air-select-11in-wifi-starlight-202405?wid=940&hei=1112&fmt=p-jpg&qlt=95&.v=MHJ3M044Wm5ySDVTUVJHY090MTFQVWtSRUR3V1RTblN3TXd3RE5HclJweXlaN3dpYVdvMVRYZk1RYUx5d0NialgyaWxBVG1PRTU2YzhCN2c2emhzWGt0RmgycTRGTHI3SUVxVFVFNFI5QytOREtHTVArQURQazJ5K25OVFhDNnM",
+					"sha256": "a1df292325f7c7f9fb67e8bac8ac19cb15fd0eadca934ec3ef5fbff68e0fa1ce",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/ipad-air-m4-starlight-a1df292325f7.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Starlight",
+					"scope": {
+						"Color": "Starlight",
+						"Display": "11-inch",
+						"Connectivity": "Wi-Fi"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/ipad-air-m4-space-gray-d601424fd3ee.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-air-select-11in-wifi-spacegray-202405?wid=940&hei=1112&fmt=p-jpg&qlt=95&.v=MHJ3M044Wm5ySDVTUVJHY090MTFQWGFtQTR4eURwVEtjWkY3RWd1SXYwVWowT2NrckZsTWdDRUM0OUhBNnNMK1gyaWxBVG1PRTU2YzhCN2c2emhzWGt0RmgycTRGTHI3SUVxVFVFNFI5Qy90am5BT0NjdWJUMzQybC8zUUQ5Q2w",
+					"sha256": "d601424fd3ee1e4d86a09871452208e92121c8b2bd7f80d64ae3b20076648788",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/ipad-air-m4-space-gray-d601424fd3ee.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Space Gray",
+					"scope": {
+						"Color": "Space Gray",
+						"Display": "11-inch",
+						"Connectivity": "Wi-Fi"
+					}
 				}
 			],
-			"seedVariantAxes": {
-				"Storage": ["128 GB", "256 GB", "512 GB", "1 TB"]
-			}
+			"seedVariantAxes": [
+				"colour",
+				"connectivity",
+				"display",
+				"memory",
+				"storage"
+			],
+			"variantNotes": [
+				"Color hex values are approximate UI swatches, not manufacturer colorimetric measurements. US manufacturer configurations; local inventory must be entered separately.",
+				"Current M4 shop reuses manufacturer image names dated 202405. Cellular models use eSIM, not physical SIM.",
+				"For seed use only 11-inch; larger sizes researched but excluded until compound image mapping is implemented.",
+				"Wi-Fi image is the primary color image. Exact cellular media also supplied; use connectivity-specific matching if exterior differences are material.",
+				{
+					"Display": "11-inch",
+					"excludedDisplays": ["13-inch"],
+					"reason": "Current gallery schema maps color only. Use default physical size; never display its photograph for another selected size."
+				},
+				"Seed offers reviewed 11-inch Wi-Fi SKUs only. Cellular and 13-inch are not offered with Wi-Fi/11-inch photography."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Blue",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "128 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Purple",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "128 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "128 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "128 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Blue",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "256 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Purple",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "256 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "256 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "256 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Blue",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "512 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Purple",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "512 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "512 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "512 GB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Blue",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "1 TB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Purple",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "1 TB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "1 TB",
+					"memory": "12 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"storage": "1 TB",
+					"memory": "12 GB"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Blue",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Purple",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Starlight",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Blue",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Purple",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Starlight",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Blue",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Purple",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Starlight",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Space Gray",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Blue",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Purple",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Starlight",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Space Gray",
+					"connectivity": "Wi-Fi",
+					"display": "11-inch",
+					"memory": "12 GB",
+					"storage": "1 TB"
+				}
+			]
 		},
 		{
 			"key": "ipad-pro-m5",
 			"name": "iPad Pro (M5)",
-			"sourceUrls": ["https://www.apple.com/ipad-pro/specs/"],
+			"sourceUrls": [
+				"https://www.apple.com/ipad-pro/specs/",
+				"https://www.apple.com/shop/buy-ipad/ipad-pro"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/ipad-pro-m5.png",
@@ -142,6 +1255,32 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/ipad-pro-m5-170ce65a5dcd.png"
+				},
+				{
+					"path": "/images/catalogue/options/ipad-pro-m5-silver-c88abeb16e03.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-pro-11-select-wifi-silver-202405?wid=940&hei=1112&fmt=p-jpg&qlt=95&.v=cU5SNnZmTmg3VlFoaGg3dW5WUnQvMkxGdWdkb2NmaG1yVzIvWDFuNS82LytPWGFLNk1GaGFmR2E1bUR3TXNrOXhxZ1ZZWHcyTUFGTS9hRk5FME1JTWlrK2VRa0RRYWNtLzdXNG1sanNYMnp0YzBLck9lOXJrSFhhRWM5YmR0Rkw",
+					"sha256": "c88abeb16e03de725218255afa4337309c75c04a642bf8faf4e540116ee9ad68",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/ipad-pro-m5-silver-c88abeb16e03.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Silver",
+					"scope": {
+						"Color": "Silver",
+						"Display": "11-inch",
+						"Connectivity": "Wi-Fi"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/ipad-pro-m5-space-black-f55ed30418f2.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-pro-11-select-wifi-spaceblack-202405?wid=940&hei=1112&fmt=p-jpg&qlt=95&.v=cU5SNnZmTmg3VlFoaGg3dW5WUnQvOHpCNlo3Y2trYUx2VGtnRmoxbk1mRFcvUGs3Z3lJUWVHYk5KZW9nNkdxb1Q5NVJ4OStiQklybHZqYkJwOUI0UWt2aHJVVVRvS3hUQ0EwVk8wak9Ka0h1S1B4SGsvR3pUbytFaVc1Q2x1U3Y",
+					"sha256": "f55ed30418f29c4e874366dcea9b2026553a3211fab26ebd3c5b50fc92f54c05",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/ipad-pro-m5-space-black-f55ed30418f2.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Space Black",
+					"scope": {
+						"Color": "Space Black",
+						"Display": "11-inch",
+						"Connectivity": "Wi-Fi"
+					}
 				}
 			],
 			"categorySlug": "tablets",
@@ -149,10 +1288,248 @@
 				"Chip": "M5",
 				"Display": "Ultra Retina XDR"
 			},
-			"seedVariantAxes": {
-				"Storage": ["256 GB", "512 GB", "1 TB", "2 TB"]
-			},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": [
+				"colour",
+				"connectivity",
+				"cpu",
+				"display",
+				"glass",
+				"memory",
+				"storage"
+			],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Color hex values are approximate UI swatches, not manufacturer colorimetric measurements. US manufacturer configurations; local inventory must be entered separately.",
+				"Do not cross-product RAM/glass: RAM and CPU derive from storage; nano-texture only 1TB/2TB. Current M5 shop reuses 202405 media; image captures exterior, not glass treatment.",
+				"For seed use only 11-inch; larger sizes researched but excluded until compound image mapping is implemented.",
+				"Wi-Fi image is the primary color image. Exact cellular media also supplied; use connectivity-specific matching if exterior differences are material.",
+				{
+					"Display": "11-inch",
+					"excludedDisplays": ["13-inch"],
+					"reason": "Current gallery schema maps color only. Use default physical size; never display its photograph for another selected size."
+				},
+				"Seed offers reviewed 11-inch Wi-Fi SKUs only. Cellular and 13-inch are not offered with Wi-Fi/11-inch photography."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Silver",
+					"storage": "256 GB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"cpu": "9-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Space Black",
+					"storage": "256 GB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"cpu": "9-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Silver",
+					"storage": "512 GB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"cpu": "9-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Space Black",
+					"storage": "512 GB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"cpu": "9-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Silver",
+					"storage": "1 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Space Black",
+					"storage": "1 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Silver",
+					"storage": "1 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Nano-texture"
+				},
+				{
+					"colour": "Space Black",
+					"storage": "1 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Nano-texture"
+				},
+				{
+					"colour": "Silver",
+					"storage": "2 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Space Black",
+					"storage": "2 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Standard"
+				},
+				{
+					"colour": "Silver",
+					"storage": "2 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Nano-texture"
+				},
+				{
+					"colour": "Space Black",
+					"storage": "2 TB",
+					"display": "11-inch",
+					"connectivity": "Wi-Fi",
+					"memory": "16 GB",
+					"cpu": "10-core",
+					"glass": "Nano-texture"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"cpu": "9-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "12 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Space Black",
+					"connectivity": "Wi-Fi",
+					"cpu": "9-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "12 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"cpu": "9-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "12 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Space Black",
+					"connectivity": "Wi-Fi",
+					"cpu": "9-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "12 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Space Black",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Nano-texture",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Space Black",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Nano-texture",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "16 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Space Black",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Standard",
+					"memory": "16 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Nano-texture",
+					"memory": "16 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Space Black",
+					"connectivity": "Wi-Fi",
+					"cpu": "10-core",
+					"display": "11-inch",
+					"glass": "Nano-texture",
+					"memory": "16 GB",
+					"storage": "2 TB"
+				}
+			]
 		},
 		{
 			"key": "galaxy-tab-s11",
@@ -183,6 +1560,28 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Full-size exact model packshot, downloaded unchanged from official purchase page and visually inspected. Front view of Silver SM-X736BZSREUB; full-size gallery asset, not thumbnail.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/galaxy-tab-s11-5dbf8f41e29c.png"
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-tab-s11-grey-f055cf7a16ab.jpg",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/assets/uk/tablets/galaxy-tab-s11/buy/colour-selection/TS11_Color_Selection_Gray_PC_1600x864.png",
+					"sha256": "f055cf7a16ab1f9d8a52d6f7eface0e905e96eb26e02b7801487b3bb3d5243f8",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-tab-s11-grey-f055cf7a16ab.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Grey",
+					"scope": {
+						"colour": "Grey"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-tab-s11-silver-5e6b9c12c6ed.jpg",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/assets/uk/tablets/galaxy-tab-s11/buy/colour-selection/TS11_Color_Selection_Silver_PC_1600x864.png",
+					"sha256": "5e6b9c12c6edb2c17033af0f3e1b13d8ea1c35899d155e12b19239a9d5ae71ce",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-tab-s11-silver-5e6b9c12c6ed.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Silver",
+					"scope": {
+						"colour": "Silver"
+					}
 				}
 			],
 			"verifiedVariantCombinations": [
@@ -193,16 +1592,235 @@
 					"Model": "SM-X736BZSREUB"
 				}
 			],
-			"seedVariantAxes": {
-				"Storage": ["128 GB"]
-			}
+			"seedVariantAxes": [
+				"colour",
+				"connectivity",
+				"memory",
+				"region",
+				"size",
+				"storage"
+			],
+			"variantNotes": [
+				"Exactly12 regular TabS11 SKUs enumerated in official UK schema:128/256/512GB,12GB RAM,Wi-Fi/5G,Grey/Silver. No1TB or14.6-inch: those belong to Ultra.",
+				"Rename current product from Galaxy Tab S11 5G to Galaxy Tab S11 if offering Wi-Fi. Existing fixed model specification must move to each SKU."
+			],
+			"verifiedConfigurations": [
+				{
+					"storage": "128 GB",
+					"memory": "12 GB",
+					"connectivity": "Wi-Fi",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Grey",
+					"model": "SM-X730NZAREUB"
+				},
+				{
+					"storage": "128 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Grey",
+					"model": "SM-X736BZAREUB"
+				},
+				{
+					"storage": "128 GB",
+					"memory": "12 GB",
+					"connectivity": "Wi-Fi",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Silver",
+					"model": "SM-X730NZSREUB"
+				},
+				{
+					"storage": "128 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Silver",
+					"model": "SM-X736BZSREUB"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "Wi-Fi",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Grey",
+					"model": "SM-X730NZAPEUB"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Grey",
+					"model": "SM-X736BZAPEUB"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "Wi-Fi",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Silver",
+					"model": "SM-X730NZSPEUB"
+				},
+				{
+					"storage": "256 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Silver",
+					"model": "SM-X736BZSPEUB"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "Wi-Fi",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Grey",
+					"model": "SM-X730NZATEUB"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Grey",
+					"model": "SM-X736BZATEUB"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "Wi-Fi",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Silver",
+					"model": "SM-X730NZSTEUB"
+				},
+				{
+					"storage": "512 GB",
+					"memory": "12 GB",
+					"connectivity": "5G",
+					"size": "11-inch",
+					"region": "UK",
+					"colour": "Silver",
+					"model": "SM-X736BZSTEUB"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Grey",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Grey",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "128 GB"
+				},
+				{
+					"colour": "Grey",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Grey",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Grey",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Grey",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "Wi-Fi",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"connectivity": "5G",
+					"memory": "12 GB",
+					"region": "UK",
+					"size": "11-inch",
+					"storage": "512 GB"
+				}
+			]
 		},
 		{
 			"key": "macbook-air-m5",
 			"name": "MacBook Air (M5)",
 			"categorySlug": "computing",
 			"sourceUrls": [
-				"https://www.apple.com/newsroom/2026/03/apple-introduces-the-new-macbook-air-with-m5/"
+				"https://www.apple.com/newsroom/2026/03/apple-introduces-the-new-macbook-air-with-m5/",
+				"https://www.apple.com/macbook-air/specs/",
+				"https://www.apple.com/shop/buy-mac/macbook-air"
 			],
 			"specifications": {
 				"Chip": "M5",
@@ -222,16 +1840,326 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Front view. Do not infer a finish or size from this photograph. Storage configurations beyond the documented starting capacity need specific SKU evidence.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/macbook-air-m5-043afd34f8e4.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/macbook-air-m5-sky-blue-414a45e86513.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/macbook-air-specs-select-202601-13inch-skyblue?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1767641167679",
+					"sha256": "414a45e86513cdcfa3467dc265250b286d094d1b5cd74fa0366afdde89c29a27",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/macbook-air-m5-sky-blue-414a45e86513.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Sky Blue",
+					"scope": {
+						"Color": "Sky Blue",
+						"Display": "13-inch"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/macbook-air-m5-silver-631b16094a00.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/macbook-air-specs-select-202601-13inch-silver?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1767641114848",
+					"sha256": "631b16094a007212cbb42c47fec7c04c9e0c0912d24e11420ed12d04db3a9b4f",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/macbook-air-m5-silver-631b16094a00.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Silver",
+					"scope": {
+						"Color": "Silver",
+						"Display": "13-inch"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/macbook-air-m5-starlight-9253517d8f00.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/macbook-air-specs-select-202601-13inch-starlight?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1767641167281",
+					"sha256": "9253517d8f00bbe12e9e2ebb34de9cbcc23a290d8ac5b81a309c5e7774c24908",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/macbook-air-m5-starlight-9253517d8f00.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Starlight",
+					"scope": {
+						"Color": "Starlight",
+						"Display": "13-inch"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/macbook-air-m5-midnight-b9ad35b2b53c.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/macbook-air-specs-select-202601-13inch-midnight?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1767641115112",
+					"sha256": "b9ad35b2b53cee85acaa916f6ee9b91e069aed79e3be3a0ed5317198d20f5473",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/macbook-air-m5-midnight-b9ad35b2b53c.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Midnight",
+					"scope": {
+						"Color": "Midnight",
+						"Display": "13-inch"
+					}
 				}
 			],
-			"seedVariantAxes": {
-				"Size": ["13-inch", "15-inch"]
-			}
+			"seedVariantAxes": [
+				"colour",
+				"cpu",
+				"display",
+				"gpu",
+				"memory",
+				"storage"
+			],
+			"variantNotes": [
+				"Color hex values are approximate UI swatches, not manufacturer colorimetric measurements. US manufacturer configurations; local inventory must be entered separately.",
+				"13-inch is 13.6-inch actual display; 15-inch is 15.3-inch. 15-inch only 10-core GPU. 32GB/2TB/4TB are CTO; do not blindly cross-product 8-core GPU upgrades. Each configuration lists verifiedColors from actual manufacturer SKU links; do not expand missing colors without checking the specific SKU.",
+				"For seed use only 13-inch; larger sizes researched but excluded until compound image mapping is implemented.",
+				{
+					"Display": "13-inch",
+					"excludedDisplays": ["15-inch"],
+					"reason": "Current gallery schema maps color only. Use default physical size; never display its photograph for another selected size."
+				}
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Sky Blue",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Midnight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Sky Blue",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Midnight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Sky Blue",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Midnight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Sky Blue",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Starlight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Midnight",
+					"display": "13-inch",
+					"cpu": "10-core",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Sky Blue",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Starlight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Midnight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Sky Blue",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Starlight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Midnight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Sky Blue",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Starlight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Midnight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "10-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Sky Blue",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Starlight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Midnight",
+					"cpu": "10-core",
+					"display": "13-inch",
+					"gpu": "8-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				}
+			]
 		},
 		{
 			"key": "mac-mini",
 			"name": "Mac mini (M6)",
-			"sourceUrls": ["https://www.apple.com/mac-mini/specs/"],
+			"sourceUrls": [
+				"https://www.apple.com/mac-mini/specs/",
+				"https://www.apple.com/shop/buy-mac/mac-mini"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/mac-mini.jpg",
@@ -241,6 +2169,17 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/mac-mini-06ba952bc2c5.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/mac-mini-silver-4cdf9e0eaf04.webp",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/mac-mini-summary-select-202608?wid=5120&hei=3280&fmt=webp&qlt=90&.v=WGZIRWwyZDVQaHBkK2N1VVlsMFNpcVhYSEpZZncrY29LOUl0SnVNSWR6V3RQaHRXQmg1Smw1K0VETVJwK2N3R3lPWjFvdU5EZVdwUnRCZ2RHSDBFS2dDVGlhMWdQMUw4Q0cxZ0ZBVlNTUjk3elJuQlNOb1hBU2ZGc01uK0d5YTU&traceId=1",
+					"sha256": "4cdf9e0eaf04ebedf1528c2fd06a8381410548d3770574e4460ad4945a18cfb2",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/mac-mini-silver-4cdf9e0eaf04.webp",
+					"optionAxis": "colour",
+					"optionValue": "Silver",
+					"scope": {
+						"Color": "Silver"
+					}
 				}
 			],
 			"categorySlug": "computing",
@@ -249,16 +2188,463 @@
 				"Memory": "16 GB",
 				"Colour": "Silver"
 			},
-			"seedVariantAxes": {
-				"Storage": ["256 GB", "512 GB"]
-			},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": [
+				"colour",
+				"chip",
+				"cpu",
+				"ethernet",
+				"gpu",
+				"memory",
+				"storage"
+			],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Color hex values are approximate UI swatches, not manufacturer colorimetric measurements. US manufacturer configurations; local inventory must be entered separately.",
+				"M5 Pro is a separate chip configuration excluded from the existing M6 product. M6 16GB memory bandwidth153GB/s;24/32GB170GB/s."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "256 GB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "256 GB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "512 GB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "512 GB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "1 TB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "1 TB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "2 TB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "2 TB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "256 GB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "256 GB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "512 GB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "512 GB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "1 TB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "1 TB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "2 TB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "2 TB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "256 GB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "256 GB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "512 GB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "512 GB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "1 TB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "1 TB",
+					"ethernet": "10Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "2 TB",
+					"ethernet": "2.5Gb"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "2 TB",
+					"ethernet": "10Gb"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "16 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "24 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "256 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "512 GB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "1 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "2.5Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "2 TB"
+				},
+				{
+					"colour": "Silver",
+					"chip": "M6",
+					"cpu": "12-core",
+					"ethernet": "10Gb",
+					"gpu": "12-core",
+					"memory": "32 GB",
+					"storage": "2 TB"
+				}
+			]
 		},
 		{
 			"key": "logitech-mx-keys-s",
 			"name": "Logitech MX Keys S",
 			"sourceUrls": [
-				"https://www.logitech.com/en-us/products/keyboards/mx-keys-s.html"
+				"https://www.logitech.com/en-us/products/keyboards/mx-keys-s.html",
+				"https://www.logitech.com/en-us/shop/p/mx-keys-s"
 			],
 			"images": [
 				{
@@ -269,6 +2655,39 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/logitech-mx-keys-s-1f1c2ae06c6a.png"
+				},
+				{
+					"path": "/images/catalogue/options/logitech-mx-keys-s-graphite-1f1c2ae06c6a.png",
+					"sourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/keyboards/mx-keys-s/migration-assets-for-delorean-2025/gallery/mx-keys-s-top-view-graphite-us.png",
+					"sha256": "1f1c2ae06c6ad1ca94526fd7d30b75a4fc6985b911c9b79d1b8dd977cd9c9dbe",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/logitech-mx-keys-s-graphite-1f1c2ae06c6a.png",
+					"optionAxis": "colour",
+					"optionValue": "Graphite",
+					"scope": {
+						"colour": "Graphite"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/logitech-mx-keys-s-pale-gray-fcc73e10f673.png",
+					"sourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/keyboards/mx-keys-s/migration-assets-for-delorean-2025/gallery/mx-keys-s-top-view-pale-gray-us.png",
+					"sha256": "fcc73e10f673566c32941be2280aadc2f76736334229425389c2ff7c74759e33",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/logitech-mx-keys-s-pale-gray-fcc73e10f673.png",
+					"optionAxis": "colour",
+					"optionValue": "Pale Gray",
+					"scope": {
+						"colour": "Pale Gray"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/logitech-mx-keys-s-black-bffa72953343.png",
+					"sourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/keyboards/mx-keys-s/migration-assets-for-delorean-2025/gallery/mx-keys-s-top-view-black-us.png",
+					"sha256": "bffa729533439fed92f1ae34e56ad2b4531ac13cd4c19679a3e0a3376e35e6df",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/logitech-mx-keys-s-black-bffa72953343.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"colour": "Black"
+					}
 				}
 			],
 			"categorySlug": "computing",
@@ -276,15 +2695,76 @@
 				"Colour": "Graphite",
 				"Layout": "US English"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": [
+				"colour",
+				"connectivity",
+				"layout",
+				"region",
+				"size"
+			],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"US schema explicitly has Graphite920-011558,Pale Gray920-011559,and Black920-011406. Black and Graphite are separate SKUs, not synonyms.",
+				"Full-size S only; Mini is a different model. Other layouts not verified in this source."
+			],
+			"verifiedConfigurations": [
+				{
+					"layout": "US English (QWERTY)",
+					"size": "Full-size",
+					"connectivity": "Bluetooth / Logi Bolt",
+					"region": "US",
+					"colour": "Graphite",
+					"model": "920-011558"
+				},
+				{
+					"layout": "US English (QWERTY)",
+					"size": "Full-size",
+					"connectivity": "Bluetooth / Logi Bolt",
+					"region": "US",
+					"colour": "Pale Gray",
+					"model": "920-011559"
+				},
+				{
+					"layout": "US English (QWERTY)",
+					"size": "Full-size",
+					"connectivity": "Bluetooth / Logi Bolt",
+					"region": "US",
+					"colour": "Black",
+					"model": "920-011406"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Graphite",
+					"connectivity": "Bluetooth / Logi Bolt",
+					"layout": "US English (QWERTY)",
+					"region": "US",
+					"size": "Full-size"
+				},
+				{
+					"colour": "Pale Gray",
+					"connectivity": "Bluetooth / Logi Bolt",
+					"layout": "US English (QWERTY)",
+					"region": "US",
+					"size": "Full-size"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "Bluetooth / Logi Bolt",
+					"layout": "US English (QWERTY)",
+					"region": "US",
+					"size": "Full-size"
+				}
+			]
 		},
 		{
 			"key": "airpods-5",
 			"name": "AirPods 5",
 			"categorySlug": "audio",
 			"sourceUrls": [
-				"https://www.apple.com/newsroom/2026/09/apple-introduces-airpods-5-with-best-in-class-open-ear-active-noise-cancellation/"
+				"https://www.apple.com/newsroom/2026/09/apple-introduces-airpods-5-with-best-in-class-open-ear-active-noise-cancellation/",
+				"https://www.apple.com/airpods-5/specs/",
+				"https://www.apple.com/shop/buy-airpods/airpods-5"
 			],
 			"specifications": {
 				"Colour": "White",
@@ -301,19 +2781,65 @@
 					"visuallyInspected": true,
 					"inspectionNote": "White earbuds and open charging case. Base gallery only; case configuration is not inferred from this hero image.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/airpods-5-7f58e7fa7acf.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/airpods-5-usb-c-charging-case-9de51632501c.jpg",
+					"sourceUrl": "https://www.apple.com/v/airpods-5/b/images/specs/hero_airpods_5gen__d26undxkde2q_large_2x.jpg",
+					"sha256": "9de51632501c7564f57a377372873c3b6b8503ce2c17179362e61ec8f3d5c178",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/airpods-5-usb-c-charging-case-9de51632501c.jpg",
+					"optionAxis": "charging case",
+					"optionValue": "USB-C Charging Case",
+					"scope": {
+						"colour": "White",
+						"charging case": "USB-C Charging Case"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/airpods-5-wireless-charging-case-76179f3cb6c3.jpg",
+					"sourceUrl": "https://www.apple.com/v/airpods-5/b/images/specs/hero_airpods_5gen_wireless__c73r67vwo7wy_large_2x.jpg",
+					"sha256": "76179f3cb6c3726b5115b59b706762a36f1539eda33dc98f3a2c691b59e4f04a",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/airpods-5-wireless-charging-case-76179f3cb6c3.jpg",
+					"optionAxis": "charging case",
+					"optionValue": "Wireless Charging Case",
+					"scope": {
+						"colour": "White",
+						"charging case": "Wireless Charging Case"
+					}
 				}
 			],
-			"seedVariantAxes": {
-				"Charging case": [
-					"USB-C Charging Case",
-					"Wireless Charging Case"
-				]
-			}
+			"seedVariantAxes": ["colour", "charging case"],
+			"variantNotes": [
+				"Both options have ANC; Wireless case option additionally supports Qi/Apple Watch chargers and Find My speaker; earbuds have volume swipe. USB-C-only option does not. Use Charging case as single media axis, not Colour. No storage option."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "White",
+					"charging case": "USB-C Charging Case"
+				},
+				{
+					"colour": "White",
+					"charging case": "Wireless Charging Case"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "White",
+					"charging case": "USB-C Charging Case"
+				},
+				{
+					"colour": "White",
+					"charging case": "Wireless Charging Case"
+				}
+			]
 		},
 		{
 			"key": "airpods-pro-3",
 			"name": "AirPods Pro 3",
-			"sourceUrls": ["https://www.apple.com/airpods-pro/"],
+			"sourceUrls": [
+				"https://www.apple.com/airpods-pro/",
+				"https://www.apple.com/airpods-pro/specs/",
+				"https://www.apple.com/shop/buy-airpods/airpods-pro-3"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/airpods-pro-3.png",
@@ -323,19 +2849,46 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/airpods-pro-3-11aa61e98eed.png"
+				},
+				{
+					"path": "/images/catalogue/options/airpods-pro-3-white-35aee945c7be.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/airpods-pro-3-hero-select-202509?wid=976&hei=916&fmt=jpeg&qlt=90&.v=cmp4MmZ6OWxOeHNNTXh4SzlBNUpEb1RucE9zZTI5eEREaWZpY29lSld3eWVDYXovZDMyN1dXU211bjZoVlVUcWJGcXNRQnFCV0w3WVRjTExvdm1ic1YxRUxFRmRlWDBITzhnRmZ5OTRmaVdKTExiOEFsRmxtQ2Nua0tRSC83MkI",
+					"sha256": "35aee945c7be91ed4fcb0b795e99a1c995224c24ddbb2e48e8546f1e4ce4f442",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/airpods-pro-3-white-35aee945c7be.jpg",
+					"optionAxis": "colour",
+					"optionValue": "White",
+					"scope": "White AirPods Pro3 with MagSafe USB-C case."
 				}
 			],
 			"categorySlug": "audio",
 			"specifications": {
 				"Colour": "White"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": ["colour", "charging case"],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"White only; five included tip sizes XXS/XS/S/M/L are in-box accessories, not five product variants; no other case/storage choices."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "White",
+					"charging case": "MagSafe Charging Case (USB-C)"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "White",
+					"charging case": "MagSafe Charging Case (USB-C)"
+				}
+			]
 		},
 		{
 			"key": "jbl-charge-6",
 			"name": "JBL Charge 6",
-			"sourceUrls": ["https://fr.jbl.com/CHARGE-6.html"],
+			"sourceUrls": [
+				"https://fr.jbl.com/CHARGE-6.html",
+				"https://www.jbl.com/JBLCHARGE6BLKAM.html"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/jbl-charge-6.png",
@@ -345,20 +2898,251 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/jbl-charge-6-60566c996f04.png"
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-black-and-orange-e1a4e479b3ce.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwdca077e1/JBL_CHARGE_6_FUNKY_BLACK_HERO_081_x1.png?sh=1200&sw=1200",
+					"sha256": "e1a4e479b3ce7a63360a673f0788f10f5aff1748c40ae92ac9e1af5ad7f981c8",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-black-and-orange-e1a4e479b3ce.png",
+					"optionAxis": "colour",
+					"optionValue": "Black and Orange",
+					"scope": {
+						"colour": "Black and Orange"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-pink-74ed4ef6dda9.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw0841be98/LS_JBL_CHARGE_6__PINK_HERO_075_x1.png?sh=1200&sw=1200",
+					"sha256": "74ed4ef6dda9f93c92c8b76bf5ed965a5db3f4f40865c9624c666fa97f821f54",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-pink-74ed4ef6dda9.png",
+					"optionAxis": "colour",
+					"optionValue": "Pink",
+					"scope": {
+						"colour": "Pink"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-white-346807369457.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwdb021b98/JBL_CHARGE_6_WHITE_HERO_080_x1.png?sh=1200&sw=1200",
+					"sha256": "346807369457be787c5ea759552d7117374065f2a435d3b863d43d37efc7f548",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-white-346807369457.png",
+					"optionAxis": "colour",
+					"optionValue": "White",
+					"scope": {
+						"colour": "White"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-blue-33d7dcbecd3e.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw7d065d88/LS_JBL_CHARGE_6_BLUE_HERO_079_x1.png?sh=1200&sw=1200",
+					"sha256": "33d7dcbecd3e289e4127157f68370899cbdaf036fdb4567306d218931cdd2cfa",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-blue-33d7dcbecd3e.png",
+					"optionAxis": "colour",
+					"optionValue": "Blue",
+					"scope": {
+						"colour": "Blue"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-sand-a4f5e3e7ef83.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw65e3f3d0/JBL_CHARGE_6_SAND_HERO_077_x2.png?sh=1200&sw=1200",
+					"sha256": "a4f5e3e7ef83e96c6276b715dffeb3cd7bc681763b36c862157ed313281f7b76",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-sand-a4f5e3e7ef83.png",
+					"optionAxis": "colour",
+					"optionValue": "Sand",
+					"scope": {
+						"colour": "Sand"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-turquoise-661a79fc3f50.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw16f8eeba/LS_JBL_CHARGE_6_TURQUOISE_HERO_080_x2.png?sh=1200&sw=1200",
+					"sha256": "661a79fc3f50fafc8fd80a1d4e399893d314de745db56b2b522422a9ec1062f9",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-turquoise-661a79fc3f50.png",
+					"optionAxis": "colour",
+					"optionValue": "Turquoise",
+					"scope": {
+						"colour": "Turquoise"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-black-fca7afa07c80.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwf730bf50/LS_JBL_CHARGE_6_BLACK_HERO_071_x1.png?sh=1200&sw=1200",
+					"sha256": "fca7afa07c80fc099f0ff16fc6e805b2c1ad31409ffe1963847d83af278a54d9",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-black-fca7afa07c80.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"colour": "Black"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-red-4d0c4e92f447.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw634efeaf/JBL_CHARGE_6_RED_HERO_070_x1.png?sh=1200&sw=1200",
+					"sha256": "4d0c4e92f447eee9352595eefd537e09c872caefe3bb13716eac28f2e5a921b5",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-red-4d0c4e92f447.png",
+					"optionAxis": "colour",
+					"optionValue": "Red",
+					"scope": {
+						"colour": "Red"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-purple-175d16ec29ea.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw64f87ff6/JBL_CHARGE_6_PURPLE_HERO_078_x1.png?sh=1200&sw=1200",
+					"sha256": "175d16ec29ea88de251f6cf779615f2dc9d4f550a06d6bf926421cea5254f068",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-purple-175d16ec29ea.png",
+					"optionAxis": "colour",
+					"optionValue": "Purple",
+					"scope": {
+						"colour": "Purple"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/jbl-charge-6-squad-6d78766e5129.png",
+					"sourceUrl": "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw6431aa2a/JBL_CHARGE_6_SQUAD_HERO_074_x1.png?sh=1200&sw=1200",
+					"sha256": "6d78766e512910aa9b32a231b3ae1373b6afddac4580f5da3611ef15f3eface9",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/jbl-charge-6-squad-6d78766e5129.png",
+					"optionAxis": "colour",
+					"optionValue": "Squad",
+					"scope": {
+						"colour": "Squad"
+					}
 				}
 			],
 			"categorySlug": "audio",
 			"specifications": {
 				"Colour": "Black"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": ["colour", "connectivity", "region"],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Ten colors explicitly named and linked to exact hero assets in official US selector. Asset resize changed from70px swatch to1200px requesting same source.",
+				"No capacity/size variations. RetailSKU verified only black JBLCHARGE6BLKAM; other color SKU strings not guessed.",
+				"Hex values not provided because compound/camouflage colors cannot be faithfully represented by one exact manufacturer hex."
+			],
+			"verifiedConfigurations": [
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Black and Orange"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Pink"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "White"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Blue"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Sand"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Turquoise"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Black"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Red"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Purple"
+				},
+				{
+					"connectivity": "Bluetooth 5.4",
+					"model": "Charge 6",
+					"region": "US",
+					"colour": "Squad"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Black and Orange",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Pink",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "White",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Blue",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Sand",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Turquoise",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Red",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Purple",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				},
+				{
+					"colour": "Squad",
+					"connectivity": "Bluetooth 5.4",
+					"region": "US"
+				}
+			]
 		},
 		{
 			"key": "galaxy-buds4",
 			"name": "Samsung Galaxy Buds4",
 			"sourceUrls": [
-				"https://www.samsung.com/ie/audio-sound/galaxy-buds/galaxy-buds4-white-sm-r540nzwaeub/"
+				"https://www.samsung.com/ie/audio-sound/galaxy-buds/galaxy-buds4-white-sm-r540nzwaeub/",
+				"https://www.samsung.com/ie/audio-sound/galaxy-buds/galaxy-buds4-black-sm-r540nzkaeub/",
+				"https://news.samsung.com/global/samsung-unveils-all-new-galaxy-buds4-series-with-ultimate-sound"
 			],
 			"images": [
 				{
@@ -369,6 +3153,28 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/galaxy-buds4-0954748c9a9f.png"
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-buds4-white-0954748c9a9f.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/ie/s2602/gallery/ie-galaxy-buds4-r540-sm-r540nzwaeub-551007852?$1164_776_PNG$",
+					"sha256": "0954748c9a9f281058b6a1471f4d2db21a74585ac7ca317e25cb65d648cd5f11",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-buds4-white-0954748c9a9f.png",
+					"optionAxis": "colour",
+					"optionValue": "White",
+					"scope": {
+						"colour": "White"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/galaxy-buds4-black-b73596626ef2.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/p6pim/ie/s2602/gallery/ie-galaxy-buds4-r540-sm-r540nzkaeub-551007806?$1164_776_PNG$",
+					"sha256": "b73596626ef22ec1c0533e1c768f9694f1e4d0233671d97ec53798dd621ae4bc",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/galaxy-buds4-black-b73596626ef2.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"colour": "Black"
+					}
 				}
 			],
 			"categorySlug": "audio",
@@ -376,13 +3182,47 @@
 				"Colour": "White",
 				"Model": "SM-R540NZWAEUB"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": ["colour", "connectivity", "region"],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Standard Buds4 only White/Black. Pink Gold belongs to Buds4 Pro; never mix model media.",
+				"Black/white hex values are representative UI swatches, not published manufacturer color measurements."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "White",
+					"model": "SM-R540NZWAEUB",
+					"region": "Ireland / EU",
+					"connectivity": "Bluetooth"
+				},
+				{
+					"colour": "Black",
+					"model": "SM-R540NZKAEUB",
+					"region": "Ireland / EU",
+					"connectivity": "Bluetooth"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "White",
+					"connectivity": "Bluetooth",
+					"region": "Ireland / EU"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "Bluetooth",
+					"region": "Ireland / EU"
+				}
+			]
 		},
 		{
 			"key": "homepod-mini",
 			"name": "HomePod mini",
-			"sourceUrls": ["https://www.apple.com/homepod-mini/"],
+			"sourceUrls": [
+				"https://www.apple.com/homepod-mini/",
+				"https://www.apple.com/homepod-mini/specs/",
+				"https://www.apple.com/shop/buy-homepod/homepod-mini"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/homepod-mini.png",
@@ -392,21 +3232,121 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/homepod-mini-c4f85886a04c.png"
+				},
+				{
+					"path": "/images/catalogue/options/homepod-mini-white-e6fe64957cea.jpg",
+					"sourceUrl": "https://www.apple.com/v/homepod-mini/j/images/specs/hero_homepod_mini_white__byv5v65oppg2_large_2x.jpg",
+					"sha256": "e6fe64957ceab4adadb06bc204f86962e7da2b09d57c8f92d6550cb02308d500",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/homepod-mini-white-e6fe64957cea.jpg",
+					"optionAxis": "colour",
+					"optionValue": "White",
+					"scope": {
+						"colour": "White"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/homepod-mini-yellow-67b32c8c9a3e.jpg",
+					"sourceUrl": "https://www.apple.com/v/homepod-mini/j/images/specs/hero_homepod_mini_yellow__b2iuq7a04aia_large_2x.jpg",
+					"sha256": "67b32c8c9a3e28bc3efc57ad370e1599e3dbf14b68d7f7707ae9fa7c9bf29dfa",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/homepod-mini-yellow-67b32c8c9a3e.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Yellow",
+					"scope": {
+						"colour": "Yellow"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/homepod-mini-orange-8e73afa39e24.jpg",
+					"sourceUrl": "https://www.apple.com/v/homepod-mini/j/images/specs/hero_homepod_mini_orange__bep40x4vnd42_large_2x.jpg",
+					"sha256": "8e73afa39e24e7a6627ef241c317d9ea096e572c0d78622489770c79250af53f",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/homepod-mini-orange-8e73afa39e24.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Orange",
+					"scope": {
+						"colour": "Orange"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/homepod-mini-blue-80c0e3d15306.jpg",
+					"sourceUrl": "https://www.apple.com/v/homepod-mini/j/images/specs/hero_homepod_mini_blue__ena1vcc2dgeq_large_2x.jpg",
+					"sha256": "80c0e3d15306cdd228b99c088adaa757dc326ed4f06481f7016389d18f5a8c17",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/homepod-mini-blue-80c0e3d15306.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Blue",
+					"scope": {
+						"colour": "Blue"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/homepod-mini-midnight-a09a51183bd2.jpg",
+					"sourceUrl": "https://www.apple.com/v/homepod-mini/j/images/specs/hero_homepod_mini_midnight__cjkkcqkqtaqa_large_2x.jpg",
+					"sha256": "a09a51183bd2227c19ccb0fe8942cdf80b14231e580e8b9cc4db32c64039c7a7",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/homepod-mini-midnight-a09a51183bd2.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Midnight",
+					"scope": {
+						"colour": "Midnight"
+					}
 				}
 			],
 			"categorySlug": "audio",
 			"specifications": {
 				"Connectivity": "Wi-Fi and Bluetooth"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": ["colour"],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Five current colours: Midnight supersedes older Space Gray. No storage/connectivity variants. USB-C powered20W adapter included; country plug differs. Bluetooth capability does not make this a generic Bluetooth audio speaker; use supported AirPlay/music services."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "White"
+				},
+				{
+					"colour": "Yellow"
+				},
+				{
+					"colour": "Orange"
+				},
+				{
+					"colour": "Blue"
+				},
+				{
+					"colour": "Midnight"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "White"
+				},
+				{
+					"colour": "Yellow"
+				},
+				{
+					"colour": "Orange"
+				},
+				{
+					"colour": "Blue"
+				},
+				{
+					"colour": "Midnight"
+				}
+			]
 		},
 		{
 			"key": "apple-watch-series-12",
 			"name": "Apple Watch Series 12",
 			"categorySlug": "watches-wearables",
 			"sourceUrls": [
-				"https://www.apple.com/newsroom/2026/09/introducing-apple-watch-series-12-with-the-all-new-health-sensing-system/"
+				"https://www.apple.com/newsroom/2026/09/introducing-apple-watch-series-12-with-the-all-new-health-sensing-system/",
+				"https://www.apple.com/apple-watch-series-12/specs/",
+				"https://www.apple.com/shop/buy-watch/apple-watch/42mm-gps-dark-bronze-aluminum-olive-sport-band",
+				"https://www.apple.com/shop/buy-watch/apple-watch/46mm-cellular-space-gray-aluminum-olive-sport-loop",
+				"https://www.apple.com/shop/buy-watch/apple-watch/42mm-cellular-black-aluminum-chambray-blue-sport-loop",
+				"https://www.apple.com/shop/buy-watch/apple-watch/46mm-cellular-light-gold-aluminum-black-unity-unity-rhythm-sport-loop",
+				"https://www.apple.com/shop/buy-watch/apple-watch/42mm-cellular-natural-titanium-chalk-calm-nike-sport-loop",
+				"https://www.apple.com/shop/buy-watch/apple-watch/42mm-cellular-radiant-gold-titanium-burgundy-sport-loop",
+				"https://www.apple.com/ca/shop/product/mjv94am/a/42mm-olive-sport-band-s-m"
 			],
 			"specifications": {
 				"Chip": "S11",
@@ -425,16 +3365,225 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Two views of the watch; exact finish and band combination is not assigned. Source separately documents aluminum, titanium and ceramic finishes; do not create an unrestricted finish/material cross product.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/apple-watch-series-12-a86881189b8c.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-series-12-dark-bronze-dc04631cda13.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MJV94ref_VW_34FR_NCE+watch-case-42-aluminum-darkbronze-nc-s12_VW_34FR+watch-face-42-aluminum-darkbronze-s12_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=eFV0NDl6dzVoc1orOTdGQVV2cEU0dTNBUDJrcVJULytKcGloTXUxMUdXQ0lrZzM5VzhVTkhiQ0RRMjRlZGFma2QvWDk3RnlTamNDZzZwc0FYTUh1R25qblBjd2JiYm5raG5NaEt4aVI1UUxTcTV5czZOa241WUwzZGFoMEg2OGZrVkRNS1ZwUVNvV1RKR1JxV0tRRWpSNmh0WVJTWTBBUWJ6RVZGNXo1eHp5LzRpa1dhcXBneVhtUk15MGZlY0FDSEdlRTZuTGFRV0ZUYVIzTEhZaHVoUXFVSy9aZXNYNHM4NWNIdGZLSmhGbw",
+					"sha256": "dc04631cda131204ebcca36cd51ff26f29393e5b189944c472c853eef2d61d6c",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-series-12-dark-bronze-dc04631cda13.png",
+					"optionAxis": "colour",
+					"optionValue": "Dark Bronze",
+					"scope": {
+						"Colour": "Dark Bronze",
+						"Case size": "42 mm",
+						"Case material": "Aluminum",
+						"Connectivity": "GPS",
+						"Band": "Olive Sport Band",
+						"Band size": "S/M"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-series-12-space-gray-4cde2dbca453.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MK8D4ref_VW_34FR_NCE+watch-case-46-aluminum-spacegray-cell-s12_VW_34FR+watch-face-46-aluminum-spacegray-s12_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=RC9xcjUzQXlxQW42aUFTUmpjZFh3TzNBUDJrcVJULytKcGloTXUxMUdXQkZSSTIyZmhjNFBMeC9tYkVLMC9iN01ZTWo0YXJJbXpIM0lYWEprQitoeWd1Z0RaeFB5LzRxZEliRVE2WkswOWx1Z3BEUVNuUG8yVjNnSmw2aFpkbkZhR0pFL2pSUEdETUVnUzlPNW5Wa1d4Nmh0WVJTWTBBUWJ6RVZGNXo1eHp5LzRpa1dhcXBneVhtUk15MGZlY0FDQWROZ1dCN0haWGRtaUxmMDAvdHN5TGgyUk4vbFBsNnpXckVuN3MvTUcwWQ",
+					"sha256": "4cde2dbca4536495cfb841fc7f8a99b23e331bc2a5b7b689991daeaa7d612a08",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-series-12-space-gray-4cde2dbca453.png",
+					"optionAxis": "colour",
+					"optionValue": "Space Gray",
+					"scope": {
+						"Colour": "Space Gray",
+						"Case size": "46 mm",
+						"Case material": "Aluminum",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Olive Sport Loop"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-series-12-black-253664dee11a.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MK854_VW_34FR_NCE+watch-case-42-aluminum-black-cell-s12_VW_34FR+watch-face-42-aluminum-black-s12_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=QmVMMkRUbHdYWXVKRnZLZnlXWXl0V3d1aHZCTUhmMm1tQnZXN0Z0bnp6ZDlaaFVPZFN4Ti8yS0xZbEJJRnVMbU5iYkluZnAvbTJnY0UyOWFtTGR4cndtTHNhRmRKQkE2OXJHRVEvRTFWdXNWaSswZEJ5MmlIZ01vZnROK0VJa3B0b0dhaWNFejRQSG1Nc0hsbGJ1VVF4cnFuUlBHdmRkUGRUMTJvcDNGQ3Q5OGJiSytMcWRVVXFnVWcrY1kzR042WXJKRzRmb2hOWFh1dFR0VFdxUDRlZw",
+					"sha256": "253664dee11acec9aaa38eda4fcb6cd51e1d720b812c93cc70dfa76671fe4f98",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-series-12-black-253664dee11a.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"Colour": "Black",
+						"Case size": "42 mm",
+						"Case material": "Aluminum",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Chambray Blue Sport Loop"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-series-12-light-gold-79cbe7dda32d.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MDF54_VW_34FR_NCE+watch-case-46-aluminum-lightgold-cell-s12_VW_34FR+watch-face-46-nonceramic-bhm-sport-loop-s12_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=TEtGRFhkaFZoMFlxQzdUQ0YzeS9mRzY4QU52Qm9RMEsxS2RJL1YvM3MyQi9vOFZrTzZBUkNTOWtPWXJUdSt4cy9ERHVtZTFNNlUxdXVHQU8vVm9idFBmQXlUU2xCQ2pTN3lrcDE0UU1hK0dXYlZ2b1J4cENzUXNhZkN4VVJCaVU1K3lYZ21FdG1GeXNzazg1Ym84ZVZEamlBaEJmR1ROY2VqNytHaHVCZGdyUVNLS2xnRUN4WG1uM2xuMGVkQWlFU2tET1BtUzlCMXZPbWEzRllKOGw1QUZTRTVsS0FlSTN6RGJCbXBiOENDcw",
+					"sha256": "79cbe7dda32dd3f5ad7b7953606eac190f6f6ea927eca58e037da9ac208d68ba",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-series-12-light-gold-79cbe7dda32d.png",
+					"optionAxis": "colour",
+					"optionValue": "Light Gold",
+					"scope": {
+						"Colour": "Light Gold",
+						"Case size": "46 mm",
+						"Case material": "Aluminum",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Black Unity Sport Loop - Unity Rhythm"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-series-12-natural-6c92e8e836a9.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MKUE4_VW_34FR_NCE+watch-case-42-titanium-natural-cell-s12_VW_34FR+watch-face-42-nonceramic-nike-chalkcalm-s12_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=K212UGwrUEpQR2M5QkJQTUFkaTJ1Mnd1aHZCTUhmMm1tQnZXN0Z0bnp6ZFRlQVNJVEV2cEVEblVkVEdINXZienFEb1FPVXFRRjhiVU5QS2ljWkRTRVhSRlE2a2xVdG1FZEh6Y2lYWXFUR0hIMko0enhSWm4xbVNKQ2JwS1NHenlmbnZ3MTRnRExQaVJkN1pxV1RENjR3U2J0b2dFalM5NmppMURSSWhFUXYxVjV3djZmTU14NnRlQ2xSWEp4bENTdWoxSWh0TVlFMG5yTlNBYnVaUnV6TzlmdUoyNXdjOGd5eUYxbnhOckdVVQ",
+					"sha256": "6c92e8e836a97e4c8129360feb3dae6417e371a5769820cefe67fe1b54ef7be4",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-series-12-natural-6c92e8e836a9.png",
+					"optionAxis": "colour",
+					"optionValue": "Natural",
+					"scope": {
+						"Colour": "Natural",
+						"Case size": "42 mm",
+						"Case material": "Titanium",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Chalk Calm Nike Sport Loop"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-series-12-radiant-gold-8cac145b8aa4.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MK864_VW_34FR_NCE+watch-case-42-titanium-radiantgold-cell-s12_VW_34FR+watch-face-42-titanium-radiantgold-s12_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=d1FjdFpBUUdESXZHa3lHZnBnOCszMnd1aHZCTUhmMm1tQnZXN0Z0bnp6ZHI0VHhsR1p1d0h6TlBKb0F0b1hwRDgyV3pBY08wSGF1NmRZRWFlbTVYcjNqblBjd2JiYm5raG5NaEt4aVI1UUltbzQyN3I0MlpQQ0dpZEMvRWlWcEJsaCt3eVIxL1doUGNTTmNUaEJwMXVuaHZVcVNxS1QrYk44Vm1VTUFRQXZyaXBIL2E5bmxJNzNXcDM1U0hrRXk1cnNqOFVsckZBVWxaQ3dOR1Q1cld0ekIxNkJ6WFFwTk92Q2hhNWVQMFhDYw",
+					"sha256": "8cac145b8aa4d7b9ef26132cbf521f4834defcc852c37ee5764d0e50f60eb937",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-series-12-radiant-gold-8cac145b8aa4.png",
+					"optionAxis": "colour",
+					"optionValue": "Radiant Gold",
+					"scope": {
+						"Colour": "Radiant Gold",
+						"Case size": "42 mm",
+						"Case material": "Titanium",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Burgundy Sport Loop"
+					}
 				}
 			],
-			"seedVariantAxes": {
-				"Size": ["42 mm", "46 mm"]
-			}
+			"seedVariantAxes": [
+				"colour",
+				"band",
+				"band size",
+				"case material",
+				"case size",
+				"connectivity"
+			],
+			"variantNotes": [
+				"Curated exact depicted configurations only; do not Cartesian-expand case sizes, connectivity or bands. Other valid manufacturer combinations are intentionally omitted because each selected colour has one reviewed image/configuration.",
+				"Hex values are approximate UI swatches, not manufacturer colourimetric specifications.",
+				"Cellular is hardware configuration, not a promise of Ghana carrier activation. Verify regional model and carrier availability before procurement.",
+				"Ceramic Night Blue/Pearl White omitted: specifications report physical43/47mm but Apple shop labels42/46mm; unresolved size naming contradiction.",
+				"Aluminum supports GPS or GPS+Cellular; titanium selections are cellular. Seed global Aluminum specification must be removed/varied if adding titanium.",
+				"Dark Bronze photo band identifier MJV94 corresponds to42mm Olive Sport Band S/M. Other chosen loops are adjustable; supplier wrist-fit verification remains necessary."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Dark Bronze",
+					"case size": "42 mm",
+					"case material": "Aluminum",
+					"connectivity": "GPS",
+					"band": "Olive Sport Band",
+					"band size": "S/M"
+				},
+				{
+					"colour": "Space Gray",
+					"case size": "46 mm",
+					"case material": "Aluminum",
+					"connectivity": "GPS + Cellular",
+					"band": "Olive Sport Loop",
+					"band size": "Adjustable"
+				},
+				{
+					"colour": "Black",
+					"case size": "42 mm",
+					"case material": "Aluminum",
+					"connectivity": "GPS + Cellular",
+					"band": "Chambray Blue Sport Loop",
+					"band size": "Adjustable"
+				},
+				{
+					"colour": "Light Gold",
+					"case size": "46 mm",
+					"case material": "Aluminum",
+					"connectivity": "GPS + Cellular",
+					"band": "Black Unity Sport Loop - Unity Rhythm",
+					"band size": "Adjustable"
+				},
+				{
+					"colour": "Natural",
+					"case size": "42 mm",
+					"case material": "Titanium",
+					"connectivity": "GPS + Cellular",
+					"band": "Chalk Calm Nike Sport Loop",
+					"band size": "Adjustable"
+				},
+				{
+					"colour": "Radiant Gold",
+					"case size": "42 mm",
+					"case material": "Titanium",
+					"connectivity": "GPS + Cellular",
+					"band": "Burgundy Sport Loop",
+					"band size": "Adjustable"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Dark Bronze",
+					"band": "Olive Sport Band",
+					"band size": "S/M",
+					"case material": "Aluminum",
+					"case size": "42 mm",
+					"connectivity": "GPS"
+				},
+				{
+					"colour": "Space Gray",
+					"band": "Olive Sport Loop",
+					"band size": "Adjustable",
+					"case material": "Aluminum",
+					"case size": "46 mm",
+					"connectivity": "GPS + Cellular"
+				},
+				{
+					"colour": "Black",
+					"band": "Chambray Blue Sport Loop",
+					"band size": "Adjustable",
+					"case material": "Aluminum",
+					"case size": "42 mm",
+					"connectivity": "GPS + Cellular"
+				},
+				{
+					"colour": "Light Gold",
+					"band": "Black Unity Sport Loop - Unity Rhythm",
+					"band size": "Adjustable",
+					"case material": "Aluminum",
+					"case size": "46 mm",
+					"connectivity": "GPS + Cellular"
+				},
+				{
+					"colour": "Natural",
+					"band": "Chalk Calm Nike Sport Loop",
+					"band size": "Adjustable",
+					"case material": "Titanium",
+					"case size": "42 mm",
+					"connectivity": "GPS + Cellular"
+				},
+				{
+					"colour": "Radiant Gold",
+					"band": "Burgundy Sport Loop",
+					"band size": "Adjustable",
+					"case material": "Titanium",
+					"case size": "42 mm",
+					"connectivity": "GPS + Cellular"
+				}
+			]
 		},
 		{
 			"key": "apple-watch-ultra-4",
 			"name": "Apple Watch Ultra 4",
-			"sourceUrls": ["https://www.apple.com/apple-watch-ultra-4/specs/"],
+			"sourceUrls": [
+				"https://www.apple.com/apple-watch-ultra-4/specs/",
+				"https://www.apple.com/shop/buy-watch/apple-watch-ultra/49mm-cellular-black-titanium-translucent-black-ocean-band",
+				"https://www.apple.com/shop/buy-watch/apple-watch-ultra/49mm-cellular-natural-titanium-translucent-gray-ocean-band",
+				"https://www.apple.com/shop/product/mkay4am/a/49mm-translucent-black-ocean-band-black-titanium-finish"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/apple-watch-ultra-4.png",
@@ -444,6 +3593,36 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/apple-watch-ultra-4-8e9b52a9fafc.png"
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-ultra-4-black-dc3936d1cc9a.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MKAY4_VW_34FR+watch-case-49-titanium-black-ultra4_VW_34FR+watch-face-49-ultra4_VW_34FR_GEO_US?wid=2000&hei=2000&fmt=png-alpha&.v=U29sMmZPWmI4ZHB1TUtOWnB6V2VyNlZGV0ZiSDllNHd6YWJwdVV2Z2xBWldDOWFLUUtwRFA1Z0VNUGRlblI0R01BenBjdVpCZVM2UnQwMC91VUtxMTJIT1F4RGdkMVl2UzFVV1VPbDk2TFRHRDEvMEQ0OVNBemxPTjlSRERhRk9PMGZvWHg2dWE3MDFwRnFzM3NVdVRKc3NFR2g5clp3N1hYNWtlaU9tcU1XT2pRUUFUR3pwVFhlbDZpS2ZxNFBK",
+					"sha256": "dc3936d1cc9ac7cbac8fa73adcda05bb7f69d9af0d70963b11001c9c59e027b0",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-ultra-4-black-dc3936d1cc9a.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"Colour": "Black",
+						"Case size": "49 mm",
+						"Case material": "Titanium",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Translucent Black Ocean Band"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-ultra-4-natural-8e641a320dc6.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MK7K4_VW_34FR+watch-case-49-titanium-natural-ultra4_VW_34FR+watch-face-49-ultra4_VW_34FR_GEO_US?wid=2000&hei=2000&fmt=png-alpha&.v=dDhhaVhCdytabStHaDlWdWFsell5cVZGV0ZiSDllNHd6YWJwdVV2Z2xBWm9SMGMvQkpTNDBiSVZSVExOcXdwL0dFNlAvcWROaC9jeFhSWncwT2doWnpkVlV6VGhvNy9VLzFYOUdBNm1QejZQMURIajlrdVBSMTZzdDl1VHYyaVdTcWU0Y1dndHNieXpwWHZCbWZnWDlic3VWT0FYT3FNWDhtMVRPWnUyZlg3RTQwL1RyQmdncndBOUp5ZFFiTk1HZm1veGJ2MXNWLzV2eHpiRi9CMTRadw",
+					"sha256": "8e641a320dc691e628445199faca2ef1afbbe196600f5607d4f164941d5acef3",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-ultra-4-natural-8e641a320dc6.png",
+					"optionAxis": "colour",
+					"optionValue": "Natural",
+					"scope": {
+						"Colour": "Natural",
+						"Case size": "49 mm",
+						"Case material": "Titanium",
+						"Connectivity": "GPS + Cellular",
+						"Band": "Translucent Gray Ocean Band"
+					}
 				}
 			],
 			"categorySlug": "watches-wearables",
@@ -452,13 +3631,62 @@
 				"Case material": "Titanium",
 				"Chip": "S11"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": [
+				"colour",
+				"band",
+				"case material",
+				"case size",
+				"connectivity"
+			],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Curated exact depicted configurations only; do not Cartesian-expand case sizes, connectivity or bands. Other valid manufacturer combinations are intentionally omitted because each selected colour has one reviewed image/configuration.",
+				"Hex values are approximate UI swatches, not manufacturer colourimetric specifications.",
+				"Cellular is hardware configuration, not a promise of Ghana carrier activation. Verify regional model and carrier availability before procurement.",
+				"Only49mm titanium GPS+Cellular; no GPS-only or storage upgrade. Ocean Band finish hardware must match case. Satellite service availability is region-dependent."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Black",
+					"case size": "49 mm",
+					"case material": "Titanium",
+					"connectivity": "GPS + Cellular",
+					"band": "Translucent Black Ocean Band"
+				},
+				{
+					"colour": "Natural",
+					"case size": "49 mm",
+					"case material": "Titanium",
+					"connectivity": "GPS + Cellular",
+					"band": "Translucent Gray Ocean Band"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Black",
+					"band": "Translucent Black Ocean Band",
+					"case material": "Titanium",
+					"case size": "49 mm",
+					"connectivity": "GPS + Cellular"
+				},
+				{
+					"colour": "Natural",
+					"band": "Translucent Gray Ocean Band",
+					"case material": "Titanium",
+					"case size": "49 mm",
+					"connectivity": "GPS + Cellular"
+				}
+			]
 		},
 		{
 			"key": "apple-watch-se-3",
 			"name": "Apple Watch SE 3",
-			"sourceUrls": ["https://www.apple.com/apple-watch-se/specs/"],
+			"sourceUrls": [
+				"https://www.apple.com/apple-watch-se/specs/",
+				"https://www.apple.com/apple-watch-se-3/specs/",
+				"https://www.apple.com/shop/buy-watch/apple-watch-se/44mm-gps-midnight-aluminum-essential-white-nike-sport-loop-se",
+				"https://www.apple.com/shop/buy-watch/apple-watch-se/44mm-gps-starlight-aluminum-magenta-sport-loop-se"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/apple-watch-se-3.png",
@@ -468,6 +3696,36 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/apple-watch-se-3-47c26a655ee9.png"
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-se-3-midnight-4734edde77ca.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MKV14_SR_SE_VW_34FR+watch-case-44-aluminum-midnight-nc-se3_VW_34FR+watch-face-44-nike-essentialwhite-se3_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=MlhxbnFQWktwRG5lbjJObGFscU82NUIvSXl2TlNkRW93bFN4MDNjT2M4eGlEU3ZVMTJGT1k0QW5uT2QzTWRSYlNyVFVTODRiVFd4OEYxUVdRWlZpS3U1c2ZaeDZIZXM4SFNMRHczMlFkcVoxUG1PVjdaV1FudllPOEVIcWxxMlBGVWZjRDFyMnc5Wk5leEtXRVVEaW9PUTU4N0MwSS9jYWJEbEpiZWpYQy9pRFJvTk1WL3dkOUtPUHdmeHpVRi90S2UwQUpXbkpHMmhYMXVmUExMUXptblpDMzZ4REZOSFNwdGp2ZEpCbWtqbw",
+					"sha256": "4734edde77cafb09d480cfe11effe8e56d0c4502b30f530b78f0e31d0940ff53",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-se-3-midnight-4734edde77ca.png",
+					"optionAxis": "colour",
+					"optionValue": "Midnight",
+					"scope": {
+						"Colour": "Midnight",
+						"Case size": "44 mm",
+						"Case material": "Aluminum",
+						"Connectivity": "GPS",
+						"Band": "Essential White Nike Sport Loop"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/apple-watch-se-3-starlight-f5bd25ed6d27.png",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MK8C4_SR_SE_VW_34FR+watch-case-44-aluminum-starlight-nc-se3_VW_34FR+watch-face-44-aluminum-starlight-se3_VW_34FR?wid=2000&hei=2000&fmt=png-alpha&.v=ZjQ1QXpxeHF5TUN1YUpPNFdreXBXNUIvSXl2TlNkRW93bFN4MDNjT2M4eHJjcnJsWnVTMHJMSGRFYUVmR2M4KzJqTXRxTmpMZ2UyR0p6NmFFOHdSVi9mQXlUU2xCQ2pTN3lrcDE0UU1hK0ZyY3JybFp1UzByTEhkRWFFZkdjOCt3MWtUbEY3SEFHcklpYWRuOHA5UEErUTU4N0MwSS9jYWJEbEpiZWpYQy9pRFJvTk1WL3dkOUtPUHdmeHpVRi90Mkp2ajFFNnpJK0xENy9NSWN4cGZWQlowWWJrQTRZZGRBeSt2YmhWQ3pjOA",
+					"sha256": "f5bd25ed6d27cff0770e72877fb6ba0777bcd9982bc67a4f3c1f591350cf8cb2",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-watch-se-3-starlight-f5bd25ed6d27.png",
+					"optionAxis": "colour",
+					"optionValue": "Starlight",
+					"scope": {
+						"Colour": "Starlight",
+						"Case size": "44 mm",
+						"Case material": "Aluminum",
+						"Connectivity": "GPS",
+						"Band": "Magenta Sport Loop"
+					}
 				}
 			],
 			"categorySlug": "watches-wearables",
@@ -475,10 +3733,52 @@
 				"Chip": "S10",
 				"Case material": "Aluminum"
 			},
-			"seedVariantAxes": {
-				"Size": ["40 mm", "44 mm"]
-			},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": [
+				"colour",
+				"band",
+				"case material",
+				"case size",
+				"connectivity"
+			],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Curated exact depicted configurations only; do not Cartesian-expand case sizes, connectivity or bands. Other valid manufacturer combinations are intentionally omitted because each selected colour has one reviewed image/configuration.",
+				"Hex values are approximate UI swatches, not manufacturer colourimetric specifications.",
+				"Cellular is hardware configuration, not a promise of Ghana carrier activation. Verify regional model and carrier availability before procurement.",
+				"Manufacturer also offers40mm and cellular; omitted from sale configurations to avoid reusing44mm GPS loop images for different size/band SKUs.40mm exact images are retained separately in /tmp/geostore-wearable-research/selected-media.json for future independent media grouping."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Midnight",
+					"case size": "44 mm",
+					"case material": "Aluminum",
+					"connectivity": "GPS",
+					"band": "Essential White Nike Sport Loop"
+				},
+				{
+					"colour": "Starlight",
+					"case size": "44 mm",
+					"case material": "Aluminum",
+					"connectivity": "GPS",
+					"band": "Magenta Sport Loop"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Midnight",
+					"band": "Essential White Nike Sport Loop",
+					"case material": "Aluminum",
+					"case size": "44 mm",
+					"connectivity": "GPS"
+				},
+				{
+					"colour": "Starlight",
+					"band": "Magenta Sport Loop",
+					"case material": "Aluminum",
+					"case size": "44 mm",
+					"connectivity": "GPS"
+				}
+			]
 		},
 		{
 			"key": "lg-oled55c6pua",
@@ -508,12 +3808,34 @@
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/lg-oled55c6pua-bec552741b75.jpg"
 				}
 			],
-			"seedVariantAxes": {}
+			"seedVariantAxes": ["region", "resolution", "size"],
+			"variantNotes": [
+				"Fixed exact model. Do not expand to different sizes/capacities/model numbers as if interchangeable variants.",
+				"US official page lists other diagonals as different models;77/83-inch are C6H, not merely sizes of55C6PUA. Color name not verified."
+			],
+			"verifiedConfigurations": [
+				{
+					"model": "OLED55C6PUA.AUS",
+					"size": "55-inch",
+					"resolution": "4K",
+					"region": "US"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"region": "US",
+					"resolution": "4K",
+					"size": "55-inch"
+				}
+			]
 		},
 		{
 			"key": "apple-tv-4k",
 			"name": "Apple TV 4K",
-			"sourceUrls": ["https://www.apple.com/apple-tv-4k/specs/"],
+			"sourceUrls": [
+				"https://www.apple.com/apple-tv-4k/specs/",
+				"https://www.apple.com/shop/buy-tv/apple-tv-4k"
+			],
 			"images": [
 				{
 					"path": "/images/catalogue/apple-tv-4k.png",
@@ -523,14 +3845,50 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/apple-tv-4k-9dcdd11c6a16.png"
+				},
+				{
+					"path": "/images/catalogue/options/apple-tv-4k-black-c3481d94ad0a.jpg",
+					"sourceUrl": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/apple-tv-4k-hero-select-202210?wid=1076&hei=1070&fmt=jpeg&qlt=90&.v=a3VoZW85YUhreXN3ZFlSUDc3a0tqdU1qeWRTYWRhVU5NM3d6SkhmNzkxTVA2eHYwV0FuTVcxeXpzZU1sNHk2WmJGcXNRQnFCV0w3WVRjTExvdm1ic2FNaUdBMSt0VkxKZ2NWelk1alBpUVVXZEdHNUFPR0hYUU12cjI0VlFzM1A",
+					"sha256": "c3481d94ad0ac213893e073b9fd7c40b01d26fe7c02c97923b8e9d630c89e3a8",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/apple-tv-4k-black-c3481d94ad0a.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": "Shared front presentation; no rear ports shown."
 				}
 			],
 			"categorySlug": "home-tv",
 			"specifications": {
 				"Output": "4K"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": ["colour", "connectivity", "storage"],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"A15 third-generation hardware. Exactly64GB Wi-Fi or128GB Wi-Fi+Ethernet; Thread only128GB. Shared front photograph valid for both, but rear-port photos must not cross variants. HDMI cable and remote USB-C charging cable sold separately."
+			],
+			"verifiedConfigurations": [
+				{
+					"colour": "Black",
+					"storage": "64 GB",
+					"connectivity": "Wi-Fi"
+				},
+				{
+					"colour": "Black",
+					"storage": "128 GB",
+					"connectivity": "Wi-Fi + Ethernet"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Black",
+					"connectivity": "Wi-Fi",
+					"storage": "64 GB"
+				},
+				{
+					"colour": "Black",
+					"connectivity": "Wi-Fi + Ethernet",
+					"storage": "128 GB"
+				}
+			]
 		},
 		{
 			"key": "samsung-ms23k3513ak",
@@ -557,9 +3915,38 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Clean right-perspective photograph, not the gallery award badge or feature illustration.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/samsung-ms23k3513ak-20f0c9a6e85b.png"
+				},
+				{
+					"path": "/images/catalogue/options/samsung-ms23k3513ak-black-38635cf0c13e.png",
+					"sourceUrl": "https://images.samsung.com/is/image/samsung/uk-microwave-solo-ms23k3513ak-ms23k3513ak-eu-rperspectiveblack-71689163?$1164_776_PNG$",
+					"sha256": "38635cf0c13ebd2d4822caaa289430cd25804514de0b61790ab74bc3870e6734",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/samsung-ms23k3513ak-black-38635cf0c13e.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"colour": "Black"
+					}
 				}
 			],
-			"seedVariantAxes": {}
+			"seedVariantAxes": ["colour", "capacity", "region"],
+			"variantNotes": [
+				"Fixed exact model. Do not expand to different sizes/capacities/model numbers as if interchangeable variants."
+			],
+			"verifiedConfigurations": [
+				{
+					"model": "MS23K3513AK/EU",
+					"capacity": "23 L",
+					"region": "UK",
+					"colour": "Black"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Black",
+					"capacity": "23 L",
+					"region": "UK"
+				}
+			]
 		},
 		{
 			"key": "hisense-h670sit-wd",
@@ -586,9 +3973,52 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Open-door interior photograph from exact model gallery. Source is South African regional model.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/hisense-h670sit-wd-5746e2e84290.jpg"
+				},
+				{
+					"path": "/images/catalogue/options/hisense-h670sit-wd-titanium-inox-0ff196565b1b.jpg",
+					"sourceUrl": "https://hisense.co.za/wp-content/uploads/2025/01/H670SIT-WD-2_sq.jpg",
+					"sha256": "0ff196565b1becef7b7b74307bc4ee240b86e002dbb75208e5bebcb55c7dc728",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/hisense-h670sit-wd-titanium-inox-0ff196565b1b.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Titanium Inox",
+					"scope": {
+						"colour": "Titanium Inox"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/hisense-h670sit-wd-titanium-inox-5746e2e84290.jpg",
+					"sourceUrl": "https://hisense.co.za/wp-content/uploads/2025/01/H670SIT-WD-6_sq.jpg",
+					"sha256": "5746e2e84290cb620f51062a8694b51e51c78090503f506b2e9514b9f3925444",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/hisense-h670sit-wd-titanium-inox-5746e2e84290.jpg",
+					"optionAxis": "colour",
+					"optionValue": "Titanium Inox",
+					"scope": {
+						"colour": "Titanium Inox"
+					}
 				}
 			],
-			"seedVariantAxes": {}
+			"seedVariantAxes": ["colour", "capacity", "region", "voltage"],
+			"variantNotes": [
+				"Fixed exact model. Do not expand to different sizes/capacities/model numbers as if interchangeable variants.",
+				"Official source labels model DISCONTINUED. Mark isNew false; cannot claim latest. Fixed Titanium Inox508L;334L fridge plus174L freezer."
+			],
+			"verifiedConfigurations": [
+				{
+					"model": "H670SIT-WD",
+					"capacity": "508 L",
+					"region": "South Africa",
+					"voltage": "220–240 V / 50 Hz",
+					"colour": "Titanium Inox"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Titanium Inox",
+					"capacity": "508 L",
+					"region": "South Africa",
+					"voltage": "220–240 V / 50 Hz"
+				}
+			]
 		},
 		{
 			"key": "anker-715-a2663",
@@ -611,9 +4041,48 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Exact charger photograph from UK product page. Plug appearance is shown; do not infer universal plug compatibility.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/anker-715-a2663-29affa8e321b.png"
+				},
+				{
+					"path": "/images/catalogue/options/anker-715-a2663-black-29affa8e321b.png",
+					"sourceUrl": "https://cdn.shopify.com/s/files/1/0491/8460/4324/products/Anker_715_Charger_Nano_II_65W.png?v=1773829229",
+					"sha256": "29affa8e321b8e8e2d978e8ab8a7cb93f9b75cb99eda8223d71e49cb53805369",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/anker-715-a2663-black-29affa8e321b.png",
+					"optionAxis": "colour",
+					"optionValue": "Black",
+					"scope": {
+						"colour": "Black"
+					}
 				}
 			],
-			"seedVariantAxes": {}
+			"seedVariantAxes": [
+				"colour",
+				"input voltage",
+				"plug",
+				"power",
+				"region"
+			],
+			"variantNotes": [
+				"Do not add plug variants from other regions without individual SKU evidence. UK charger A2663214 input specified200–240V; not universal100–240V."
+			],
+			"verifiedConfigurations": [
+				{
+					"power": "65 W",
+					"plug": "UK",
+					"region": "UK",
+					"input voltage": "200–240 V",
+					"colour": "Black",
+					"model": "A2663214"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Black",
+					"input voltage": "200–240 V",
+					"plug": "UK",
+					"power": "65 W",
+					"region": "UK"
+				}
+			]
 		},
 		{
 			"key": "anker-laptop-power-bank-a1695",
@@ -630,6 +4099,28 @@
 					"visuallyInspected": true,
 					"inspectionNote": "Reviewed in the labeled product contact sheet. Exact manufacturer model artwork; base gallery only, no colour-specific media assigned.",
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/anker-laptop-power-bank-a1695-389170af3fa5.png"
+				},
+				{
+					"path": "/images/catalogue/options/anker-laptop-power-bank-a1695-space-black-389170af3fa5.png",
+					"sourceUrl": "https://cdn.shopify.com/s/files/1/0493/9834/9974/files/A1695H11_TD01_V1.png?v=1773643751",
+					"sha256": "389170af3fa5d309a168415cc952e9f73d2a1916012e9314fca42fd2601fba2e",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/anker-laptop-power-bank-a1695-space-black-389170af3fa5.png",
+					"optionAxis": "colour",
+					"optionValue": "Space Black",
+					"scope": {
+						"colour": "Space Black"
+					}
+				},
+				{
+					"path": "/images/catalogue/options/anker-laptop-power-bank-a1695-silver-918769641464.png",
+					"sourceUrl": "https://cdn.shopify.com/s/files/1/0493/9834/9974/files/A1695H41_TD01_V1.png?v=1773643751",
+					"sha256": "918769641464e95f7b8cc503088f05ded1cf47421e5f2f4043112014556f54e7",
+					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-22/anker-laptop-power-bank-a1695-silver-918769641464.png",
+					"optionAxis": "colour",
+					"optionValue": "Silver",
+					"scope": {
+						"colour": "Silver"
+					}
 				}
 			],
 			"categorySlug": "accessories-power",
@@ -638,8 +4129,51 @@
 				"Capacity": "25,000 mAh",
 				"Maximum total output": "165 W"
 			},
-			"seedVariantAxes": {},
-			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory."
+			"seedVariantAxes": [
+				"colour",
+				"capacity",
+				"maximum total output",
+				"package",
+				"region"
+			],
+			"variantScope": "Only listed seed options are offered. Manufacturer family artwork stays in the base gallery; no image is attributed to an unverified colour. Prices and quantities are explicit development fixtures, not verified supplier inventory.",
+			"variantNotes": [
+				"Two standalone color SKUs verified:Space BlackA1695H11 and SilverA1695H41. Exclude bundle variants as separate package contents, not independent capacity/wattage combinations.165W peak is dual-port;3/4-device maximum130W."
+			],
+			"verifiedConfigurations": [
+				{
+					"capacity": "25,000 mAh",
+					"maximum total output": "165 W",
+					"package": "Power Bank",
+					"region": "US",
+					"colour": "Space Black",
+					"model": "A1695H11"
+				},
+				{
+					"capacity": "25,000 mAh",
+					"maximum total output": "165 W",
+					"package": "Power Bank",
+					"region": "US",
+					"colour": "Silver",
+					"model": "A1695H41"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"colour": "Space Black",
+					"capacity": "25,000 mAh",
+					"maximum total output": "165 W",
+					"package": "Power Bank",
+					"region": "US"
+				},
+				{
+					"colour": "Silver",
+					"capacity": "25,000 mAh",
+					"maximum total output": "165 W",
+					"package": "Power Bank",
+					"region": "US"
+				}
+			]
 		},
 		{
 			"key": "ugreen-revodok-70410",
@@ -666,7 +4200,28 @@
 					"publicUrl": "https://pub-3d66529de106425c8c82087a4d8cc710.r2.dev/catalogue/2026-09-21/ugreen-revodok-70410-b2a3eda345a5.png"
 				}
 			],
-			"seedVariantAxes": {}
+			"seedVariantAxes": ["hdmi", "ports", "power delivery", "region"],
+			"variantNotes": [
+				"Fixed exact model. Do not expand to different sizes/capacities/model numbers as if interchangeable variants.",
+				"Official Shopify product has one Default Title variant SKU70410 only. No independent color/port-count option; do not invent color name from gray-looking photo."
+			],
+			"verifiedConfigurations": [
+				{
+					"model": "70410",
+					"ports": "6-in-1",
+					"hdmi": "4K at 30 Hz",
+					"power delivery": "100 W",
+					"region": "UK"
+				}
+			],
+			"seedConfigurations": [
+				{
+					"hdmi": "4K at 30 Hz",
+					"ports": "6-in-1",
+					"power delivery": "100 W",
+					"region": "UK"
+				}
+			]
 		}
 	],
 	"excluded": [
@@ -686,5 +4241,6 @@
 			"model": "Hisense RC-70WS",
 			"reason": "Global product URL redirected to unrelated homepage. Replaced with verified H670SIT-WD regional listing."
 		}
-	]
+	],
+	"variantPolicy": "Only explicitly manufacturer-verified configurations are offered. Variant photos are option-tagged; none are generic fallbacks. Prices and quantities remain seed fixtures, with per-product stock totals preserved; not supplier-confirmed commercial inventory."
 }
