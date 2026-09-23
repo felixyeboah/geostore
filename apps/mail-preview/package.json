@@ -9,16 +9,16 @@
 		"format": "biome format --write"
 	},
 	"dependencies": {
-		"@react-email/components": "^1.0.10",
+		"@react-email/components": "^1.0.12",
 		"@react-email/preview-server": "^5.2.10",
 		"@repo/mail": "workspace:*",
 		"react": "catalog:",
-		"react-email": "^5.2.10"
+		"react-email": "^6.9.5"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
 		"@repo/tsconfig": "workspace:*",
-		"@types/node": "^25.5.0",
-		"@types/react": "^19.2.14"
+		"@types/node": "^26.6.2",
+		"@types/react": "^19.3.0"
 	}
 }
