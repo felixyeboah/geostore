@@ -29,7 +29,7 @@
 		"@types/node": "catalog:",
 		"dotenv-cli": "catalog:",
 		"tsx": "catalog:",
-		"turbo": "^2.8.17",
+		"turbo": "^2.11.2",
 		"typescript": "catalog:"
 	},
 	"pnpm": {
