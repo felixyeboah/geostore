@@ -133,8 +133,9 @@ const nextConfig: NextConfig = {
 		);
 
 		/*
-		 * The admin runs on Node, never on Cloudflare Workers, so it has no
-		 * use for the workerd Prisma client. That client imports its query
+		 * This webpack build runs on Node, so it has no use for the workerd
+		 * Prisma client. Cloudflare builds use Turbopack through OpenNext and
+		 * retain that client. The workerd client imports its query
 		 * compiler as `...wasm?module`, which webpack cannot parse — the build
 		 * fails with "Unexpected character" on the raw wasm. The import in
 		 * client.ts is relative, so the alias is the resolved path rather than
