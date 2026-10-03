@@ -1,0 +1,19 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "geostoresgh-admin",
+	"account_id": "dfed33ea3d6cce574a4f6d446d5f1e8b",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-09-19",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"NEXT_PUBLIC_SAAS_URL": "https://geostoresgh-admin.reevitinc.workers.dev",
+		"NEXT_PUBLIC_MARKETING_URL": "https://geostoresgh.reevitinc.workers.dev"
+	}
+}
