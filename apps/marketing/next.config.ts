@@ -48,7 +48,26 @@ const nextConfig: NextConfig = {
 	// Two departments were renamed when the taxonomy grew. Anything already
 	// shared or indexed under the old slug keeps working.
 	async redirects() {
+		const saasUrl = process.env.NEXT_PUBLIC_SAAS_URL?.replace(/\/$/, "");
+		const adminRedirects = saasUrl
+			? [
+					// OpenNext leaves an empty wildcard literal in external redirects.
+					// Handle the admin root before matching its subpaths.
+					"/admin",
+					"/admin/:path*",
+					"/login",
+					"/forgot-password",
+					"/reset-password",
+					"/verify",
+				].map((source) => ({
+					source,
+					destination: `${saasUrl}${source}`,
+					permanent: false,
+				}))
+			: [];
+
 		return [
+			...adminRedirects,
 			{
 				source: "/categories/wearables",
 				destination: "/categories/watches-wearables",

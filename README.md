@@ -48,6 +48,31 @@ pnpm build
 
 ## Production configuration
 
+The storefront and admin are separate deployments. `apps/marketing` owns the
+`geostoresgh` Cloudflare Worker; `apps/saas` owns `geostoresgh-admin`. Deploy the
+admin before the storefront so its `/admin` and login redirects have a working
+destination. The admin entry point is `/admin/overview` on the admin Worker.
+
+Set `NEXT_PUBLIC_SAAS_URL` to the admin origin and `NEXT_PUBLIC_MARKETING_URL`
+to the storefront origin **when building both apps**, as well as at runtime.
+Next.js redirects and public URLs are fixed at build time. Configure the
+required secrets below using Wrangler's secret store; do not commit them in
+`wrangler.jsonc` or reuse local development signing secrets. Product uploads
+also need the R2 credentials and public bucket URLs from `.env.local.example`.
+
+```bash
+pnpm db:generate
+pnpm --filter saas cf:build
+pnpm --filter saas cf:preview
+pnpm --filter saas cf:deploy
+pnpm --filter marketing cf:build
+pnpm --filter marketing cf:deploy
+node tooling/deploy/smoke-admin.mjs https://geostoresgh.reevitinc.workers.dev https://geostoresgh-admin.reevitinc.workers.dev
+```
+
+Cloudflare builds use Turbopack to retain Prisma's workerd WASM import. The
+existing Node development and build commands continue to use webpack.
+
 The server refuses to start in production if any of these is wrong, rather than
 failing quietly at the first customer request.
 

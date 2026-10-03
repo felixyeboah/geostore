@@ -18,6 +18,7 @@
 		"enabled": true
 	},
 	"vars": {
+		"NEXT_PUBLIC_SAAS_URL": "https://geostoresgh-admin.reevitinc.workers.dev",
 		"NEXT_PUBLIC_MARKETING_URL": "https://geostoresgh.reevitinc.workers.dev"
 	}
 }
