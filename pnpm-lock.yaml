@@ -732,6 +732,9 @@ importers:
       '@mdx-js/mdx':
         specifier: 'catalog:'
         version: 3.1.1
+      '@opennextjs/cloudflare':
+        specifier: ^1.20.6
+        version: 1.20.6(encoding@0.1.13)(next@16.3.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(@types/node@25.5.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.135.0(@types/node@25.5.0))
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.58.2
@@ -798,6 +801,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      wrangler:
+        specifier: ^4.135.0
+        version: 4.135.0(@types/node@25.5.0)
 
   packages/api:
     dependencies:

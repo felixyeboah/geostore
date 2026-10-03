@@ -632,6 +632,13 @@ pnpm format   # Format code
 - Keep files Biome-clean before committing
 - Target Node.js ≥ 20 with ESM-compatible imports
 
+### Cloudflare Deployments
+
+- Deploy `apps/saas` (`geostoresgh-admin`) before `apps/marketing` (`geostoresgh`). The storefront redirects admin and sign-in routes to the SaaS origin.
+- Set both public app origins at build time and runtime. Keep secrets in Wrangler's secret store.
+- Use each app's `cf:build`, `cf:preview`, and `cf:deploy` scripts. The admin's Cloudflare build uses Turbopack for Prisma's workerd WASM import; Node builds retain webpack.
+- Run `tooling/deploy/smoke-admin.mjs` against both origins and verify login in a browser before declaring production admin access working.
+
 ### Testing
 
 - E2E tests use **Playwright** in `apps/marketing/tests` and `apps/saas/tests`

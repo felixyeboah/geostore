@@ -37,6 +37,8 @@
 
 ### Fixed
 
+- Added the admin Cloudflare deployment and storefront redirects for admin and login routes; authentication uses the SQLite Prisma adapter that matches the shared database.
+
 - Selected option photos follow the product into the bag, confirmation toast and saved order; checkout rejects missing required variant choices.
 - Products with only option-tagged photos can be saved in admin without adding a misleading generic gallery photo.
 
