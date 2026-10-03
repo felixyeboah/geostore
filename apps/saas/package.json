@@ -57,7 +57,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@opennextjs/cloudflare": "^1.20.6",
+		"@opennextjs/cloudflare": "^1.20.7",
 		"@biomejs/biome": "catalog:",
 		"@mdx-js/mdx": "catalog:",
 		"@playwright/test": "catalog:",
@@ -84,7 +84,7 @@
 		"tsx": "catalog:",
 		"typescript": "catalog:",
 		"@libsql/client": "^0.17.4",
-		"wrangler": "^4.135.0"
+		"wrangler": "^4.144.0"
 	},
 	"name": "saas",
 	"private": true,
