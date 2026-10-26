@@ -23,7 +23,7 @@
 		"@biomejs/biome": "catalog:",
 		"@repo/tsconfig": "workspace:*",
 		"@types/react": "catalog:",
-		"encoding": "^0.1.13",
+		"encoding": "^0.1.14",
 		"typescript": "catalog:"
 	},
 	"main": "./index.ts",
